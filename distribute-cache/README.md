@@ -42,7 +42,7 @@ private DistributCache distributCache;
 1. 将key存放在`CacheKeyEnum`枚举中
 ```java
 /**
- * @program: msa-common
+ * @program: distribute-cache
  * @description: 缓存 key管理
  * @author: lk
  * @create: 2022-1-6
@@ -66,7 +66,7 @@ public static CacheKeyWrap cacheKeyBuild(CacheKeyEnum cacheKeyEnum, Object... ar
 ## 完整使用示例
 ```java
 /**
- * @program: msa-common
+ * @program: distribute-cache
  * @description: 缓存 key管理
  * @author: lk
  * @create: 2022-1-6
