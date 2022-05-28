@@ -12,19 +12,19 @@
 ```yml
 redisson:
   # 连接的超时时间
-  timeout : 3000
+  timeout : # 连接的超时时间
   # 地址
-  address : 192.168.2.102
+  address : # 地址
   # 端口号
-  port : 6379
+  port : # 端口号
   # 密码
-  password : 7ygvUJM
+  password : # 密码
   # 选择的redis数据库
-  database : 2
+  database : # 选择的redis数据库
   # 连接池大小
-  connectionPoolSize : 64
+  connectionPoolSize : # 连接池大小
   # 最小空闲连接大小
-  connectionMinimumIdleSize : 10
+  connectionMinimumIdleSize : # 最小空闲连接大小
 ```
 # 分布式锁组件的使用
 
@@ -51,7 +51,7 @@ public void testAnnotation(Test1Dto dto) {
 
 - 目前是在方法执行完后将锁释放，没有显示提供锁存活时间配置项，如确定需要的话后续会升级
 - 当没有获得锁的请求等待waitTime时长后仍获取不到锁，就会抛出<font color="#FF0000">请求频繁</font>异常
-- 为了防止业务名重复可在com.bjgoodwill.msa.common.base.DistributedLockConstants常量类中设置业务名
+- 为了防止业务名重复可在DistributedLockConstants常量类中设置业务名
 
 ## 方法级别方式
 DistributedLockUtil:
@@ -102,4 +102,4 @@ public ResultMap<String> updateUserName(String name, Integer id){
 - 尽量能够自己来设置唯一标识，如订单id、就诊号、缴费单号
 - 如果不能自己来确定唯一标识的话，系统会使用 `类名+方法名+参数名+userId`的方式来生成唯一标识，如果采用返回相同结果的重复执行策略的话，在某些场景会有问题需要使用者考虑清楚。如:
   <font color="#FF0000">某个用户进行提交订单操作，执行的逻辑较长。这时同一个用户再提交一个订单的话，虽然是两个订单，但是在设置的不允许重复访问时间内，第2个订单返回的结果仍然是第1个订单的结果。需要注意。(!!!==目前此功能还需完善需要显式指定唯一标识==!!!)</font>
-- 为了防止业务名重复可在com.bjgoodwill.msa.common.base.RepeatLimitConstants常量类中设置业务名
+- 为了防止业务名重复可在RepeatLimitConstants常量类中设置业务名
