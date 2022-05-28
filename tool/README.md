@@ -2,9 +2,9 @@
 ## 1 引入依赖
 ```xml
 <dependency>
-			<groupId>com.example</groupId>
-			<artifactId>tool</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+  <groupId>com.example</groupId>
+  <artifactId>tool</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
 ## 2 在项目相应的apollo上添加配置
