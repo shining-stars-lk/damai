@@ -7,7 +7,7 @@
   <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
-## 2 在项目相应的apollo上添加配置
+## 2 在项目上添加配置
 `具体参数与项目中redis相关的配置一致即可`
 ```yml
 redisson:
@@ -28,7 +28,7 @@ redisson:
 ```
 # 分布式锁组件的使用
 
-## 在相应的方法上加上@DistributedLock注解
+## 注解方式，在相应的方法上加上@DistributedLock注解
 
 ### 示例
 ```java
@@ -53,6 +53,26 @@ public void testAnnotation(Test1Dto dto) {
 - 当没有获得锁的请求等待waitTime时长后仍获取不到锁，就会抛出<font color="#FF0000">请求频繁</font>异常
 - 为了防止业务名重复可在com.bjgoodwill.msa.common.base.DistributedLockConstants常量类中设置业务名
 
+## 方法级别方式
+DistributedLockUtil:
+```java
+/**
+ * 没有返回值的加锁执行
+ * @param taskRun 要执行的任务
+ * @param name 锁的业务名
+ * @param keys 锁的标识
+ * */
+public void execute(TaskRun taskRun,String name,String [] keys);
+
+/**
+* 有返回值的加锁执行
+* @param taskCall 要执行的任务
+* @param name 锁的业务名
+* @param keys 锁的标识
+* @return 要执行的任务的返回值
+* */
+public <T> T submit(TaskCall<T> taskCall,String name,String [] keys)
+```
 # 防重复提交组件的使用
 ## 在相应的方法上加上@RepeatLimit注解
 ### 示例
