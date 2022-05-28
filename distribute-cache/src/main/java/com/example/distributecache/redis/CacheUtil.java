@@ -1,7 +1,7 @@
 package com.example.distributecache.redis;
 
 import com.alibaba.fastjson.util.ParameterizedTypeImpl;
-import com.example.distributecache.core.StringUtil;
+import com.example.common.core.StringUtil;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;

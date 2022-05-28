@@ -12,9 +12,11 @@
 	<description>工具组件</description>
 
 	<modules>
+		<module>common</module>
 		<module>threadpool</module>
 		<module>tool</module>
 		<module>distribute-cache</module>
+		<module>id-generator</module>
 	</modules>
 
 	<properties>

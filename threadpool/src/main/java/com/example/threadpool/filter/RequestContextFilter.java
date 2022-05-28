@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * @program: msa-common
+ * @program: common
  * @description: 将requestId放入slf4j的MDC,用于后续获取
  * @author: lk
  * @create: 2021-11-08 16:48
