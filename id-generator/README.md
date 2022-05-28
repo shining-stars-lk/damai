@@ -8,6 +8,14 @@
 
 **使用**
 
+- 引入依赖
+```xml
+<dependency>
+    <groupId>com.example</groupId>
+    <artifactId>id-generator</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
 - 按照`distribute-cache`和`tool`模块的配置方法，将redis和redisson配置好
 - 调用`IdUtil.getId()`方法即可
 
