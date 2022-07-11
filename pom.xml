@@ -13,16 +13,18 @@
 
 	<modules>
 		<module>common</module>
-		<module>threadpool</module>
-		<module>tool</module>
 		<module>distribute-cache</module>
 		<module>id-generator</module>
+		<module>springcloud</module>
+		<module>threadpool</module>
+		<module>tool</module>
 	</modules>
 
 	<properties>
 		<revision>0.0.1-SNAPSHOT</revision>
 		<java.version>1.8</java.version>
 		<spring-boot.version>2.3.12.RELEASE</spring-boot.version>
+		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -46,6 +48,21 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>6.0.6</version>
 		</dependency>
+
+		<!-- nacos start -->
+		<dependency>
+			<groupId>com.alibaba.cloud</groupId>
+			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+			<version>2.2.7.RELEASE</version>
+		</dependency>
+
+		<!-- spring-cloud-starter-alibaba-nacos-discovery源码中nacos-common optional为true,所以这里要将common引入 -->
+		<dependency>
+			<groupId>com.alibaba.nacos</groupId>
+			<artifactId>nacos-common</artifactId>
+			<version>2.0.3</version>
+		</dependency>
+		<!-- nacos end -->
 	</dependencies>
 
 	<dependencyManagement>
@@ -57,8 +74,14 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
-
 	</dependencyManagement>
 
 	<build>
