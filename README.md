@@ -12,3 +12,5 @@
 - `id-generator`分布式id生成工具
   - 结合著名的雪花算法思路，13位时间戳 + 本机IP（后3位） + DATACENTER_ID(后3位) + TID(后3位) + 单毫秒内的自增序列（2位）
   - DATACENTER_ID使用redis做自增
+- `springcloud`微服务组件
+  - 提供服务优雅上下线的功能，详情查看此模块下的文档
