@@ -18,6 +18,7 @@
 		<module>springcloud</module>
 		<module>threadpool</module>
 		<module>tool</module>
+		<module>arithmetic</module>
 	</modules>
 
 	<properties>
