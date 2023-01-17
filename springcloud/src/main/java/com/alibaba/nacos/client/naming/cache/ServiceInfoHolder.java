@@ -171,6 +171,8 @@ public class ServiceInfoHolder implements Closeable {
         if (changed || (StringUtils.isNotEmpty(notifyService) && "yes".equals(notifyService))) {
             NAMING_LOGGER.info("current ips:(" + serviceInfo.ipCount() + ") service: " + serviceInfo.getKey() + " -> "
                     + JacksonUtils.toJson(serviceInfo.getHosts()));
+            System.out.println("current ips:(" + serviceInfo.ipCount() + ") service: " + serviceInfo.getKey() + " -> "
+                    + JacksonUtils.toJson(serviceInfo.getHosts()));
             // 添加实例变更事件，会被订阅者执行
             NotifyCenter.publishEvent(new InstancesChangeEvent(serviceInfo.getName(), serviceInfo.getGroupName(),
                     serviceInfo.getClusters(), serviceInfo.getHosts()));
