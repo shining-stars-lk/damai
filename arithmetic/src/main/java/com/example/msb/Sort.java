@@ -1,4 +1,4 @@
-package com.example;
+package com.example.msb;
 
 /**
  * @program: sort
