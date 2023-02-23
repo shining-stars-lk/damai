@@ -20,6 +20,7 @@
 		<module>threadpool</module>
 		<module>tool</module>
 		<module>arithmetic</module>
+		<module>record</module>
 	</modules>
 
 	<properties>
