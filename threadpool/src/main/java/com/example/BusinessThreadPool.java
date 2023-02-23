@@ -16,7 +16,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: msa-toolkit
  * @description: 定制化线程池(此线程池能够获取服务调用链路requestId)
  * @author: lk
  * @create: 2021-12-11 14:09

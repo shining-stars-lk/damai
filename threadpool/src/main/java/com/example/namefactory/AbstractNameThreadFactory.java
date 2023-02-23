@@ -4,7 +4,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * @program: msa-toolkit
  * @description: 线程工厂抽象基类
  * @author: lk
  * @create: 2021-12-16

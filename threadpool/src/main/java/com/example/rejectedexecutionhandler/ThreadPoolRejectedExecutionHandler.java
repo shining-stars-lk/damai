@@ -1,12 +1,10 @@
 package com.example.rejectedexecutionhandler;
 
-import java.util.Optional;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * @program: msa-toolkit
  * @description: 线程池异常处理
  * @author: lk
  * @create: 2021-12-06

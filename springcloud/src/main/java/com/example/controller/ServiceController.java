@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @program: msa-common-service-manage
  * @description:
  * @author: lk
  * @create: 2022-06-08
