@@ -7,7 +7,6 @@ import com.example.repeatLimit.info.strategy.generateKey.GenerateKeyStrategyCont
 import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
@@ -17,7 +16,6 @@ import java.util.Optional;
  * @author: lk
  * @create: 2022-05-28
  **/
-@Component
 public class RepeatLimitInfoProvider extends BaseInfoProvider {
 
     private final Logger logger = LoggerFactory.getLogger(RepeatLimitInfoProvider.class);

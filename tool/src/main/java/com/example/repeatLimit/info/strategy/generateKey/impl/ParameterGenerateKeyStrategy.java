@@ -1,14 +1,12 @@
 package com.example.repeatLimit.info.strategy.generateKey.impl;
 
-import com.example.repeatLimit.info.GenerateKeyStrategy;
-import com.example.repeatLimit.info.RepeatLimitInfoProvider;
 import com.example.core.Constants;
 import com.example.core.StringUtil;
+import com.example.repeatLimit.info.GenerateKeyStrategy;
+import com.example.repeatLimit.info.RepeatLimitInfoProvider;
 import com.example.repeatLimit.info.strategy.generateKey.GenerateKeyHandler;
 import com.example.repeatLimit.info.strategy.generateKey.GenerateKeyStrategyContext;
 import org.aspectj.lang.JoinPoint;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -21,11 +19,13 @@ import java.util.StringJoiner;
  * @author: lk
  * @create: 2022-05-28
  **/
-@Component
 public class ParameterGenerateKeyStrategy implements GenerateKeyHandler {
-
-    @Autowired
+    
     private RepeatLimitInfoProvider repeatLimitInfoProvider;
+    
+    public ParameterGenerateKeyStrategy(RepeatLimitInfoProvider repeatLimitInfoProvider){
+        this.repeatLimitInfoProvider = repeatLimitInfoProvider;
+    }
 
     @PostConstruct
     public void init(){

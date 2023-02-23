@@ -1,6 +1,7 @@
 package com.example.distributedlock.redisson.config;
 
 import com.example.core.StringUtil;
+import com.example.core.DistributedConf;
 import com.example.distributedlock.redisson.RedissonProperties;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
  * @author: lk
  * @create: 2022-05-28
  **/
-@Configuration
+@Configuration(proxyBeanMethods = false)
 /** 当yml中的配置存在 redisson.address和redisson.password时 此配置对象才生效，否则会报错
  * */
 //@ConditionalOnProperty({"redisson.address","redisson.password"})
@@ -35,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
 /**让RedisAutoConfiguration加载完后再加载RedissonAutoConfiguration
  * */
 @AutoConfigureAfter(RedisAutoConfiguration.class)
+@AutoConfigureBefore(DistributedConf.class)
 public class RedissonAutoConfiguration {
 
     private Logger logger = LoggerFactory.getLogger(RedissonAutoConfiguration.class);
@@ -49,7 +52,7 @@ public class RedissonAutoConfiguration {
      * @return RedissonClient
      */
     @Bean
-    RedissonClient redissonSingle() {
+    public RedissonClient redissonSingle() {
 
         verify(redssionProperties);
 

@@ -4,7 +4,6 @@ import com.example.repeatLimit.info.RepeatRejectedStrategy;
 import com.example.repeatLimit.info.strategy.repeatrejected.RepeatLimitHandler;
 import com.example.repeatLimit.info.strategy.repeatrejected.RepeatLimitStrategyContext;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +14,6 @@ import java.util.concurrent.TimeUnit;
  * @author: lk
  * @create: 2022-05-28
  **/
-@Component("abortStrategy")
 public class AbortStrategy implements RepeatLimitHandler {
 
     @PostConstruct

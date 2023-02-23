@@ -3,8 +3,6 @@ package com.example.operate.impl;
 import com.example.operate.Operate;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,11 +12,13 @@ import java.util.concurrent.TimeUnit;
  * @author: lk
  * @create: 2022-05-28
  **/
-@Component("redissonOperate")
 public class RedissonOperate implements Operate {
-
-    @Autowired
+    
     private RedissonClient redissonClient;
+    
+    public RedissonOperate(RedissonClient redissonClient){
+        this.redissonClient = redissonClient;
+    }
 
     @Override
     public void set(String name,Object o) {
