@@ -5,12 +5,27 @@
 # 引入依赖
 
 ```xml
-<groupId>com.example</groupId>
-<artifactId>distribute-es</artifactId>
-<version><version>0.0.1-SNAPSHOT</version></version>
+<dependency>
+    <groupId>com.example</groupId>
+    <artifactId>distribute-es</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+</dependency>
 ```
 
 # 使用
+## 添加配置信息
+```yml
+#es开关
+es.switch = true
+#elasticsearch.userName=es用户名
+elasticsearch.userName = 
+#elasticsearch.passWord=es密码
+elasticsearch.passWord = 
+#es.type.switch=版本
+es.type.switch = false
+#elasticsearch.ip=es地址
+elasticsearch.ip = 
+```
 
 ## 引入api
 

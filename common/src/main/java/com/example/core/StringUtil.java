@@ -3,6 +3,10 @@ package com.example.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  * @program: distribute-cache
  * @description: String工具类
@@ -30,5 +34,37 @@ public class StringUtil {
 	 */
 	public static boolean isEmpty(String str) {
 		return !StringUtil.isNotEmpty(str);
+	}
+	
+	/**
+	 * 将流转换为字符串
+	 * @param is 文件流
+	 * @return
+	 * @throws IOException
+	 */
+	public static String inputStream2String(InputStream is){
+		ByteArrayOutputStream baos = null;
+		String result = null;
+		try {
+			if(is != null) {
+				baos = new ByteArrayOutputStream();
+				int i = -1;
+				while ((i = is.read()) != -1) {
+					baos.write(i);
+				}
+				result = baos.toString();
+			}
+		}catch(IOException e) {
+			throw new RuntimeException("流转换为字符串失败！");
+		}finally {
+			if(baos != null) {
+				try {
+					baos.close();
+				} catch (IOException e) {
+					logger.error("关闭流失败！");
+				}
+			}
+		}
+		return result;
 	}
 }
