@@ -3,19 +3,17 @@ package com.example.repeatLimit.aspect;
 import com.example.distributedlock.DistributedLocker;
 import com.example.distributedlock.redisson.LockType;
 import com.example.distributedlock.redisson.factory.RedissonLockFactory;
+import com.example.repeatLimit.annotion.RepeatLimit;
 import com.example.repeatLimit.info.RepeatLimitInfoProvider;
 import com.example.repeatLimit.info.RepeatRejectedStrategy;
 import com.example.repeatLimit.info.strategy.repeatrejected.RepeatLimitHandler;
 import com.example.repeatLimit.info.strategy.repeatrejected.RepeatLimitStrategyFactory;
-import com.example.repeatLimit.annotion.RepeatLimit;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +23,6 @@ import java.util.concurrent.TimeUnit;
  * @author: lk
  * @create: 2022-05-28
  **/
-@Component
 @Aspect
 @Order(-9)
 public class RepeatLimitAspect {
@@ -36,14 +33,21 @@ public class RepeatLimitAspect {
 
     private final long WAIT_TIME = 0;
 
-    @Autowired
+    
     private RepeatLimitInfoProvider repeatLimitInfoProvider;
 
-    @Autowired
+    
     private RedissonLockFactory redissonLockFactory;
 
-    @Autowired
+    
     private RepeatLimitStrategyFactory repeatLimitStrategyFactory;
+    
+    public RepeatLimitAspect(RepeatLimitInfoProvider repeatLimitInfoProvider, RedissonLockFactory redissonLockFactory, 
+                             RepeatLimitStrategyFactory repeatLimitStrategyFactory){
+        this.repeatLimitInfoProvider = repeatLimitInfoProvider;
+        this.redissonLockFactory = redissonLockFactory;
+        this.repeatLimitStrategyFactory = repeatLimitStrategyFactory;
+    }
 
     @Around("@annotation(repeatLimit)")
     public Object around(ProceedingJoinPoint joinPoint, RepeatLimit repeatLimit) throws Throwable {

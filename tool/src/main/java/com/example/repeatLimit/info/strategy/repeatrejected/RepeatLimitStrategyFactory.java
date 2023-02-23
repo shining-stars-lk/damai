@@ -1,7 +1,5 @@
 package com.example.repeatLimit.info.strategy.repeatrejected;
 
-import org.springframework.stereotype.Component;
-
 import java.util.Optional;
 
 /**
@@ -10,7 +8,6 @@ import java.util.Optional;
  * @author: lk
  * @create: 2022-05-28
  **/
-@Component
 public class RepeatLimitStrategyFactory {
 
     public RepeatLimitHandler getRepeatLimitStrategy(String key){

@@ -5,8 +5,6 @@ import com.example.repeatLimit.info.RepeatRejectedStrategy;
 import com.example.repeatLimit.info.strategy.repeatrejected.RepeatLimitHandler;
 import com.example.repeatLimit.info.strategy.repeatrejected.RepeatLimitStrategyContext;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
@@ -17,13 +15,15 @@ import java.util.concurrent.TimeUnit;
  * @author: lk
  * @create: 2022-05-28
  **/
-@Component("sameResultStrategy")
 public class SameResultStrategy implements RepeatLimitHandler {
 
     private final String NO_RETURN_VALUE = "void";
-
-    @Autowired
+    
     private Operate operate;
+    
+    public SameResultStrategy(Operate operate){
+        this.operate = operate;
+    }
 
     @PostConstruct
     private void init(){

@@ -5,7 +5,6 @@ import com.example.core.StringUtil;
 import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import java.util.List;
  * @author: lk
  * @create: 2022-05-28
  **/
-@Component
 public class DistributedLockInfoProvider extends BaseInfoProvider {
 
     private final Logger logger = LoggerFactory.getLogger(DistributedLockInfoProvider.class);

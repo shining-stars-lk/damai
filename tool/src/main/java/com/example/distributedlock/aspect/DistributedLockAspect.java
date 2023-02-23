@@ -1,11 +1,11 @@
 package com.example.distributedlock.aspect;
 
 import com.example.core.StringUtil;
-import com.example.distributedlock.annotion.DistributedLock;
-import com.example.distributedlock.redisson.factory.RedissonLockFactory;
 import com.example.distributedlock.DistributedLockInfoProvider;
 import com.example.distributedlock.DistributedLocker;
+import com.example.distributedlock.annotion.DistributedLock;
 import com.example.distributedlock.redisson.LockType;
+import com.example.distributedlock.redisson.factory.RedissonLockFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -13,9 +13,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,18 +25,21 @@ import java.util.concurrent.TimeUnit;
  * @author: lk
  * @create: 2022-05-28
  **/
-
-@Component
 @Aspect
 @Order(-10)
 public class DistributedLockAspect {
 
     private final Logger logger = LoggerFactory.getLogger(DistributedLockAspect.class);
 
-    @Autowired
+    
     private RedissonLockFactory redissonLockFactory;
-    @Autowired
+    
     private DistributedLockInfoProvider distributedLockInfoProvider;
+    
+    public DistributedLockAspect(RedissonLockFactory redissonLockFactory,DistributedLockInfoProvider distributedLockInfoProvider){
+        this.redissonLockFactory = redissonLockFactory;
+        this.distributedLockInfoProvider = distributedLockInfoProvider;
+    }
 
 
     @Around("@annotation(distributedlock)")

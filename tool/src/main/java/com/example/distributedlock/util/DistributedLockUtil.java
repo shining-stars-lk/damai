@@ -5,8 +5,6 @@ import com.example.distributedlock.DistributedLocker;
 import com.example.distributedlock.info.LockTimeOutStrategy;
 import com.example.distributedlock.redisson.LockType;
 import com.example.distributedlock.redisson.factory.RedissonLockFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,13 +14,16 @@ import java.util.concurrent.TimeUnit;
  * @author: lk
  * @create: 2022-05-28
  **/
-@Component
 public class DistributedLockUtil {
-
-    @Autowired
+    
     private RedissonLockFactory redissonLockFactory;
-    @Autowired
+
     private DistributedLockInfoProvider distributedLockInfoProvider;
+    
+    public DistributedLockUtil(RedissonLockFactory redissonLockFactory, DistributedLockInfoProvider distributedLockInfoProvider){
+        this.redissonLockFactory = redissonLockFactory;
+        this.distributedLockInfoProvider = distributedLockInfoProvider;
+    }
 
     /**
      * 没有返回值的加锁执行
