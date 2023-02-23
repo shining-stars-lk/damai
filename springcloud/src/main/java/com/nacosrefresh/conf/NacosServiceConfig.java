@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @program: msa-common-service-manage
  * @description: bean管理
  * @author: lk
  * @create: 2022-06-08

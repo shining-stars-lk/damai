@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @program: bjgoodwill-msa-scloud
  * @description: ribbon缓存管理
  * @author: lk
  * @create: 2022-06-01

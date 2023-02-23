@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @program: msa-common-service-manage
  * @description: 服务管理
  * @author: lk
  * @create: 2022-06-08

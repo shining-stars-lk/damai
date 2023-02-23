@@ -2,10 +2,8 @@ package com.example.filter;
 
 
 import org.slf4j.MDC;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,25 +19,18 @@ import java.io.IOException;
 public class RequestContextFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        if (requestAttributes != null) {
-            HttpServletRequest msaRequest = ((ServletRequestAttributes) requestAttributes).getRequest();
-            if (msaRequest != null) {
-                String requestId = msaRequest.getHeader("requestId");
-                if (requestId == null){
-                    MDC.put("requestId",requestId);
-                }
-                try {
-                    filterChain.doFilter(request, response);
-                }finally {
-                    MDC.remove("requestId");
-                }
-            }else{
-                filterChain.doFilter(request, response);
+        if (request != null) {
+            String requestId = request.getHeader("requestId");
+            if (requestId == null){
+                MDC.put("requestId",requestId);
             }
-        }else {
+            try {
+                filterChain.doFilter(request, response);
+            }finally {
+                MDC.remove("requestId");
+            }
+        }else{
             filterChain.doFilter(request, response);
         }
-
     }
 }

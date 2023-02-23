@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
- * @program: msa-toolkit
  * @description: 对线程池进行MDC获取requestId增强
  * @author: lk
  * @create: 2021-12-06

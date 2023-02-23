@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 
 /**
- * @program: bjgoodwill-msa-scloud
  * @description: nacos缓存管理
  * @author: lk
  * @create: 2022-06-01

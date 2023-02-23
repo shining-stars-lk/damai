@@ -1,7 +1,6 @@
 package com.example.namefactory;
 
 /**
- * @program: msa-toolkit
  * @description: 业务线程工厂
  * @author: lk
  * @create: 2021-12-16 14:09
