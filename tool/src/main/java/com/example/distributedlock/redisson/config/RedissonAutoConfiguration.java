@@ -1,7 +1,7 @@
 package com.example.distributedlock.redisson.config;
 
-import com.example.core.StringUtil;
 import com.example.core.DistributedConf;
+import com.example.core.StringUtil;
 import com.example.distributedlock.redisson.RedissonProperties;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -15,7 +15,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @program: distribute-cache
@@ -23,7 +22,6 @@ import org.springframework.context.annotation.Configuration;
  * @author: lk
  * @create: 2022-05-28
  **/
-@Configuration(proxyBeanMethods = false)
 /** 当yml中的配置存在 redisson.address和redisson.password时 此配置对象才生效，否则会报错
  * */
 //@ConditionalOnProperty({"redisson.address","redisson.password"})

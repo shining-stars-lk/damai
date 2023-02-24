@@ -19,7 +19,6 @@ import com.example.repeatLimit.info.strategy.repeatrejected.impl.SameResultStrat
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @program: toolkit
@@ -27,7 +26,6 @@ import org.springframework.context.annotation.Configuration;
  * @author: lk
  * @create: 2023-02-23
  **/
-@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(RedissonAutoConfiguration.class)
 public class DistributedConf {
     
