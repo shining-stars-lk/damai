@@ -1,5 +1,7 @@
 package com.example.record.provider;
 
+import com.example.record.function.IParseFunction;
+import com.example.record.function.ParseFunctionFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -22,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * @program: record
  * @description:
  * @author: lk
  * @create: 2023-02-21
@@ -29,7 +32,6 @@ import java.util.regex.Pattern;
 public class RecordBaseInfoProvider {
     
     private final Logger logger = LoggerFactory.getLogger(RecordBaseInfoProvider.class);
-    
     /**
      * 操作记录标识
      * */
@@ -45,6 +47,12 @@ public class RecordBaseInfoProvider {
     private ParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
     
     private ExpressionParser parser = new SpelExpressionParser();
+    
+    private ParseFunctionFactory parseFunctionFactory;
+    
+    public RecordBaseInfoProvider(ParseFunctionFactory parseFunctionFactory){
+        this.parseFunctionFactory = parseFunctionFactory;
+    }
     
     
     /**
@@ -69,6 +77,15 @@ public class RecordBaseInfoProvider {
         return definitionContent;
     }
     
+    /**
+     * spel解析入参
+     * */
+    public String getDefinitionContent(JoinPoint joinPoint, String content, String errMsg) throws NoSuchMethodException {
+        Method method = getMethod(joinPoint);
+        String definitionContent = getSpelDefinitionContent(content, method, joinPoint.getArgs(), errMsg);
+        return definitionContent;
+    }
+    
     public Method getMethod(JoinPoint joinPoint) throws NoSuchMethodException {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
@@ -79,11 +96,23 @@ public class RecordBaseInfoProvider {
         return method;
     }
     
-    private String getSpelDefinitionContent(String definitionKey, Method method, Object[] parameterValues) {
+    public String getSpelDefinitionContent(String definitionKey, Method method, Object[] parameterValues) {
         if (!ObjectUtils.isEmpty(definitionKey)) {
             MethodBasedEvaluationContext context = new MethodBasedEvaluationContext(null, method, parameterValues, nameDiscoverer);
             TemplateParserContext template = new TemplateParserContext("(",")");
             Expression expression = parser.parseExpression(definitionKey, template);
+            Object objKey = expression.getValue(context);
+            return ObjectUtils.nullSafeToString(objKey);
+        }
+        return null;
+    }
+    
+    public String getSpelDefinitionContent(String definitionKey, Method method, Object[] parameterValues, String errMsg) {
+        if (!ObjectUtils.isEmpty(definitionKey)) {
+            MethodBasedEvaluationContext context = new MethodBasedEvaluationContext(null, method, parameterValues, nameDiscoverer);
+            TemplateParserContext template = new TemplateParserContext("(",")");
+            Expression expression = parser.parseExpression(definitionKey, template);
+            context.setVariable("errMsg",errMsg);
             Object objKey = expression.getValue(context);
             return ObjectUtils.nullSafeToString(objKey);
         }
@@ -109,15 +138,39 @@ public class RecordBaseInfoProvider {
     /**
      * 解析函数并执行
      * */
-    public String executeFunction(String content, ProceedingJoinPoint joinPoint) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public String executeFunction(String content, ProceedingJoinPoint joinPoint, boolean beforeExecute) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         List<String> functionStrList = getFunction(content);
         String contentNew = content;
         for (String functionStr : functionStrList) {
             String functionStrRel = functionStr.replace("{","").replace("}","");
-            //反射执行方法
-            String functionResult = handleCustomFunction(functionStrRel,joinPoint);
-            contentNew = contentNew.replace(functionStr,functionResult);
+            IParseFunction function = parseFunctionFactory.getFunction(functionStrRel);
+            if (beforeExecute) {
+                if (function != null && function.executeBefore()) {
+                    String functionResult = handleApplyFunction(function,joinPoint);
+                    contentNew = contentNew.replace(functionStr,functionResult);
+                }
+            }else {
+                if (function != null && !function.executeBefore()) {
+                    String functionResult = handleApplyFunction(function,joinPoint);
+                    contentNew = contentNew.replace(functionStr,functionResult);
+                }
+            }
         }
         return contentNew;
+    }
+    
+    /**
+     * 反射执行apply方法
+     * */
+    public String handleApplyFunction(IParseFunction function, JoinPoint joinPoint) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // prepare invocation context
+        Method currentMethod = ((MethodSignature) joinPoint.getSignature()).getMethod();
+        Method handleMethod = function.getClass().getDeclaredMethod("apply", currentMethod.getParameterTypes());
+        handleMethod.setAccessible(true);
+        Object[] args = joinPoint.getArgs();
+        // invoke
+        Object result = handleMethod.invoke(function, args);
+        String functionResult = ObjectUtils.nullSafeToString(result);
+        return functionResult;
     }
 }

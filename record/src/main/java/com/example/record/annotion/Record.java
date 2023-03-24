@@ -34,6 +34,17 @@ public @interface Record {
      * #dto.remark #为固定前缀，dto为入参名，remark为参数中的字段名
      * @return name
      */
-    String content() default "";
+    String content();
+    
+    /**
+     * 失败记录内容
+     * 例如：
+     * 名字为{getDoctorUserName}的医生,添加备注为(#dto.remark)的操作失败，失败原因为(#errMsg)
+     * 
+     * 说明：
+     * (#errMsg)为固定写法，错误信息进行占位 
+     * ResultMap.errCode !=0 的情况下取ResultMap.errMsg的信息，否则取异常信息。 当这两种情况都没有则不记录failContent
+     * */
+    String failContent() default "";
     
 }
