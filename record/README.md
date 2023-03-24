@@ -136,7 +136,7 @@ public class TestDto {
 @RequestMapping(value = "/testrecord", method = RequestMethod.POST)
 @Record(operatorName = "测试",content = "名字为{getDoctorUserName}的医生,将名字为{getPatientUserName}的患者的订单,添加了备注为(#dto.remark)",
             failContent = "名字为{getDoctorUserName}的医生,添加备注为(#dto.remark)的操作失败，失败原因为(#errMsg)")
-public boolean testRecord(@Valid @RequestBody TestDistributedTransactionDto dto) {
+public boolean testRecord(@Valid @RequestBody TestDto dto) {
     return testService.testRecord(dto);
 }
 ```
