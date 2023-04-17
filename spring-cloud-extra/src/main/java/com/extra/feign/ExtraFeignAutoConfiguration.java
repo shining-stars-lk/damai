@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  **/
 
 @Configuration(proxyBeanMethods = false)
-public class FeignAutoConfiguration {
+public class ExtraFeignAutoConfiguration {
     
     @Bean
     public FeignRequestInterceptor feignRequestInterceptor (){

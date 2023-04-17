@@ -29,35 +29,35 @@
             <!-- <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/> -->
         </Console>
         
-        <!-- 输出到日志文件 -->
-        <RollingFile name="RollingFile" fileName="${LOG_HOME}/logs/${PROJECT_NAME}/${FILE_NAME}.log"
-                     filePattern="${LOG_HOME}/logs/${PROJECT_NAME}/$${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz">
-            <ThresholdFilter level="INFO"/>
-             <PatternLayout charset="${ENCODING}" pattern="${PATTERN}"/> 
-            <Policies>
-            	<!--  interval，integer型，指定两次封存动作之间的时间间隔。单位:以日志的命名精度来确定单位，比如yyyy-MM-dd-HH 单位为小时，yyyy-MM-dd-HH-mm 单位为分钟
-					modulate，boolean型，说明是否对封存时间进行调制。若modulate=true，则封存时间将以0点为边界进行偏移计算 -->
-                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
-                <SizeBasedTriggeringPolicy size="100 MB"/>
-            </Policies>
-            <!-- 最多保留文件数 -->
-            <DefaultRolloverStrategy max="30"/>
-        </RollingFile>
-        
-        <!-- 输出错误信息到日志文件 -->
-        <RollingFile name="RollingFileError" fileName="${LOG_HOME}/logs/${PROJECT_NAME}/${FILE_NAME}-error.log"
-                     filePattern="${LOG_HOME}/logs/${PROJECT_NAME}/$${date:yyyy-MM}/${FILE_NAME}-error-%d{yyyy-MM-dd}-%i.log.gz">
-            <ThresholdFilter level="ERROR"/>
-            <PatternLayout charset="${ENCODING}" pattern="${PATTERN}"/>
-            <Policies>
-            	<!--  interval，integer型，指定两次封存动作之间的时间间隔。单位:以日志的命名精度来确定单位，比如yyyy-MM-dd-HH 单位为小时，yyyy-MM-dd-HH-mm 单位为分钟
-					modulate，boolean型，说明是否对封存时间进行调制。若modulate=true，则封存时间将以0点为边界进行偏移计算 -->
-                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
-                <SizeBasedTriggeringPolicy size="100 MB"/>
-            </Policies>
-            <!-- 最多保留文件数 -->
-            <DefaultRolloverStrategy max="30"/>
-        </RollingFile>
+<!--        &lt;!&ndash; 输出到日志文件 &ndash;&gt;-->
+<!--        <RollingFile name="RollingFile" fileName="${LOG_HOME}/logs/${PROJECT_NAME}/${FILE_NAME}.log"-->
+<!--                     filePattern="${LOG_HOME}/logs/${PROJECT_NAME}/$${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz">-->
+<!--            <ThresholdFilter level="INFO"/>-->
+<!--             <PatternLayout charset="${ENCODING}" pattern="${PATTERN}"/> -->
+<!--            <Policies>-->
+<!--            	&lt;!&ndash;  interval，integer型，指定两次封存动作之间的时间间隔。单位:以日志的命名精度来确定单位，比如yyyy-MM-dd-HH 单位为小时，yyyy-MM-dd-HH-mm 单位为分钟-->
+<!--					modulate，boolean型，说明是否对封存时间进行调制。若modulate=true，则封存时间将以0点为边界进行偏移计算 &ndash;&gt;-->
+<!--                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>-->
+<!--                <SizeBasedTriggeringPolicy size="100 MB"/>-->
+<!--            </Policies>-->
+<!--            &lt;!&ndash; 最多保留文件数 &ndash;&gt;-->
+<!--            <DefaultRolloverStrategy max="30"/>-->
+<!--        </RollingFile>-->
+<!--        -->
+<!--        &lt;!&ndash; 输出错误信息到日志文件 &ndash;&gt;-->
+<!--        <RollingFile name="RollingFileError" fileName="${LOG_HOME}/logs/${PROJECT_NAME}/${FILE_NAME}-error.log"-->
+<!--                     filePattern="${LOG_HOME}/logs/${PROJECT_NAME}/$${date:yyyy-MM}/${FILE_NAME}-error-%d{yyyy-MM-dd}-%i.log.gz">-->
+<!--            <ThresholdFilter level="ERROR"/>-->
+<!--            <PatternLayout charset="${ENCODING}" pattern="${PATTERN}"/>-->
+<!--            <Policies>-->
+<!--            	&lt;!&ndash;  interval，integer型，指定两次封存动作之间的时间间隔。单位:以日志的命名精度来确定单位，比如yyyy-MM-dd-HH 单位为小时，yyyy-MM-dd-HH-mm 单位为分钟-->
+<!--					modulate，boolean型，说明是否对封存时间进行调制。若modulate=true，则封存时间将以0点为边界进行偏移计算 &ndash;&gt;-->
+<!--                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>-->
+<!--                <SizeBasedTriggeringPolicy size="100 MB"/>-->
+<!--            </Policies>-->
+<!--            &lt;!&ndash; 最多保留文件数 &ndash;&gt;-->
+<!--            <DefaultRolloverStrategy max="30"/>-->
+<!--        </RollingFile>-->
     </Appenders>
 
     <Loggers>
