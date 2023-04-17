@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.nacosrefresh.conf.NacosServiceConfig
+  com.nacosrefresh.conf.NacosServiceConfig,\
+  com.extra.feign.FeignAutoConfiguration
