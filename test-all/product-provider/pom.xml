@@ -10,12 +10,14 @@
     </parent>
 
 
-    <artifactId>order-consumer</artifactId>
+    <artifactId>product-provider</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>order-consumer-client</module>
-        <module>order-consumer-service</module>
+        <module>product-provider-client</module>
+        <module>product-provider-service</module>
     </modules>
+    
+    
 
 </project>

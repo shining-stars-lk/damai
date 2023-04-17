@@ -1,0 +1,21 @@
+package com.example.client;
+
+import com.example.dto.GetDto;
+import com.example.vo.GetVo;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
+
+/**
+ * @program: toolkit
+ * @description:
+ * @author: lk
+ * @create: 2023-04-17
+ **/
+@Component
+@FeignClient(value = "product-provider-service",fallback = ProductClientFallback.class)
+public interface ProductClient {
+    
+    @PostMapping("/product/get")
+    GetVo get(GetDto dto);
+}
