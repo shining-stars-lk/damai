@@ -18,6 +18,6 @@
 
     <modules>
         <module>order-consumer</module>
-        <module>productor-provider</module>
+        <module>product-provider</module>
     </modules>
 </project>

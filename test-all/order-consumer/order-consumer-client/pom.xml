@@ -5,13 +5,15 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>toolkit</artifactId>
+        <artifactId>order-consumer</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>springcloud</artifactId>
-    <name>springcloud</name>
-    <description>springcloud组件</description>
+
+    <artifactId>order-consumer-client</artifactId>
+
+    <name>order-consumer-client</name>
+    <description>rpc</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -45,7 +47,22 @@
             <artifactId>common</artifactId>
             <version>${revision}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-okhttp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+        </dependency>
     </dependencies>
+
+
 
     <build>
         <plugins>
@@ -59,18 +76,17 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <!-- 生成sources源码包的插件 -->
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
+                <artifactId>maven-source-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.example.springcloud.SpringcloudApplication</mainClass>
+                    <attach>true</attach>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>repackage</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>repackage</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
