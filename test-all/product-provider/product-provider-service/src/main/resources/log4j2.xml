@@ -67,8 +67,8 @@
         <!-- 配置日志的根节点 -->
         <root level="INFO">
             <appender-ref ref="Console"/>
-            <appender-ref ref="RollingFile"/>
-            <appender-ref ref="RollingFileError"/>
+<!--            <appender-ref ref="RollingFile"/>-->
+<!--            <appender-ref ref="RollingFileError"/>-->
         </root>
     </Loggers>
 </Configuration>
