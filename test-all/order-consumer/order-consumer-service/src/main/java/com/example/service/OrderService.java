@@ -1,10 +1,12 @@
 package com.example.service;
 
+import com.alibaba.fastjson.JSON;
 import com.example.client.ProductClient;
 import com.example.dto.GetDto;
 import com.example.dto.GetOrderDto;
 import com.example.vo.GetOrderVo;
 import com.example.vo.GetVo;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
  * @create: 2023-04-17
  **/
 @Service
+@Log4j2
 public class OrderService {
     
     @Autowired
@@ -33,6 +36,7 @@ public class OrderService {
             getOrderVo.setProductName(getVo.getName());
             getOrderVo.setProductNumber(getVo.getNumber());
         }
+        log.info("getOrder执行 GetOrderVo : {}", JSON.toJSONString(getOrderVo));
         return getOrderVo;
     }
 }
