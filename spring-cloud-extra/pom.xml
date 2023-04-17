@@ -9,8 +9,8 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>springcloud</artifactId>
-    <name>springcloud</name>
+    <artifactId>spring-cloud-extra</artifactId>
+    <name>spring-cloud-extra</name>
     <description>springcloud组件</description>
 
     <properties>
@@ -37,6 +37,19 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
         </dependency>
+        <!-- nacos start -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <version>2.2.7.RELEASE</version>
+        </dependency>
+        <!-- spring-cloud-starter-alibaba-nacos-discovery源码中nacos-common optional为true,所以这里要将common引入 -->
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-common</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+        <!-- nacos end -->
     </dependencies>
 
     <build>

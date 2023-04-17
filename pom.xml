@@ -16,7 +16,7 @@
 		<module>distribute-cache</module>
 		<module>distribute-es</module>
 		<module>id-generator</module>
-		<module>springcloud</module>
+		<module>spring-cloud-extra</module>
 		<module>threadpool</module>
 		<module>tool</module>
 		<module>arithmetic</module>

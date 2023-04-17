@@ -33,6 +33,11 @@
             <version>${revision}</version>
         </dependency>
         <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>spring-cloud-extra</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
