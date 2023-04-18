@@ -13,8 +13,6 @@ public class DiscoveryEnabledRule extends PredicateBasedRule implements Initiali
     
     private ExtraRibbonProperties extraRibbonProperties;
     
-    public DiscoveryEnabledRule(){}
-    
     public DiscoveryEnabledRule(ExtraRibbonProperties extraRibbonProperties){
         this.extraRibbonProperties = extraRibbonProperties;
     }
