@@ -29,7 +29,7 @@ public class MetadataAwarePredicate extends AbstractServerPredicate{
 	
 	public static final String MARK_FLAG_FALSE = "false";
 	
-	private static final String MARK = "mark";
+	private static final String MARK_PARAMETER = "mark";
 	
 	private String mark;
 	
@@ -66,7 +66,7 @@ public class MetadataAwarePredicate extends AbstractServerPredicate{
 			RequestAttributes ra = RequestContextHolder.getRequestAttributes();
 			ServletRequestAttributes sra = (ServletRequestAttributes) ra;
 			HttpServletRequest request = sra.getRequest();
-			String markFromRequest = request.getHeader(MARK);
+			String markFromRequest = request.getHeader(MARK_PARAMETER);
 			if (StringUtils.isEmpty(markFromRequest)) {
 				markFromRequest = mark;
 			}
@@ -76,7 +76,7 @@ public class MetadataAwarePredicate extends AbstractServerPredicate{
 			if (metadata != null || metadata.isEmpty() == true) {
 				markFromMetaData = MARK_FLAG_FALSE;
 			}else {
-				markFromMetaData = metadata.get(MARK);
+				markFromMetaData = metadata.get(MARK_PARAMETER);
 			}
 			//判断如果被调用端没有灰度配置则默认配置为生产环境
 			if(markFromMetaData == null || !(markFromMetaData.equalsIgnoreCase(MARK_FLAG_FALSE) || markFromMetaData.equalsIgnoreCase(MARK_FLAG_TRUE))) {
@@ -115,7 +115,7 @@ public class MetadataAwarePredicate extends AbstractServerPredicate{
 				Map<String,String> map = Maps.newHashMap();
 				for (Server serverBalance : serverList) {
 					NacosServer server = (NacosServer) serverBalance;
-					String markFromBalance = server.getInstance().getMetadata().get(MARK);
+					String markFromBalance = server.getInstance().getMetadata().get(MARK_PARAMETER);
 					//判断如果被调用端没有灰度配置则默认配置为生产环境
 					if(markFromBalance == null || !(markFromBalance.equalsIgnoreCase(MARK_FLAG_FALSE) || markFromBalance.equalsIgnoreCase(MARK_FLAG_TRUE))) {
 						markFromBalance = MARK_FLAG_FALSE;
