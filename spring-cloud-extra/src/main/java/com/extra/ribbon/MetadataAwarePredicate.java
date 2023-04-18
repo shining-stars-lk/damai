@@ -36,6 +36,7 @@ public class MetadataAwarePredicate extends AbstractServerPredicate{
 	private DiscoveryEnabledRule discoveryEnabledRule;
 	
 	public MetadataAwarePredicate(String mark,DiscoveryEnabledRule discoveryEnabledRule){
+		super(discoveryEnabledRule);
 		this.mark = mark;
 		this.discoveryEnabledRule = discoveryEnabledRule;
 	}
