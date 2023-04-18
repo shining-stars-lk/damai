@@ -4,19 +4,17 @@ import com.netflix.loadbalancer.AbstractServerPredicate;
 import com.netflix.loadbalancer.AvailabilityPredicate;
 import com.netflix.loadbalancer.CompositePredicate;
 import com.netflix.loadbalancer.PredicateBasedRule;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-public class DiscoveryEnabledRule extends PredicateBasedRule {
+public class DiscoveryEnabledRule extends PredicateBasedRule implements InitializingBean {
 
-    private final CompositePredicate predicate;
+    private CompositePredicate predicate = null;
     
-    public DiscoveryEnabledRule(){
-        this(new MetadataAwarePredicate());
-    }
+    private ExtraRibbonProperties extraRibbonProperties;
     
-    public DiscoveryEnabledRule(AbstractServerPredicate abstractServerPredicate) {
-        Assert.notNull(abstractServerPredicate, "参数 'abstractServerPredicate' 不能为 null");
-        this.predicate = createCompositePredicate(abstractServerPredicate, new AvailabilityPredicate(this, null));
+    public DiscoveryEnabledRule(ExtraRibbonProperties extraRibbonProperties){
+        this.extraRibbonProperties = extraRibbonProperties;
     }
     
     @Override
@@ -27,5 +25,12 @@ public class DiscoveryEnabledRule extends PredicateBasedRule {
     private CompositePredicate createCompositePredicate(AbstractServerPredicate abstractServerPredicate, AvailabilityPredicate availabilityPredicate) {
         return CompositePredicate.withPredicates(abstractServerPredicate, availabilityPredicate)
                 .build();
+    }
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        MetadataAwarePredicate metadataAwarePredicate = new MetadataAwarePredicate(extraRibbonProperties.getMark(), this);
+        Assert.notNull(metadataAwarePredicate, "参数 'abstractServerPredicate' 不能为 null");
+        predicate = createCompositePredicate(metadataAwarePredicate, new AvailabilityPredicate(this, null));
     }
 }
