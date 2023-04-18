@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author: lk
  * @create: 2023-04-17
  **/
-@ConfigurationProperties("pre.production")
+@ConfigurationProperties("spring.cloud.nacos.discovery.metadata")
 @Setter
 @Getter
 public class ExtraRibbonProperties {
