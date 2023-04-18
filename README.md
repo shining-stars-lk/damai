@@ -16,7 +16,12 @@
 - `id-generator`分布式id生成工具
   - 结合著名的雪花算法思路，13位时间戳 + 本机IP（后3位） + DATACENTER_ID(后3位) + TID(后3位) + 单毫秒内的自增序列（2位）
   - DATACENTER_ID使用redis做自增
-- `springcloud`微服务组件
+- `spring-cloud-extra`微服务组件
   - 提供服务优雅上下线的功能，详情查看此模块下的文档
+  - 实现了微服务之间的feign调用时，请求头重要参数能够传递的功能
+  - 实现了灰度和生产环境共用一个注册中心，并实现服务隔离的功能
 - `record`日志记录行为
   - 定制化记录操作行为，详情查看此模块下的文档
+- `test-all` 微服务测试用例，注册在nacos上
+  - order-consumer 订单服务，消费方
+  - product-provider 产品服务，提供方

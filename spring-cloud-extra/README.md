@@ -520,3 +520,6 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
 https://blog.csdn.net/guntun8987/category_11866826.html
 **ribbon系列**
 https://blog.csdn.net/guntun8987/category_11865144.html
+
+# 实现了微服务之间的feign调用时，请求头重要参数能够传递的功能
+# 实现了灰度和生产环境共用一个注册中心，并实现服务隔离的功能
