@@ -30,6 +30,9 @@ public class OrderService {
         
         GetDto getDto = new GetDto();
         getDto.setId(getOrderDto.getId() + "11");
+        if (getOrderDto.getSleepTime() != null) {
+            getDto.setSleepTime(getOrderDto.getSleepTime());
+        }
         GetVo getVo = productClient.get(getDto);
         if (getVo != null) {
             getOrderVo.setProductId(getVo.getId());
@@ -37,6 +40,26 @@ public class OrderService {
             getOrderVo.setProductNumber(getVo.getNumber());
         }
         log.info("getOrder执行 GetOrderVo : {}", JSON.toJSONString(getOrderVo));
+        return getOrderVo;
+    }
+    
+    public GetOrderVo getOrderV2(final GetOrderDto getOrderDto) {
+        GetOrderVo getOrderVo = new GetOrderVo();
+        getOrderVo.setId(getOrderDto.getId());
+        getOrderVo.setName("橘子订单");
+    
+        GetDto getDto = new GetDto();
+        getDto.setId(getOrderDto.getId() + "22");
+        if (getOrderDto.getSleepTime() != null) {
+            getDto.setSleepTime(getOrderDto.getSleepTime());
+        }
+        GetVo getVo = productClient.getV2(getDto);
+        if (getVo != null) {
+            getOrderVo.setProductId(getVo.getId());
+            getOrderVo.setProductName(getVo.getName());
+            getOrderVo.setProductNumber(getVo.getNumber());
+        }
+        log.info("getOrderV2执行 GetOrderVo : {}", JSON.toJSONString(getOrderVo));
         return getOrderVo;
     }
 }

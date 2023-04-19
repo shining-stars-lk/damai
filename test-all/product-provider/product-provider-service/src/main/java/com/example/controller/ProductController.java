@@ -26,4 +26,9 @@ public class ProductController {
     public GetVo get(@RequestBody GetDto dto){
         return productService.get(dto);
     }
+    
+    @PostMapping(value = "/getV2")
+    public GetVo getV2(@RequestBody GetDto dto){
+        return productService.getV2(dto);
+    }
 }

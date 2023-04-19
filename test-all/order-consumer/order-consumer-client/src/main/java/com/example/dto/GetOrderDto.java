@@ -14,4 +14,6 @@ import lombok.Setter;
 public class GetOrderDto {
 
     private String id;
+    
+    private Long sleepTime;
 }

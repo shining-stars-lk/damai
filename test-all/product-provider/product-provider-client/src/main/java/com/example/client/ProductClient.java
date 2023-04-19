@@ -18,4 +18,7 @@ public interface ProductClient {
     
     @PostMapping("/product/get")
     GetVo get(GetDto dto);
+    
+    @PostMapping("/product/getV2")
+    GetVo getV2(GetDto dto);
 }
