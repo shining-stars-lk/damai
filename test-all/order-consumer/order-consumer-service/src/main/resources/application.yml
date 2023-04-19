@@ -1,9 +1,10 @@
+#服务端口
+server:
+  port: 8081
 # 应用名称
 spring:
   application:
     name: order-consumer-service
-# 端口号
-  port: 8081
 # nacos
   cloud:
     nacos:

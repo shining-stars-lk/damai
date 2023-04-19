@@ -1,9 +1,10 @@
+#服务端口
+server:
+  port: 8082
 # 应用名称
 spring:
   application:
     name: product-provider-service
-  # 端口号
-  port: 8082
   # nacos
   cloud:
     nacos:
