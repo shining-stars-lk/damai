@@ -15,4 +15,5 @@ public class GetDto {
     
     private String id;
     private String name;
+    private Long sleepTime;
 }

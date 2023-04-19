@@ -25,5 +25,10 @@ public class OrderController {
     @PostMapping(value = "/getOrder")
     public GetOrderVo getOrder(@RequestBody GetOrderDto getOrderDto){
         return orderService.getOrder(getOrderDto);
-    } 
+    }
+    
+    @PostMapping(value = "/getOrderV2")
+    public GetOrderVo getOrderV2(@RequestBody GetOrderDto getOrderDto){
+        return orderService.getOrderV2(getOrderDto);
+    }
 }

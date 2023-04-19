@@ -30,9 +30,9 @@ import java.util.concurrent.TimeUnit;
  **/
 @Log4j2
 public class ExtraHystrixConcurrencyStrategy extends HystrixConcurrencyStrategy {
-    
+
     private HystrixConcurrencyStrategy delegate;
-    
+
     public ExtraHystrixConcurrencyStrategy() {
         try {
             this.delegate = HystrixPlugins.getInstance().getConcurrencyStrategy();
@@ -62,7 +62,7 @@ public class ExtraHystrixConcurrencyStrategy extends HystrixConcurrencyStrategy 
             log.error("Failed to register Sleuth Hystrix Concurrency Strategy", e);
         }
     }
-    
+
     private void logCurrentStateOfHystrixPlugins(HystrixEventNotifier eventNotifier,
                                                  HystrixMetricsPublisher metricsPublisher,
                                                  HystrixPropertiesStrategy propertiesStrategy) {
@@ -74,14 +74,14 @@ public class ExtraHystrixConcurrencyStrategy extends HystrixConcurrencyStrategy 
             log.debug("Registering Sleuth Hystrix Concurrency Strategy.");
         }
     }
-    
+
     @Override
     public <T> Callable<T> wrapCallable(Callable<T> callable) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         Map<String, String> copyOfContextMap = MDC.getCopyOfContextMap();
         return new WrappedCallable<>(callable, requestAttributes, copyOfContextMap);
     }
-    
+
     @Override
     public ThreadPoolExecutor getThreadPool(HystrixThreadPoolKey threadPoolKey,
                                             HystrixProperty<Integer> corePoolSize,
@@ -91,42 +91,42 @@ public class ExtraHystrixConcurrencyStrategy extends HystrixConcurrencyStrategy 
         return this.delegate.getThreadPool(threadPoolKey, corePoolSize, maximumPoolSize,
                 keepAliveTime, unit, workQueue);
     }
-    
+
     @Override
     public ThreadPoolExecutor getThreadPool(HystrixThreadPoolKey threadPoolKey,
                                             HystrixThreadPoolProperties threadPoolProperties) {
         return this.delegate.getThreadPool(threadPoolKey, threadPoolProperties);
     }
-    
+
     @Override
     public BlockingQueue<Runnable> getBlockingQueue(int maxQueueSize) {
         return this.delegate.getBlockingQueue(maxQueueSize);
     }
-    
+
     @Override
     public <T> HystrixRequestVariable<T> getRequestVariable(
             HystrixRequestVariableLifecycle<T> rv) {
         return this.delegate.getRequestVariable(rv);
     }
-    
+
     static class WrappedCallable<T> implements Callable<T> {
-        
+
         private final Callable<T> target;
         private final RequestAttributes requestAttributes;
         private final Map<String, String> context;
-        
+
         public WrappedCallable(Callable<T> target, RequestAttributes requestAttributes, Map<String, String> context) {
             this.target = target;
             this.requestAttributes = requestAttributes;
             this.context = context;
         }
-        
+
         @Override
         public T call() throws Exception {
             //log.info("RequestAttributeHystrixConcurrencyStrategy.WrappedCallable.call threadName:{} threadId:{}",Thread.currentThread().getName(),Thread.currentThread().getId());
             try {
                 RequestContextHolder.setRequestAttributes(requestAttributes);
-                MDC.setContextMap(context);
+                //MDC.setContextMap(context);
                 return target.call();
             } finally {
                 MDC.clear();
