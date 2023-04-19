@@ -1,0 +1,6 @@
+# 应用名称
+spring:
+  application:
+    name: arithmetic
+
+

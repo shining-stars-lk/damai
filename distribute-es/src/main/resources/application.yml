@@ -1,0 +1,19 @@
+# 应用名称
+spring:
+  application:
+    name: distribute-es
+#es使用开关
+es:
+  switch: true
+  # 是否使用type类型
+  type:
+    switch: false
+#elasticsearch.userName=es用户名
+elasticsearch:
+  userName: es用户名
+#elasticsearch.passWord=es密码
+  passWord: es密码
+#elasticsearch.ip=es地址
+  ip: es地址
+
+

@@ -1,0 +1,9 @@
+# 应用名称
+spring:
+  application:
+    name: record
+#使用开关
+record:
+  enabled: true
+
+
