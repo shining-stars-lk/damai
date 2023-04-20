@@ -62,6 +62,10 @@
             <version>2.0.3</version>
         </dependency>
         <!-- nacos end -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

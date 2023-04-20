@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
  * @create: 2023-04-17
  **/
 @Component
-@FeignClient(value = "product-provider-service",fallback = DepartmentClientFallback.class)
+@FeignClient(value = "department-provider-service",fallback = DepartmentClientFallback.class)
 public interface DepartmentClient {
     
-    @PostMapping("/product/get")
+    @PostMapping("/department/get")
     GetDepartmentVo get(GetDepartmentDto dto);
     
-    @PostMapping("/product/getV2")
+    @PostMapping("/department/getV2")
     GetDepartmentVo getV2(GetDepartmentDto dto);
 }
