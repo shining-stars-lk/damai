@@ -1,6 +1,6 @@
 #服务端口
 server:
-  port: 8081
+  port: 9081
 # 应用名称
 spring:
   application:
@@ -13,10 +13,14 @@ spring:
         # 标识
         metadata:
           mark: true
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
   main:
     allow-bean-definition-overriding: true
 feign:
-  hystrix:
+  sentinel:
     enabled: true
   httpclient:
     enabled: false

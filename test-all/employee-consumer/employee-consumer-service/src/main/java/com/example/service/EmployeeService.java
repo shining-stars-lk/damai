@@ -30,7 +30,7 @@ public class EmployeeService {
         
         GetDepartmentDto getDepartmentDto = new GetDepartmentDto();
         getDepartmentDto.setId(getEmployeeVo.getId() + "11");
-        if (getDepartmentDto.getSleepTime() != null) {
+        if (getEmployeeDto.getSleepTime() != null) {
             getDepartmentDto.setSleepTime(getEmployeeDto.getSleepTime());
         }
         GetDepartmentVo getVo = departmentClient.get(getDepartmentDto);
