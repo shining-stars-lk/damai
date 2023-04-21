@@ -4,7 +4,7 @@ import java.util.Random;
 
 /**
  * @program: 
- * @description: 主线程向ThreadLocal(或者InheritableThreadLocal)设置值，每个子线程再取值
+ * @description: 主线程向ThreadLocal(或者InheritableThreadLocal)设置值，子线程再取值
  * @author: lk
  * @create: 2023-04-19
  **/
