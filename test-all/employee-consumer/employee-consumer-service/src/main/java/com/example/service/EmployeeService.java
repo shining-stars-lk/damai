@@ -23,7 +23,7 @@ public class EmployeeService {
     @Autowired
     private DepartmentClient departmentClient;
     
-    public GetEmployeeVo getEmployee(final GetEmployeeDto getEmployeeDto) {
+    public GetEmployeeVo getEmployee(final GetEmployeeDto getEmployeeDto) throws Exception {
         GetEmployeeVo getEmployeeVo = new GetEmployeeVo();
         getEmployeeVo.setId(getEmployeeDto.getId());
         getEmployeeVo.setName("苹果员工-1");
@@ -42,7 +42,7 @@ public class EmployeeService {
         return getEmployeeVo;
     }
     
-    public GetEmployeeVo getEmployeeV2(final GetEmployeeDto getEmployeeDto) {
+    public GetEmployeeVo getEmployeeV2(final GetEmployeeDto getEmployeeDto) throws Exception {
         GetEmployeeVo getEmployeeVo = new GetEmployeeVo();
         getEmployeeVo.setId(getEmployeeDto.getId());
         getEmployeeVo.setName("橘子员工-1");

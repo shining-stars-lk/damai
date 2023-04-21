@@ -26,11 +26,6 @@ public class ThreadLocalCase4 {
             int value = random.nextInt(10000);
             threadLocal.set(value);
             System.out.println(Thread.currentThread().getName() + "放入值，值为 : " + value);
-//            try {
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                Thread.currentThread().interrupt();
-//            }
             executor.execute(TtlRunnable.get(() -> {
                 System.out.println(Thread.currentThread().getName() + "进行取值，值为 : " + threadLocal.get());
             }));

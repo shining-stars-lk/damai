@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface DepartmentClient {
     
     @PostMapping("/department/get")
-    GetDepartmentVo get(GetDepartmentDto dto);
+    GetDepartmentVo get(GetDepartmentDto dto) throws Exception;
     
     @PostMapping("/department/getV2")
-    GetDepartmentVo getV2(GetDepartmentDto dto);
+    GetDepartmentVo getV2(GetDepartmentDto dto) throws Exception;
 }

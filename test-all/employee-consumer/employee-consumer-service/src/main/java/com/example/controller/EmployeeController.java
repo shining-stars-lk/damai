@@ -23,12 +23,12 @@ public class EmployeeController {
     private EmployeeService employeeService;
     
     @PostMapping(value = "/getEmployee")
-    public GetEmployeeVo getEmployee(@RequestBody GetEmployeeDto getOrderDto){
+    public GetEmployeeVo getEmployee(@RequestBody GetEmployeeDto getOrderDto) throws Exception {
         return employeeService.getEmployee(getOrderDto);
     }
     
     @PostMapping(value = "/getEmployeeV2")
-    public GetEmployeeVo getEmployeeV2(@RequestBody GetEmployeeDto getOrderDto){
+    public GetEmployeeVo getEmployeeV2(@RequestBody GetEmployeeDto getOrderDto) throws Exception {
         return employeeService.getEmployeeV2(getOrderDto);
     }
 }
