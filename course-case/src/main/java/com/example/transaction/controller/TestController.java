@@ -24,11 +24,17 @@ public class TestController {
         test.setColumn4("test4-" + id);
         test.setColumn5("test5-" + id);
         test.setColumn6("test6-" + id);
+        test.setNumber(id);
         return testService.insert(test);
     }
     @RequestMapping("getById/{id}")
     public Test getById(@PathVariable Long id){
         return testService.getById(id);
+    }
+
+    @RequestMapping("updateNumberById/{number}/{id}")
+    public Integer updateNumberById(@PathVariable Long number,@PathVariable Long id){
+        return testService.updateNumberById(number,id);
     }
 
 }

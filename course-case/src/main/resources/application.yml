@@ -26,4 +26,11 @@ spring:
       # 使用DBCP connection pool，是否追踪废弃statement或连接，默认为: false
       logAbandoned: true
 
-
+logging:
+  level:
+    example:
+      mapper : debug
+    tracer: trace
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

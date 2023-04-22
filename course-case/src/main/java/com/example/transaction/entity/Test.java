@@ -20,4 +20,6 @@ public class Test {
     private String column5;
 
     private String column6;
+
+    private Long number;
 }
