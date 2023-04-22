@@ -25,4 +25,9 @@ public class TestService implements ITestService {
     public Test getById(Long id) {
         return testMapper.getById(id);
     }
+
+    @Override
+    public Integer updateNumberById(Long number, Long id) {
+        return testMapper.updateNumberById(number, id);
+    }
 }

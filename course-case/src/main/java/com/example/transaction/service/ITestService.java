@@ -7,4 +7,6 @@ public interface ITestService {
     int insert(Test test);
 
     Test getById(Long id);
+
+    Integer updateNumberById(Long number, Long id);
 }
