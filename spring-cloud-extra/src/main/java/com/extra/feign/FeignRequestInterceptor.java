@@ -2,7 +2,7 @@ package com.extra.feign;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
  * @create: 2023-04-17
  **/
 
-@Log4j2
+@Slf4j
 public class FeignRequestInterceptor implements RequestInterceptor {
     
     /**

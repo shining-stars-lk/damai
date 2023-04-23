@@ -6,7 +6,7 @@ import com.netflix.loadbalancer.AbstractServerPredicate;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.PredicateKey;
 import com.netflix.loadbalancer.Server;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -22,7 +22,7 @@ import java.util.Map;
  * @author: lk
  * @create: 2023-04-17
  **/
-@Log4j2
+@Slf4j
 public class MetadataAwarePredicate extends AbstractServerPredicate{
 	
 	public static final String MARK_FLAG_TRUE = "true";

@@ -1,7 +1,7 @@
 package com.extra.hystrix;
 
 import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategy;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -15,7 +15,7 @@ import java.util.concurrent.Callable;
  * @author: lk
  * @create: 2023-04-17
  **/
-@Log4j2
+@Slf4j
 public class ExtraHystrixConcurrencyStrategyV2 extends HystrixConcurrencyStrategy {
     
 

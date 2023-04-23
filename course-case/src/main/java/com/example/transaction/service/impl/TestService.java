@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-@Transactional(rollbackForClassName = {"Exception"})
 public class TestService implements ITestService {
 
     @Autowired
@@ -18,7 +17,18 @@ public class TestService implements ITestService {
 
     @Override
     public int insert(Test test) {
-        return testMapper.insert(test);
+        testMapper.insert(test);
+        int i = 1 / 0;
+        return 1;
+    }
+    
+    @Transactional
+    @Override
+    public int insert2(Test test) {
+        Long id = test.getId();
+        test.setId(id+10);
+        int result = testMapper.insert(test);
+        return result;
     }
 
     @Override
