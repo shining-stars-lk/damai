@@ -6,7 +6,7 @@ import com.example.dto.GetDepartmentDto;
 import com.example.dto.GetEmployeeDto;
 import com.example.vo.GetDepartmentVo;
 import com.example.vo.GetEmployeeVo;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
  * @create: 2023-04-17
  **/
 @Service
-@Log4j2
+@Slf4j
 public class EmployeeService {
     
     @Autowired

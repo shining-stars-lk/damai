@@ -5,6 +5,8 @@ import com.example.transaction.entity.Test;
 public interface ITestService {
 
     int insert(Test test);
+    
+    int insert2(Test test);
 
     Test getById(Long id);
 

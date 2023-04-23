@@ -2,11 +2,13 @@ package com.example.transaction.controller;
 
 import com.example.transaction.entity.Test;
 import com.example.transaction.service.ITestService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/test")
 public class TestController {
@@ -25,7 +27,13 @@ public class TestController {
         test.setColumn5("test5-" + id);
         test.setColumn6("test6-" + id);
         test.setNumber(id);
-        return testService.insert(test);
+        int result = 0;
+        try {
+            result = testService.insert(test);
+        }catch (Exception e) {
+            log.error("出现异常",e);
+        }
+        return result;
     }
     @RequestMapping("getById/{id}")
     public Test getById(@PathVariable Long id){

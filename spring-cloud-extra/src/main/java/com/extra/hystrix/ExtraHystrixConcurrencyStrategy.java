@@ -28,7 +28,7 @@
 // * @author: lk
 // * @create: 2023-04-17
 // **/
-//@Log4j2
+//@Slf4j
 //public class ExtraHystrixConcurrencyStrategy extends HystrixConcurrencyStrategy {
 //
 //    private HystrixConcurrencyStrategy delegate;
