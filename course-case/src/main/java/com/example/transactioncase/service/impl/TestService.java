@@ -1,9 +1,9 @@
-package com.example.transaction.service.impl;
+package com.example.transactioncase.service.impl;
 
 
-import com.example.transaction.entity.Test;
-import com.example.transaction.mapper.TestMapper;
-import com.example.transaction.service.ITestService;
+import com.example.transactioncase.entity.Test;
+import com.example.transactioncase.mapper.TestMapper;
+import com.example.transactioncase.service.ITestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
