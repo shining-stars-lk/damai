@@ -1,4 +1,4 @@
-package com.example.threadlocal;
+package com.example.threadlocalcase;
 
 import java.util.Random;
 

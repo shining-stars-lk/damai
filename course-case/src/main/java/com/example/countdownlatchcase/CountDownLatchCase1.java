@@ -1,18 +1,17 @@
-package com.example.countdownlatch;
+package com.example.countdownlatchcase;
 
 import java.util.concurrent.CountDownLatch;
 
 /**
- * @program: 开启5个线程，主线程执行await()进行阻塞，每个线程执行countDown()，当达到CountDownLatch初始化时设置的次数后
- *           主线程会继续执行
- * @description: 
+ * @program: toolkit
+ * @description: 开启5个线程，主线程执行await()进行阻塞，每个线程执行countDown()，当达到CountDownLatch初始化时设置的次数后
+ *               主线程会继续执行
  * @author: lk
  * @create: 2023-04-20
  **/
 public class CountDownLatchCase1 {
     
     public static void main(String[] args) {
-        
         CountDownLatch countDownLatch = new CountDownLatch(5);
         long mainThreadStartTime = System.currentTimeMillis();
         System.out.println(Thread.currentThread().getName() + "开始执行 ");

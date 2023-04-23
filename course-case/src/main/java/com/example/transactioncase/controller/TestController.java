@@ -1,7 +1,7 @@
-package com.example.transaction.controller;
+package com.example.transactioncase.controller;
 
-import com.example.transaction.entity.Test;
-import com.example.transaction.service.ITestService;
+import com.example.transactioncase.entity.Test;
+import com.example.transactioncase.service.ITestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
