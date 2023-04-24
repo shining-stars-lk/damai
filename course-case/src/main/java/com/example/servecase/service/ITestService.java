@@ -1,6 +1,6 @@
-package com.example.transactioncase.service;
+package com.example.servecase.service;
 
-import com.example.transactioncase.entity.Test;
+import com.example.servecase.entity.Test;
 
 public interface ITestService {
 
