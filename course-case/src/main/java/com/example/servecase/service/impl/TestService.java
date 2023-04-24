@@ -1,9 +1,9 @@
-package com.example.transactioncase.service.impl;
+package com.example.servecase.service.impl;
 
 
-import com.example.transactioncase.entity.Test;
-import com.example.transactioncase.mapper.TestMapper;
-import com.example.transactioncase.service.ITestService;
+import com.example.servecase.entity.Test;
+import com.example.servecase.mapper.TestMapper;
+import com.example.servecase.service.ITestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,6 @@ public class TestService implements ITestService {
     @Override
     public int insert(Test test) {
         testMapper.insert(test);
-        int i = 1 / 0;
         return 1;
     }
     

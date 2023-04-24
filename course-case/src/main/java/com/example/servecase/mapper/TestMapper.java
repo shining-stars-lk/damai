@@ -1,7 +1,7 @@
-package com.example.transactioncase.mapper;
+package com.example.servecase.mapper;
 
 
-import com.example.transactioncase.entity.Test;
+import com.example.servecase.entity.Test;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 

@@ -1,13 +1,19 @@
-package com.example.transactioncase.controller;
+package com.example.servecase.controller;
 
-import com.example.transactioncase.entity.Test;
-import com.example.transactioncase.service.ITestService;
+import com.example.servecase.entity.Test;
+import com.example.servecase.service.ITestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @program: 测试事务
+ * @description:
+ * @author: lk
+ * @create: 2023-04-24
+ **/
 @Slf4j
 @RestController
 @RequestMapping("/test")

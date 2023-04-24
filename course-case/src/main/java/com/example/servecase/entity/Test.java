@@ -1,4 +1,4 @@
-package com.example.transactioncase.entity;
+package com.example.servecase.entity;
 
 import lombok.Getter;
 import lombok.Setter;
