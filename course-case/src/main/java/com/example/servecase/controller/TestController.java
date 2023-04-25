@@ -22,17 +22,16 @@ public class TestController {
     @Autowired
     private ITestService testService;
 
-    @RequestMapping("/insert/{id}")
-    public Integer insert(@PathVariable Long id){
+    @RequestMapping("/insert/{number}")
+    public Integer insert(@PathVariable Long number){
         Test test = new Test();
-        test.setId(id);
-        test.setColumn1("test1-" + id);
-        test.setColumn2("test2-" + id);
-        test.setColumn3("test3-" + id);
-        test.setColumn4("test4-" + id);
-        test.setColumn5("test5-" + id);
-        test.setColumn6("test6-" + id);
-        test.setNumber(id);
+        test.setColumn1("test1");
+        test.setColumn2("test2");
+        test.setColumn3("test3");
+        test.setColumn4("test4");
+        test.setColumn5("test5");
+        test.setColumn6("test6");
+        test.setNumber(number);
         int result = 0;
         try {
             result = testService.insert(test);
