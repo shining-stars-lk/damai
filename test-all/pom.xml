@@ -21,5 +21,6 @@
         <module>product-provider</module>
         <module>department-provider</module>
         <module>employee-consumer</module>
+        <module>gateway</module>
     </modules>
 </project>
