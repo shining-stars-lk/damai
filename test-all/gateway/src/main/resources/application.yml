@@ -1,10 +1,10 @@
 #服务端口
 server:
-  port: 8082
+  port: 6068
 # 应用名称
 spring:
   application:
-    name: product-provider-service
+    name: gateway
   # nacos
   cloud:
     nacos:
@@ -13,6 +13,40 @@ spring:
         # 标识
         metadata:
           mark: true
+    gateway:
+      discovery:
+        locator:
+          # 开启负载均衡对网关的路由转发的支持
+          enabled: true
+      default-filters:
+        # 熔断过滤器
+        - name: Hystrix
+          args:
+            name: fallbackcmd
+            fallbackuri: forward:/fallbackhandler
+      # 负载均衡路由规则 开启路由后的服务swagger才能显示
+      routes:
+        - id: product-provider-service
+          uri: lb://product-provider-service
+          predicates:
+            - Path=/gateway/product/**
+          filters:
+            - StripPrefix=2
+          #            - RewritePath=/gateway/log(?<segment>/?.*), $\{segment}
+          metadata:
+            title: 产品系统
+
+        - id: order-consumer-service
+          uri: lb://order-consumer-service
+          predicates:
+            - Path=/gateway/order/**
+          filters:
+            - StripPrefix=2
+          #            - RewritePath=/gateway/log(?<segment>/?.*), $\{segment}
+          metadata:
+            title: 订单系统
+      
+      enabled: true      
   main:
     allow-bean-definition-overriding: true
 feign:
