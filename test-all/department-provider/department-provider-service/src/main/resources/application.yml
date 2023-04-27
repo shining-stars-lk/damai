@@ -13,11 +13,29 @@ spring:
         # 标识
         metadata:
           mark: true
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+#      datasource:
+#        degrade:
+#          apollo:
+#            flowRulesKey: ${spring.application.name}-${spring.cloud.sentinel.datasource.degrade.apollo.rule-ruleType}-rules
+#            namespace-name: ${sentinel.datasource.rules.apollo.namespace-name}
+#            ruleType: degrade
+#        flow:
+#          apollo:
+#            flowRulesKey: ${spring.application.name}-${spring.cloud.sentinel.datasource.flow.apollo.ruleType}-rules
+#            namespace-name: ${sentinel.datasource.rules.apollo.namespace-name}
+#            ruleType: flow
+      eager: true
   main:
     allow-bean-definition-overriding: true
 feign:
-  hystrix:
+  sentinel:
     enabled: true
+  hystrix:
+    enabled: false
   httpclient:
     enabled: false
   okhttp:
@@ -67,3 +85,25 @@ management:
       show-details: always
   security:
     enabled: false
+
+
+
+
+
+
+
+
+#app:
+#  id: msa-log
+#apollo:
+#  meta: http://192.168.2.65:8080
+#  bootstrap:
+#    enabled: true
+#    namespaces:  100001.common-config-h,application
+#    eagerLoad:
+#      enabled: true
+#sentinel:
+#  datasource:
+#    rules:
+#      apollo:
+#        namespace-name: 100001.nacos-notify
