@@ -1,18 +1,15 @@
 package com.example.conf;
 
+import com.example.common.Result;
+import lombok.Data;
+
 import java.util.Map;
 
 
+@Data
 public class RequestWrapper {
     
     private Map<String,String> map;
     
-    
-    public Map<String, String> getMap() {
-        return map;
-    }
-    
-    public void setMap(final Map<String, String> map) {
-        this.map = map;
-    }
+    private Result result;
 }
