@@ -1,7 +1,9 @@
 package com.example.filter;
 
 
+import com.alibaba.fastjson.JSON;
 import com.example.conf.RequestWrapper;
+import com.example.core.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +29,11 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+
+import static com.example.conf.Constant.REQUESTID;
 
 /**
  * @program: bjgoodwill-msa-patient-api-gateway
@@ -41,6 +46,7 @@ public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordere
 
     private final static Logger logger = LoggerFactory.getLogger(CommonParamsValidationGateWayFilter.class);
     
+    private static final String REQUEST_BODY = "body";
 
     @Autowired
     private ServerCodecConfigurer serverCodecConfigurer;
@@ -66,8 +72,10 @@ public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordere
         ServerRequest serverRequest = ServerRequest.create(exchange, serverCodecConfigurer.getReaders());
         Mono<String> modifiedBody = serverRequest.bodyToMono(String.class).flatMap(originalBody -> {
             //进行业务验证，并将相关参数放入map
-            //Map<String, String> map = verify(originalBody, exchange);
-            return Mono.just(originalBody);
+            Map<String, String> map = verify(originalBody, exchange);
+            String body = map.get(REQUEST_BODY);
+            requestWrapper.setMap(map);
+            return Mono.just(body);
         });
         BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
         HttpHeaders headers = new HttpHeaders();
@@ -81,6 +89,14 @@ public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordere
     }
 
     private Map<String,String> verify(String originalBody,ServerWebExchange exchange){
+        ServerHttpRequest request = exchange.getRequest();
+        String requestBody = originalBody;
+        Map<String, String> requestBodyContent = new HashMap<>();
+        if (StringUtil.isNotEmpty(originalBody)) {
+            requestBodyContent = JSON.parseObject(originalBody, Map.class);
+        }
+        Map<String,String> map = new HashMap<>(4);
+        map.put(REQUEST_BODY,requestBody);
         return null;
     }
     //将网关层request请求头中的重要参数传递给后续的微服务中
@@ -91,6 +107,11 @@ public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordere
                 long contentLength = headers.getContentLength();
                 HttpHeaders newHeaders = new HttpHeaders();
                 newHeaders.putAll(headers);
+                String originalRequestId = newHeaders.getFirst(REQUESTID);
+                if (StringUtil.isEmpty(originalRequestId)) {
+                    originalRequestId = requestId;
+                }
+                newHeaders.set(REQUESTID,originalRequestId);
                 if (contentLength > 0){
                     newHeaders.setContentLength(contentLength);
                 }else {
