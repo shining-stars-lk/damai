@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.example.conf.Constant.REQUESTID;
+import static com.example.common.Constant.REQUESTID;
 
 /**
  * @program: bjgoodwill-msa-patient-api-gateway
