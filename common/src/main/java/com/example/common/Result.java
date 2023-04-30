@@ -27,4 +27,18 @@ public class Result<T> implements Serializable {
         result.message = message;
         return result;
     }
+
+    public static <T> Result<T> error(String message) {
+        Result<T> result = new Result<T>();
+        result.code = -100;
+        result.message = message;
+        return result;
+    }
+
+    public static <T> Result<T> error() {
+        Result<T> result = new Result<T>();
+        result.code = -100;
+        result.message = "系统错误，请稍后重试!";
+        return result;
+    }
 }
