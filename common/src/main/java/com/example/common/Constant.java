@@ -1,7 +1,7 @@
-package com.example.conf;
+package com.example.common;
 /**
  * log4j下传常量
- * @author lix
+ * @author lk
  *
  */
 public class Constant {
