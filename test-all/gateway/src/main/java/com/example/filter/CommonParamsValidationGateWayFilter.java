@@ -4,6 +4,7 @@ package com.example.filter;
 import com.alibaba.fastjson.JSON;
 import com.example.conf.RequestWrapper;
 import com.example.core.StringUtil;
+import com.example.util.SignatureUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,15 @@ public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordere
         if (StringUtil.isNotEmpty(originalBody)) {
             requestBodyContent = JSON.parseObject(originalBody, Map.class);
         }
+        //应用渠道
+        String channel = requestBodyContent.get("channel");
+        boolean checkFlag = SignatureUtil.rsa256Check(requestBodyContent, appInfo.getAppPublicKey(), charset);
+        
+        
+        
+        
+        
+        
         Map<String,String> map = new HashMap<>(4);
         map.put(REQUEST_BODY,requestBody);
         return null;
