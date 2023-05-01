@@ -1,5 +1,6 @@
 package com.example.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,9 +14,8 @@ import java.security.NoSuchAlgorithmException;
  * @date 24 Jul 2014 15:48:27
  * 
  */
+@Slf4j
 public class MD5Generator {
-	// 日志常量初始化
-	private static final Logger logger = LoggerFactory.getLogger(MD5Generator.class);
 
 	/**
 	 * @Title: MD5
@@ -43,7 +43,7 @@ public class MD5Generator {
 			result = buf.toString();
 		} catch (NoSuchAlgorithmException e) {
 			// 将错误记录到日志中
-			logger.error(String.valueOf(e.getCause()));
+			log.error(String.valueOf(e.getCause()));
 		}
 		return result;
 	}
