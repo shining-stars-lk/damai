@@ -17,17 +17,17 @@ spring:
       transport:
         port: 8720
         dashboard: localhost:8080
-      datasource:
-        degrade:
-          apollo:
-            flowRulesKey: ${spring.application.name}-${spring.cloud.sentinel.datasource.degrade.apollo.rule-ruleType}-rules
-            namespace-name: ${sentinel.datasource.rules.apollo.namespace-name}
-            ruleType: degrade
-        flow:
-          apollo:
-            flowRulesKey: ${spring.application.name}-${spring.cloud.sentinel.datasource.flow.apollo.ruleType}-rules
-            namespace-name: ${sentinel.datasource.rules.apollo.namespace-name}
-            ruleType: flow
+#      datasource:
+#        degrade:
+#          apollo:
+#            flowRulesKey: ${spring.application.name}-${spring.cloud.sentinel.datasource.degrade.apollo.rule-ruleType}-rules
+#            namespace-name: ${sentinel.datasource.rules.apollo.namespace-name}
+#            ruleType: degrade
+#        flow:
+#          apollo:
+#            flowRulesKey: ${spring.application.name}-${spring.cloud.sentinel.datasource.flow.apollo.ruleType}-rules
+#            namespace-name: ${sentinel.datasource.rules.apollo.namespace-name}
+#            ruleType: flow
       eager: true
   main:
     allow-bean-definition-overriding: true
@@ -35,7 +35,7 @@ feign:
   sentinel:
     enabled: true
   hystrix:
-    enabled: false
+    enabled: true
   httpclient:
     enabled: false
   okhttp:
