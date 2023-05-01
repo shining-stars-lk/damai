@@ -41,4 +41,11 @@ public class Result<T> implements Serializable {
         result.message = "系统错误，请稍后重试!";
         return result;
     }
+    
+    public static <T> Result<T> success(T t) {
+        Result<T> result = new Result<T>();
+        result.code = 1;
+        result.setData(t);
+        return result;
+    }
 }
