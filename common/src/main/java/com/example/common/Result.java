@@ -44,7 +44,7 @@ public class Result<T> implements Serializable {
     
     public static <T> Result<T> success(T t) {
         Result<T> result = new Result<T>();
-        result.code = 1;
+        result.code = 0;
         result.setData(t);
         return result;
     }
