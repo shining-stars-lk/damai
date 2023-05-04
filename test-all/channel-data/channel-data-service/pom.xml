@@ -78,6 +78,12 @@
             <version>2.0.3</version>
         </dependency>
         <!-- nacos end -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <!--			<artifactId>druid-spring-boot-starter</artifactId>-->
+            <artifactId>druid</artifactId>
+            <version>1.1.10</version>
+        </dependency>
     </dependencies>
 
     <build>

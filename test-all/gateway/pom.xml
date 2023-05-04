@@ -74,6 +74,11 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>channel-data-client</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 
     <build>

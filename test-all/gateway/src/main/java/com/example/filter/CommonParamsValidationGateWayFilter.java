@@ -4,9 +4,10 @@ package com.example.filter;
 import com.alibaba.fastjson.JSON;
 import com.example.conf.RequestWrapper;
 import com.example.core.StringUtil;
+import com.example.service.ChannelDataService;
 import com.example.util.SignatureUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.vo.GetChannelDataVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -42,15 +43,19 @@ import static com.example.common.Constant.REQUESTID;
  * @author: lk
  * @create: 2022-10-26
  **/
+@Slf4j
 @Component
 public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordered {
-
-    private final static Logger logger = LoggerFactory.getLogger(CommonParamsValidationGateWayFilter.class);
     
     private static final String REQUEST_BODY = "body";
+    
+    private static final String CHARSET = "utf-8";
 
     @Autowired
     private ServerCodecConfigurer serverCodecConfigurer;
+    
+    @Autowired
+    private ChannelDataService channelDataService;
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
@@ -97,8 +102,9 @@ public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordere
             requestBodyContent = JSON.parseObject(originalBody, Map.class);
         }
         //应用渠道
-        String channel = requestBodyContent.get("channel");
-        boolean checkFlag = SignatureUtil.rsa256Check(requestBodyContent, appInfo.getAppPublicKey(), charset);
+        String code = requestBodyContent.get("code");
+        GetChannelDataVo getChannelDataVo = channelDataService.GetChannelDataByCode(code);
+        boolean checkFlag = SignatureUtil.rsa256Check(requestBodyContent, getChannelDataVo.getPublicKey(), CHARSET);
         
         
         
