@@ -7,6 +7,7 @@ import com.example.core.StringUtil;
 import com.example.service.ChannelDataService;
 import com.example.util.SignatureUtil;
 import com.example.vo.GetChannelDataVo;
+import com.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +37,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.example.common.Constant.REQUESTID;
+import static com.example.constant.Constant.MARK_PARAMETER;
+import static com.example.constant.Constant.TRACE_ID;
 
 /**
  * @program: bjgoodwill-msa-patient-api-gateway
@@ -63,20 +65,30 @@ public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordere
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
-        String requestId = "1111";
         ServerHttpRequest request = exchange.getRequest();
-
+        String traceId = request.getHeaders().getFirst(TRACE_ID);
+        String mark = request.getHeaders().getFirst(MARK_PARAMETER);
+        if (StringUtil.isEmpty(traceId)) {
+            traceId = "1111";
+        }
+        if (StringUtil.isEmpty(BaseParameterHolder.getParameter(TRACE_ID))) {
+            BaseParameterHolder.setParameter(TRACE_ID,traceId);
+        }
+        if (StringUtil.isEmpty(BaseParameterHolder.getParameter(MARK_PARAMETER))) {
+            BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
+        }
         //if (HttpMethod.POST.equals(request.getMethod()) || HttpMethod.PUT.equals(request.getMethod())) {
             MediaType contentType = request.getHeaders().getContentType();
             if (MediaType.APPLICATION_JSON.equals(contentType)){
                 //application json请求
-                return readBody(exchange,chain,requestId);
+                return readBody(exchange,chain,TRACE_ID);
             }
         //}
         return chain.filter(exchange);
     }
 
-    private Mono<Void> readBody(ServerWebExchange exchange, GatewayFilterChain chain, String requestId){
+    private Mono<Void> readBody(ServerWebExchange exchange, GatewayFilterChain chain, String traceId){
+        log.info("current thread readBody : {}",Thread.currentThread().getName());
         RequestWrapper requestWrapper = new RequestWrapper();
 
         ServerRequest serverRequest = ServerRequest.create(exchange, serverCodecConfigurer.getReaders());
@@ -94,11 +106,12 @@ public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordere
 
         CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
         return bodyInserter.insert(outputMessage,new BodyInserterContext()).then(Mono.defer(() ->
-                chain.filter(exchange.mutate().request(decorate(exchange, headers, outputMessage, requestWrapper, requestId)).build())
+                chain.filter(exchange.mutate().request(decorate(exchange, headers, outputMessage, requestWrapper, traceId)).build())
         )).onErrorResume((Function<Throwable,Mono<Void>>) throwable -> Mono.error(throwable));
     }
 
     private Map<String,String> verify(String originalBody,ServerWebExchange exchange){
+        log.info("current thread verify: {}",Thread.currentThread().getName());
         ServerHttpRequest request = exchange.getRequest();
         String requestBody = originalBody;
         Map<String, String> requestBodyContent = new HashMap<>();
@@ -116,18 +129,15 @@ public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordere
         return map;
     }
     //将网关层request请求头中的重要参数传递给后续的微服务中
-    private ServerHttpRequestDecorator decorate(ServerWebExchange exchange, HttpHeaders headers, CachedBodyOutputMessage outputMessage, RequestWrapper requestWrapper, String requestId){
+    private ServerHttpRequestDecorator decorate(ServerWebExchange exchange, HttpHeaders headers, CachedBodyOutputMessage outputMessage, RequestWrapper requestWrapper, String traceId){
         return new ServerHttpRequestDecorator(exchange.getRequest()){
             @Override
             public HttpHeaders getHeaders() {
+                log.info("current thread getHeaders: {}",Thread.currentThread().getName());
                 long contentLength = headers.getContentLength();
                 HttpHeaders newHeaders = new HttpHeaders();
                 newHeaders.putAll(headers);
-                String originalRequestId = newHeaders.getFirst(REQUESTID);
-                if (StringUtil.isEmpty(originalRequestId)) {
-                    originalRequestId = requestId;
-                }
-                newHeaders.set(REQUESTID,originalRequestId);
+                newHeaders.set(TRACE_ID,traceId);
                 if (contentLength > 0){
                     newHeaders.setContentLength(contentLength);
                 }else {

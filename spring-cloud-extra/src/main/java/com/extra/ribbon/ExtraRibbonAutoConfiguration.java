@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 public class ExtraRibbonAutoConfiguration {
     
     @Bean
-    public DiscoveryEnabledRule discoveryEnabledRule(ExtraRibbonProperties extraRibbonProperties){
-        return new DiscoveryEnabledRule(extraRibbonProperties);
+    public CustomEnabledRule discoveryEnabledRule(ExtraRibbonProperties extraRibbonProperties){
+        return new CustomEnabledRule(extraRibbonProperties);
     }
 }

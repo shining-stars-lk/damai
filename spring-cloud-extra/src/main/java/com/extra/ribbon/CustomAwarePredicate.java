@@ -6,6 +6,7 @@ import com.netflix.loadbalancer.AbstractServerPredicate;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.PredicateKey;
 import com.netflix.loadbalancer.Server;
+import com.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
@@ -16,6 +17,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.constant.Constant.MARK_FLAG_FALSE;
+import static com.example.constant.Constant.MARK_FLAG_TRUE;
+import static com.example.constant.Constant.MARK_PARAMETER;
+
 /**
  * @program: 灰度版本选择负载均衡选择器
  * @description:
@@ -23,22 +28,17 @@ import java.util.Map;
  * @create: 2023-04-17
  **/
 @Slf4j
-public class MetadataAwarePredicate extends AbstractServerPredicate{
+public class CustomAwarePredicate extends AbstractServerPredicate{
 	
-	public static final String MARK_FLAG_TRUE = "true";
-	
-	public static final String MARK_FLAG_FALSE = "false";
-	
-	private static final String MARK_PARAMETER = "mark";
 	
 	private String mark;
 	
-	private DiscoveryEnabledRule discoveryEnabledRule;
+	private CustomEnabledRule customEnabledRule;
 	
-	public MetadataAwarePredicate(String mark,DiscoveryEnabledRule discoveryEnabledRule){
-		super(discoveryEnabledRule);
+	public CustomAwarePredicate(String mark, CustomEnabledRule customEnabledRule){
+		super(customEnabledRule);
 		this.mark = mark;
-		this.discoveryEnabledRule = discoveryEnabledRule;
+		this.customEnabledRule = customEnabledRule;
 	}
 	
 	/**
@@ -64,9 +64,14 @@ public class MetadataAwarePredicate extends AbstractServerPredicate{
 		boolean result;
 		try {
 			RequestAttributes ra = RequestContextHolder.getRequestAttributes();
-			ServletRequestAttributes sra = (ServletRequestAttributes) ra;
-			HttpServletRequest request = sra.getRequest();
-			String markFromRequest = request.getHeader(MARK_PARAMETER);
+			String markFromRequest = null;
+			if (ra != null) {
+				ServletRequestAttributes sra = (ServletRequestAttributes) ra;
+				HttpServletRequest request = sra.getRequest();
+				markFromRequest = request.getHeader(MARK_PARAMETER);
+			}else {
+				markFromRequest = BaseParameterHolder.getParameter(MARK_PARAMETER);
+			}
 			if (StringUtils.isEmpty(markFromRequest)) {
 				markFromRequest = mark;
 			}
@@ -101,10 +106,10 @@ public class MetadataAwarePredicate extends AbstractServerPredicate{
 			 * 	  而客户端请求Header中的 mark 为false，则结果返回false,不允许做负载均衡。
 			 */
 			if(result == false && markFromRequest.equalsIgnoreCase(MARK_FLAG_TRUE)) {
-				if(discoveryEnabledRule == null) {
+				if(customEnabledRule == null) {
 					throw new Exception("Ribbon在进行灰度负载选择时，metadataAwareRule值为空，请检查您的灰度代码");
 				}
-				ILoadBalancer iLoadBalancer = discoveryEnabledRule.getLoadBalancer();
+				ILoadBalancer iLoadBalancer = customEnabledRule.getLoadBalancer();
 				if(iLoadBalancer == null) {
 					throw new Exception("Ribbon在进行灰度负载选择时，iLoadBalancer值为空，请检查您的灰度代码");
 				}
@@ -129,7 +134,7 @@ public class MetadataAwarePredicate extends AbstractServerPredicate{
 		}catch (Exception e) {
 			//如果报异常，则请求会进入熔断器
 			result = false;
-			log.error("MetadataAwarePredicate#apply error",e);
+			log.error("CustomAwarePredicate#apply error",e);
 		}
 		return result;
 	}

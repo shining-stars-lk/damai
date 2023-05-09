@@ -17,11 +17,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 public class ExtraHystrixAutoConfiguration {
 
-//    @Bean
-//    public ExtraHystrixConcurrencyStrategy extraHystrixConcurrencyStrategy(){
-//        return new ExtraHystrixConcurrencyStrategy();
-//    }
-
     @Bean
     public ServletRegistrationBean getServlet(){
         HystrixMetricsStreamServlet streamServlet = new HystrixMetricsStreamServlet();
