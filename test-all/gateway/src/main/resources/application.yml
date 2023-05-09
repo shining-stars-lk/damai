@@ -1,18 +1,14 @@
-#服务端口
 server:
   port: 6068
-# 应用名称
 spring:
   application:
-    name: gateway
-  # nacos
+    name: gateway-api
+  main:
+    allow-bean-definition-overriding: true
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
-        # 标识
-        metadata:
-          mark: true
+        server-addr: localhost:8848
     gateway:
       discovery:
         locator:
@@ -46,9 +42,8 @@ spring:
           metadata:
             title: 订单系统
       
-      enabled: true      
-  main:
-    allow-bean-definition-overriding: true
+      enabled: true
+
 feign:
   hystrix:
     enabled: true
