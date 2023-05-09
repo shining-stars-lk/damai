@@ -53,16 +53,16 @@ hystrix:
             ribbon:
               ReadTimeout: 60000
               ConnectTimeout: 60000
-  #在这个示例中，我们为ProductClient接口中的getV2(GetDto)方法设置了一个超时时间为100000毫秒（100秒）。当远程服务调用超过100秒时，Hystrix将触发超时并执行回退逻辑              
-  ProductClient#getV2(GetDto):
-    #execution: 表示与命令执行相关的配置。
-    execution:
-      #isolation: 表示与命令隔离相关的配置。
-      isolation:
-        #thread: 表示使用线程隔离策略。
-        thread:
-          #timeoutInMilliseconds: 设置超时时间，单位为毫秒。
-          timeoutInMilliseconds: 100000
+    #在这个示例中，我们为ProductClient接口中的getV2(GetDto)方法设置了一个超时时间为100000毫秒（100秒）。当远程服务调用超过100秒时，Hystrix将触发超时并执行回退逻辑              
+    ProductClient#getV2(GetDto):
+      #execution: 表示与命令执行相关的配置。
+      execution:
+        #isolation: 表示与命令隔离相关的配置。
+        isolation:
+          #thread: 表示使用线程隔离策略。
+          thread:
+            #timeoutInMilliseconds: 设置超时时间，单位为毫秒。
+            timeoutInMilliseconds: 100000
 ribbon:
   ReadTimeout: 60000
   ConnectTimeout: 60000
