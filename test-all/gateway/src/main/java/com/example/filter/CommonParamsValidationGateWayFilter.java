@@ -47,17 +47,17 @@ import static com.example.common.Constant.REQUESTID;
 @Slf4j
 @Component
 public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordered {
-    
+
     private static final String REQUEST_BODY = "body";
-    
+
     private static final String CHARSET = "utf-8";
 
     @Autowired
     private ServerCodecConfigurer serverCodecConfigurer;
-    
+
     @Autowired
     private ChannelDataService channelDataService;
-    
+
     @Value("${verify.switch:false}")
     private boolean verifySwitch;
 
