@@ -9,6 +9,7 @@ import com.example.util.SignatureUtil;
 import com.example.vo.GetChannelDataVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.filter.factory.rewrite.CachedBodyOutputMessage;
@@ -56,6 +57,9 @@ public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordere
     
     @Autowired
     private ChannelDataService channelDataService;
+    
+    @Value("${verify.switch:false}")
+    private boolean verifySwitch;
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
@@ -101,19 +105,15 @@ public class CommonParamsValidationGateWayFilter implements GlobalFilter, Ordere
         if (StringUtil.isNotEmpty(originalBody)) {
             requestBodyContent = JSON.parseObject(originalBody, Map.class);
         }
-        //应用渠道
-        String code = requestBodyContent.get("code");
-        GetChannelDataVo getChannelDataVo = channelDataService.GetChannelDataByCode(code);
-        boolean checkFlag = SignatureUtil.rsa256Check(requestBodyContent, getChannelDataVo.getPublicKey(), CHARSET);
-        
-        
-        
-        
-        
-        
+        if (verifySwitch) {
+            //应用渠道
+            String code = requestBodyContent.get("code");
+            GetChannelDataVo getChannelDataVo = channelDataService.GetChannelDataByCode(code);
+            boolean checkFlag = SignatureUtil.rsa256Check(requestBodyContent, getChannelDataVo.getPublicKey(), CHARSET);
+        }
         Map<String,String> map = new HashMap<>(4);
         map.put(REQUEST_BODY,requestBody);
-        return null;
+        return map;
     }
     //将网关层request请求头中的重要参数传递给后续的微服务中
     private ServerHttpRequestDecorator decorate(ServerWebExchange exchange, HttpHeaders headers, CachedBodyOutputMessage outputMessage, RequestWrapper requestWrapper, String requestId){
