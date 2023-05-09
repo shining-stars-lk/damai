@@ -6,7 +6,7 @@ import com.netflix.loadbalancer.CompositePredicate;
 import com.netflix.loadbalancer.PredicateBasedRule;
 import org.springframework.util.Assert;
 
-public class DiscoveryEnabledRule extends PredicateBasedRule {
+public class CustomEnabledRule extends PredicateBasedRule {
     
     /**
      * 这里为静态的原因是ribbon在定时任务执行时是直接调用DiscoveryEnabledRule的无参构造方法，而不是从spring中获得
@@ -15,17 +15,17 @@ public class DiscoveryEnabledRule extends PredicateBasedRule {
     
     private CompositePredicate predicate = null;
     
-    public DiscoveryEnabledRule(ExtraRibbonProperties extraRibbonProperties){
+    public CustomEnabledRule(ExtraRibbonProperties extraRibbonProperties){
         super();
         mark = extraRibbonProperties.getMark();
-        MetadataAwarePredicate metadataAwarePredicate = new MetadataAwarePredicate(mark, this);
+        CustomAwarePredicate metadataAwarePredicate = new CustomAwarePredicate(mark, this);
         Assert.notNull(metadataAwarePredicate, "参数 'abstractServerPredicate' 不能为 null");
         predicate = createCompositePredicate(metadataAwarePredicate, new AvailabilityPredicate(this, null));
     }
     
-    public DiscoveryEnabledRule(){
+    public CustomEnabledRule(){
         super();
-        MetadataAwarePredicate metadataAwarePredicate = new MetadataAwarePredicate(mark, this);
+        CustomAwarePredicate metadataAwarePredicate = new CustomAwarePredicate(mark, this);
         Assert.notNull(metadataAwarePredicate, "参数 'abstractServerPredicate' 不能为 null");
         predicate = createCompositePredicate(metadataAwarePredicate, new AvailabilityPredicate(this, null));
     }

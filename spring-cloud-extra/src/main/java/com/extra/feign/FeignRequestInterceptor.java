@@ -9,6 +9,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.example.constant.Constant.TRACE_ID;
+
 /**
  * @program: 将请求头的信息传递到下一个微服务链路中
  * @description:
@@ -19,10 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 public class FeignRequestInterceptor implements RequestInterceptor {
     
-    /**
-     * 链路id
-     * */
-    private static final String TRACE_ID = "traceId";
+    
     
     @Override
     public void apply(final RequestTemplate template) {

@@ -1,0 +1,41 @@
+package com.filter;
+
+import com.threadlocal.BaseParameterHolder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+import static com.example.constant.Constant.MARK_PARAMETER;
+import static com.example.constant.Constant.TRACE_ID;
+
+/**
+ * @program: toolkit
+ * @description:
+ * @author: lk
+ * @create: 2023-05-09
+ **/
+@Slf4j
+public class BaseParameterFilter extends OncePerRequestFilter {
+    @Override
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) throws ServletException, IOException {
+        log.info("current thread doFilterInternal : {}",Thread.currentThread().getName());
+        if (request != null) {
+            String traceId = request.getHeader(TRACE_ID);
+            String mark = request.getHeader(MARK_PARAMETER);
+            try {
+                BaseParameterHolder.setParameter(TRACE_ID,traceId);
+                BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
+                filterChain.doFilter(request, response);
+            }finally {
+                BaseParameterHolder.removeParameter(TRACE_ID);
+            }
+        }else {
+            filterChain.doFilter(request, response);
+        }
+    }
+}

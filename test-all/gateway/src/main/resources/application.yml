@@ -67,6 +67,10 @@ feign:
 hystrix:
   #command: 表示要配置的是Hystrix命令（即要应用断路器的方法）。
   command:
+    fallbackcmd:
+      execution:
+        isolation:
+          strategy: THREAD
     default:
       coreSize: 50
       #execution: 表示与命令执行相关的配置。
