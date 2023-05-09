@@ -1,8 +1,6 @@
 package com.example.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -58,20 +56,20 @@ public class MD5Generator {
 	 * @return String 返回加密后的密码值
 	 * @throws
 	 */
-	public static String encryptPassword(String password, String salt) {
-		// salt为null时代表新用户注册或用户修改密码时需要生成盐值，不为null时代表登录验证密码
-		if (salt == null) {
-			// 生成随机8位盐值
-			salt = RandomStringGenerator.gen8DigitalString();
-		}
-		// 给第一次MD5值加盐（盐值与前台传回的第一次MD5密码进行组合）
-		String tempPsw = salt + password;
-		// 第二次MD5运算
-		tempPsw = MD5Generator.MD5(tempPsw);
-		// 生成最终加密密码，前8位是盐值，后面是第二次MD5运算值
-//		tempPsw = salt + tempPsw;
-		// 返回加密后的密码
-		return tempPsw;
-	}
+//	public static String encryptPassword(String password, String salt) {
+//		// salt为null时代表新用户注册或用户修改密码时需要生成盐值，不为null时代表登录验证密码
+//		if (salt == null) {
+//			// 生成随机8位盐值
+//			salt = RandomStringGenerator.gen8DigitalString();
+//		}
+//		// 给第一次MD5值加盐（盐值与前台传回的第一次MD5密码进行组合）
+//		String tempPsw = salt + password;
+//		// 第二次MD5运算
+//		tempPsw = MD5Generator.MD5(tempPsw);
+//		// 生成最终加密密码，前8位是盐值，后面是第二次MD5运算值
+////		tempPsw = salt + tempPsw;
+//		// 返回加密后的密码
+//		return tempPsw;
+//	}
 
 }

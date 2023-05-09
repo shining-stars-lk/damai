@@ -35,7 +35,7 @@ feign:
   sentinel:
     enabled: true
   hystrix:
-    enabled: true
+    enabled: false
   httpclient:
     enabled: false
   okhttp:
