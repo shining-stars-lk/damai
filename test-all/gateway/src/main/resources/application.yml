@@ -18,8 +18,8 @@ spring:
         # 熔断过滤器
         - name: Hystrix
           args:
-            name: fallbackcmd
-            fallbackuri: forward:/fallbackhandler
+            name: fallBackHandler
+            fallbackuri: forward:/fallBackHandler
       # 负载均衡路由规则 开启路由后的服务swagger才能显示
       routes:
         - id: product-provider-service
@@ -51,23 +51,13 @@ feign:
     enabled: false
   okhttp:
     enabled: true
-  compression:
-    request:
-      #配置请求 GZIP 压缩
-      enabled: true
-      #配置压缩支持的 MIME TYPE
-      mime-types: text/xml,application/xml,application/json
-      #配置压缩数据大小的最小阀值，默认 2048
-      min-request-size: 512
-    response:
-      #配置响应 GZIP 压缩
-      enabled: true
 
 #hystrix: 顶层配置，表示这是Hystrix的配置。
 hystrix:
   #command: 表示要配置的是Hystrix命令（即要应用断路器的方法）。
   command:
-    fallbackcmd:
+    #将熔断的隔离模式显示为thread模式，否则服务调用为信号量模式
+    fallBackHandler:
       execution:
         isolation:
           strategy: THREAD

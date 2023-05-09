@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HystrixFallBackController {
 
-    @RequestMapping(value = "/fallbackhandler")
+    @RequestMapping(value = "/fallBackHandler")
     public String fallBackHandler(){
         return "熔断器执行";
     }
