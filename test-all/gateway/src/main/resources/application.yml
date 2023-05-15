@@ -9,7 +9,12 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+    sentinel:
+      transport:
+        port: 8768
+        dashboard: localhost:8082    
     gateway:
+      enabled: true
       discovery:
         locator:
           # 开启负载均衡对网关的路由转发的支持
@@ -41,12 +46,22 @@ spring:
           #            - RewritePath=/gateway/log(?<segment>/?.*), $\{segment}
           metadata:
             title: 订单系统
-      
-      enabled: true
+            
+        - id: employee-consumer-service
+          uri: lb://employee-consumer-service
+          predicates:
+            - Path=/gateway/employee/**
+          filters:
+            - StripPrefix=2
+          #            - RewritePath=/gateway/log(?<segment>/?.*), $\{segment}
+          metadata:
+            title: 职员系统    
 
 feign:
-  hystrix:
+  sentinel:
     enabled: true
+  hystrix:
+    enabled: false
   httpclient:
     enabled: false
   okhttp:
