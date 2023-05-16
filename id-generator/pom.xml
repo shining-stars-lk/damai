@@ -22,6 +22,17 @@
     </properties>
 
     <dependencies>
+        <!-- Apache Commons -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -34,19 +45,27 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <groupId>com.alibaba</groupId>
+            <!--			<artifactId>druid-spring-boot-starter</artifactId>-->
+            <artifactId>druid</artifactId>
+            <version>1.1.10</version>
         </dependency>
         <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>distribute-cache</artifactId>
-            <version>${revision}</version>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.5.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>tool</artifactId>
-            <version>${revision}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.baidu.fsg</groupId>-->
+<!--            <artifactId>uid-generator</artifactId>-->
+<!--            <version>1.0.0-SNAPSHOT</version>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.mybatis</groupId>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
