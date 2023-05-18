@@ -8,9 +8,8 @@ import java.security.NoSuchAlgorithmException;
 /**
  * @ClassName: MD5Generator
  * @Description: MD5算法类
- * @author Joran
- * @date 24 Jul 2014 15:48:27
- * 
+ * @author lk
+ * @date 2023-5-18
  */
 @Slf4j
 public class MD5Generator {

@@ -21,9 +21,10 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
 /**
- * RSA算法
- * 
+ * @ClassName: RSA
+ * @Description:
  * @author lk
+ * @date 2023-5-18
  */
 public class RSA {
 	private static final String SIGN_TYPE_RSA = "RSA";

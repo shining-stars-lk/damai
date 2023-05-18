@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * @ClassName: SignatureUtil
+ * @Description:
  * @author lk
- *
+ * @date 2023-5-18
  */
 public class SignatureUtil {
 	
@@ -276,7 +278,6 @@ public class SignatureUtil {
 	 * 
 	 * @param key
 	 * @param value
-	 * @param isEncode
 	 * @return
 	 */
 	private static String buildKeyValueObj(String key, Object value) {
