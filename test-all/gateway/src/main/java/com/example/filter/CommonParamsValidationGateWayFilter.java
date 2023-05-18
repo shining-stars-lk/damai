@@ -41,10 +41,10 @@ import static com.example.constant.Constant.MARK_PARAMETER;
 import static com.example.constant.Constant.TRACE_ID;
 
 /**
- * @program: bjgoodwill-msa-patient-api-gateway
+ * @program: gateway
  * @description:
  * @author: lk
- * @create: 2022-10-26
+ * @create: 2023-5-18
  **/
 @Slf4j
 @Component

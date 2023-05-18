@@ -83,14 +83,17 @@ management:
         include: '*'
     health:
       show-details: always
+  endpoint:
+    health:
+      probes:
+        enabled: true
   security:
     enabled: false
-
-
-
-
-
-
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true  
 
 
 app:
