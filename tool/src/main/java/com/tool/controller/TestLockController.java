@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @create: 2023-02-23
  **/
 @RestController
-public class TestController {
+public class TestLockController {
     
     @PostMapping(value = "/test")
     @ServiceLock(name = "test",keys = {"#id"})

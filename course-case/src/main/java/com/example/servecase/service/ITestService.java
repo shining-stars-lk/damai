@@ -11,4 +11,6 @@ public interface ITestService {
     Test getById(Long id);
 
     Integer updateNumberById(Long number, Long id);
+    
+    boolean insertNumber(Long number, Long id);
 }

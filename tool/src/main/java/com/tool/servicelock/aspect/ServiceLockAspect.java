@@ -13,6 +13,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @create: 2022-05-28
  **/
 @Aspect
-//@Order(-10)
+@Order(-10)
 public class ServiceLockAspect {
 
     private final Logger logger = LoggerFactory.getLogger(ServiceLockAspect.class);
