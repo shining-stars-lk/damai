@@ -49,5 +49,10 @@ public class TestController {
     public Integer updateNumberById(@PathVariable Long number,@PathVariable Long id){
         return testService.updateNumberById(number,id);
     }
+    
+    @RequestMapping("insertNumber/{number}/{id}")
+    public boolean insertNumber(@PathVariable Long number,@PathVariable Long id){
+        return testService.insertNumber(number,id);
+    }
 
 }

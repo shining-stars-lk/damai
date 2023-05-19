@@ -4,6 +4,7 @@ package com.example.servecase.service.impl;
 import com.example.servecase.entity.Test;
 import com.example.servecase.mapper.TestMapper;
 import com.example.servecase.service.ITestService;
+import com.tool.servicelock.annotion.ServiceLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,4 +40,18 @@ public class TestService implements ITestService {
     public Integer updateNumberById(Long number, Long id) {
         return testMapper.updateNumberById(number, id);
     }
+    
+    
+    @Override
+    @Transactional
+    @ServiceLock(name = "insertNumber",keys = {"#id"},waitTime = 50)
+    public boolean insertNumber(final Long number, final Long id) {
+        Test test = testMapper.getById(id);
+        Long originalNumber = test.getNumber();
+        originalNumber = originalNumber + number;
+        test.setNumber(originalNumber);
+        testMapper.updateById(test);
+        return true;
+    }
+    
 }

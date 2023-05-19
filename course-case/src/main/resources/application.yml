@@ -14,7 +14,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       # 最大连接池数量
-      maxActive: 60
+      maxActive: 200
       # 获取连接时最大等待时间，单位毫秒
       maxWait: 60000
       # 配置一个连接在池中最小生存的时间,单位是毫秒
@@ -36,9 +36,9 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 redisson:
   timeout: 3000
-  address: #地址
+  address: 192.168.2.102
   port: 6379
-  password: #密码
-  database: 0
+  password: 7ygvUJM
+  database: 5
   connectionPoolSize: 64
   connectionMinimumIdleSize: 10    
