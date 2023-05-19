@@ -1,4 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.example.distributedlock.redisson.config.RedissonAutoConfiguration,\
-  com.example.core.DistributedConf
+  com.tool.servicelock.redisson.config.RedissonAutoConfiguration,\
+  com.tool.core.DistributedConf
   
