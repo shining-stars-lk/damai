@@ -34,3 +34,11 @@ logging:
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+redisson:
+  timeout: 3000
+  address: #地址
+  port: 6379
+  password: #密码
+  database: 0
+  connectionPoolSize: 64
+  connectionMinimumIdleSize: 10    

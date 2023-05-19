@@ -48,7 +48,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.example.tool.ThreadpoolApplication</mainClass>
+                    <mainClass>com.tool.ThreadpoolApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

@@ -2,7 +2,7 @@
 ## 1 引入依赖
 ```xml
 <dependency>
-  <groupId>com.example</groupId>
+  <groupId>com.tool</groupId>
   <artifactId>tool</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 </dependency>
