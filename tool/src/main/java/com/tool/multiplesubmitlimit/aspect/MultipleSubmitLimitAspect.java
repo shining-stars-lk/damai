@@ -1,13 +1,13 @@
-package com.tool.repeatLimit.aspect;
+package com.tool.multiplesubmitlimit.aspect;
 
 import com.tool.servicelock.ServiceLocker;
 import com.tool.servicelock.redisson.LockType;
 import com.tool.servicelock.redisson.factory.RedissonLockFactory;
-import com.tool.repeatLimit.annotion.RepeatLimit;
-import com.tool.repeatLimit.info.RepeatLimitInfoProvider;
-import com.tool.repeatLimit.info.RepeatRejectedStrategy;
-import com.tool.repeatLimit.info.strategy.repeatrejected.RepeatLimitHandler;
-import com.tool.repeatLimit.info.strategy.repeatrejected.RepeatLimitStrategyFactory;
+import com.tool.multiplesubmitlimit.annotion.MultipleSubmitLimit;
+import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfoProvider;
+import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitRejectedStrategy;
+import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitHandler;
+import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitStrategyFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -25,39 +25,39 @@ import java.util.concurrent.TimeUnit;
  **/
 @Aspect
 @Order(-9)
-public class RepeatLimitAspect {
+public class MultipleSubmitLimitAspect {
 
-    private final Logger logger = LoggerFactory.getLogger(RepeatLimitAspect.class);
+    private final Logger logger = LoggerFactory.getLogger(MultipleSubmitLimitAspect.class);
 
     private final long MAX_TIME_OUT = 15;
 
     private final long WAIT_TIME = 0;
 
     
-    private RepeatLimitInfoProvider repeatLimitInfoProvider;
+    private MultipleSubmitLimitInfoProvider repeatLimitInfoProvider;
 
     
     private RedissonLockFactory redissonLockFactory;
 
     
-    private RepeatLimitStrategyFactory repeatLimitStrategyFactory;
+    private MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory;
     
-    public RepeatLimitAspect(RepeatLimitInfoProvider repeatLimitInfoProvider, RedissonLockFactory redissonLockFactory, 
-                             RepeatLimitStrategyFactory repeatLimitStrategyFactory){
+    public MultipleSubmitLimitAspect(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider, RedissonLockFactory redissonLockFactory,
+                                     MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory){
         this.repeatLimitInfoProvider = repeatLimitInfoProvider;
         this.redissonLockFactory = redissonLockFactory;
         this.repeatLimitStrategyFactory = repeatLimitStrategyFactory;
     }
 
     @Around("@annotation(repeatLimit)")
-    public Object around(ProceedingJoinPoint joinPoint, RepeatLimit repeatLimit) throws Throwable {
+    public Object around(ProceedingJoinPoint joinPoint, MultipleSubmitLimit repeatLimit) throws Throwable {
         Object o = null;
         String lockName = "";
         String resultKeyName = "";
         String[] keys = repeatLimit.keys();
         String name = repeatLimit.name();
         long timeout = checkTimeOut(repeatLimit.timeout());
-        RepeatRejectedStrategy repeatRejectedStrategy = repeatLimit.repeatRejected();
+        MultipleSubmitLimitRejectedStrategy repeatRejectedStrategy = repeatLimit.repeatRejected();
         if (keys != null && keys.length > 0) {
             lockName = repeatLimitInfoProvider.getLockName(joinPoint,name, keys);
             resultKeyName = repeatLimitInfoProvider.getResultKeyName(joinPoint,name, keys);
@@ -67,7 +67,7 @@ public class RepeatLimitAspect {
         }
 
         logger.info("==repeat limit lockName:{} resultKeyName:{}==",lockName,resultKeyName);
-        RepeatLimitHandler repeatLimitHandler = repeatLimitStrategyFactory.getRepeatLimitStrategy(repeatRejectedStrategy.getMsg());
+        MultipleSubmitLimitHandler repeatLimitHandler = repeatLimitStrategyFactory.getMultipleSubmitLimitStrategy(repeatRejectedStrategy.getMsg());
 
         ServiceLocker lock = redissonLockFactory.createLock(LockType.Reentrant);
         boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, WAIT_TIME);

@@ -1,9 +1,9 @@
-package com.tool.repeatLimit.info;
+package com.tool.multiplesubmitlimit.info;
 
 import com.tool.core.BaseInfoProvider;
-import com.tool.repeatLimit.annotion.RepeatLimit;
-import com.tool.repeatLimit.info.strategy.generateKey.GenerateKeyHandler;
-import com.tool.repeatLimit.info.strategy.generateKey.GenerateKeyStrategyContext;
+import com.tool.multiplesubmitlimit.annotion.MultipleSubmitLimit;
+import com.tool.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyHandler;
+import com.tool.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyStrategyContext;
 import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +16,9 @@ import java.util.Optional;
  * @author: lk
  * @create: 2022-05-28
  **/
-public class RepeatLimitInfoProvider extends BaseInfoProvider {
+public class MultipleSubmitLimitInfoProvider extends BaseInfoProvider {
 
-    private final Logger logger = LoggerFactory.getLogger(RepeatLimitInfoProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(MultipleSubmitLimitInfoProvider.class);
 
     public static final String NAME_PREFIX = "REPEAT_LIMIT";
 
@@ -40,16 +40,16 @@ public class RepeatLimitInfoProvider extends BaseInfoProvider {
     /**
      * 获取指定生成业务策略生成的业务名字
      * */
-    public String getLockNameByGenerateKeyStrategy(RepeatLimit repeatLimit, JoinPoint joinPoint){
+    public String getLockNameByGenerateKeyStrategy(MultipleSubmitLimit repeatLimit, JoinPoint joinPoint){
         GenerateKeyHandler generateKeyStrategy = getGenerateKeyStrategy(repeatLimit.generatorKey().getMsg());
         String key = generateKeyStrategy.generateKey(joinPoint);
-        return RepeatLimitInfoProvider.NAME_PREFIX.concat(":").concat(key);
+        return MultipleSubmitLimitInfoProvider.NAME_PREFIX.concat(":").concat(key);
     }
 
 
-    public String getResultKeyNameByGenerateKeyStrategy(RepeatLimit repeatLimit,JoinPoint joinPoint){
+    public String getResultKeyNameByGenerateKeyStrategy(MultipleSubmitLimit repeatLimit, JoinPoint joinPoint){
         GenerateKeyHandler generateKeyStrategy = getGenerateKeyStrategy(repeatLimit.generatorKey().getMsg());
         String key = generateKeyStrategy.generateKey(joinPoint);
-        return RepeatLimitInfoProvider.RESULT_PREFIX.concat(":").concat(key);
+        return MultipleSubmitLimitInfoProvider.RESULT_PREFIX.concat(":").concat(key);
     }
 }

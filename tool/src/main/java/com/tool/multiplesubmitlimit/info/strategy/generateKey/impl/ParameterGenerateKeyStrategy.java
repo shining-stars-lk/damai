@@ -1,11 +1,11 @@
-package com.tool.repeatLimit.info.strategy.generateKey.impl;
+package com.tool.multiplesubmitlimit.info.strategy.generateKey.impl;
 
 import com.tool.core.Constants;
 import com.example.core.StringUtil;
-import com.tool.repeatLimit.info.GenerateKeyStrategy;
-import com.tool.repeatLimit.info.RepeatLimitInfoProvider;
-import com.tool.repeatLimit.info.strategy.generateKey.GenerateKeyHandler;
-import com.tool.repeatLimit.info.strategy.generateKey.GenerateKeyStrategyContext;
+import com.tool.multiplesubmitlimit.info.GenerateKeyStrategy;
+import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfoProvider;
+import com.tool.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyHandler;
+import com.tool.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyStrategyContext;
 import org.aspectj.lang.JoinPoint;
 
 import javax.annotation.PostConstruct;
@@ -21,9 +21,9 @@ import java.util.StringJoiner;
  **/
 public class ParameterGenerateKeyStrategy implements GenerateKeyHandler {
     
-    private RepeatLimitInfoProvider repeatLimitInfoProvider;
+    private MultipleSubmitLimitInfoProvider repeatLimitInfoProvider;
     
-    public ParameterGenerateKeyStrategy(RepeatLimitInfoProvider repeatLimitInfoProvider){
+    public ParameterGenerateKeyStrategy(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider){
         this.repeatLimitInfoProvider = repeatLimitInfoProvider;
     }
 

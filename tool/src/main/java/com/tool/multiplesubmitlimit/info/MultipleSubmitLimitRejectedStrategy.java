@@ -1,4 +1,4 @@
-package com.tool.repeatLimit.info;
+package com.tool.multiplesubmitlimit.info;
 
 /**
  * @program: distribute-cache
@@ -6,7 +6,7 @@ package com.tool.repeatLimit.info;
  * @author: lk
  * @create: 2022-05-28
  **/
-public enum RepeatRejectedStrategy {
+public enum MultipleSubmitLimitRejectedStrategy {
 
     ABORT_STRATEGY(1,"ABORT"),
     SAME_RESULT(2,"SAME_RESULT");
@@ -15,7 +15,7 @@ public enum RepeatRejectedStrategy {
 
     private String msg;
 
-    RepeatRejectedStrategy(Integer code, String msg){
+    MultipleSubmitLimitRejectedStrategy(Integer code, String msg){
         this.code = code;
         this.msg = msg;
     }
@@ -37,7 +37,7 @@ public enum RepeatRejectedStrategy {
     }
 
     public static String getMsg(Integer code) {
-        for (RepeatRejectedStrategy re : RepeatRejectedStrategy.values()) {
+        for (MultipleSubmitLimitRejectedStrategy re : MultipleSubmitLimitRejectedStrategy.values()) {
             if (re.code.intValue() == code.intValue()) {
                 return re.msg;
             }
@@ -45,8 +45,8 @@ public enum RepeatRejectedStrategy {
         return "";
     }
 
-    public static RepeatRejectedStrategy getRc(Integer code) {
-        for (RepeatRejectedStrategy re : RepeatRejectedStrategy.values()) {
+    public static MultipleSubmitLimitRejectedStrategy getRc(Integer code) {
+        for (MultipleSubmitLimitRejectedStrategy re : MultipleSubmitLimitRejectedStrategy.values()) {
             if (re.code.intValue() == code.intValue()) {
                 return re;
             }

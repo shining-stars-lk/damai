@@ -14,13 +14,13 @@ import java.util.concurrent.TimeUnit;
  * @author: lk
  * @create: 2022-05-28
  **/
-public class DistributedLockUtil {
+public class ServiceLockUtil {
     
     private RedissonLockFactory redissonLockFactory;
 
     private ServiceLockInfoProvider distributedLockInfoProvider;
     
-    public DistributedLockUtil(RedissonLockFactory redissonLockFactory, ServiceLockInfoProvider distributedLockInfoProvider){
+    public ServiceLockUtil(RedissonLockFactory redissonLockFactory, ServiceLockInfoProvider distributedLockInfoProvider){
         this.redissonLockFactory = redissonLockFactory;
         this.distributedLockInfoProvider = distributedLockInfoProvider;
     }

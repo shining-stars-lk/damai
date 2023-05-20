@@ -1,4 +1,4 @@
-package com.tool.repeatLimit.info;
+package com.tool.multiplesubmitlimit.info;
 
 /**
  * @program: distribute-cache
