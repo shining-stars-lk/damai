@@ -1,7 +1,7 @@
-package com.tool.repeatLimit.annotion;
+package com.tool.multiplesubmitlimit.annotion;
 
-import com.tool.repeatLimit.info.GenerateKeyStrategy;
-import com.tool.repeatLimit.info.RepeatRejectedStrategy;
+import com.tool.multiplesubmitlimit.info.GenerateKeyStrategy;
+import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitRejectedStrategy;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  **/
 @Target(value= {ElementType.TYPE, ElementType.METHOD})
 @Retention(value= RetentionPolicy.RUNTIME)
-public @interface RepeatLimit {
+public @interface MultipleSubmitLimit {
 
     /**
      * 业务名称
@@ -43,5 +43,5 @@ public @interface RepeatLimit {
     /**
      * 提交重复时，执行的策略(默认快速拒绝)
      * */
-    RepeatRejectedStrategy repeatRejected() default RepeatRejectedStrategy.ABORT_STRATEGY;
+    MultipleSubmitLimitRejectedStrategy repeatRejected() default MultipleSubmitLimitRejectedStrategy.ABORT_STRATEGY;
 }

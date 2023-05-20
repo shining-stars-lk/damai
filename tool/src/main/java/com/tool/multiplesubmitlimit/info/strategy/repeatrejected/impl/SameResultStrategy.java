@@ -1,9 +1,9 @@
-package com.tool.repeatLimit.info.strategy.repeatrejected.impl;
+package com.tool.multiplesubmitlimit.info.strategy.repeatrejected.impl;
 
 import com.tool.operate.Operate;
-import com.tool.repeatLimit.info.RepeatRejectedStrategy;
-import com.tool.repeatLimit.info.strategy.repeatrejected.RepeatLimitHandler;
-import com.tool.repeatLimit.info.strategy.repeatrejected.RepeatLimitStrategyContext;
+import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitRejectedStrategy;
+import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitHandler;
+import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitStrategyContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 import javax.annotation.PostConstruct;
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * @author: lk
  * @create: 2022-05-28
  **/
-public class SameResultStrategy implements RepeatLimitHandler {
+public class SameResultStrategy implements MultipleSubmitLimitHandler {
 
     private final String NO_RETURN_VALUE = "void";
     
@@ -27,7 +27,7 @@ public class SameResultStrategy implements RepeatLimitHandler {
 
     @PostConstruct
     private void init(){
-        RepeatLimitStrategyContext.put(RepeatRejectedStrategy.SAME_RESULT.getMsg(),this);
+        MultipleSubmitLimitStrategyContext.put(MultipleSubmitLimitRejectedStrategy.SAME_RESULT.getMsg(),this);
     }
 
 

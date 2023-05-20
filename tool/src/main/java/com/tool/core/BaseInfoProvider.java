@@ -2,7 +2,7 @@ package com.tool.core;
 
 
 
-import com.tool.repeatLimit.info.RepeatLimitInfoProvider;
+import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfoProvider;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ import java.util.List;
  **/
 public class BaseInfoProvider {
 
-    private final Logger logger = LoggerFactory.getLogger(RepeatLimitInfoProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(MultipleSubmitLimitInfoProvider.class);
 
     private ParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
 
