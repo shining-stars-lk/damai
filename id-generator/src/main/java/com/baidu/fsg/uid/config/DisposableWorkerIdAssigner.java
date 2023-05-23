@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.baidu.fsg.uid.worker;
+package com.baidu.fsg.uid.config;
 
-import com.baidu.fsg.uid.utils.DockerUtils;
-import com.baidu.fsg.uid.utils.NetUtils;
-import com.baidu.fsg.uid.worker.dao.WorkerNodeDAO;
-import com.baidu.fsg.uid.worker.entity.WorkerNodeEntity;
-import org.apache.commons.lang.math.RandomUtils;
+import com.baidu.fsg.uid.worker.WorkerIdAssigner;
+import com.example.entity.WorkerNode;
+import com.example.mapper.WorkerNodeMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +34,7 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
     private static final Logger LOGGER = LoggerFactory.getLogger(DisposableWorkerIdAssigner.class);
 
     @Resource
-    private WorkerNodeDAO workerNodeDAO;
+    private WorkerNodeMapper workerNodeMapper;
 
     /**
      * Assign worker id base on database.<p>
@@ -48,32 +46,12 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
     @Transactional
     public long assignWorkerId() {
         // build worker node entity
-        WorkerNodeEntity workerNodeEntity = buildWorkerNode();
+        WorkerNode workerNodeEntity = buildWorkerNode();
 
         // add worker node for new (ignore the same IP + PORT)
-        workerNodeDAO.addWorkerNode(workerNodeEntity);
+        workerNodeMapper.addWorkerNode(workerNodeEntity);
         LOGGER.info("Add worker node:" + workerNodeEntity);
 
         return workerNodeEntity.getId();
     }
-
-    /**
-     * Build worker node entity by IP and PORT
-     */
-    private WorkerNodeEntity buildWorkerNode() {
-        WorkerNodeEntity workerNodeEntity = new WorkerNodeEntity();
-        if (DockerUtils.isDocker()) {
-            workerNodeEntity.setType(WorkerNodeType.CONTAINER.value());
-            workerNodeEntity.setHostName(DockerUtils.getDockerHost());
-            workerNodeEntity.setPort(DockerUtils.getDockerPort());
-
-        } else {
-            workerNodeEntity.setType(WorkerNodeType.ACTUAL.value());
-            workerNodeEntity.setHostName(NetUtils.getLocalAddress());
-            workerNodeEntity.setPort(System.currentTimeMillis() + "-" + RandomUtils.nextInt(100000));
-        }
-
-        return workerNodeEntity;
-    }
-
 }

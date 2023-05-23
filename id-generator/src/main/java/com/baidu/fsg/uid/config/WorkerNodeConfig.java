@@ -1,7 +1,9 @@
-package com.example.config;
+package com.baidu.fsg.uid.config;
 
 import com.baidu.fsg.uid.UidGenerator;
 import com.baidu.fsg.uid.impl.CachedUidGenerator;
+import com.baidu.fsg.uid.worker.WorkerIdAssigner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,13 +16,14 @@ import org.springframework.context.annotation.Configuration;
 public class WorkerNodeConfig {
 
     @Bean("disposableWorkerIdAssigner")
-    public DisposableWorkerIdAssigner disposableWorkerIdAssigner(){
-        DisposableWorkerIdAssigner disposableWorkerIdAssigner = new DisposableWorkerIdAssigner();
-        return  disposableWorkerIdAssigner;
+    @ConditionalOnMissingBean(WorkerIdAssigner.class)
+    public WorkerIdAssigner disposableWorkerIdAssigner(){
+        WorkerIdAssigner workerIdAssigner = new DisposableWorkerIdAssigner();
+        return workerIdAssigner;
     }
 
     @Bean("cachedUidGenerator")
-    public UidGenerator uidGenerator(DisposableWorkerIdAssigner disposableWorkerIdAssigner){
+    public UidGenerator uidGenerator(WorkerIdAssigner disposableWorkerIdAssigner){
         CachedUidGenerator cachedUidGenerator = new CachedUidGenerator();
         cachedUidGenerator.setWorkerIdAssigner(disposableWorkerIdAssigner);
         return cachedUidGenerator;
