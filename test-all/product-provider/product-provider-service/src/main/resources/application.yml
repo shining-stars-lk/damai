@@ -36,6 +36,11 @@ feign:
 
 #hystrix: 顶层配置，表示这是Hystrix的配置。
 hystrix:
+  threadpool:
+    default:
+      coreSize: 500
+      maximumSize: 800
+      allowMaximumSizeToDivergeFromCoreSize: true
   #command: 表示要配置的是Hystrix命令（即要应用断路器的方法）。
   command:
     default:
