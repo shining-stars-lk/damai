@@ -76,8 +76,9 @@ hystrix:
       execution:
         isolation:
           strategy: THREAD
+          thread:
+            timeoutInMilliseconds: 20000 # Hystrix 的熔断超时时间
     default:
-      coreSize: 50
       #execution: 表示与命令执行相关的配置。
       execution:
         timeout:
@@ -88,9 +89,6 @@ hystrix:
           thread:
             #timeoutInMilliseconds: 设置超时时间，单位为毫秒。
             timeoutInMilliseconds: 10000
-            ribbon:
-              ReadTimeout: 60000
-              ConnectTimeout: 60000
 ribbon:
   ReadTimeout: 60000
   ConnectTimeout: 60000
