@@ -89,7 +89,8 @@ hystrix:
           strategy: THREAD
   threadpool:
     default:
-      coreSize: 50 # Hystrix 更改默认并发数配置        
+      # Hystrix 更改默认并发数配置
+      coreSize: 50        
 # gateway调用服务此ribbon配置参数失效，使用feign调用服务时生效，超时时间为ribbon.ReadTimeout + ribbon.ConnectTimeout
 ribbon:
   ReadTimeout: 10000
