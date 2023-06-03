@@ -3,6 +3,7 @@ package com.example.service;
 import com.example.client.ChannelDataClient;
 import com.example.common.Result;
 import com.example.enums.BaseCode;
+import com.example.exception.ToolkitException;
 import com.example.vo.GetChannelDataVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,6 @@ public class ChannelDataService {
         if (GetChannelDataResult.getCode() == BaseCode.SUCCESS.getCode()) {
             return GetChannelDataResult.getData();
         }
-        throw new RuntimeException("没有找到ChannelData");
+        throw new ToolkitException("没有找到ChannelData");
     }
 }
