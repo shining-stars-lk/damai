@@ -17,7 +17,11 @@ public enum BaseCode {
     
     ARGUMENT_EMPTY(-4,"基础参数为空"),
     
-    SUBMIT_FREQUENT(-5,"执行频繁，请稍后再试");
+    SUBMIT_FREQUENT(-5,"执行频繁，请稍后再试"),
+    
+    USER_ID_EMPTY(-6,"用户id为空"),
+    
+    USER_EMPTY(-7,"用户为空");
     
     private Integer code;
     

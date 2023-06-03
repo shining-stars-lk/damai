@@ -11,9 +11,11 @@ import com.example.exception.ArgumentException;
 import com.example.exception.ToolkitException;
 import com.example.service.ApiLimitService;
 import com.example.service.ChannelDataService;
+import com.example.service.TokenService;
 import com.example.util.AesForClient;
 import com.example.util.SignatureUtil;
 import com.example.vo.GetChannelDataVo;
+import com.example.vo.UserVo;
 import com.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,7 @@ import static com.example.constant.GatewayConstant.CHARSET;
 import static com.example.constant.GatewayConstant.CODE;
 import static com.example.constant.GatewayConstant.REQUEST_BODY;
 import static com.example.constant.GatewayConstant.RSA_FLAG;
+import static com.example.constant.GatewayConstant.TOKEN;
 
 /**
  * @program: gateway
@@ -72,6 +75,9 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     
     @Autowired
     private ApiLimitService apiLimitService;
+    
+    @Autowired
+    private TokenService tokenService;
     
     @Resource
     private UidGenerator uidGenerator;
@@ -139,12 +145,16 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             requestBodyContent = JSON.parseObject(originalBody, Map.class);
         }
         String code = null;
+        String token = null;
+        String userId;
         if (verifySwitch) {
             String requestURI = request.getPath().value();
             String aesFlag = request.getHeaders().getFirst(AES_FLAG);
             String rsaFlag = request.getHeaders().getFirst(RSA_FLAG);
             //应用渠道
             code = requestBodyContent.get(CODE);
+            //token
+            token = requestBodyContent.get(TOKEN);
             if (StringUtil.isEmpty(code)) {
                 ArgumentError argumentError = new ArgumentError();
                 argumentError.setArgumentName(CODE);
@@ -160,11 +170,23 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                     throw new ToolkitException(BaseCode.CHANNEL_DATA);
                 }
             }
+            if (StringUtil.isEmpty(token)) {
+                ArgumentError argumentError = new ArgumentError();
+                argumentError.setArgumentName(token);
+                argumentError.setMessage("token参数为空");
+                List<ArgumentError> argumentErrorList = new ArrayList<>();
+                argumentErrorList.add(argumentError);
+                throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
+            }
+            
+            UserVo userVo = tokenService.getUser(token);
+            userId = userVo.getId();
+            
             if (StringUtil.isNotEmpty(aesFlag) && "true".equals(aesFlag)) {
                 String dec = AesForClient.decrypt(channelDataVo.getAesKey(), aesVector, requestBodyContent.get(BUSINESS_BODY));
                 requestBody = dec;
             }
-            apiLimitService.apiLimit("1",requestURI,request);
+            apiLimitService.apiLimit(userId,requestURI,request);
         }
         Map<String,String> map = new HashMap<>(4);
         map.put(REQUEST_BODY,requestBody);

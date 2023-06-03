@@ -20,4 +20,6 @@ public class GatewayConstant {
     
     public static final String CODE = "code";
     
+    public static final String TOKEN = "token";
+    
 }
