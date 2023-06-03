@@ -4,51 +4,53 @@ package com.example.enums;
  * @program: toolkit
  * @description:
  * @author: lk
- * @create: 2023-05-04
+ * @create: 2023-06-03
  **/
 public enum BaseCode {
     
-    SUCCESS(0, "OK");
+    SUCCESS(0, "OK"),
+    RSA_SIGN_ERROR(-1,"res签名验证失败"),
+    
+    AES_ERROR(-2,"aes验证失败"),
+    
+    CHANNEL_DATA(-3,"渠道数据为空"),
+    
+    ARGUMENT_EMPTY(-4,"基础参数为空"),
+    
+    SUBMIT_FREQUENT(-5,"执行频繁，请稍后再试");
     
     private Integer code;
-    private String message = "";
     
-    BaseCode(Integer code, String message) {
+    private String msg = "";
+    
+    BaseCode(Integer code, String msg) {
         this.code = code;
-        this.message = message;
+        this.msg = msg;
     }
     
-    public static String getMessage(Integer code) {
-        for (BaseCode baseCode : BaseCode.values()) {
-            if (baseCode.code.intValue() == code.intValue()) {
-                return baseCode.message;
+    public Integer getCode() {
+        return this.code;
+    }
+    
+    public String getMsg() {
+        return this.msg == null ? "" : this.msg;
+    }
+    
+    public static String getMsg(Integer code) {
+        for (BaseCode re : BaseCode.values()) {
+            if (re.code.intValue() == code.intValue()) {
+                return re.msg;
             }
         }
         return "";
     }
     
-    public static BaseCode getResultCode(Integer code) {
-        for (BaseCode baseCode : BaseCode.values()) {
-            if (baseCode.code.intValue() == code.intValue()) {
-                return baseCode;
+    public static BaseCode getRc(Integer code) {
+        for (BaseCode re : BaseCode.values()) {
+            if (re.code.intValue() == code.intValue()) {
+                return re;
             }
         }
         return null;
-    }
-    
-    public Integer getCode() {
-        return code;
-    }
-    
-    public void setCode(final Integer code) {
-        this.code = code;
-    }
-    
-    public String getMessage() {
-        return message;
-    }
-    
-    public void setMessage(final String message) {
-        this.message = message;
     }
 }
