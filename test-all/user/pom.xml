@@ -5,24 +5,19 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>toolkit</artifactId>
+        <artifactId>test-all</artifactId>
         <version>${revision}</version>
     </parent>
 
 
-    <artifactId>test-all</artifactId>
+    <artifactId>user</artifactId>
     <packaging>pom</packaging>
 
-    <name>test-all</name>
-    <description>测试</description>
-
     <modules>
-        <module>order-consumer</module>
-        <module>product-provider</module>
-        <module>department-provider</module>
-        <module>employee-consumer</module>
-        <module>gateway</module>
-        <module>channel-data</module>
-        <module>user</module>
+        <module>user-client</module>
+        <module>user-service</module>
     </modules>
+    
+    
+
 </project>
