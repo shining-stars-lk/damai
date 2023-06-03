@@ -12,10 +12,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @EnableHystrix
 @SpringBootApplication
-public class ChannelDataApplication {
+public class UserApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ChannelDataApplication.class, args);
+        SpringApplication.run(UserApplication.class, args);
     }
 
 }

@@ -50,6 +50,12 @@ public class Result<T> implements Serializable {
         return result;
     }
     
+    public static <T> Result<T> success() {
+        Result<T> result = new Result<T>();
+        result.code = 0;
+        return result;
+    }
+    
     public static <T> Result<T> success(T t) {
         Result<T> result = new Result<T>();
         result.code = 0;
