@@ -19,4 +19,6 @@ public class Constant {
     
     public static final String MARK_PARAMETER = "mark";
     
+    public static final String CODE = "code";
+    
 }

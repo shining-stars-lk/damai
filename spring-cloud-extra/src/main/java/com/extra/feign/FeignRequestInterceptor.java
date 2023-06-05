@@ -9,6 +9,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.example.constant.Constant.CODE;
 import static com.example.constant.Constant.TRACE_ID;
 
 /**
@@ -21,8 +22,6 @@ import static com.example.constant.Constant.TRACE_ID;
 @Slf4j
 public class FeignRequestInterceptor implements RequestInterceptor {
     
-    
-    
     @Override
     public void apply(final RequestTemplate template) {
         try {
@@ -31,7 +30,9 @@ public class FeignRequestInterceptor implements RequestInterceptor {
                 ServletRequestAttributes sra = (ServletRequestAttributes) ra;
                 HttpServletRequest request = sra.getRequest();
                 String traceId = request.getHeader(TRACE_ID);
+                String code = request.getHeader(CODE);
                 template.header(TRACE_ID,traceId);
+                template.header(CODE,code);
             }
         }catch (Exception e) {
             log.error("FeignRequestInterceptor apply error",e);
