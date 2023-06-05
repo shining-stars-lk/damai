@@ -5,19 +5,25 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>test-all</artifactId>
+        <artifactId>toolkit</artifactId>
         <version>${revision}</version>
     </parent>
 
 
-    <artifactId>channel-data</artifactId>
+    <artifactId>server</artifactId>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>channel-data-client</module>
-        <module>channel-data-service</module>
-    </modules>
-    
-    
+    <name>server</name>
+    <description>测试</description>
 
+    <modules>
+        <module>order-consumer</module>
+        <module>product-provider</module>
+        <module>department-provider</module>
+        <module>employee-consumer</module>
+        <module>gateway</module>
+        <module>channel-data</module>
+        <module>user</module>
+        <module>server-case</module>
+    </modules>
 </project>
