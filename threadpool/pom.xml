@@ -13,7 +13,7 @@
     <artifactId>threadpool</artifactId>
 
     <name>threadpool</name>
-    <description>线程池(支持最终链路requestId)</description>
+    <description>线程池(支持最终链路traceId)</description>
 
     <properties>
         <java.version>1.8</java.version>
