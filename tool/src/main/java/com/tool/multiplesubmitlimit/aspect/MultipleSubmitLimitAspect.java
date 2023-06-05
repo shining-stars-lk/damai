@@ -1,18 +1,17 @@
 package com.tool.multiplesubmitlimit.aspect;
 
-import com.tool.servicelock.ServiceLocker;
-import com.tool.servicelock.redisson.LockType;
-import com.tool.servicelock.redisson.factory.RedissonLockFactory;
 import com.tool.multiplesubmitlimit.annotion.MultipleSubmitLimit;
 import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfoProvider;
 import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitRejectedStrategy;
 import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitHandler;
 import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitStrategyFactory;
+import com.tool.servicelock.ServiceLocker;
+import com.tool.servicelock.redisson.LockType;
+import com.tool.servicelock.redisson.factory.RedissonLockFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 
 import java.util.concurrent.TimeUnit;
@@ -25,9 +24,8 @@ import java.util.concurrent.TimeUnit;
  **/
 @Aspect
 @Order(-9)
+@Slf4j
 public class MultipleSubmitLimitAspect {
-
-    private final Logger logger = LoggerFactory.getLogger(MultipleSubmitLimitAspect.class);
 
     private final long MAX_TIME_OUT = 15;
 
@@ -66,7 +64,7 @@ public class MultipleSubmitLimitAspect {
             resultKeyName = repeatLimitInfoProvider.getResultKeyNameByGenerateKeyStrategy(repeatLimit, joinPoint);
         }
 
-        logger.info("==repeat limit lockName:{} resultKeyName:{}==",lockName,resultKeyName);
+        log.info("==repeat limit lockName:{} resultKeyName:{}==",lockName,resultKeyName);
         MultipleSubmitLimitHandler repeatLimitHandler = repeatLimitStrategyFactory.getMultipleSubmitLimitStrategy(repeatRejectedStrategy.getMsg());
 
         ServiceLocker lock = redissonLockFactory.createLock(LockType.Reentrant);
