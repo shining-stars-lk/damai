@@ -1,7 +1,7 @@
-package com.example.servecase.provider;
+package com.example.provider;
 
 
-import com.example.servecase.entity.Pay;
+import com.example.entity.Pay;
 import org.apache.ibatis.jdbc.SQL;
 
 public class PayProvider {

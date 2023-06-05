@@ -1,8 +1,8 @@
-package com.example.servecase.mapper;
+package com.example.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.servecase.entity.Test;
+import com.example.entity.Test;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 

@@ -1,7 +1,7 @@
-package com.example.servecase.service;
+package com.example.service;
 
-import com.example.servecase.dto.PayDto;
-import com.example.servecase.entity.Pay;
+import com.example.dto.PayDto;
+import com.example.entity.Pay;
 
 import java.util.List;
 

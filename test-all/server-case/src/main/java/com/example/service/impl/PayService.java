@@ -1,9 +1,9 @@
-package com.example.servecase.service.impl;
+package com.example.service.impl;
 
-import com.example.servecase.dto.PayDto;
-import com.example.servecase.entity.Pay;
-import com.example.servecase.mapper.PayMapper;
-import com.example.servecase.service.IPayService;
+import com.example.dto.PayDto;
+import com.example.entity.Pay;
+import com.example.mapper.PayMapper;
+import com.example.service.IPayService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

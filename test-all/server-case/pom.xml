@@ -5,15 +5,15 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>user</artifactId>
+        <artifactId>test-all</artifactId>
         <version>${revision}</version>
     </parent>
 
 
-    <artifactId>user-service</artifactId>
+    <artifactId>server-case</artifactId>
 
-    <name>user-service</name>
-    <description>用户服务</description>
+    <name>server-case</name>
+    <description>服务演示案例</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -40,27 +40,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>user-client</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>channel-data-client</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>spring-cloud-extra</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>id-generator</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>distribute-cache</artifactId>
+            <artifactId>tool</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
@@ -68,31 +48,6 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.5.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-okhttp</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-        </dependency>
-        <!-- nacos start -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-            <version>2.2.7.RELEASE</version>
-        </dependency>
-        <!-- spring-cloud-starter-alibaba-nacos-discovery源码中nacos-common optional为true,所以这里要将common引入 -->
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-common</artifactId>
-            <version>2.0.3</version>
-        </dependency>
-        <!-- nacos end -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
@@ -117,7 +72,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.example.UserApplication</mainClass>
+                    <mainClass>com.example.ServerCaseApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
