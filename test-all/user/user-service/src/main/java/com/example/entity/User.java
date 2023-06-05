@@ -25,4 +25,8 @@ public class User {
     private Integer status;
     
     private Date createTime;
+    
+    private String mobile;
+    
+    private Date editTime;
 }

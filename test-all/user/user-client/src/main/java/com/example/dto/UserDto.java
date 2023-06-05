@@ -8,6 +8,8 @@ import java.util.Date;
 public class UserDto {
 
     private String name;
+    
+    private String mobile;
 
     private Date createTime;
 }
