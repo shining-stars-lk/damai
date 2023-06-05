@@ -1,5 +1,5 @@
 CREATE TABLE `channel_data` (
-  `id` bigint NOT NULL COMMENT 'id',
+  `id` varchar(50) NOT NULL COMMENT 'id',
   `name` varchar(50) DEFAULT NULL COMMENT '名称',
   `code` varchar(50) DEFAULT NULL COMMENT '编码',
   `introduce` varchar(500) DEFAULT NULL COMMENT '介绍描述',

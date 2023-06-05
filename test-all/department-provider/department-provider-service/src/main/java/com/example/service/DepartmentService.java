@@ -2,9 +2,15 @@ package com.example.service;
 
 import com.alibaba.fastjson.JSON;
 import com.example.dto.GetDepartmentDto;
+import com.example.dto.GetDeptDto;
+import com.example.strategy.DepartmentStrategy;
+import com.example.strategy.factory.DepartmentFactory;
 import com.example.vo.GetDepartmentVo;
+import com.example.vo.GetDeptVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @program: toolkit
@@ -15,11 +21,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class DepartmentService {
-    
-    
-    private Integer number1 = 10000;
-    
-    private Integer number2 = 999;
     
     public GetDepartmentVo get(GetDepartmentDto dto){
         if (dto.getSleepTime() != null) {
@@ -49,5 +50,10 @@ public class DepartmentService {
         getVo.setName("橘子公司");
         log.info("get执行 GetVo : {}", JSON.toJSONString(getVo));
         return getVo;
+    }
+    
+    public List<GetDeptVo> getDeptListByCode(GetDeptDto dto) {
+        DepartmentStrategy departmentStrategy = DepartmentFactory.getDepartmentStrategy(dto.getTypeCode());
+        return departmentStrategy.getDeptListByCode(dto);
     }
 }

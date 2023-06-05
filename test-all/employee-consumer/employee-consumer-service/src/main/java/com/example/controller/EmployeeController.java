@@ -1,6 +1,5 @@
 package com.example.controller;
 
-import com.example.common.Result;
 import com.example.dto.GetEmployeeDto;
 import com.example.service.EmployeeService;
 import com.example.vo.GetEmployeeVo;
@@ -22,12 +21,6 @@ public class EmployeeController {
     
     @Autowired
     private EmployeeService employeeService;
-    
-    @PostMapping(value = "/test")
-    public Result test() throws Exception {
-        Thread.sleep(100);
-        return Result.success(true);
-    }
     
     @PostMapping(value = "/getEmployee")
     public GetEmployeeVo getEmployee(@RequestBody GetEmployeeDto getOrderDto) throws Exception {

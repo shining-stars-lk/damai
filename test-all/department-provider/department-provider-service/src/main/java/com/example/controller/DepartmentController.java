@@ -1,6 +1,8 @@
 package com.example.controller;
 
+import com.example.common.Result;
 import com.example.dto.GetDepartmentDto;
+import com.example.dto.GetDeptDto;
 import com.example.service.DepartmentService;
 import com.example.vo.GetDepartmentVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,4 +33,9 @@ public class DepartmentController {
     public GetDepartmentVo getV2(@RequestBody GetDepartmentDto dto){
         return departmentService.getV2(dto);
     }
+    
+    @PostMapping(value = "/getDeptListByCode")
+    public Result getDeptListByCode(@RequestBody GetDeptDto dto){
+        return Result.success(departmentService.getDeptListByCode(dto));
+    } 
 }
