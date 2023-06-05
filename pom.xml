@@ -21,7 +21,7 @@
 		<module>tool</module>
 		<module>arithmetic</module>
 		<module>record</module>
-		<module>test-all</module>
+		<module>server</module>
 		<module>course-case</module>
 	</modules>
 

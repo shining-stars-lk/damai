@@ -5,7 +5,7 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>test-all</artifactId>
+        <artifactId>server</artifactId>
         <version>${revision}</version>
     </parent>
 

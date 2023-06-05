@@ -5,19 +5,17 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>test-all</artifactId>
+        <artifactId>server</artifactId>
         <version>${revision}</version>
     </parent>
 
 
-    <artifactId>user</artifactId>
+    <artifactId>order-consumer</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>user-client</module>
-        <module>user-service</module>
+        <module>order-consumer-client</module>
+        <module>order-consumer-service</module>
     </modules>
-    
-    
 
 </project>

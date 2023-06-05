@@ -22,7 +22,7 @@
   - 实现了灰度和生产环境共用一个注册中心，并实现服务隔离的功能
 - `record`日志记录行为
   - 定制化记录操作行为，详情查看此模块下的文档
-- `test-all` 微服务测试用例，注册在nacos上
+- `server` 微服务测试用例，注册在nacos上
   - 使用hystrix熔断
     - order-consumer 订单服务，消费方
     - product-provider 产品服务，提供方
