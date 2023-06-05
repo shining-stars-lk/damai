@@ -1,5 +1,6 @@
 package com.example.exception;
 
+import com.example.common.Result;
 import com.example.enums.BaseCode;
 
 /**
@@ -29,6 +30,11 @@ public class ToolkitException extends BaseException {
 	public ToolkitException(BaseCode baseCode) {
 		super(baseCode.getMsg());
 		this.code = baseCode.getCode();
+	}
+	
+	public ToolkitException(Result result) {
+		super(result.getMessage());
+		this.code = result.getCode();
 	}
 
 	public ToolkitException(Throwable cause) {

@@ -179,7 +179,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
             }
             
-            UserVo userVo = tokenService.getUser(token);
+            UserVo userVo = tokenService.getUser(token, channelDataVo.getAesKey());
             userId = userVo.getId();
             
             if (StringUtil.isNotEmpty(aesFlag) && "true".equals(aesFlag)) {
