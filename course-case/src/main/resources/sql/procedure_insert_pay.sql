@@ -1,4 +1,4 @@
-CREATE DEFINER=`root`@`localhost` PROCEDURE `tes`.`insert_pay`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `toolkit`.`insert_pay`()
 BEGIN
    	DECLARE paramter_user_id VARCHAR(32);
    	DECLARE paramter_id int;
