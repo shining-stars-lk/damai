@@ -1,7 +1,7 @@
-package com.example.servecase.controller;
+package com.example.controller;
 
-import com.example.servecase.entity.Test;
-import com.example.servecase.service.ITestService;
+import com.example.entity.Test;
+import com.example.service.ITestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -1,9 +1,9 @@
-package com.example.servecase.service.impl;
+package com.example.service.impl;
 
 
-import com.example.servecase.entity.Test;
-import com.example.servecase.mapper.TestMapper;
-import com.example.servecase.service.ITestService;
+import com.example.entity.Test;
+import com.example.mapper.TestMapper;
+import com.example.service.ITestService;
 import com.tool.servicelock.annotion.ServiceLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

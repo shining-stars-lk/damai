@@ -24,5 +24,6 @@
         <module>gateway</module>
         <module>channel-data</module>
         <module>user</module>
+        <module>server-case</module>
     </modules>
 </project>

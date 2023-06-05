@@ -1,8 +1,8 @@
-package com.example.servecase.mapper;
+package com.example.mapper;
 
-import com.example.servecase.dto.PayDto;
-import com.example.servecase.entity.Pay;
-import com.example.servecase.provider.PayProvider;
+import com.example.dto.PayDto;
+import com.example.entity.Pay;
+import com.example.provider.PayProvider;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;

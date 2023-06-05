@@ -1,13 +1,11 @@
-package com.example.servecase.entity;
+package com.example.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Setter
-@Getter
+@Data
 public class Pay {
     private Long id;
 

@@ -1,8 +1,8 @@
-package com.example.servecase.controller;
+package com.example.controller;
 
-import com.example.servecase.dto.PayDto;
-import com.example.servecase.entity.Pay;
-import com.example.servecase.service.impl.PayService;
+import com.example.dto.PayDto;
+import com.example.entity.Pay;
+import com.example.service.impl.PayService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
