@@ -1,8 +1,5 @@
 package com.example.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -29,43 +26,43 @@ public class WorkerNode implements Serializable {
     /**
      * auto increment id
      */
-    @TableId(value = "ID", type = IdType.AUTO)
+    //@TableId(value = "ID", type = IdType.AUTO)
     private Long id;
 
     /**
      * host name
      */
-    @TableField("HOST_NAME")
+    //@TableField("HOST_NAME")
     private String hostName;
 
     /**
      * port
      */
-    @TableField("PORT")
+    //@TableField("PORT")
     private String port;
 
     /**
      * node type: ACTUAL or CONTAINER
      */
-    @TableField("TYPE")
+    //@TableField("TYPE")
     private Integer type;
 
     /**
      * launch date
      */
-    @TableField("LAUNCH_DATE")
+    //@TableField("LAUNCH_DATE")
     private LocalDate launchDate;
 
     /**
      * modified time
      */
-    @TableField("MODIFIED")
+    //@TableField("MODIFIED")
     private LocalDateTime modified;
 
     /**
      * created time
      */
-    @TableField("CREATED")
+    //@TableField("CREATED")
     private LocalDateTime created;
 
 

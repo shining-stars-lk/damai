@@ -35,7 +35,13 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         //3.设置响应状态吗
         boolean exceptionFlag = false;
         RequestWrapper requestWrapper = new RequestWrapper();
-        if (ex instanceof Exception) {
+        if (ex instanceof ArgumentException) {
+            ArgumentException ae = (ArgumentException)ex;
+            Result<Object> result = Result.error(ae.getCode(), ae.getMessage());
+            result.setData(ae.getArgumentErrorList());
+            requestWrapper.setResult(result);
+            exceptionFlag = true;
+        }else if (ex instanceof Exception) {
             Result result = Result.error(-100,"网络异常!");
             requestWrapper.setResult(result);
             exceptionFlag = true;

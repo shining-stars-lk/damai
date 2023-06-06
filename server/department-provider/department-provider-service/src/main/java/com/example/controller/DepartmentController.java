@@ -34,6 +34,11 @@ public class DepartmentController {
         return departmentService.getV2(dto);
     }
     
+    @PostMapping(value = "/printTraceId")
+    public Result printTraceId(){
+        return Result.success(departmentService.printTraceId());
+    }
+    
     @PostMapping(value = "/getDeptListByCode")
     public Result getDeptListByCode(@RequestBody GetDeptDto dto){
         return Result.success(departmentService.getDeptListByCode(dto));

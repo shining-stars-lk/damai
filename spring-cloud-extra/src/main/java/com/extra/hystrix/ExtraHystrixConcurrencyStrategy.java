@@ -49,9 +49,15 @@ public class ExtraHystrixConcurrencyStrategy extends HystrixConcurrencyStrategy 
             log.info("current thread call: {}",Thread.currentThread().getName());
             //log.info("RequestAttributeHystrixConcurrencyStrategy.WrappedCallable.call threadName:{} threadId:{}",Thread.currentThread().getName(),Thread.currentThread().getId());
             try {
-                RequestContextHolder.setRequestAttributes(requestAttributes);
-                MDC.setContextMap(context);
-                BaseParameterHolder.setParameterMap(parameterMap);
+                if (requestAttributes != null) {
+                    RequestContextHolder.setRequestAttributes(requestAttributes);
+                }
+                if (context != null) {
+                    MDC.setContextMap(context);
+                }
+                if (parameterMap != null) {
+                    BaseParameterHolder.setParameterMap(parameterMap);
+                }
                 return target.call();
             } finally {
                 MDC.clear();

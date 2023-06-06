@@ -1,10 +1,7 @@
 package com.example.service.impl;
 
 import com.baidu.fsg.uid.UidGenerator;
-import com.example.entity.WorkerNode;
-import com.example.mapper.WorkerNodeMapper;
 import com.example.service.IWorkerNodeService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,7 +15,7 @@ import javax.annotation.Resource;
  * @since 2020-04-23
  */
 @Service
-public class WorkerNodeServiceImpl extends ServiceImpl<WorkerNodeMapper, WorkerNode> implements IWorkerNodeService {
+public class WorkerNodeServiceImpl implements IWorkerNodeService {
 
     @Resource
     private UidGenerator uidGenerator;

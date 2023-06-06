@@ -22,4 +22,6 @@ public class GatewayConstant {
     
     public static final String TOKEN = "token";
     
+    public static final String DEBUG = "debug";
+    
 }

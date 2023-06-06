@@ -37,6 +37,7 @@ import java.util.function.BiFunction;
 
 import static com.example.constant.GatewayConstant.AES_FLAG;
 import static com.example.constant.GatewayConstant.CODE;
+import static com.example.constant.GatewayConstant.DEBUG;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR;
 
 /**
@@ -49,10 +50,10 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.O
 @Slf4j
 public class ResponseValidationFilter implements GlobalFilter, Ordered {
     
-    @Value("${verify.switch:false}")
+    @Value("${verify.switch:true}")
     private boolean verifySwitch;
     
-    @Value("${aes.vector}")
+    @Value("${aes.vector:default}")
     private String aesVector;
     
     @Autowired
@@ -135,7 +136,8 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
     private String checkResponseBody(final ServerWebExchange serverWebExchange, final String responseBody) {
         String modifyResponseBody = responseBody;
         ServerHttpRequest request = serverWebExchange.getRequest();
-        if (verifySwitch) {
+        String debug = request.getHeaders().getFirst(DEBUG);
+        if (verifySwitch && (!StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
             String aesFlag = request.getHeaders().getFirst(AES_FLAG);
             if (StringUtil.isNotEmpty(responseBody)) {
                 Result<Object> result = JSON.parseObject(responseBody, Result.class);
