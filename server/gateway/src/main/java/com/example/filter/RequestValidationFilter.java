@@ -12,12 +12,13 @@ import com.example.exception.ToolkitException;
 import com.example.service.ApiLimitService;
 import com.example.service.ChannelDataService;
 import com.example.service.TokenService;
+import com.example.threadlocal.BaseParameterHolder;
 import com.example.util.AesForClient;
 import com.example.util.SignatureUtil;
 import com.example.vo.GetChannelDataVo;
 import com.example.vo.UserVo;
-import com.example.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -27,7 +28,6 @@ import org.springframework.cloud.gateway.support.BodyInserterContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
@@ -52,6 +52,7 @@ import static com.example.constant.GatewayConstant.AES_FLAG;
 import static com.example.constant.GatewayConstant.BUSINESS_BODY;
 import static com.example.constant.GatewayConstant.CHARSET;
 import static com.example.constant.GatewayConstant.CODE;
+import static com.example.constant.GatewayConstant.DEBUG;
 import static com.example.constant.GatewayConstant.REQUEST_BODY;
 import static com.example.constant.GatewayConstant.RSA_FLAG;
 import static com.example.constant.GatewayConstant.TOKEN;
@@ -82,10 +83,10 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     @Resource
     private UidGenerator uidGenerator;
 
-    @Value("${verify.switch:false}")
+    @Value("${verify.switch:true}")
     private boolean verifySwitch;
     
-    @Value("${aes.vector}")
+    @Value("${aes.vector:default}")
     private String aesVector;
 
     @Override
@@ -93,29 +94,33 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String traceId = request.getHeaders().getFirst(TRACE_ID);
         String mark = request.getHeaders().getFirst(MARK_PARAMETER);
+        String debug = request.getHeaders().getFirst(DEBUG);
         if (StringUtil.isEmpty(traceId)) {
             traceId = String.valueOf(uidGenerator.getUID());
         }
-        if (StringUtil.isEmpty(BaseParameterHolder.getParameter(TRACE_ID))) {
-            BaseParameterHolder.setParameter(TRACE_ID,traceId);
+        MDC.put(TRACE_ID,traceId);
+        Map<String,String> headMap = new HashMap<>();
+        headMap.put(TRACE_ID,traceId);
+        headMap.put(MARK_PARAMETER,mark);
+        if (StringUtil.isNotEmpty(debug)) {
+            headMap.put(DEBUG,debug);
         }
-        if (StringUtil.isEmpty(BaseParameterHolder.getParameter(MARK_PARAMETER))) {
-            BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
-        }
+        BaseParameterHolder.setParameter(TRACE_ID,traceId);
+        BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
         //if (HttpMethod.POST.equals(request.getMethod()) || HttpMethod.PUT.equals(request.getMethod())) {
-            MediaType contentType = request.getHeaders().getContentType();
-            if (MediaType.APPLICATION_JSON.equals(contentType)){
+            //MediaType contentType = request.getHeaders().getContentType();
+            //if (MediaType.APPLICATION_JSON.equals(contentType)){
                 //application json请求
-                return readBody(exchange,chain,TRACE_ID);
-            }
+                return readBody(exchange,chain,headMap);
+            //}
         //}
-        return chain.filter(exchange);
+        //return chain.filter(exchange);
     }
 
-    private Mono<Void> readBody(ServerWebExchange exchange, GatewayFilterChain chain, String traceId){
+    private Mono<Void> readBody(ServerWebExchange exchange, GatewayFilterChain chain, Map<String,String> headMap){
         log.info("current thread readBody : {}",Thread.currentThread().getName());
         RequestWrapper requestWrapper = new RequestWrapper();
-
+        
         ServerRequest serverRequest = ServerRequest.create(exchange, serverCodecConfigurer.getReaders());
         Mono<String> modifiedBody = serverRequest.bodyToMono(String.class).flatMap(originalBody -> {
             //进行业务验证，并将相关参数放入map
@@ -129,11 +134,14 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         HttpHeaders headers = new HttpHeaders();
         headers.putAll(exchange.getRequest().getHeaders());
         headers.remove(HttpHeaders.CONTENT_LENGTH);
-
+        
         CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
-        return bodyInserter.insert(outputMessage,new BodyInserterContext()).then(Mono.defer(() ->
-                chain.filter(exchange.mutate().request(decorateHead(exchange, headers, outputMessage, requestWrapper, traceId)).build())
-        )).onErrorResume((Function<Throwable,Mono<Void>>) throwable -> Mono.error(throwable));
+        return bodyInserter
+                .insert(outputMessage, new BodyInserterContext())
+                .then(Mono.defer(() -> chain.filter(
+                        exchange.mutate().request(decorateHead(exchange, headers, outputMessage, requestWrapper, headMap)).build()
+                )))
+                .onErrorResume((Function<Throwable, Mono<Void>>) throwable -> Mono.error(throwable));
     }
 
     private Map<String,String> verify(String originalBody,ServerWebExchange exchange){
@@ -145,9 +153,10 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             requestBodyContent = JSON.parseObject(originalBody, Map.class);
         }
         String code = null;
-        String token = null;
+        String token;
         String userId;
-        if (verifySwitch) {
+        String debug = request.getHeaders().getFirst(DEBUG);
+        if (verifySwitch && !(StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
             String requestURI = request.getPath().value();
             String aesFlag = request.getHeaders().getFirst(AES_FLAG);
             String rsaFlag = request.getHeaders().getFirst(RSA_FLAG);
@@ -196,7 +205,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         return map;
     }
     //将网关层request请求头中的重要参数传递给后续的微服务中
-    private ServerHttpRequestDecorator decorateHead(ServerWebExchange exchange, HttpHeaders headers, CachedBodyOutputMessage outputMessage, RequestWrapper requestWrapper, String traceId){
+    private ServerHttpRequestDecorator decorateHead(ServerWebExchange exchange, HttpHeaders headers, CachedBodyOutputMessage outputMessage, RequestWrapper requestWrapper, Map<String,String> headMap){
         return new ServerHttpRequestDecorator(exchange.getRequest()){
             @Override
             public HttpHeaders getHeaders() {
@@ -205,12 +214,19 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 HttpHeaders newHeaders = new HttpHeaders();
                 newHeaders.putAll(headers);
                 Map<String, String> map = requestWrapper.getMap();
-                newHeaders.setAll(map);
-                newHeaders.set(TRACE_ID,traceId);
+                if (map != null) {
+                    newHeaders.setAll(map);
+                }
+                if (headMap != null) {
+                    newHeaders.setAll(headMap);
+                }
                 if (contentLength > 0){
                     newHeaders.setContentLength(contentLength);
                 }else {
                     newHeaders.set(HttpHeaders.TRANSFER_ENCODING,"chunked");
+                }
+                if (headMap != null && StringUtil.isNotEmpty(headMap.get(TRACE_ID))) {
+                    MDC.put(TRACE_ID,headMap.get(TRACE_ID));
                 }
                 return newHeaders;
             }
@@ -224,6 +240,6 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return -1;
+        return -2;
     }
 }

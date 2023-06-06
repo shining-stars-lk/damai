@@ -5,6 +5,12 @@ spring:
     name: gateway-api
   main:
     allow-bean-definition-overriding: true
+  redis:
+    database: 5
+    host: 192.168.2.102
+    port: 6379
+    password: 7ygvUJM
+    timeout: 3000  
   cloud:
     nacos:
       discovery:
@@ -56,12 +62,22 @@ spring:
           #            - RewritePath=/gateway/log(?<segment>/?.*), $\{segment}
           metadata:
             title: 职员系统    
+            
+        - id: department-provider-service
+          uri: lb://department-provider-service
+          predicates:
+            - Path=/gateway/department/**
+          filters:
+            - StripPrefix=2
+          #            - RewritePath=/gateway/log(?<segment>/?.*), $\{segment}
+          metadata:
+            title: 部门系统    
 
 feign:
-  sentinel:
-    enabled: true
+#  sentinel:
+#    enabled: false
   hystrix:
-    enabled: false
+    enabled: true
   httpclient:
     enabled: false
   okhttp:

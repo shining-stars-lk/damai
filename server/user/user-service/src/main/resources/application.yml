@@ -9,8 +9,7 @@ spring:
     username: root
     password: root
     url: jdbc:mysql://localhost:3306/tes?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
-    driver-class-name: com.mysql.jdbc.Driver
-    #    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       # 最大连接池数量
