@@ -1,7 +1,7 @@
 package com.extra.hystrix;
 
 import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategy;
-import com.threadlocal.BaseParameterHolder;
+import com.example.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.web.context.request.RequestAttributes;
@@ -17,7 +17,7 @@ import java.util.concurrent.Callable;
  * @create: 2023-04-17
  **/
 @Slf4j
-public class ExtraHystrixConcurrencyStrategyV2 extends HystrixConcurrencyStrategy {
+public class ExtraHystrixConcurrencyStrategy extends HystrixConcurrencyStrategy {
 
 
     @Override
@@ -48,16 +48,15 @@ public class ExtraHystrixConcurrencyStrategyV2 extends HystrixConcurrencyStrateg
         public T call() throws Exception {
             log.info("current thread call: {}",Thread.currentThread().getName());
             //log.info("RequestAttributeHystrixConcurrencyStrategy.WrappedCallable.call threadName:{} threadId:{}",Thread.currentThread().getName(),Thread.currentThread().getId());
-            Map<String, String> previousParameterMap = BaseParameterHolder.getParameterMap();
             try {
                 RequestContextHolder.setRequestAttributes(requestAttributes);
-                //MDC.setContextMap(context);
+                MDC.setContextMap(context);
                 BaseParameterHolder.setParameterMap(parameterMap);
                 return target.call();
             } finally {
                 MDC.clear();
                 RequestContextHolder.resetRequestAttributes();
-                BaseParameterHolder.setParameterMap(previousParameterMap);
+                BaseParameterHolder.removeParameterMap();
             }
         }
     }

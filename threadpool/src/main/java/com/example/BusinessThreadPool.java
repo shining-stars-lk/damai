@@ -16,9 +16,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @description: 定制化线程池(此线程池能够获取服务调用链路requestId)
+ * @description: 定制化线程池(此线程池能够获取服务调用链路traceId)
  * @author: lk
- * @create: 2021-12-11 14:09
+ * @create: 2023-06-06 14:09
  **/
 
 public class BusinessThreadPool extends BaseThreadPoolMDC {
@@ -66,7 +66,7 @@ public class BusinessThreadPool extends BaseThreadPoolMDC {
      * @return
      */
     public static void execute(Runnable r) {
-        execute.execute(wrapExecute(r, getContextForTask()));
+        execute.execute(wrapExecute(r, getContextForTask(), getContextForHold()));
     }
 
     /**
@@ -76,6 +76,6 @@ public class BusinessThreadPool extends BaseThreadPoolMDC {
      * @return
      */
     public static <T> Future<T> submit(Callable<T> c) {
-        return execute.submit(wrapSubmit(c, getContextForTask()));
+        return execute.submit(wrapSubmit(c, getContextForTask(), getContextForHold()));
     }
 }

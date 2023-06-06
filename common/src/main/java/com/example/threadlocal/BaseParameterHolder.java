@@ -1,4 +1,4 @@
-package com.threadlocal;
+package com.example.threadlocal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,5 +49,9 @@ public class BaseParameterHolder {
     
     public static void setParameterMap(Map<String, String> map) {
         threadLocalMap.set(map);
+    }
+    
+    public static void removeParameterMap(){
+        threadLocalMap.remove();
     }
 }

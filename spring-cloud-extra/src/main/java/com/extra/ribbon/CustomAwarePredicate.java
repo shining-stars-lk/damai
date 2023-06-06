@@ -6,7 +6,7 @@ import com.netflix.loadbalancer.AbstractServerPredicate;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.PredicateKey;
 import com.netflix.loadbalancer.Server;
-import com.threadlocal.BaseParameterHolder;
+import com.example.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
