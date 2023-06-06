@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 /**
  * @program: toolkit
  * @description:
@@ -25,7 +27,7 @@ public class DepartmentController {
     private DepartmentService departmentService;
     
     @PostMapping(value = "/get")
-    public GetDepartmentVo get(@RequestBody GetDepartmentDto dto){
+    public GetDepartmentVo get(@Valid @RequestBody GetDepartmentDto dto){
         return departmentService.get(dto);
     }
     
@@ -40,7 +42,7 @@ public class DepartmentController {
     }
     
     @PostMapping(value = "/getDeptListByCode")
-    public Result getDeptListByCode(@RequestBody GetDeptDto dto){
+    public Result getDeptListByCode(@Valid @RequestBody GetDeptDto dto){
         return Result.success(departmentService.getDeptListByCode(dto));
     } 
 }

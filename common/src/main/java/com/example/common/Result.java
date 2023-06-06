@@ -36,6 +36,13 @@ public class Result<T> implements Serializable {
         return result;
     }
     
+    public static <T> Result<T> error(Integer code,T data) {
+        Result<T> result = new Result<T>();
+        result.code = -100;
+        result.data = data;
+        return result;
+    }
+    
     public static <T> Result<T> error(BaseCode baseCode) {
         Result<T> result = new Result<T>();
         result.code = baseCode.getCode();

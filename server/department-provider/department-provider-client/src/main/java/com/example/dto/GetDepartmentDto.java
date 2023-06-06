@@ -1,7 +1,8 @@
 package com.example.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * @program: toolkit
@@ -9,10 +10,9 @@ import lombok.Setter;
  * @author: lk
  * @create: 2023-04-17
  **/
-@Getter
-@Setter
+@Data
 public class GetDepartmentDto {
-    
+    @NotBlank
     private String id;
     private String name;
     private Long sleepTime;
