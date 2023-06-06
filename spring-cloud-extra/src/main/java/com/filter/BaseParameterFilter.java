@@ -1,5 +1,6 @@
 package com.filter;
 
+import com.example.core.StringUtil;
 import com.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,11 +29,16 @@ public class BaseParameterFilter extends OncePerRequestFilter {
             String traceId = request.getHeader(TRACE_ID);
             String mark = request.getHeader(MARK_PARAMETER);
             try {
-                BaseParameterHolder.setParameter(TRACE_ID,traceId);
-                BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
+                if (StringUtil.isNotEmpty(traceId)) {
+                    BaseParameterHolder.setParameter(TRACE_ID,traceId);
+                }
+                if (StringUtil.isNotEmpty(mark)) {
+                    BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
+                }
                 filterChain.doFilter(request, response);
             }finally {
                 BaseParameterHolder.removeParameter(TRACE_ID);
+                BaseParameterHolder.removeParameter(MARK_PARAMETER);
             }
         }else {
             filterChain.doFilter(request, response);
