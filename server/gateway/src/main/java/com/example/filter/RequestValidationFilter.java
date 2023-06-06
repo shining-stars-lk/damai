@@ -16,7 +16,7 @@ import com.example.util.AesForClient;
 import com.example.util.SignatureUtil;
 import com.example.vo.GetChannelDataVo;
 import com.example.vo.UserVo;
-import com.threadlocal.BaseParameterHolder;
+import com.example.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -27,6 +27,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>common</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
