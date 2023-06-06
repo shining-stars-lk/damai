@@ -25,7 +25,7 @@ import javax.annotation.PostConstruct;
 import java.util.Map;
 
 /**
- * @program: bjgoodwill-msa-scloud
+ * @program: toolkit
  * @description:
  * @author: lk
  * @create: 2023-03-23

@@ -41,7 +41,7 @@ import static com.example.constant.GatewayConstant.DEBUG;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR;
 
 /**
- * @program: bjgoodwill-msa-scloud
+ * @program: toolkit
  * 参考 {@link org.springframework.cloud.gateway.filter.factory.rewrite.ModifyResponseBodyGatewayFilterFactory}
  * @author lk
  * @create: 2023-05-30
