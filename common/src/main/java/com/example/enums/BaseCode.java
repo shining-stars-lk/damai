@@ -25,7 +25,9 @@ public enum BaseCode {
     
     CODE_EMPTY(-8,"code参数为空"),
     
-    DEPARTMENT_STRATEGY(-9,"departmentStrategy策略实现未找到");
+    DEPARTMENT_STRATEGY(-9,"departmentStrategy策略实现未找到"),
+    
+    PARAMETER_ERROR(-10,"参数验证异常");
     
     private Integer code;
     

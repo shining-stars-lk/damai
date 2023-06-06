@@ -1,11 +1,13 @@
 package com.example.exception;
 
 import com.example.common.Result;
+import com.example.enums.BaseCode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
@@ -19,7 +21,10 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public Result validExceptionHandler(HttpServletRequest request, MethodArgumentNotValidException ex) {
         log.error("参数验证异常 method : {} url : {} query : {} ", request.getMethod(), getRequestUrl(request), getRequestQuery(request), ex);
-        return Result.error();
+        ArgumentError argumentError = new ArgumentError();
+        argumentError.setArgumentName(ex.getBindingResult().getFieldError().getField());
+        argumentError.setMessage(ex.getBindingResult().getFieldError().getDefaultMessage());
+        return Result.error(BaseCode.PARAMETER_ERROR.getCode(),argumentError);
     }
 
     /**

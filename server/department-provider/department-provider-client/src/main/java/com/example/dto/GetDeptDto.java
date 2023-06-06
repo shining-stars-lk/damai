@@ -2,6 +2,8 @@ package com.example.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @program: toolkit
  * @description:
@@ -11,5 +13,6 @@ import lombok.Data;
 @Data
 public class GetDeptDto {
     
+    @NotBlank
     private String typeCode;
 }
