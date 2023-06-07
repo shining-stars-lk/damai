@@ -4,11 +4,14 @@ import com.example.common.Result;
 import com.example.enums.BaseCode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -21,10 +24,17 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public Result validExceptionHandler(HttpServletRequest request, MethodArgumentNotValidException ex) {
         log.error("参数验证异常 method : {} url : {} query : {} ", request.getMethod(), getRequestUrl(request), getRequestQuery(request), ex);
-        ArgumentError argumentError = new ArgumentError();
-        argumentError.setArgumentName(ex.getBindingResult().getFieldError().getField());
-        argumentError.setMessage(ex.getBindingResult().getFieldError().getDefaultMessage());
-        return Result.error(BaseCode.PARAMETER_ERROR.getCode(),argumentError);
+        BindingResult bindingResult = ex.getBindingResult();
+        List<ArgumentError> argumentErrorList = 
+                bindingResult.getFieldErrors()
+                        .stream()
+                        .map(fieldError -> {
+                            ArgumentError argumentError = new ArgumentError();
+                            argumentError.setArgumentName(fieldError.getField());
+                            argumentError.setMessage(fieldError.getDefaultMessage());
+                            return argumentError;
+                        }).collect(Collectors.toList());
+        return Result.error(BaseCode.PARAMETER_ERROR.getCode(),argumentErrorList);
     }
 
     /**
