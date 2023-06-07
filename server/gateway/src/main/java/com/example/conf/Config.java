@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * @program: gateway
  * @description:
- * @author: lk
+ * @author: k
  * @create: 2024-4-25
  **/
 @Configuration

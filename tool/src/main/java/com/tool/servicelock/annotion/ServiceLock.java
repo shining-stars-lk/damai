@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: distribute-cache
  * @description: 分布式锁注解
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 @Target(value= {ElementType.TYPE, ElementType.METHOD})

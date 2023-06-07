@@ -12,7 +12,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 /**
  * @program: toolkit
  * @description:
- * @author: lk
+ * @author: k
  * @create: 2023-05-23
  **/
 @Configuration(proxyBeanMethods = false)

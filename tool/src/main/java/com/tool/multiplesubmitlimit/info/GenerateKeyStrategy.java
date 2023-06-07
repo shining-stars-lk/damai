@@ -3,7 +3,7 @@ package com.tool.multiplesubmitlimit.info;
 /**
  * @program: distribute-cache
  * @description: 生成键策略枚举
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public enum GenerateKeyStrategy {

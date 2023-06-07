@@ -5,7 +5,7 @@ import java.util.Random;
 /**
  * @program: 
  * @description: 主线程向ThreadLocal(或者InheritableThreadLocal)设置值，子线程再取值
- * @author: lk
+ * @author: k
  * @create: 2023-04-19
  **/
 public class ThreadLocalCase2 {

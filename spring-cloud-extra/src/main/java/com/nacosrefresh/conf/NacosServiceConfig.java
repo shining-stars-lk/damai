@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @description: bean管理
- * @author: lk
+ * @author: k
  * @create: 2022-06-08
  **/
 @Configuration(proxyBeanMethods = false)

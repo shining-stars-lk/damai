@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: distribute-cache
  * @description: 提供方法级别的分布式锁
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public class ServiceLockUtil {

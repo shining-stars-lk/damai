@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * @program: distribute-cache
  * @description: 防重复提交标识组装类
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public class MultipleSubmitLimitInfoProvider extends BaseInfoProvider {

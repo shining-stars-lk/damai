@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @program: toolkit
  * @description:
- * @author: lk
+ * @author: k
  * @create: 2023-04-17
  **/
 @ConfigurationProperties("spring.cloud.nacos.discovery.metadata")

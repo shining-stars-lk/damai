@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * @program: distribute-cache
  * @description: 真实key构建类(不对外使用,只在缓存工具类中做中转)
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public final class CacheKeyWrap {

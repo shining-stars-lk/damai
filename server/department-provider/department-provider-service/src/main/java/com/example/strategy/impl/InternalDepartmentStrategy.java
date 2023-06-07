@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * @program: toolkit
  * @description: 内部数据库获取部门列表策略
- * @author: lk
+ * @author: k
  * @create: 2023-06-05
  **/
 @Component

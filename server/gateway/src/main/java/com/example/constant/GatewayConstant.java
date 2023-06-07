@@ -3,7 +3,7 @@ package com.example.constant;
 /**
  * @program: toolkit
  * @description:
- * @author: lk
+ * @author: k
  * @create: 2023-05-09
  **/
 public class GatewayConstant {

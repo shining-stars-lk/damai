@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @description: 定制化线程池(此线程池能够获取服务调用链路traceId)
- * @author: lk
+ * @author: k
  * @create: 2023-06-06 14:09
  **/
 

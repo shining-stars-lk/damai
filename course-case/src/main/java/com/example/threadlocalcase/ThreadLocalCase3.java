@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 /**
  * @program: 
  * @description: 开启循环，每个循环中主线程使用InheritableThreadLocal进行设置，使用线程池来进行取值
- * @author: lk
+ * @author: k
  * @create: 2023-04-19
  **/
 public class ThreadLocalCase3 {

@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: distribute-cache
  * @description: redisson操作接口实现类
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public class RedissonOperate implements Operate {

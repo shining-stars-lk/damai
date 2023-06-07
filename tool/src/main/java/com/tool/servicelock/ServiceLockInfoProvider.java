@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @program: distribute-cache
  * @description: 锁业务名和标识进行组装并获取类
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public class ServiceLockInfoProvider extends BaseInfoProvider {

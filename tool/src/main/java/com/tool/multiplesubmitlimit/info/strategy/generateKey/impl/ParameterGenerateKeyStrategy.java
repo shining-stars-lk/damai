@@ -16,7 +16,7 @@ import java.util.StringJoiner;
 /**
  * @program: distribute-cache
  * @description: 生成键通用策略 REPEAT_LIMIT(标识)+类名+方法名+参数名+userId
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public class ParameterGenerateKeyStrategy implements GenerateKeyHandler {

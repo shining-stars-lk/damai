@@ -4,7 +4,7 @@ package com.example.synchronizedcase;
  * @program: toolkit
  * @description: 开启10个线程，每个线程中循环100次对result变量进行++自增，主线程等待10s后输出result值结果
  *               创建一个object对象，将synchronized添加在此object对象
- * @author: lk
+ * @author: k
  * @create: 2023-04-23
  **/
 public class SynchronizedCase2 {

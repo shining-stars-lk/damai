@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 /**
  * @program: 
  * @description: 使用TransmittableThreadLocal来解决线程池线程复用的问题
- * @author: lk
+ * @author: k
  * @create: 2023-04-19
  **/
 public class ThreadLocalCase4 {

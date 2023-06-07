@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 /**
  * @program: distribute-cache
  * @description: 防重复提交限制注解
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 @Target(value= {ElementType.TYPE, ElementType.METHOD})

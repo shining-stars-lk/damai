@@ -2,7 +2,7 @@ package com.example.namefactory;
 
 /**
  * @description: 业务线程工厂
- * @author: lk
+ * @author: k
  * @create: 2021-12-16 14:09
  **/
 public class BusinessNameThreadFactory extends AbstractNameThreadFactory {

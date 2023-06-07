@@ -3,7 +3,7 @@ package com.tool.servicelock.redisson;
 /**
  * @program: distribute-cache
  * @description: 分布式锁锁类型
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public enum LockType {

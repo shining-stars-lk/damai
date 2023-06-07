@@ -4,7 +4,7 @@ package com.example.core;
 /**
  * @program: distribute-cache
  * @description: redis的key，value管理枚举
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public enum CacheKeyEnum {

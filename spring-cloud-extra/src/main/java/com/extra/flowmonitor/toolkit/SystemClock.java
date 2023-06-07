@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @program: 
  * @description:
- * @author: lk
+ * @author: k
  * @create: 2023-04-24
  **/
 public final class SystemClock {
