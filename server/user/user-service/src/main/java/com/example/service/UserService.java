@@ -66,7 +66,7 @@ public class UserService {
             userMapper.updateById(user);
         }
         cacheUser(user);
-        return generateToken(user.getId());
+        return generateToken(user.getId(),userDto.getCode());
     }
     
     public void cacheUser(User user){
@@ -74,8 +74,8 @@ public class UserService {
         distributCache.expire(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.USER_ID,user.getId()),1, TimeUnit.DAYS);
     }
     
-    public String generateToken(String userId){
-        String aesKey = getAesKey();
+    public String generateToken(String userId,String code){
+        String aesKey = getAesKey(code);
         String token = DesAlgorithm.encrypt(userId, aesKey);
         return token;
     }
@@ -87,8 +87,8 @@ public class UserService {
         return Optional.ofNullable(request.getHeader("code")).orElseThrow(() -> new ToolkitException(BaseCode.CODE_EMPTY));
     }
     
-    public String getAesKey(){
-        Result<GetChannelDataVo> result = channelDataClient.getByCode(getCode());
+    public String getAesKey(String code){
+        Result<GetChannelDataVo> result = channelDataClient.getByCode(code);
         if (result.getCode() != Result.success().getCode()) {
             throw new ToolkitException(result);
         }

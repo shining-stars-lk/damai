@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 /**
  * @program: toolkit
  * @description:
@@ -24,7 +26,7 @@ public class UserController {
     private UserService userService;
     
     @PostMapping(value = "/login")
-    public Result<UserVo> login(@RequestBody UserDto userDto) {
+    public Result<UserVo> login(@Valid  @RequestBody UserDto userDto) {
         userService.login(userDto);
         return Result.success();
     }
