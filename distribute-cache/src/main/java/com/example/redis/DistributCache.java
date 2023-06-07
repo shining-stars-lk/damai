@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: distribute-cache
  * @description: 分布式缓存统一接口
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public interface DistributCache {

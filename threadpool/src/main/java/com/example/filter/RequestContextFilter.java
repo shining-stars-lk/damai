@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * @program: common
  * @description: 将requestId放入slf4j的MDC,用于后续获取
- * @author: lk
+ * @author: k
  * @create: 2021-11-08 16:48
  **/
 public class RequestContextFilter extends OncePerRequestFilter {

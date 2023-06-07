@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @program: toolkit
  * @description:
- * @author: lk
+ * @author: k
  * @create: 2023-05-09
  **/
 @Configuration(proxyBeanMethods = false)

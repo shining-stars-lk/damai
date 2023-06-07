@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: distribute-cache
  * @description: 分布式锁切面
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 @Aspect

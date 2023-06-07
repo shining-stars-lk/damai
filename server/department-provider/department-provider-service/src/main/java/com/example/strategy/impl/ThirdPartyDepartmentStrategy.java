@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @program: toolkit
  * @description: 调用第三方获取部门列表策略
- * @author: lk
+ * @author: k
  * @create: 2023-06-05
  **/
 @Component

@@ -3,7 +3,7 @@ package com.example.atguigu;
 /**
  * @program: toolkit
  * @description:
- * @author: lk
+ * @author: k
  * @create: 2023-01-17
  **/
 public class AtguiguSort {

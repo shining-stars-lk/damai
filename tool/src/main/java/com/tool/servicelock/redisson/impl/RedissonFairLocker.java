@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: distribute-cache
  * @description: 分布式锁(公平锁)
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public class RedissonFairLocker implements ServiceLocker {

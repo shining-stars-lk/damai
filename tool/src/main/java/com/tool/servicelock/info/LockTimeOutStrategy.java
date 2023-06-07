@@ -4,7 +4,7 @@ package com.tool.servicelock.info;
 /**
  * @program: distribute-cache
  * @description: 分布式锁失败处理接口实现类
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public enum LockTimeOutStrategy implements LockTimeOutHandler{

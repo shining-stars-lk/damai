@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @program: distribute-cache
  * @description: 将yml的配置和此对象绑定
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 @ConfigurationProperties(prefix = RedissonProperties.PREFIX)

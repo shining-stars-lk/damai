@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: distribute-cache
  * @description: 防重复提交限制功能
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 @Aspect

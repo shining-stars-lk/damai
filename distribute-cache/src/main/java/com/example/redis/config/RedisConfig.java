@@ -10,7 +10,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 /**
  * @program: distribute-cache
  * @description: redis配置
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 @Configuration

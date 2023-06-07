@@ -3,7 +3,7 @@ package com.tool.core;
 /**
  * @program: distribute-cache
  * @description: 分布式锁业务名管理
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public class DistributedLockConstants {

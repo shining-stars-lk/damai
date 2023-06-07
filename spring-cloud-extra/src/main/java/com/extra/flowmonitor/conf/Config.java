@@ -20,7 +20,7 @@ package com.extra.flowmonitor.conf;
 /**
  * @program: 
  * @description:
- * @author: lk
+ * @author: k
  * @create: 2023-04-24
  **/
 public final class Config {

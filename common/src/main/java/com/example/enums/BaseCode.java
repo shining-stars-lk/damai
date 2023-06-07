@@ -3,7 +3,7 @@ package com.example.enums;
 /**
  * @program: toolkit
  * @description:
- * @author: lk
+ * @author: k
  * @create: 2023-06-03
  **/
 public enum BaseCode {

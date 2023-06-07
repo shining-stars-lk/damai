@@ -10,7 +10,7 @@ import java.io.InputStream;
 /**
  * @program: distribute-cache
  * @description: String工具类
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public class StringUtil {

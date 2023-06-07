@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: distribute-cache
  * @description: 防重复提交触发时策略(方法执行期间返回相同结果)
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public class SameResultStrategy implements MultipleSubmitLimitHandler {

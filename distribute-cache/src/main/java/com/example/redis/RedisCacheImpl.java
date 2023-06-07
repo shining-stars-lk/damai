@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 /**
  * @program: distribute-cache
  * @description: redis分布式缓存实现
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 @Component

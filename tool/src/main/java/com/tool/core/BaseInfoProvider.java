@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * @program: distribute-cache
  * @description: 基础解析类
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public class BaseInfoProvider {

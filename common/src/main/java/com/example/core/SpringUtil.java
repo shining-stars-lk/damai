@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct;
 /**
  * @program: distribute-cache
  * @description: spring工具类
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 @Component

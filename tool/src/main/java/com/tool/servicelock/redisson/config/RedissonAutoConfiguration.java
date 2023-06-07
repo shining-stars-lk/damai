@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Bean;
 /**
  * @program: distribute-cache
  * @description: redisson信息配置加载类
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 /** 当yml中的配置存在 redisson.address和redisson.password时 此配置对象才生效，否则会报错

@@ -44,7 +44,7 @@ private DistributCache distributCache;
 /**
  * @program: distribute-cache
  * @description: 缓存 key管理
- * @author: lk
+ * @author: k
  * @create: 2022-1-6
  **/
 public enum CacheKeyEnum {
@@ -68,7 +68,7 @@ public static CacheKeyWrap cacheKeyBuild(CacheKeyEnum cacheKeyEnum, Object... ar
 /**
  * @program: distribute-cache
  * @description: 缓存 key管理
- * @author: lk
+ * @author: k
  * @create: 2022-1-6
  **/
 public enum CacheKeyEnum {

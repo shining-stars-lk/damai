@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 /**
  * @program: distribute-cache
  * @description: 缓存工具类
- * @author: lk
+ * @author: k
  * @create: 2022-05-28
  **/
 public class CacheUtil {
