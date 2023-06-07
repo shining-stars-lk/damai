@@ -26,6 +26,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @program: toolkit
@@ -70,6 +71,7 @@ public class UserService {
     
     public void cacheUser(User user){
         distributCache.set(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.USER_ID,user.getId()),user);
+        distributCache.expire(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.USER_ID,user.getId()),1, TimeUnit.DAYS);
     }
     
     public String generateToken(String userId){
