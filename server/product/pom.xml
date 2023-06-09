@@ -5,25 +5,19 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>toolkit</artifactId>
+        <artifactId>server</artifactId>
         <version>${revision}</version>
     </parent>
 
 
-    <artifactId>server</artifactId>
+    <artifactId>product</artifactId>
     <packaging>pom</packaging>
 
-    <name>server</name>
-    <description>测试</description>
-
     <modules>
-        <module>order</module>
-        <module>product</module>
-        <module>department</module>
-        <module>employee</module>
-        <module>gateway</module>
-        <module>channel-data</module>
-        <module>user</module>
-        <module>server-case</module>
+        <module>product-client</module>
+        <module>product-service</module>
     </modules>
+    
+    
+
 </project>
