@@ -24,8 +24,8 @@
   - 定制化记录操作行为，详情查看此模块下的文档
 - `server` 微服务测试用例，注册在nacos上
   - 使用hystrix熔断
-    - order-consumer 订单服务，消费方
-    - product-provider 产品服务，提供方
+    - order 订单服务，消费方
+    - product 产品服务，提供方
   - 使用sentinel熔断
-    - employee-consumer 职员服务，消费方
-    - department-provider 部门服务，提供方
+    - employee 职员服务，消费方
+    - department 部门服务，提供方

@@ -33,8 +33,8 @@ spring:
             fallbackuri: forward:/fallBackHandler
       # 负载均衡路由规则 开启路由后的服务swagger才能显示
       routes:
-        - id: product-provider-service
-          uri: lb://product-provider-service
+        - id: product-service
+          uri: lb://product-service
           predicates:
             - Path=/gateway/product/**
           filters:
@@ -43,8 +43,8 @@ spring:
           metadata:
             title: 产品系统
 
-        - id: order-consumer-service
-          uri: lb://order-consumer-service
+        - id: order-service
+          uri: lb://order-service
           predicates:
             - Path=/gateway/order/**
           filters:
@@ -53,8 +53,8 @@ spring:
           metadata:
             title: 订单系统
             
-        - id: employee-consumer-service
-          uri: lb://employee-consumer-service
+        - id: employee-service
+          uri: lb://employee-service
           predicates:
             - Path=/gateway/employee/**
           filters:
@@ -63,8 +63,8 @@ spring:
           metadata:
             title: 职员系统    
             
-        - id: department-provider-service
-          uri: lb://department-provider-service
+        - id: department-service
+          uri: lb://department-service
           predicates:
             - Path=/gateway/department/**
           filters:
