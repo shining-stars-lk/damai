@@ -1,4 +1,4 @@
-package com.example.designmode.templatepattern;
+package com.example.designmode.template;
 
 /**
  * @program: toolkit
