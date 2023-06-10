@@ -1,4 +1,4 @@
-package com.example.countdownlatchcase;
+package com.example.countdownlatch;
 
 import java.util.concurrent.CountDownLatch;
 
