@@ -1,25 +1,26 @@
 package com.example.jdk8;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
+import com.example.entity.User;
 
-/**
- * @program: toolkit
- * @description: 演示callable的使用和特点
- * @author: k
- * @create: 2023-06-09
- **/
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Case1 {
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        FutureTask task = new FutureTask(() -> {
-            System.out.println("执行call方法开始");
-            Thread.sleep(3000);
-            System.out.println("执行call方法结束");
-            return 1;
-        });
-        new Thread(task).start();
-        System.out.println("执行main线程任务");
-        System.out.println("获取call方法结果:"+task.get());
+    public static void main(String[] args) {
+        TestStream();
+    }
+
+    public static void TestStream(){
+        List<User> users = Arrays.asList(new User(1, 20,"张三"), new User(2, 20,"李四"));
+        List<User> users2 = users.stream().filter(user -> user.getId() > 1).collect(Collectors.toList());
+        users2.forEach(System.out::println);
+
+        List<String> userNames = users.stream().map(user -> user.getName()).collect(Collectors.toList());
+        userNames.forEach(System.out::println);
+
+        List<Integer> userAges = users.stream().map(user -> user.getAge()).distinct().collect(Collectors.toList());
+        userAges.forEach(System.out::println);
     }
 }
