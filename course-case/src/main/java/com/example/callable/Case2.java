@@ -9,12 +9,13 @@ import java.util.concurrent.FutureTask;
  * @author: k
  * @create: 2023-06-09
  **/
-public class Case1 {
+public class Case2 {
 
     public static void main(String[] args) {
         FutureTask task = new FutureTask(() -> {
             System.out.println("执行call方法开始");
             Thread.sleep(3000);
+            int i = 1 / 0;
             System.out.println("执行call方法结束");
             return 1;
         });
