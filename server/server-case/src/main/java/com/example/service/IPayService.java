@@ -12,12 +12,14 @@ import java.util.List;
  * @create: 2023-04-24
  **/
 public interface IPayService {
+
+    Integer testTransactionThread(Pay pay);
     
     Pay getById(Long id);
     
     List<Pay> select(PayDto payDto);
     
-    Integer insert(PayDto payDto);
+    Integer insert(Pay pay);
     
     Integer updateById(Pay pay);
 }
