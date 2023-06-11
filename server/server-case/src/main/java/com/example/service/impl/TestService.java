@@ -4,7 +4,7 @@ package com.example.service.impl;
 import com.example.entity.Test;
 import com.example.mapper.TestMapper;
 import com.example.service.ITestService;
-import com.tool.servicelock.annotion.ServiceLock;
+//import com.tool.servicelock.annotion.ServiceLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +44,7 @@ public class TestService implements ITestService {
     
     @Override
     @Transactional
-    @ServiceLock(name = "insertNumber",keys = {"#id"},waitTime = 50)
+    //@ServiceLock(name = "insertNumber",keys = {"#id"},waitTime = 50)
     public boolean insertNumber(final Long number, final Long id) {
         Test test = testMapper.getById(id);
         Long originalNumber = test.getNumber();

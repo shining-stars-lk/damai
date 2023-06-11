@@ -27,10 +27,15 @@ public class PayController {
     
     @Autowired
     private PayService payService;
+
+    @PostMapping("/testTransactionThread")
+    public Integer testTransactionThread(@RequestBody Pay pay){
+        return payService.testTransactionThread(pay);
+    }
     
     @PostMapping("/insert")
-    public Integer insert(@RequestBody PayDto payDto){
-        return payService.insert(payDto);
+    public Integer insert(@RequestBody Pay pay){
+        return payService.insert(pay);
     }
     
     @PostMapping("/getById/{id}")
@@ -42,4 +47,6 @@ public class PayController {
     public List<Pay> select(@RequestBody PayDto payDto){
         return payService.select(payDto);
     }
+
+
 }

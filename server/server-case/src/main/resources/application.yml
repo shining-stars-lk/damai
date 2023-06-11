@@ -40,4 +40,4 @@ redisson:
   password: 7ygvUJM
   database: 5
   connectionPoolSize: 64
-  connectionMinimumIdleSize: 10    
+  connectionMinimumIdleSize: 10
