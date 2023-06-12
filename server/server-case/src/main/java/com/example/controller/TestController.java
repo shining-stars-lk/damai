@@ -23,11 +23,11 @@ public class TestController {
     private ITestService testService;
 
     @RequestMapping("/insert/{number}")
-    public Integer insert(@PathVariable Long number){
+    public Integer insert(@PathVariable Integer number){
         Test test = new Test();
-        test.setColumn1("test1");
-        test.setColumn2("test2");
-        test.setColumn3("test3");
+        test.setColumn1(number);
+        test.setColumn2(number);
+        test.setColumn3(number);
         test.setColumn4("test4");
         test.setColumn5("test5");
         test.setColumn6("test6");
@@ -46,12 +46,12 @@ public class TestController {
     }
 
     @RequestMapping("updateNumberById/{number}/{id}")
-    public Integer updateNumberById(@PathVariable Long number,@PathVariable Long id){
+    public Integer updateNumberById(@PathVariable Integer number,@PathVariable Long id){
         return testService.updateNumberById(number,id);
     }
     
     @RequestMapping("insertNumber/{number}/{id}")
-    public boolean insertNumber(@PathVariable Long number,@PathVariable Long id){
+    public boolean insertNumber(@PathVariable Integer number,@PathVariable Long id){
         return testService.insertNumber(number,id);
     }
 

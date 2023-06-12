@@ -10,7 +10,7 @@ public interface ITestService {
 
     Test getById(Long id);
 
-    Integer updateNumberById(Long number, Long id);
+    Integer updateNumberById(Integer number, Long id);
     
-    boolean insertNumber(Long number, Long id);
+    boolean insertNumber(Integer number, Long id);
 }

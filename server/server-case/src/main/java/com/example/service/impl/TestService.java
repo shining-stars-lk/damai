@@ -37,7 +37,7 @@ public class TestService implements ITestService {
     }
 
     @Override
-    public Integer updateNumberById(Long number, Long id) {
+    public Integer updateNumberById(Integer number, Long id) {
         return testMapper.updateNumberById(number, id);
     }
     
@@ -45,9 +45,9 @@ public class TestService implements ITestService {
     @Override
     @Transactional
     //@ServiceLock(name = "insertNumber",keys = {"#id"},waitTime = 50)
-    public boolean insertNumber(final Long number, final Long id) {
+    public boolean insertNumber(final Integer number, final Long id) {
         Test test = testMapper.getById(id);
-        Long originalNumber = test.getNumber();
+        Integer originalNumber = test.getNumber();
         originalNumber = originalNumber + number;
         test.setNumber(originalNumber);
         testMapper.updateById(test);
