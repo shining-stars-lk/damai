@@ -4,7 +4,7 @@ BEGIN
    	DECLARE paramter_id int;
 	DECLARE i INT DEFAULT 5;
 
-   WHILE i <= 9000 DO
+   WHILE i <= 15 DO
      SET paramter_id = i;
 
 
@@ -12,9 +12,9 @@ INSERT INTO  `test` (
     id, column1, column2, column3, column4, column5, column6, number
 )
 VALUES(paramter_id,
-       CONCAT(i, "_1"),
-       CONCAT(i, "_2"),
-       CONCAT(i, "_3"),
+       paramter_id,
+       paramter_id,
+       paramter_id,
        CONCAT(i, "_4"),
        CONCAT(i, "_5"),
        CONCAT(i, "_6"),

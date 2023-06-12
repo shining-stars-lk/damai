@@ -10,11 +10,11 @@ public class Test {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
-    private String column1;
+    private Integer column1;
 
-    private String column2;
+    private Integer column2;
 
-    private String column3;
+    private Integer column3;
 
     private String column4;
 
@@ -22,5 +22,5 @@ public class Test {
 
     private String column6;
 
-    private Long number;
+    private Integer number;
 }
