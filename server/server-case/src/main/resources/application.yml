@@ -52,3 +52,6 @@ management:
     health:
       # 开启对所有用户暴露详细的应用健康信息
       show-details: always
+      probes:
+        # 将只在k8s环境生效的配置改为在任何情况下也可以启动(如/actuator/health/liveness，/actuator/health/readiness)
+        enabled: true
