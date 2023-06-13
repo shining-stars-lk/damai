@@ -41,3 +41,14 @@ redisson:
   database: 5
   connectionPoolSize: 64
   connectionMinimumIdleSize: 10
+  
+management:
+  endpoints:
+    web:
+      exposure:
+        # 开启所有的endpoints(不包含shutdown)
+        include: "*"
+  endpoint:
+    health:
+      # 开启对所有用户暴露详细的应用健康信息
+      show-details: always
