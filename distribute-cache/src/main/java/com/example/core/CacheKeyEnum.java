@@ -9,10 +9,12 @@ package com.example.core;
  **/
 public enum CacheKeyEnum {
 
-    Key("key","键值测试","value为TestCacheDto类型","lk"),
-    Key2("key:%s","键值占位测试","value为TestCacheDto类型","lk"),
+    Key("key","键值测试","value为TestCacheDto类型","k"),
+    Key2("key:%s","键值占位测试","value为TestCacheDto类型","k"),
     
-    USER_ID("user_id:%s","userId","value为UserVo类型","lk"),
+    USER_ID("user_id:%s","userId","value为UserVo类型","k"),
+    
+    PRODUCT_STOCK("product_stock:%S","商品库存id","value为库存","k"),
     
     //分布式datacenter_id
     DISTRIBUTED_DATACENTER_ID("distributed_datacenter_id:%s","分布式datacenter_id","分布式datacenter_id的值","lk"),

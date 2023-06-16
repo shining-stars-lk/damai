@@ -1,10 +1,22 @@
 package com.example.service;
 
 import com.alibaba.fastjson.JSON;
+import com.baidu.fsg.uid.UidGenerator;
+import com.example.core.CacheKeyEnum;
 import com.example.dto.GetDto;
+import com.example.dto.ProductDto;
+import com.example.entity.Product;
+import com.example.mapper.ProductMapper;
+import com.example.redis.CacheKeyWrap;
+import com.example.redis.DistributCache;
 import com.example.vo.GetVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @program: toolkit
@@ -15,6 +27,15 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class ProductService {
+    
+    @Autowired
+    private ProductMapper productMapper;
+    
+    @Autowired
+    private DistributCache distributCache;
+    
+    @Resource
+    private UidGenerator uidGenerator; 
     
     
     private Integer number1 = 10000;
@@ -51,5 +72,18 @@ public class ProductService {
         getVo.setNumber(number2);
         log.info("get执行 GetVo : {}", JSON.toJSONString(getVo));
         return getVo;
+    }
+    
+    public Boolean insert(final ProductDto productDto) {
+        Product product = new Product();
+        BeanUtils.copyProperties(productDto,product);
+        product.setId(String.valueOf(uidGenerator.getUID()));
+        product.setCreateTime(new Date());
+        
+        if (productDto.getSaveRedis() != null && productDto.getSaveRedis() == 1) {
+            productMapper.insert(product);
+        }
+        distributCache.incrBy(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.PRODUCT_STOCK,String.valueOf(product.getId())),product.getStock());
+        return true;
     }
 }

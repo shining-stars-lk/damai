@@ -1,7 +1,6 @@
 package com.example.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * @program: toolkit
@@ -9,8 +8,7 @@ import lombok.Setter;
  * @author: k
  * @create: 2023-04-17
  **/
-@Setter
-@Getter
+@Data
 public class GetOrderDto {
 
     private String id;
