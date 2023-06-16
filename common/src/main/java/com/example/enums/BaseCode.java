@@ -27,7 +27,9 @@ public enum BaseCode {
     
     DEPARTMENT_STRATEGY(-9,"departmentStrategy策略实现未找到"),
     
-    PARAMETER_ERROR(-10,"参数验证异常");
+    PARAMETER_ERROR(-10,"参数验证异常"),
+    
+    PRODUCT_STOCK_NOT_ENOUGH(-11,"库存不足");
     
     private Integer code;
     

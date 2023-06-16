@@ -49,6 +49,14 @@ public class Result<T> implements Serializable {
         result.message = baseCode.getMsg();
         return result;
     }
+    
+    public static <T> Result<T> error(BaseCode baseCode,T data) {
+        Result<T> result = new Result<T>();
+        result.code = baseCode.getCode();
+        result.message = baseCode.getMsg();
+        result.data = data;
+        return result;
+    }
 
     public static <T> Result<T> error() {
         Result<T> result = new Result<T>();
