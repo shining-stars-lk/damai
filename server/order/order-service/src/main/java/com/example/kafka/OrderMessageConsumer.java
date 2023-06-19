@@ -3,10 +3,9 @@ package com.example.kafka;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.example.entity.Order;
 import com.example.entity.ProductOrder;
-import com.example.mapper.OrderMapper;
-import com.example.mapper.ProductOrderMapper;
+import com.example.entity.PsOrder;
+import com.example.service.OrderService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -24,24 +23,18 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderMessageConsumer {
 
-    private OrderMapper orderMapper;
-    
-    private ProductOrderMapper productOrderMapper;
+    private OrderService orderService;
     
     @KafkaListener(topics = {"${kafka.consumer.topic:order}"},containerFactory = "kafkaListenerContainerFactory")
     public void consumerOrderMessage(ConsumerRecord consumerRecord){
-        Object key = consumerRecord.key();
-        String value = (String)consumerRecord.value();
-        JSONObject jsonObject = JSON.parseObject(value);
-        Order order = jsonObject.getObject("order", Order.class);
-        JSONArray productOrderJSONArray = jsonObject.getJSONArray("productOrderList");
-        List<ProductOrder> productOrderList = productOrderJSONArray.toJavaList(ProductOrder.class);
-        
         try {
-            orderMapper.insert(order);
-            for (ProductOrder productOrder : productOrderList) {
-                productOrderMapper.insert(productOrder);
-            }
+            Object key = consumerRecord.key();
+            String value = (String)consumerRecord.value();
+            JSONObject jsonObject = JSON.parseObject(value);
+            PsOrder psOrder = jsonObject.getObject("order", PsOrder.class);
+            JSONArray productOrderJSONArray = jsonObject.getJSONArray("productOrderList");
+            List<ProductOrder> productOrderList = productOrderJSONArray.toJavaList(ProductOrder.class);
+            orderService.saveOrderAndProductOrder(psOrder,productOrderList);
         }catch (Exception e) {
             log.error("consumerOrderMessage error",e);
         }
