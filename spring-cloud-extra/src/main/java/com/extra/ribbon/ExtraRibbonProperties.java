@@ -1,7 +1,6 @@
 package com.extra.ribbon;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -11,8 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @create: 2023-04-17
  **/
 @ConfigurationProperties("spring.cloud.nacos.discovery.metadata")
-@Setter
-@Getter
+@Data
 public class ExtraRibbonProperties {
     
     private String mark;
