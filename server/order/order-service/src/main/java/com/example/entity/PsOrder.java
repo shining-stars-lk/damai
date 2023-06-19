@@ -12,7 +12,7 @@ import java.util.Date;
  * @create: 2023-06-14
  **/
 @Data
-public class Order {
+public class PsOrder {
 
     private String id;
     

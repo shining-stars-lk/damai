@@ -25,10 +25,10 @@ spring:
       # 使用DBCP connection pool，是否追踪废弃statement或连接，默认为: false
       logAbandoned: true
   redis:
-    database: 5
-    host: 192.168.2.102
+    database: 0
+    host: 82.157.255.105
     port: 6379
-    password: 7ygvUJM
+    password: qaz123
     timeout: 3000    
 # nacos
   cloud:
@@ -110,5 +110,16 @@ management:
       show-details: always
   security:
     enabled: false
-        
 
+        
+kafka:
+  producer:
+    servers: 82.157.255.105:9092
+    topic: save_order
+  consumer:
+    servers: 82.157.255.105:9092
+    autoCommit: true
+    autoCommitIntervalMs: 2000
+    autoOffsetReset: latest
+    groupId: order
+    topic: save_order

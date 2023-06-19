@@ -1,7 +1,6 @@
 package com.example.kafka;
 
-import com.example.mapper.OrderMapper;
-import com.example.mapper.ProductOrderMapper;
+import com.example.service.OrderService;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -48,7 +47,7 @@ public class ConsumerConfig {
     }
     
     @Bean
-    public OrderMessageConsumer orderMessageConsumer(OrderMapper orderMapper, ProductOrderMapper productOrderMapper){
-        return new OrderMessageConsumer(orderMapper,productOrderMapper);
+    public OrderMessageConsumer orderMessageConsumer(OrderService orderService){
+        return new OrderMessageConsumer(orderService);
     }
 }

@@ -2,7 +2,6 @@ package com.example.kafka;
 
 import lombok.AllArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Component;
 
 /**
  * @program: toolkit
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
  * @author: k
  * @create: 2023-06-14
  **/
-@Component
 @AllArgsConstructor
 public class OrderMessageSend {
     

@@ -9,20 +9,24 @@ import com.example.core.CacheKeyEnum;
 import com.example.dto.GetDto;
 import com.example.dto.GetOrderDto;
 import com.example.dto.InsertOrderDto;
-import com.example.entity.Order;
 import com.example.entity.ProductOrder;
+import com.example.entity.PsOrder;
 import com.example.enums.BaseCode;
 import com.example.kafka.OrderMessageSend;
+import com.example.mapper.OrderMapper;
+import com.example.mapper.ProductOrderMapper;
 import com.example.redis.CacheKeyWrap;
 import com.example.redis.DistributCache;
 import com.example.vo.GetOrderVo;
 import com.example.vo.GetVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -32,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @program: toolkit
@@ -55,6 +60,12 @@ public class OrderService {
     @Resource
     private UidGenerator uidGenerator;
     private DefaultRedisScript redisScript;
+    
+    @Autowired
+    private OrderMapper orderMapper;
+    
+    @Autowired
+    private ProductOrderMapper productOrderMapper;
     
     @PostConstruct
     public void init(){
@@ -107,6 +118,7 @@ public class OrderService {
         return getOrderVo;
     }
     
+    @Transactional
     public Result<Boolean> insert(final InsertOrderDto dto) {
         List<ProductDto> productDtoList = dto.getProductDtoList();
         List<String> keyList = new ArrayList<>();
@@ -120,7 +132,7 @@ public class OrderService {
             return Result.error(BaseCode.PRODUCT_STOCK_NOT_ENOUGH);
         }
         if (orderMessageSend != null) {
-            Order order = new Order();
+            PsOrder order = new PsOrder();
             order.setId(String.valueOf(uidGenerator.getUID()));
             order.setPayAmount(dto.getPayAmount());
             order.setPayChannelType(dto.getPayChannelType());
@@ -145,5 +157,15 @@ public class OrderService {
             orderMessageSend.sendMessage(JSON.toJSONString(map));
         }
         return Result.success(true);
+    }
+    
+    @Transactional
+    public void saveOrderAndProductOrder(PsOrder psOrder, List<ProductOrder> productOrderList){
+        if (Optional.ofNullable(psOrder).isPresent() && CollectionUtils.isNotEmpty(productOrderList)) {
+            orderMapper.insert(psOrder);
+            for (ProductOrder productOrder : productOrderList) {
+                productOrderMapper.insert(productOrder);
+            }
+        }
     }
 }

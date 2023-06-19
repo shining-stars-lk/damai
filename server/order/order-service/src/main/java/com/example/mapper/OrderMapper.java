@@ -1,7 +1,7 @@
 package com.example.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.entity.Order;
+import com.example.entity.PsOrder;
 
 /**
  * @program: toolkit
@@ -9,5 +9,5 @@ import com.example.entity.Order;
  * @author: k
  * @create: 2023-06-14
  **/
-public interface OrderMapper extends BaseMapper<Order> {
+public interface OrderMapper extends BaseMapper<PsOrder> {
 }
