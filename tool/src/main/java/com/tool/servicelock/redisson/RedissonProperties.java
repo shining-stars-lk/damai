@@ -1,6 +1,9 @@
 package com.tool.servicelock.redisson;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @program: distribute-cache
@@ -9,6 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @create: 2022-05-28
  **/
 @ConfigurationProperties(prefix = RedissonProperties.PREFIX)
+@Data
 public class RedissonProperties {
 
     public static final String PREFIX = "redisson";
@@ -27,72 +31,11 @@ public class RedissonProperties {
 
     private int connectionMinimumIdleSize = 10;
 
-    public int getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public int getConnectionPoolSize() {
-        return connectionPoolSize;
-    }
-
-    public void setConnectionPoolSize(int connectionPoolSize) {
-        this.connectionPoolSize = connectionPoolSize;
-    }
-
-    public int getConnectionMinimumIdleSize() {
-        return connectionMinimumIdleSize;
-    }
-
-    public void setConnectionMinimumIdleSize(int connectionMinimumIdleSize) {
-        this.connectionMinimumIdleSize = connectionMinimumIdleSize;
-    }
-
-    public int getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(int database) {
-        this.database = database;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
-    @Override
-    public String toString() {
-        return "RedissonProperties{" +
-                "timeout=" + timeout +
-                ", address='" + address + '\'' +
-                ", port='" + port + '\'' +
-                ", password='" + password + '\'' +
-                ", database=" + database +
-                ", connectionPoolSize=" + connectionPoolSize +
-                ", connectionMinimumIdleSize=" + connectionMinimumIdleSize +
-                '}';
-    }
+    private String produceTopic;
+    
+    private Long delayTime;
+    
+    private TimeUnit delayTimeUnit;
+    
+    private String consumeTopic;
 }

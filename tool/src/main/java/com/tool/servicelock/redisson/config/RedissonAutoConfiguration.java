@@ -1,47 +1,32 @@
 package com.tool.servicelock.redisson.config;
 
-import com.tool.core.DistributedConf;
 import com.example.core.StringUtil;
+import com.tool.core.DistributedConf;
 import com.tool.servicelock.redisson.RedissonProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.redisson.config.SingleServerConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 /**
- * @program: distribute-cache
+ * @program: tool
  * @description: redisson信息配置加载类
  * @author: k
  * @create: 2022-05-28
  **/
-/** 当yml中的配置存在 redisson.address和redisson.password时 此配置对象才生效，否则会报错
- * */
-//@ConditionalOnProperty({"redisson.address","redisson.password"})
-/** 让使用@ConfigurationProperties 注解的类生效。
- *  说明：
- *      如果一个配置类只配置@ConfigurationProperties注解，而没有使用@Component，
- *      那么在IOC容器中是获取不到properties 配置文件转化的bean。
- *      说白了 @EnableConfigurationProperties 相当于把使用 @ConfigurationProperties 的类进行了一次注入。
- **/
+@ConditionalOnProperty("redisson.address")
 @EnableConfigurationProperties(RedissonProperties.class)
-/**让RedisAutoConfiguration加载完后再加载RedissonAutoConfiguration
- * */
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 @AutoConfigureBefore(DistributedConf.class)
+@Slf4j
 public class RedissonAutoConfiguration {
-
-    private Logger logger = LoggerFactory.getLogger(RedissonAutoConfiguration.class);
-
-    @Autowired
-    private RedissonProperties redssionProperties;
 
     private static final String ADDRESS_PREFIX = "redis";
 
@@ -50,36 +35,20 @@ public class RedissonAutoConfiguration {
      * @return RedissonClient
      */
     @Bean
-    public RedissonClient redissonSingle() {
-
-        verify(redssionProperties);
-
+    public RedissonClient redissonSingle(RedissonProperties redissonProperties) {
         Config config = new Config();
         SingleServerConfig serverConfig = config.useSingleServer()
-                .setAddress(ADDRESS_PREFIX+"://"+redssionProperties.getAddress()+":"+redssionProperties.getPort())
-                .setDatabase(redssionProperties.getDatabase())
-                .setTimeout(redssionProperties.getTimeout())
-                .setConnectionPoolSize(redssionProperties.getConnectionPoolSize())
-                .setConnectionMinimumIdleSize(redssionProperties.getConnectionMinimumIdleSize())
+                .setAddress(ADDRESS_PREFIX+"://"+redissonProperties.getAddress()+":"+redissonProperties.getPort())
+                .setDatabase(redissonProperties.getDatabase())
+                .setTimeout(redissonProperties.getTimeout())
+                .setConnectionPoolSize(redissonProperties.getConnectionPoolSize())
+                .setConnectionMinimumIdleSize(redissonProperties.getConnectionMinimumIdleSize())
                 .setIdleConnectionTimeout(30000)
                 .setPingConnectionInterval(30000);
 
-        if(StringUtil.isNotEmpty(redssionProperties.getPassword())) {
-            serverConfig.setPassword(redssionProperties.getPassword());
+        if(StringUtil.isNotEmpty(redissonProperties.getPassword())) {
+            serverConfig.setPassword(redissonProperties.getPassword());
         }
-
         return Redisson.create(config);
-    }
-
-    private void verify(RedissonProperties redssionProperties){
-        if (redssionProperties == null) {
-            throw new RuntimeException("属性为空");
-        }
-        if (StringUtil.isEmpty(redssionProperties.getAddress())){
-            throw new RuntimeException("地址为空");
-        }
-        if (StringUtil.isEmpty(redssionProperties.getPassword())){
-            throw new RuntimeException("密码为空");
-        }
     }
 }
