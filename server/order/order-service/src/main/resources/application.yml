@@ -123,3 +123,15 @@ kafka:
     autoOffsetReset: latest
     groupId: order
     topic: save_order
+redisson:
+  timeout: 3000
+  address: 82.157.255.105
+  port: 6379
+  password: qaz123
+  database: 5
+  connectionPoolSize: 64
+  connectionMinimumIdleSize: 10
+  produceTopic: order
+  delayTime: 15
+  delayTimeUnit: TimeUnit.MINUTES
+  consumeTopic: order

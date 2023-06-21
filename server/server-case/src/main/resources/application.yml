@@ -35,9 +35,9 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 redisson:
   timeout: 3000
-  address: 192.168.2.102
+  address: 82.157.255.105
   port: 6379
-  password: 7ygvUJM
+  password: qaz123
   database: 5
   connectionPoolSize: 64
   connectionMinimumIdleSize: 10
