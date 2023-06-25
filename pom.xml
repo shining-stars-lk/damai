@@ -23,7 +23,6 @@
 		<module>record</module>
 		<module>server</module>
 		<module>course-case</module>
-		<module>kafka-base</module>
 	</modules>
 
 	<properties>
