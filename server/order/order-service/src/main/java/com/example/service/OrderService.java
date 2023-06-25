@@ -9,6 +9,7 @@ import com.example.core.CacheKeyEnum;
 import com.example.dto.GetDto;
 import com.example.dto.GetOrderDto;
 import com.example.dto.InsertOrderDto;
+import com.example.dto.PayOrderDto;
 import com.example.entity.ProductOrder;
 import com.example.entity.PsOrder;
 import com.example.enums.BaseCode;
@@ -118,7 +119,6 @@ public class OrderService {
         return getOrderVo;
     }
     
-    @Transactional
     public Result<Boolean> insert(final InsertOrderDto dto) {
         List<ProductDto> productDtoList = dto.getProductDtoList();
         List<String> keyList = new ArrayList<>();
@@ -167,5 +167,17 @@ public class OrderService {
                 productOrderMapper.insert(productOrder);
             }
         }
+    }
+    
+    public Result<Boolean> pay(final PayOrderDto dto) {
+        PsOrder psOrder = orderMapper.selectById(dto.getId());
+        if (Optional.ofNullable(psOrder).isPresent()) {
+            psOrder.setPayChannelType(dto.getPayChannelType());
+            psOrder.setStatus(2);
+            psOrder.setPayTime(new Date());
+            orderMapper.updateById(psOrder);
+            Result.success(true);
+        }
+        return Result.success(false);
     }
 }
