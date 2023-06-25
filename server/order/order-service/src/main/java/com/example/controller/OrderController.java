@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.common.Result;
 import com.example.dto.GetOrderDto;
 import com.example.dto.InsertOrderDto;
+import com.example.dto.PayOrderDto;
 import com.example.service.OrderService;
 import com.example.vo.GetOrderVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +40,10 @@ public class OrderController {
     @PostMapping(value = "/insertOrder")
     public Result<Boolean> insertOrder(@Valid @RequestBody InsertOrderDto dto) {
         return orderService.insert(dto);
+    }
+    
+    @PostMapping(value = "/payOrder")
+    public Result<Boolean> payOrder(@Valid @RequestBody PayOrderDto dto) {
+        return orderService.pay(dto);
     }
 }
