@@ -1,5 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.tool.servicelock.redisson.config.RedissonAutoConfiguration,\
   com.tool.core.DistributedConf,\
-  com.tool.delayqueue.ProduceConfig
-  
+  com.tool.delayqueue.ProduceConfig,\
+  com.tool.delayqueue.ConsumeConfig

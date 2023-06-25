@@ -132,6 +132,6 @@ redisson:
   connectionPoolSize: 64
   connectionMinimumIdleSize: 10
   produceTopic: order
-  delayTime: 15
-  delayTimeUnit: TimeUnit.MINUTES
+  delayTime: 300
+  delayTimeUnit: SECONDS
   consumeTopic: order
