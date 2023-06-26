@@ -13,6 +13,10 @@ spring:
         # 标识
         metadata:
           mark: true
+  security:
+    user:
+      name: admin
+      password: admin    
 #dingtalk:
 #  token: a
   main:
