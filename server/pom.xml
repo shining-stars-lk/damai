@@ -25,5 +25,6 @@
         <module>channel-data</module>
         <module>user</module>
         <module>server-case</module>
+        <module>admin</module>
     </modules>
 </project>
