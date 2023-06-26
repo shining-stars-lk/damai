@@ -1,0 +1,28 @@
+#服务端口
+server:
+  port: 10082
+# 应用名称
+spring:
+  application:
+    name: admin
+  # nacos
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        # 标识
+        metadata:
+          mark: true
+#dingtalk:
+#  token: a
+  main:
+    allow-bean-definition-overriding: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    health:
+      show-details: always
+  security:
+    enabled: false
