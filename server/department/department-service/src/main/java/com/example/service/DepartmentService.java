@@ -1,7 +1,6 @@
 package com.example.service;
 
 import com.alibaba.fastjson.JSON;
-import com.example.BusinessThreadPool;
 import com.example.dto.GetDepartmentDto;
 import com.example.dto.GetDeptDto;
 import com.example.strategy.DepartmentStrategy;
@@ -59,8 +58,6 @@ public class DepartmentService {
     }
     
     public String printTraceId() {
-        log.info("printTraceId");
-        BusinessThreadPool.execute(() -> log.info("async printTraceId"));
-        return null;
+        return "1111";
     }
 }
