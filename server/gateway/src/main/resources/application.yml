@@ -73,11 +73,11 @@ spring:
             - StripPrefix=2
           #            - RewritePath=/gateway/log(?<segment>/?.*), $\{segment}
             # 降级配置
-            - name: SpecialHystrix
+            - name: FineGritHystrix
               args:
                 id: fallBackHandler
                 fallbackUri: forward:/fallBackHandler
-                timeout:
+                urlMap:
                   #接口超时处理 以-代替/
                   department-get: 6000
           metadata:

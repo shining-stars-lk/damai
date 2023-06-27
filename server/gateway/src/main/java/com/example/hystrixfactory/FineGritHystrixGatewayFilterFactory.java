@@ -242,7 +242,7 @@ public class FineGritHystrixGatewayFilterFactory
 		RouteHystrixCommand(Config config, ServerWebExchange exchange,
 				GatewayFilterChain chain, String hystrixKey) {
 			super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(hystrixKey))
-					.andCommandKey(HystrixCommandKey.Factory.asKey(hystrixKey)));
+					.andCommandKey(HystrixCommandKey.Factory.asKey(config.id)));
 			this.fallbackUri = config.getFallbackUri();
 			this.exchange = exchange;
 			this.chain = chain;
@@ -251,7 +251,7 @@ public class FineGritHystrixGatewayFilterFactory
 		RouteHystrixCommand(Config config, ServerWebExchange exchange,
 							GatewayFilterChain chain, int timeout, String hystrixKey) {
 			super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(hystrixKey))
-					.andCommandKey(HystrixCommandKey.Factory.asKey(hystrixKey))
+					.andCommandKey(HystrixCommandKey.Factory.asKey(config.id))
 					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(timeout)));
 			this.fallbackUri = config.getFallbackUri();
 			this.exchange = exchange;
