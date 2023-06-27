@@ -25,12 +25,14 @@ spring:
         locator:
           # 开启负载均衡对网关的路由转发的支持
           enabled: true
-      default-filters:
-        # 熔断过滤器
-        - name: Hystrix
-          args:
-            name: fallBackHandler
-            fallbackuri: forward:/fallBackHandler
+       # 如果使用全局熔断，则自定义熔断中单独接口超时时间如果大于全局超时时间则失效，因为两个熔断器都会执行   
+#      default-filters:
+#        # 熔断过滤器
+#        - name: Hystrix
+#          args:
+#            name: fallBackHandler
+#            id: Hystrix
+#            fallbackuri: forward:/fallBackHandler    
       # 负载均衡路由规则 开启路由后的服务swagger才能显示
       routes:
         - id: product-service
@@ -70,8 +72,16 @@ spring:
           filters:
             - StripPrefix=2
           #            - RewritePath=/gateway/log(?<segment>/?.*), $\{segment}
+            # 降级配置
+            - name: SpecialHystrix
+              args:
+                id: fallBackHandler
+                fallbackUri: forward:/fallBackHandler
+                timeout:
+                  #接口超时处理 以-代替/
+                  department-get: 6000
           metadata:
-            title: 部门系统    
+            title: 部门系统      
 
 feign:
 #  sentinel:
@@ -97,7 +107,7 @@ hystrix:
           #thread: 表示使用线程隔离策略。
           thread:
             #timeoutInMilliseconds: 设置超时时间，单位为毫秒。
-            timeoutInMilliseconds: 10000
+            timeoutInMilliseconds: 3000
     #将熔断的隔离模式显示为thread模式，否则服务调用为信号量模式
     fallBackHandler:
       execution:
