@@ -9,29 +9,30 @@ package com.example.enums;
 public enum BaseCode {
     
     SUCCESS(0, "OK"),
-    RSA_SIGN_ERROR(-1,"res签名验证失败"),
+    SYSTEM_ERROR(-1,"系统异常"),
+    RSA_SIGN_ERROR(1,"res签名验证失败"),
     
-    AES_ERROR(-2,"aes验证失败"),
+    AES_ERROR(2,"aes验证失败"),
     
-    CHANNEL_DATA(-3,"渠道数据为空"),
+    CHANNEL_DATA(3,"渠道数据为空"),
     
-    ARGUMENT_EMPTY(-4,"基础参数为空"),
+    ARGUMENT_EMPTY(4,"基础参数为空"),
     
-    SUBMIT_FREQUENT(-5,"执行频繁，请稍后再试"),
+    SUBMIT_FREQUENT(5,"执行频繁，请稍后再试"),
     
-    USER_ID_EMPTY(-6,"用户id为空"),
+    USER_ID_EMPTY(6,"用户id为空"),
     
-    USER_EMPTY(-7,"用户为空"),
+    USER_EMPTY(7,"用户为空"),
     
-    CODE_EMPTY(-8,"code参数为空"),
+    CODE_EMPTY(8,"code参数为空"),
     
-    DEPARTMENT_STRATEGY(-9,"departmentStrategy策略实现未找到"),
+    DEPARTMENT_STRATEGY(9,"departmentStrategy策略实现未找到"),
     
-    PARAMETER_ERROR(-10,"参数验证异常"),
+    PARAMETER_ERROR(10,"参数验证异常"),
     
-    PRODUCT_STOCK_NOT_ENOUGH(-11,"库存不足"),
+    PRODUCT_STOCK_NOT_ENOUGH(11,"库存不足"),
     
-    JOB_INFO_NOT_EXIST(-12,"jobInfo不存在");
+    JOB_INFO_NOT_EXIST(12,"jobInfo不存在");
     
     private Integer code;
     
