@@ -9,6 +9,7 @@ import com.example.dto.JobInfoDtoPage;
 import com.example.dto.RunJobDto;
 import com.example.entity.JobInfo;
 import com.example.mapper.JobInfoMapper;
+import com.example.run.ServiceJobRun;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,11 @@ public class JobInfoService extends ServiceImpl<JobInfoMapper, JobInfo> {
 
     @Autowired
     private JobInfoMapper jobInfoMapper;
-    
     @Resource
     private UidGenerator uidGenerator;
+    
+    @Autowired
+    private ServiceJobRun serviceJobRun;
     
     public Page<JobInfo> pageList(JobInfoDtoPage jobInfoDtoPage){
         Page<JobInfo> page = Page.of(jobInfoDtoPage.getPageNo(), jobInfoDtoPage.getPageSize());
@@ -46,7 +49,7 @@ public class JobInfoService extends ServiceImpl<JobInfoMapper, JobInfo> {
         jobInfoMapper.insert(jobInfo);
     }
     
-    public void runJob(final RunJobDto runJobDto) {
-        
+    public Object runJob(final RunJobDto runJobDto) {
+        return serviceJobRun.runJob(runJobDto.getId());
     }
 }

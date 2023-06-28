@@ -54,7 +54,7 @@ public class ServiceJobRun {
     @Resource
     private UidGenerator uidGenerator;
     
-    public void runJob(String jobInfoId){
+    public Object runJob(String jobInfoId){
         JobInfo jobInfo = Optional.ofNullable(jobInfoService.getById(jobInfoId)).orElseThrow(() -> new ToolkitException(BaseCode.JOB_INFO_NOT_EXIST));
         String id = jobInfo.getId();
         String url = jobInfo.getUrl();
@@ -99,6 +99,7 @@ public class ServiceJobRun {
         }catch (Exception e) {
             log.error("job info run error",e);
         }
+        return result;
     }
     
     /**
