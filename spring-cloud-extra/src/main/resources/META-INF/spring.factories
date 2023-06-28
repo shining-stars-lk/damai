@@ -1,6 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.extra.feign.ExtraFeignAutoConfiguration,\
-  com.extra.hystrix.ExtraHystrixAutoConfiguration,\
-  com.extra.ribbon.ExtraRibbonAutoConfiguration,\
-  com.extra.flowmonitor.config.FlowMonitorAutoConfiguration,\
-  com.filter.FilterAutoConfiguration

@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>spring-cloud-extra</artifactId>
+            <artifactId>service-component</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>

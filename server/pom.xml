@@ -26,5 +26,6 @@
         <module>user</module>
         <module>server-case</module>
         <module>admin</module>
+        <module>job</module>
     </modules>
 </project>

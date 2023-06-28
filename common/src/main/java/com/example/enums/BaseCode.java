@@ -29,7 +29,9 @@ public enum BaseCode {
     
     PARAMETER_ERROR(-10,"参数验证异常"),
     
-    PRODUCT_STOCK_NOT_ENOUGH(-11,"库存不足");
+    PRODUCT_STOCK_NOT_ENOUGH(-11,"库存不足"),
+    
+    JOB_INFO_NOT_EXIST(-12,"jobInfo不存在");
     
     private Integer code;
     
