@@ -1,10 +1,10 @@
 #服务端口
 server:
-  port: 11082
+  port: 11182
 # 应用名称
 spring:
   application:
-    name: job-info-service
+    name: job-service
   datasource:
     username: root
     password: root

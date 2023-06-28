@@ -41,8 +41,7 @@ public class JobInfoController {
     }
     
     @RequestMapping(value = "/runJob",method = RequestMethod.POST)
-    public Result<Page<JobInfo>> runJob(@Valid @RequestBody RunJobDto runJobDto) {
-        jobInfoService.runJob(runJobDto);
-        return Result.success();
+    public Result<Object> runJob(@Valid @RequestBody RunJobDto runJobDto) {
+        return Result.success(jobInfoService.runJob(runJobDto));
     }
 }

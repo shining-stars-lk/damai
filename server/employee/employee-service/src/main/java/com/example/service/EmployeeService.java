@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.alibaba.fastjson.JSON;
+import com.example.annotation.JobCall;
 import com.example.client.DepartmentClient;
 import com.example.dto.GetDepartmentDto;
 import com.example.dto.GetEmployeeDto;
@@ -42,21 +43,11 @@ public class EmployeeService {
         return getEmployeeVo;
     }
     
+    @JobCall
     public GetEmployeeVo getEmployeeV2(final GetEmployeeDto getEmployeeDto) throws Exception {
         GetEmployeeVo getEmployeeVo = new GetEmployeeVo();
         getEmployeeVo.setId(getEmployeeDto.getId());
         getEmployeeVo.setName("橘子员工-1");
-        
-        GetDepartmentDto getDepartmentDto = new GetDepartmentDto();
-        getDepartmentDto.setId(getEmployeeVo.getId() + "22");
-        if (getDepartmentDto.getSleepTime() != null) {
-            getDepartmentDto.setSleepTime(getEmployeeDto.getSleepTime());
-        }
-        GetDepartmentVo getVo = departmentClient.get(getDepartmentDto);
-        if (getVo != null) {
-            getEmployeeVo.setDepartmentId(getVo.getId());
-            getEmployeeVo.setDepartmentName(getVo.getName());
-        }
         log.info("getEmployeeV2执行 GetDepartmentDto : {}", JSON.toJSONString(getEmployeeVo));
         return getEmployeeVo;
     }
