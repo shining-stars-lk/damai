@@ -1,14 +1,15 @@
 package com.example.aspect;
 
 import com.example.BusinessThreadPool;
+import com.example.annotation.JobCall;
 import com.example.callback.JobRunCallBack;
 import com.example.enums.JobRunStatus;
+import com.example.enums.JobRunType;
 import com.example.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -36,22 +37,17 @@ public class JobRunCallAspect {
     @Autowired
     private JobRunCallBack jobRunCallBack;
     
-    @Pointcut("@annotation(com.example.annotation.JobCall)")
-    public void jobAspect(){}
-    
-    @Around("jobAspect()")
-    public Object jobAround(ProceedingJoinPoint jointPoint){
+    @Around("@annotation(jobCall)")
+    public Object jobAround(ProceedingJoinPoint jointPoint, JobCall jobCall){
         setJobParams();
-        BusinessThreadPool.execute(() -> {
-            try {
-                jointPoint.proceed();
-                jobRunCallBack.callBack(JobRunStatus.RUN_SUCCESS.getMsg(), JobRunStatus.RUN_SUCCESS.getCode());
-            }catch (Throwable e) {
-                log.warn("jobAround error",e);
-                jobRunCallBack.callBack(e.toString(), JobRunStatus.RUN_SUCCESS.getCode());
-            }
-        });
-        return null;
+        if (jobCall.jobRunType() == JobRunType.SYNC_RUN) {
+            return runJobCallBack(jointPoint);
+        }else {
+            BusinessThreadPool.execute(() -> {
+                runJobCallBack(jointPoint);
+            });
+            return null;
+        }
     }
     
     public void setJobParams(){
@@ -64,5 +60,17 @@ public class JobRunCallAspect {
         }catch (Exception e) {
             log.error("setJobParams error",e);
         }
+    }
+    
+    public Object runJobCallBack(ProceedingJoinPoint jointPoint){
+        Object result = null;
+        try {
+            result = jointPoint.proceed();
+            jobRunCallBack.callBack(JobRunStatus.RUN_SUCCESS.getMsg(), JobRunStatus.RUN_SUCCESS.getCode());
+        }catch (Throwable e) {
+            log.warn("jobAround error",e);
+            jobRunCallBack.callBack(e.toString(), JobRunStatus.RUN_SUCCESS.getCode());
+        }
+        return result;
     }
 }
