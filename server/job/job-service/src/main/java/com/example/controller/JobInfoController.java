@@ -35,9 +35,9 @@ public class JobInfoController {
     }
     
     @RequestMapping(value = "/add",method = RequestMethod.POST)
-    public Result<Page<JobInfo>> add(@Valid @RequestBody JobInfoDto jobInfoDto) {
+    public Result<Boolean> add(@Valid @RequestBody JobInfoDto jobInfoDto) {
         jobInfoService.add(jobInfoDto);
-        return Result.success();
+        return Result.success(true);
     }
     
     @RequestMapping(value = "/runJob",method = RequestMethod.POST)
