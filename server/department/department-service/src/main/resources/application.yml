@@ -28,10 +28,12 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
+        server-addr: 82.157.255.105:8848
         # 标识
         metadata:
           mark: true
+      config:
+        file-extension: yaml
     sentinel:
       transport:
         port: 8719

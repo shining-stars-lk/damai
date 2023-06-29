@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableFeignClients
 @EnableHystrix
 @SpringBootApplication
-public class DepartmentClientApplication {
+public class DepartmentApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DepartmentClientApplication.class, args);
+        SpringApplication.run(DepartmentApplication.class, args);
     }
 
 }
