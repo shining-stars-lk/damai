@@ -9,7 +9,7 @@ import com.example.enums.BaseCode;
 import com.example.exception.ArgumentError;
 import com.example.exception.ArgumentException;
 import com.example.exception.ToolkitException;
-import com.example.service.ApiLimitService;
+import com.example.service.ApiRestrictService;
 import com.example.service.ChannelDataService;
 import com.example.service.TokenService;
 import com.example.threadlocal.BaseParameterHolder;
@@ -75,7 +75,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     private ChannelDataService channelDataService;
     
     @Autowired
-    private ApiLimitService apiLimitService;
+    private ApiRestrictService apiRestrictService;
     
     @Autowired
     private TokenService tokenService;
@@ -195,7 +195,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 String dec = AesForClient.decrypt(channelDataVo.getAesKey(), aesVector, requestBodyContent.get(BUSINESS_BODY));
                 requestBody = dec;
             }
-            apiLimitService.apiLimit(userId,requestURI,request);
+            apiRestrictService.apiRestrict(userId,requestURI,request);
         }
         Map<String,String> map = new HashMap<>(4);
         map.put(REQUEST_BODY,requestBody);

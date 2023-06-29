@@ -27,5 +27,6 @@
         <module>server-case</module>
         <module>admin</module>
         <module>job</module>
+        <module>customize</module>
     </modules>
 </project>

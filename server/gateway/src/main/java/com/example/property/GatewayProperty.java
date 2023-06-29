@@ -24,5 +24,5 @@ public class GatewayProperty {
     private Long semaphore;
     //需要做频率限制的路径
     @Value("${api.limit.paths:#{null}}")
-    private String[] apiLimitPaths;
+    private String[] apiRestrictPaths;
 }

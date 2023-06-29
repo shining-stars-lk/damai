@@ -1,10 +1,15 @@
 package com.example.service;
 
+import com.alibaba.fastjson.JSON;
+import com.baidu.fsg.uid.UidGenerator;
 import com.example.core.StringUtil;
+import com.example.dto.ApiDataDto;
 import com.example.enums.BaseCode;
 import com.example.exception.ToolkitException;
+import com.example.kafka.ApiDataMessageSend;
 import com.example.property.GatewayProperty;
 import com.example.redis.DistributCache;
+import com.example.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -16,8 +21,10 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @program: toolkit
@@ -25,15 +32,21 @@ import java.util.List;
  * @author: k
  * @create: 2023-06-03
  **/
-@Component
 @Slf4j
-public class ApiLimitService {
+@Component
+public class ApiRestrictService {
     
     @Autowired
     private DistributCache distributCache;
     
     @Autowired
     private GatewayProperty gatewayProperty;
+    
+    @Autowired(required = false)
+    private ApiDataMessageSend apiDataMessageSend;
+    
+    @Resource
+    private UidGenerator uidGenerator;
     
     private DefaultRedisScript redisScript;
     
@@ -48,11 +61,11 @@ public class ApiLimitService {
         }
     }
     
-    public boolean checkApiLimit(String requestURI){
-        if (gatewayProperty.getApiLimitPaths() != null && gatewayProperty.getApiLimitPaths().length > 0) {
-            for (String apiLimitPath : gatewayProperty.getApiLimitPaths()) {
+    public boolean checkApiRestrict(String requestURI){
+        if (gatewayProperty.getApiRestrictPaths() != null && gatewayProperty.getApiRestrictPaths().length > 0) {
+            for (String apiRestrictPath : gatewayProperty.getApiRestrictPaths()) {
                 PathMatcher matcher = new AntPathMatcher();
-                if(matcher.match(apiLimitPath, requestURI)){
+                if(matcher.match(apiRestrictPath, requestURI)){
                     return true;
                 }
             }
@@ -60,8 +73,8 @@ public class ApiLimitService {
         return false;
     }
     
-    public void apiLimit(String id, String requestPath, ServerHttpRequest request){
-        if (checkApiLimit(requestPath)) {
+    public void apiRestrict(String id, String requestPath, ServerHttpRequest request){
+        if (checkApiRestrict(requestPath)) {
             Long count = 0L;
             try {
                 String ip = getIpAddress(request);
@@ -112,5 +125,18 @@ public class ApiLimitService {
             ipAddress = "";
         }
         return ipAddress;
+    }
+    
+    public void saveApiData(ServerHttpRequest request, String apiUrl){
+        ApiDataDto apiDataDto = new ApiDataDto();
+        apiDataDto.setId(String.valueOf(uidGenerator.getUID()));
+        apiDataDto.setApiAddress(getIpAddress(request));
+        apiDataDto.setApiUrl(apiUrl);
+        apiDataDto.setCreateTime(DateUtils.now());
+        apiDataDto.setCallDayTime(DateUtils.nowStr(DateUtils.FORMAT_DATE));
+        apiDataDto.setCallHourTime(DateUtils.nowStr(DateUtils.FORMAT_HOUR));
+        apiDataDto.setCallMinuteTime(DateUtils.nowStr(DateUtils.FORMAT_MINUTE));
+        apiDataDto.setCallMinuteTime(DateUtils.nowStr(DateUtils.FORMAT_SECOND));
+        Optional.ofNullable(apiDataMessageSend).ifPresent(send -> send.sendMessage(JSON.toJSONString(apiDataMessageSend)));
     }
 }
