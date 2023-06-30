@@ -18,6 +18,8 @@ public enum CacheKeyEnum {
     
     //分布式datacenter_id
     DISTRIBUTED_DATACENTER_ID("distributed_datacenter_id:%s","分布式datacenter_id","分布式datacenter_id的值","lk"),
+    
+    RULE("rule_%s","调用限制规则的key","调用限制规则的value","k")
     ;
 
     /**
