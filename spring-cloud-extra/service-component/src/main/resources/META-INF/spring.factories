@@ -4,3 +4,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.example.aspect.ExtraRibbonAutoConfiguration,\
   com.extra.flowmonitor.config.FlowMonitorAutoConfiguration,\
   com.filter.FilterAutoConfiguration
+org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
+  com.registercenter.RegisterCenterAutoConfigurationImportFilter
