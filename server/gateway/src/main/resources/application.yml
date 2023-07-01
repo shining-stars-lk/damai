@@ -82,7 +82,10 @@ spring:
                   department-get: 6000
           metadata:
             title: 部门系统      
-
+kafka:
+  producer:
+    servers: 82.157.255.105:9092
+    topic: save_api_data
 feign:
 #  sentinel:
 #    enabled: false

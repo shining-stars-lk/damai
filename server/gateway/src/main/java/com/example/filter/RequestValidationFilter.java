@@ -157,7 +157,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         String userId;
         String debug = request.getHeaders().getFirst(DEBUG);
         if (verifySwitch && !(StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
-            String requestURI = request.getPath().value();
+            String uri = request.getPath().value();
             String aesFlag = request.getHeaders().getFirst(AES_FLAG);
             String rsaFlag = request.getHeaders().getFirst(RSA_FLAG);
             //应用渠道
@@ -195,7 +195,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 String dec = AesForClient.decrypt(channelDataVo.getAesKey(), aesVector, requestBodyContent.get(BUSINESS_BODY));
                 requestBody = dec;
             }
-            apiRestrictService.apiRestrict(userId,requestURI,request);
+            apiRestrictService.apiRestrict(userId,uri,request);
         }
         Map<String,String> map = new HashMap<>(4);
         map.put(REQUEST_BODY,requestBody);
