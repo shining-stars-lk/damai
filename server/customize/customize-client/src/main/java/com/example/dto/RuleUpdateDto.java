@@ -26,7 +26,7 @@ public class RuleUpdateDto {
     
     private Integer limitTimeType;
     
-    private Integer message;
+    private String message;
     
     private Integer status;
     

@@ -25,7 +25,7 @@ public class Rule {
     
     private Integer limitTimeType;
     
-    private Integer message;
+    private String message;
     
     private Integer status;
     

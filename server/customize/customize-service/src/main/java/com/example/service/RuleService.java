@@ -16,6 +16,7 @@ import com.example.vo.RuleVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Optional;
@@ -38,6 +39,7 @@ public class RuleService {
     @Resource
     private UidGenerator uidGenerator;
     
+    @Transactional
     public void add(RuleDto ruleDto) {
         Rule rule = new Rule();
         BeanUtils.copyProperties(ruleDto,rule);
@@ -47,12 +49,14 @@ public class RuleService {
         saveCache(rule.getId());
     }
     
+    @Transactional
     public void update(final RuleUpdateDto ruleUpdateDto) {
         Rule rule = new Rule();
         BeanUtils.copyProperties(ruleUpdateDto,rule);
         ruleMapper.updateById(rule);
     }
     
+    @Transactional
     public void updateStatus(final RuleStatusDto ruleStatusDto) {
         Rule rule = new Rule();
         rule.setId(ruleStatusDto.getId());
