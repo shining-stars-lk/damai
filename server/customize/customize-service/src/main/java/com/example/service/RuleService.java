@@ -5,6 +5,7 @@ import com.example.core.CacheKeyEnum;
 import com.example.dto.RuleDto;
 import com.example.dto.RuleGetDto;
 import com.example.dto.RuleStatusDto;
+import com.example.dto.RuleUpdateDto;
 import com.example.entity.Rule;
 import com.example.enums.RuleStatus;
 import com.example.mapper.RuleMapper;
@@ -46,6 +47,12 @@ public class RuleService {
         saveCache(rule.getId());
     }
     
+    public void update(final RuleUpdateDto ruleUpdateDto) {
+        Rule rule = new Rule();
+        BeanUtils.copyProperties(ruleUpdateDto,rule);
+        ruleMapper.updateById(rule);
+    }
+    
     public void updateStatus(final RuleStatusDto ruleStatusDto) {
         Rule rule = new Rule();
         rule.setId(ruleStatusDto.getId());
@@ -72,4 +79,6 @@ public class RuleService {
             }
         });
     }
+    
+    
 }

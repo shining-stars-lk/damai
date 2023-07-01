@@ -113,9 +113,6 @@ management:
 
         
 kafka:
-  producer:
-    servers: 82.157.255.105:9092
-    topic: save_api_data
   consumer:
     servers: 82.157.255.105:9092
     autoCommit: true

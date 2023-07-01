@@ -13,15 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class GatewayProperty {
-    
-    @Value("${api.limit.increment.value:1}")
-    private String incrementValue;
-    
-    @Value("${api.limit.expiration.time:1}")
-    private String expirationTime;
-    
-    @Value("${api.limit.semaphore:10}")
-    private Long semaphore;
     //需要做频率限制的路径
     @Value("${api.limit.paths:#{null}}")
     private String[] apiRestrictPaths;

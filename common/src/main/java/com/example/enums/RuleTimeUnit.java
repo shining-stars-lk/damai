@@ -6,16 +6,16 @@ package com.example.enums;
  * @author: k
  * @create: 2023-06-03
  **/
-public enum RuleStatus {
-    RUN(1,"正常"),
-    STOP(0,"禁用")
+public enum RuleTimeUnit {
+    SECOND(1,"秒"),
+    MINUTE(2,"分钟")
     ;
 
     private Integer code;
 
     private String msg;
 
-    RuleStatus(Integer code, String msg) {
+    RuleTimeUnit(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }
@@ -37,7 +37,7 @@ public enum RuleStatus {
     }
 
     public static String getMsg(Integer code) {
-        for (RuleStatus re : RuleStatus.values()) {
+        for (RuleTimeUnit re : RuleTimeUnit.values()) {
             if (re.code.intValue() == code.intValue()) {
                 return re.msg;
             }
@@ -45,8 +45,8 @@ public enum RuleStatus {
         return "";
     }
 
-    public static RuleStatus getRc(Integer code) {
-        for (RuleStatus re : RuleStatus.values()) {
+    public static RuleTimeUnit getRc(Integer code) {
+        for (RuleTimeUnit re : RuleTimeUnit.values()) {
             if (re.code.intValue() == code.intValue()) {
                 return re;
             }

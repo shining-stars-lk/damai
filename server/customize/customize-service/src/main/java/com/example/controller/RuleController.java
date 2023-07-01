@@ -4,6 +4,7 @@ import com.example.common.Result;
 import com.example.dto.RuleDto;
 import com.example.dto.RuleGetDto;
 import com.example.dto.RuleStatusDto;
+import com.example.dto.RuleUpdateDto;
 import com.example.service.RuleService;
 import com.example.vo.RuleVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,12 @@ public class RuleController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Result add(@Valid @RequestBody RuleDto ruleDto) {
         ruleService.add(ruleDto);
+        return Result.success();
+    }
+    
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public Result update(@Valid @RequestBody RuleUpdateDto ruleUpdateDto) {
+        ruleService.update(ruleUpdateDto);
         return Result.success();
     }
     
