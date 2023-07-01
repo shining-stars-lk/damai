@@ -26,6 +26,7 @@ public class ApiDataMessageConsumer {
     public void consumerOrderMessage(ConsumerRecord consumerRecord){
         try {
             Optional.ofNullable(consumerRecord.value()).map(String::valueOf).ifPresent(value -> {
+                log.info("consumerOrderMessage message:{}",value);
                 ApiData apiData = JSON.parseObject(value, ApiData.class);
                 apiDataService.save(apiData);
             });
