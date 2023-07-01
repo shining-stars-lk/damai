@@ -16,7 +16,7 @@ if (haveException == 1) then
     result = 1
     return {result,count,ruleThresholdValue}
 end
-if (redis.call('exists', KEYS[6]) == 1) then
+if (redis.call('exists', KEYS[5]) == 1) then
     result = 1
 end
 return {result,count,ruleThresholdValue}

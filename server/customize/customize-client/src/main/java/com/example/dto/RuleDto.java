@@ -23,6 +23,6 @@ public class RuleDto {
     private Integer limitTime;
     @NotNull
     private Integer limitTimeType;
-    @NotNull
-    private Integer message;
+    
+    private String message;
 }

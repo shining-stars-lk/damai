@@ -6,15 +6,15 @@ spring:
   main:
     allow-bean-definition-overriding: true
   redis:
-    database: 5
-    host: 192.168.2.102
+    database: 0
+    host: 82.157.255.105
     port: 6379
-    password: 7ygvUJM
+    password: qaz123
     timeout: 3000  
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
+        server-addr: 127.0.0.1:8848
     sentinel:
       transport:
         port: 8768
@@ -63,7 +63,17 @@ spring:
             - StripPrefix=2
           #            - RewritePath=/gateway/log(?<segment>/?.*), $\{segment}
           metadata:
-            title: 职员系统    
+            title: 职员系统
+            
+        - id: customize-service
+          uri: lb://customize-service
+          predicates:
+            - Path=/gateway/customize/**
+          filters:
+            - StripPrefix=2
+          #            - RewritePath=/gateway/log(?<segment>/?.*), $\{segment}
+          metadata:
+            title: 定制系统    
             
         - id: department-service
           uri: lb://department-service
@@ -79,9 +89,12 @@ spring:
                 fallbackUri: forward:/fallBackHandler
                 urlMap:
                   #接口超时处理 以-代替/
-                  department-get: 6000
+                  department-get: 9000
           metadata:
             title: 部门系统      
+api:
+  limit:
+    paths: /**/test/test
 kafka:
   producer:
     servers: 82.157.255.105:9092
@@ -110,7 +123,7 @@ hystrix:
           #thread: 表示使用线程隔离策略。
           thread:
             #timeoutInMilliseconds: 设置超时时间，单位为毫秒。
-            timeoutInMilliseconds: 3000
+            timeoutInMilliseconds: 6000
     #将熔断的隔离模式显示为thread模式，否则服务调用为信号量模式
     fallBackHandler:
       execution:
@@ -119,7 +132,7 @@ hystrix:
   threadpool:
     default:
       # Hystrix 更改默认并发数配置
-      coreSize: 50        
+      coreSize: 100        
 # gateway调用服务此ribbon配置参数失效，使用feign调用服务时生效，超时时间为ribbon.ReadTimeout + ribbon.ConnectTimeout
 ribbon:
   ReadTimeout: 10000
