@@ -137,7 +137,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.example.DepartmentProviderServiceClientApplication</mainClass>
+                    <mainClass>com.example.DepartmentApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
