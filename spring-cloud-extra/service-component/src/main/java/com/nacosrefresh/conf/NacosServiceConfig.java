@@ -8,14 +8,13 @@ import com.nacosrefresh.handle.ServiceHandle;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @description: bean管理
  * @author: k
  * @create: 2022-06-08
  **/
-@Configuration(proxyBeanMethods = false)
+
 @EnableConfigurationProperties
 @AutoConfigureAfter({NacosAutoServiceRegistration.class})
 public class NacosServiceConfig {

@@ -19,6 +19,8 @@ public interface ServiceLocker {
     RLock lock(String lockKey, TimeUnit unit, long leaseTime);
 
     boolean tryLock(String lockKey, TimeUnit unit, long waitTime);
+    
+    boolean tryLock(String lockKey, TimeUnit unit, long waitTime, long leaseTime);
 
     void unlock(String lockKey);
 
