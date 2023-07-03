@@ -1,4 +1,4 @@
-package com.example.core;
+package com.example.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -11,28 +11,28 @@ import javax.annotation.PostConstruct;
 
 @Component
 public class SpringUtil implements ApplicationContextAware, EnvironmentAware {
-    
+
     private ApplicationContext applicationContext;
     
     private Environment environment;
-    
+
     private static SpringUtil springUtil;
-    
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
-    
+
     @PostConstruct
     public void init(){
         springUtil = this;
     }
-    
+
     public static ApplicationContext getApplicationContext(){
         return springUtil.applicationContext;
     }
-    
-    
+
+
     public static <T> T getBean(Class<T> requiredType){
         if (springUtil == null) {
             return null;
@@ -40,10 +40,7 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware {
         return springUtil.applicationContext.getBean(requiredType);
     }
     
-    public static String getProperty(String key){
-        if (springUtil == null) {
-            return null;
-        }
+    public String getProperty(String key){
         return springUtil.environment.getProperty(key);
     }
     
