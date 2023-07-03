@@ -14,6 +14,6 @@ spring:
       config:
         server-addr: 82.157.255.105:8848
         file-extension: yaml
-        shared-configs:
-          - data-id: common.yaml
-            refresh: true
+#        shared-configs:
+#          - data-id: common.yaml
+#            refresh: true
