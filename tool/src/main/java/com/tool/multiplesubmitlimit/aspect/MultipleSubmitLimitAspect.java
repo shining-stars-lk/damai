@@ -68,7 +68,12 @@ public class MultipleSubmitLimitAspect {
         MultipleSubmitLimitHandler repeatLimitHandler = repeatLimitStrategyFactory.getMultipleSubmitLimitStrategy(repeatRejectedStrategy.getMsg());
 
         ServiceLocker lock = redissonLockFactory.createLock(LockType.Reentrant);
-        boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, WAIT_TIME);
+        boolean result = false;
+        if (timeout == 0) {
+            result = lock.tryLock(lockName, TimeUnit.SECONDS, WAIT_TIME);
+        }else {
+            result = lock.tryLock(lockName, TimeUnit.SECONDS, WAIT_TIME, timeout);
+        }
         //加锁成功执行
         if (result) {
             try{

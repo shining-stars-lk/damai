@@ -50,6 +50,16 @@ public class RedissonFairLocker implements ServiceLocker {
             return false;
         }
     }
+    
+    @Override
+    public boolean tryLock(String lockKey, TimeUnit unit, long waitTime, long leaseTime) {
+        RLock lock = redissonClient.getFairLock(lockKey);
+        try {
+            return lock.tryLock(waitTime, leaseTime, unit);
+        } catch (InterruptedException e) {
+            return false;
+        }
+    }
 
     @Override
     public void unlock(String lockKey) {
