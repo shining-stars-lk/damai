@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: String工具类
  * @author: k
  * @create: 2022-05-28

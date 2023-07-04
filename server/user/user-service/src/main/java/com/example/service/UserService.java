@@ -4,14 +4,14 @@ import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.client.ChannelDataClient;
 import com.example.common.Result;
-import com.example.core.CacheKeyEnum;
+import com.example.core.RedisKeyEnum;
 import com.example.dto.UserDto;
 import com.example.entity.User;
 import com.example.enums.BaseCode;
 import com.example.exception.ToolkitException;
 import com.example.mapper.UserMapper;
-import com.example.redis.CacheKeyWrap;
-import com.example.redis.DistributCache;
+import com.example.redis.RedisKeyWrap;
+import com.example.redis.RedisCache;
 import com.example.util.DesAlgorithm;
 import com.example.vo.GetChannelDataVo;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +45,7 @@ public class UserService {
     private UidGenerator uidGenerator;
     
     @Autowired
-    private DistributCache distributCache;
+    private RedisCache redisCache;
     
     @Autowired
     private ChannelDataClient channelDataClient;
@@ -70,8 +70,8 @@ public class UserService {
     }
     
     public void cacheUser(User user){
-        distributCache.set(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.USER_ID,user.getId()),user);
-        distributCache.expire(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.USER_ID,user.getId()),1, TimeUnit.DAYS);
+        redisCache.set(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.USER_ID,user.getId()),user);
+        redisCache.expire(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.USER_ID,user.getId()),1, TimeUnit.DAYS);
     }
     
     public String generateToken(String userId,String code){

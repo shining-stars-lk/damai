@@ -1,7 +1,7 @@
 package com.example.service;
 
 import com.baidu.fsg.uid.UidGenerator;
-import com.example.core.CacheKeyEnum;
+import com.example.core.RedisKeyEnum;
 import com.example.dto.RuleDto;
 import com.example.dto.RuleGetDto;
 import com.example.dto.RuleStatusDto;
@@ -9,8 +9,8 @@ import com.example.dto.RuleUpdateDto;
 import com.example.entity.Rule;
 import com.example.enums.RuleStatus;
 import com.example.mapper.RuleMapper;
-import com.example.redis.CacheKeyWrap;
-import com.example.redis.DistributCache;
+import com.example.redis.RedisKeyWrap;
+import com.example.redis.RedisCache;
 import com.example.util.DateUtils;
 import com.example.vo.RuleVo;
 import org.springframework.beans.BeanUtils;
@@ -34,7 +34,7 @@ public class RuleService {
     private RuleMapper ruleMapper;
     
     @Autowired
-    private DistributCache distributCache;
+    private RedisCache redisCache;
     
     @Resource
     private UidGenerator uidGenerator;
@@ -77,9 +77,9 @@ public class RuleService {
     public void saveCache(String id){
         Optional.ofNullable(ruleMapper.selectById(id)).ifPresent(rule -> {
             if (rule.getStatus() == RuleStatus.RUN.getCode()) {
-                distributCache.set(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.RULE),rule);
+                redisCache.set(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.RULE),rule);
             }else {
-                distributCache.del(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.RULE));
+                redisCache.del(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.RULE));
             }
         });
     }

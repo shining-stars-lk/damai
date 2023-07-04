@@ -5,7 +5,7 @@ import com.baidu.fsg.uid.UidGenerator;
 import com.example.ProductDto;
 import com.example.client.ProductClient;
 import com.example.common.Result;
-import com.example.core.CacheKeyEnum;
+import com.example.core.RedisKeyEnum;
 import com.example.dto.GetDto;
 import com.example.dto.GetOrderDto;
 import com.example.dto.InsertOrderDto;
@@ -16,8 +16,8 @@ import com.example.enums.BaseCode;
 import com.example.kafka.OrderMessageSend;
 import com.example.mapper.OrderMapper;
 import com.example.mapper.ProductOrderMapper;
-import com.example.redis.CacheKeyWrap;
-import com.example.redis.DistributCache;
+import com.example.redis.RedisKeyWrap;
+import com.example.redis.RedisCache;
 import com.example.vo.GetOrderVo;
 import com.example.vo.GetVo;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +53,7 @@ public class OrderService {
     private ProductClient productClient;
     
     @Autowired
-    private DistributCache distributCache;
+    private RedisCache redisCache;
     
     @Autowired(required = false)
     private OrderMessageSend orderMessageSend;
@@ -124,10 +124,10 @@ public class OrderService {
         List<String> keyList = new ArrayList<>();
         String[] steps = new String[productDtoList.size()];
         for (int i = 0; i < productDtoList.size(); i++) {
-            keyList.add(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.PRODUCT_STOCK, productDtoList.get(i).getProductId()).getRelKey());
+            keyList.add(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.PRODUCT_STOCK, productDtoList.get(i).getProductId()).getRelKey());
             steps[i] = String.valueOf(productDtoList.get(i).getProductAmount());
         }
-        long count = (Long) distributCache.getInstance().execute(redisScript, keyList, steps);
+        long count = (Long) redisCache.getInstance().execute(redisScript, keyList, steps);
         if (count == -1) {
             return Result.error(BaseCode.PRODUCT_STOCK_NOT_ENOUGH);
         }

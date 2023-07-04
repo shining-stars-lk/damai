@@ -13,7 +13,7 @@
 
 	<modules>
 		<module>common</module>
-		<module>distribute-cache</module>
+		<module>redis-tool</module>
 		<module>distribute-es</module>
 		<module>id-generator</module>
 		<module>spring-cloud-extra</module>

@@ -1,7 +1,7 @@
 package com.tool.servicelock.redisson;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 分布式锁锁类型
  * @author: k
  * @create: 2022-05-28

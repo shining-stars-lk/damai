@@ -61,7 +61,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>distribute-cache</artifactId>
+            <artifactId>redis-tool</artifactId>
             <version>${revision}</version>
             <exclusions>
                 <exclusion>

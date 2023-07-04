@@ -9,7 +9,7 @@ import com.tool.servicelock.redisson.factory.RedissonLockFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 提供方法级别的分布式锁
  * @author: k
  * @create: 2022-05-28

@@ -3,7 +3,7 @@ package com.tool.multiplesubmitlimit.info.strategy.generateKey;
 import org.aspectj.lang.JoinPoint;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 生成键策略接口
  * @author: k
  * @create: 2022-05-28

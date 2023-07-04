@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 基础解析类
  * @author: k
  * @create: 2022-05-28

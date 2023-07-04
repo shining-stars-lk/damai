@@ -1,7 +1,7 @@
 package com.tool.multiplesubmitlimit.info;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 生成键策略枚举
  * @author: k
  * @create: 2022-05-28

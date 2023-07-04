@@ -7,7 +7,7 @@ import org.redisson.api.RedissonClient;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: redisson操作接口实现类
  * @author: k
  * @create: 2022-05-28
