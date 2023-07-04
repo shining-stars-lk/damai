@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.client.ChannelDataClient;
 import com.example.common.Result;
+import com.example.dto.GetChannelDataByCodeDto;
 import com.example.enums.BaseCode;
 import com.example.exception.ToolkitException;
 import com.example.vo.GetChannelDataVo;
@@ -20,8 +21,10 @@ public class ChannelDataService {
     @Autowired
     private ChannelDataClient channelDataClient;
     
-    public GetChannelDataVo GetChannelDataByCode(String code){
-        Result<GetChannelDataVo> GetChannelDataResult = channelDataClient.getByCode(code);
+    public GetChannelDataVo getChannelDataByCode(String code){
+        GetChannelDataByCodeDto getChannelDataByCodeDto = new GetChannelDataByCodeDto();
+        getChannelDataByCodeDto.setCode(code);
+        Result<GetChannelDataVo> GetChannelDataResult = channelDataClient.getByCode(getChannelDataByCodeDto);
         if (GetChannelDataResult.getCode() == BaseCode.SUCCESS.getCode()) {
             return GetChannelDataResult.getData();
         }

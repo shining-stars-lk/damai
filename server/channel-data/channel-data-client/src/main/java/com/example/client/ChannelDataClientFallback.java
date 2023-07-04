@@ -1,6 +1,8 @@
 package com.example.client;
 
 import com.example.common.Result;
+import com.example.dto.GetChannelDataByCodeDto;
+import com.example.enums.BaseCode;
 import com.example.vo.GetChannelDataVo;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class ChannelDataClientFallback implements ChannelDataClient {
     
     @Override
-    public Result<GetChannelDataVo> getByCode(final String code) {
-        return null;
+    public Result<GetChannelDataVo> getByCode(GetChannelDataByCodeDto dto) {
+        return Result.error(BaseCode.SYSTEM_ERROR);
     }
 }

@@ -5,10 +5,10 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 /**
- * @program: bjgoodwill-msa-scloud
+ * @program: toolkit
  * @description:
- * @author: lk
- * @create: 2023-06-07
+ * @author: k
+ * @create: 2023-06-30
  **/
 @Data
 public class TestDto {
