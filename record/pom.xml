@@ -67,7 +67,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.example.DistributeCacheApplication</mainClass>
+                    <mainClass>com.example.RecordApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

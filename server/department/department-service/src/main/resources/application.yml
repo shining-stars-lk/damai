@@ -11,14 +11,14 @@ spring:
         degrade:
           nacos:
             server-addr: 82.157.255.105:8848
-            dataId: global-degrade-rules
+            dataId: general-degrade-rules
             groupId: SENTINEL_GROUP
             dataType: json
             rule-type: degrade
         flow:
           nacos:
             server-addr: 82.157.255.105:8848
-            dataId: global-flow-rules
+            dataId: general-flow-rules
             groupId: SENTINEL_GROUP
             dataType: json
             rule-type: flow
