@@ -16,4 +16,7 @@ public class GatewayProperty {
     //需要做频率限制的路径
     @Value("${api.limit.paths:#{null}}")
     private String[] apiRestrictPaths;
+    
+    @Value("${skip.check.token.paths:/**/department/printTraceId}")
+    private String[] skipCheckTokenPaths;
 }

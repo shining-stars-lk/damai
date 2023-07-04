@@ -9,12 +9,13 @@ import com.example.enums.BaseCode;
 import com.example.exception.ArgumentError;
 import com.example.exception.ArgumentException;
 import com.example.exception.ToolkitException;
+import com.example.property.GatewayProperty;
 import com.example.service.ApiRestrictService;
 import com.example.service.ChannelDataService;
 import com.example.service.TokenService;
 import com.example.threadlocal.BaseParameterHolder;
 import com.example.util.AesForClient;
-import com.example.util.SignatureUtil;
+import com.example.util.SignUtil;
 import com.example.vo.GetChannelDataVo;
 import com.example.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,8 @@ import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -80,6 +83,9 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     @Autowired
     private TokenService tokenService;
     
+    @Autowired
+    private GatewayProperty gatewayProperty;
+    
     @Resource
     private UidGenerator uidGenerator;
 
@@ -88,6 +94,10 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     
     @Value("${aes.vector:default}")
     private String aesVector;
+    
+    
+    
+    
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
@@ -148,23 +158,23 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         log.info("current thread verify: {}",Thread.currentThread().getName());
         ServerHttpRequest request = exchange.getRequest();
         String requestBody = originalBody;
-        Map<String, String> requestBodyContent = new HashMap<>();
+        Map<String, String> bodyContent = new HashMap<>();
         if (StringUtil.isNotEmpty(originalBody)) {
-            requestBodyContent = JSON.parseObject(originalBody, Map.class);
+            bodyContent = JSON.parseObject(originalBody, Map.class);
         }
         String code = null;
         String token;
         String userId = null;
         String uri = request.getPath().value();
         String debug = request.getHeaders().getFirst(DEBUG);
-        if (verifySwitch && !(StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
+        if (!(StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
             
             String aesFlag = request.getHeaders().getFirst(AES_FLAG);
             String rsaFlag = request.getHeaders().getFirst(RSA_FLAG);
             //应用渠道
-            code = requestBodyContent.get(CODE);
+            code = bodyContent.get(CODE);
             //token
-            token = requestBodyContent.get(TOKEN);
+            token = bodyContent.get(TOKEN);
             if (StringUtil.isEmpty(code)) {
                 ArgumentError argumentError = new ArgumentError();
                 argumentError.setArgumentName(CODE);
@@ -173,14 +183,16 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 argumentErrorList.add(argumentError);
                 throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
             }
-            GetChannelDataVo channelDataVo = channelDataService.GetChannelDataByCode(code);
+            GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
             if (StringUtil.isNotEmpty(rsaFlag) && "true".equals(rsaFlag)) {
-                boolean checkFlag = SignatureUtil.rsa256Check(requestBodyContent, channelDataVo.getPublicKey(), CHARSET);
+                boolean checkFlag = SignUtil.rsa256Check(bodyContent, channelDataVo.getPublicKey(), CHARSET);
                 if (!checkFlag) {
                     throw new ToolkitException(BaseCode.CHANNEL_DATA);
                 }
             }
-            if (StringUtil.isEmpty(token)) {
+            
+            boolean skipCheckTokenResult = skipCheckToken(uri);
+            if (!skipCheckTokenResult && StringUtil.isEmpty(token)) {
                 ArgumentError argumentError = new ArgumentError();
                 argumentError.setArgumentName(token);
                 argumentError.setMessage("token参数为空");
@@ -189,12 +201,16 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
             }
             
-            UserVo userVo = tokenService.getUser(token, channelDataVo.getAesKey());
-            userId = userVo.getId();
+            if (!skipCheckTokenResult) {
+                UserVo userVo = tokenService.getUser(token, channelDataVo.getAesKey());
+                userId = userVo.getId();
+            }
             
             if (StringUtil.isNotEmpty(aesFlag) && "true".equals(aesFlag)) {
-                String dec = AesForClient.decrypt(channelDataVo.getAesKey(), aesVector, requestBodyContent.get(BUSINESS_BODY));
+                String dec = AesForClient.decrypt(channelDataVo.getAesKey(), aesVector, bodyContent.get(BUSINESS_BODY));
                 requestBody = dec;
+            }else {
+                requestBody = bodyContent.get(BUSINESS_BODY);
             }
         }
         apiRestrictService.apiRestrict(userId,uri,request);
@@ -242,5 +258,17 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     @Override
     public int getOrder() {
         return -2;
+    }
+    
+    public boolean skipCheckToken(String url){
+        if (gatewayProperty.getSkipCheckTokenPaths() != null && gatewayProperty.getSkipCheckTokenPaths().length > 0) {
+            for (String skipCheckTokenPath : gatewayProperty.getSkipCheckTokenPaths()) {
+                PathMatcher matcher = new AntPathMatcher();
+                if(matcher.match(skipCheckTokenPath, url)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

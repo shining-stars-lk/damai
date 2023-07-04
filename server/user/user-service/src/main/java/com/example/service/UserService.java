@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.client.ChannelDataClient;
 import com.example.common.Result;
 import com.example.core.RedisKeyEnum;
+import com.example.dto.GetChannelDataByCodeDto;
 import com.example.dto.UserDto;
 import com.example.entity.User;
 import com.example.enums.BaseCode;
@@ -88,7 +89,9 @@ public class UserService {
     }
     
     public String getAesKey(String code){
-        Result<GetChannelDataVo> result = channelDataClient.getByCode(code);
+        GetChannelDataByCodeDto getChannelDataByCodeDto = new GetChannelDataByCodeDto();
+        getChannelDataByCodeDto.setCode(code);
+        Result<GetChannelDataVo> result = channelDataClient.getByCode(getChannelDataByCodeDto);
         if (result.getCode() != Result.success().getCode()) {
             throw new ToolkitException(result);
         }

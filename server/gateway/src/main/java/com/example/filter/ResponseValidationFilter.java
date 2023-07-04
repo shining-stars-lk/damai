@@ -152,7 +152,7 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
                         argumentErrorList.add(argumentError);
                         throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
                     }
-                    GetChannelDataVo channelDataVo = channelDataService.GetChannelDataByCode(code);
+                    GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
                     if (StringUtil.isNotEmpty(aesFlag) && "true".equals(aesFlag)) {
                         String encrypt = AesForClient.encrypt(channelDataVo.getAesKey(), aesVector, JSON.toJSONString(data));
                         result.setData(encrypt);
