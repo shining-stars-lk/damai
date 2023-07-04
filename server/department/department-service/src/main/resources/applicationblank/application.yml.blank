@@ -110,25 +110,3 @@ management:
       show-details: always
   security:
     enabled: false
-
-
-
-
-
-
-
-
-#app:
-#  id: msa-log
-#apollo:
-#  meta: http://192.168.2.65:8080
-#  bootstrap:
-#    enabled: true
-#    namespaces:  100001.common-config-h,application
-#    eagerLoad:
-#      enabled: true
-#sentinel:
-#  datasource:
-#    rules:
-#      apollo:
-#        namespace-name: 100001.nacos-notify
