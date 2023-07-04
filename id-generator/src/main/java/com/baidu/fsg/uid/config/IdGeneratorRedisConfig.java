@@ -17,9 +17,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  **/
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty("spring.redis.host")
-public class RedisConfig {
+public class IdGeneratorRedisConfig {
     
-    @Bean("myRedisTemplate")
+    @Bean("idGeneratorRedisTemplate")
     public RedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate redisTemplate = new RedisTemplate();
         redisTemplate.setDefaultSerializer(new StringRedisSerializer());
@@ -28,7 +28,7 @@ public class RedisConfig {
     }
     
     @Bean("disposableWorkerIdAssigner")
-    public WorkerIdAssigner redisDisposableWorkerIdAssigner(@Qualifier("myRedisTemplate") RedisTemplate redisTemplate){
+    public WorkerIdAssigner redisDisposableWorkerIdAssigner(@Qualifier("idGeneratorRedisTemplate") RedisTemplate redisTemplate){
         RedisDisposableWorkerIdAssigner redisDisposableWorkerIdAssigner = new RedisDisposableWorkerIdAssigner(redisTemplate);
         return redisDisposableWorkerIdAssigner;
     }
