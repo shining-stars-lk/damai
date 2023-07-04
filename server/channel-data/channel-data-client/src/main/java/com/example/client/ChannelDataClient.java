@@ -5,7 +5,7 @@ import com.example.dto.GetChannelDataByCodeDto;
 import com.example.vo.GetChannelDataVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 /**
  * @program: toolkit
@@ -17,6 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @FeignClient(value = "channel-data-service",fallback = ChannelDataClientFallback.class)
 public interface ChannelDataClient {
     
-    @GetMapping("/channel/data/getByCode")
+    @PostMapping("/channel/data/getByCode")
     Result<GetChannelDataVo> getByCode(GetChannelDataByCodeDto dto);
 }

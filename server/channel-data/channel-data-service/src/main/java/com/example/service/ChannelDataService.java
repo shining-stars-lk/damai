@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Optional;
 
 /**
  * @program: toolkit
@@ -32,11 +33,12 @@ public class ChannelDataService {
     private UidGenerator uidGenerator;
     
     public GetChannelDataVo getByCode(GetChannelDataByCodeDto dto){
+        GetChannelDataVo getChannelDataVo = new GetChannelDataVo();
         QueryWrapper<ChannelData> wrapper = new QueryWrapper();
         wrapper.eq("status",1).eq("code",dto.getCode());
-        ChannelData channelData = channelDataMapper.selectOne(wrapper);
-        GetChannelDataVo getChannelDataVo = new GetChannelDataVo();
-        BeanUtils.copyProperties(channelData,getChannelDataVo);
+        Optional.ofNullable(channelDataMapper.selectOne(wrapper)).ifPresent(channelData -> {
+            BeanUtils.copyProperties(channelData,getChannelDataVo);
+        });
         return getChannelDataVo;
     }
     

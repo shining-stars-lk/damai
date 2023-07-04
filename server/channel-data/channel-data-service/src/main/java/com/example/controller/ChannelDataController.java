@@ -6,7 +6,6 @@ import com.example.dto.GetChannelDataByCodeDto;
 import com.example.service.ChannelDataService;
 import com.example.vo.GetChannelDataVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +26,7 @@ public class ChannelDataController {
     @Autowired
     private ChannelDataService channelDataService;
     
-    @GetMapping (value = "/getByCode")
+    @PostMapping (value = "/getByCode")
     public Result<GetChannelDataVo> getByCode(@Valid @RequestBody GetChannelDataByCodeDto getChannelDataByCodeDto) {
         GetChannelDataVo getChannelDataVo = channelDataService.getByCode(getChannelDataByCodeDto);
         return Result.success(getChannelDataVo);
