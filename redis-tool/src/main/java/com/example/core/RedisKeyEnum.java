@@ -2,12 +2,12 @@ package com.example.core;
 
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: redis的key，value管理枚举
  * @author: k
  * @create: 2022-05-28
  **/
-public enum CacheKeyEnum {
+public enum RedisKeyEnum {
 
     Key("key","键值测试","value为TestCacheDto类型","k"),
     Key2("key:%s","键值占位测试","value为TestCacheDto类型","k"),
@@ -44,15 +44,15 @@ public enum CacheKeyEnum {
      * */
     private String author;
 
-    CacheKeyEnum(String keyCode, String keyMsg, String valueMsg, String author){
+    RedisKeyEnum(String keyCode, String keyMsg, String valueMsg, String author){
         this.keyCode = keyCode;
         this.keyMsg = keyMsg;
         this.valueMsg = valueMsg;
         this.author = author;
     }
 
-    public static CacheKeyEnum getRc(String keyCode) {
-        for (CacheKeyEnum re : CacheKeyEnum.values()) {
+    public static RedisKeyEnum getRc(String keyCode) {
+        for (RedisKeyEnum re : RedisKeyEnum.values()) {
             if (re.keyCode.equals(keyCode)) {
                 return re;
             }

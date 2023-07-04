@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 防重复提交标识组装类
  * @author: k
  * @create: 2022-05-28

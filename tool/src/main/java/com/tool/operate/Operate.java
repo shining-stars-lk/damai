@@ -3,7 +3,7 @@ package com.tool.operate;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: redisson操作接口
  * @author: k
  * @create: 2022-05-28

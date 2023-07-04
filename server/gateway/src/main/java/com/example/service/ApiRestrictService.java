@@ -2,7 +2,7 @@ package com.example.service;
 
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
-import com.example.core.CacheKeyEnum;
+import com.example.core.RedisKeyEnum;
 import com.example.core.StringUtil;
 import com.example.dto.ApiDataDto;
 import com.example.enums.BaseCode;
@@ -10,8 +10,8 @@ import com.example.enums.RuleTimeUnit;
 import com.example.exception.ToolkitException;
 import com.example.kafka.ApiDataMessageSend;
 import com.example.property.GatewayProperty;
-import com.example.redis.CacheKeyWrap;
-import com.example.redis.DistributCache;
+import com.example.redis.RedisKeyWrap;
+import com.example.redis.RedisCache;
 import com.example.util.DateUtils;
 import com.example.vo.RuleVo;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ import java.util.Optional;
 public class ApiRestrictService {
     
     @Autowired
-    private DistributCache distributCache;
+    private RedisCache redisCache;
     
     @Autowired
     private GatewayProperty gatewayProperty;
@@ -85,7 +85,7 @@ public class ApiRestrictService {
             long thresholdValue = 0L;
             String message = "";
             try {
-                RuleVo ruleVo = distributCache.get(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.RULE), RuleVo.class);
+                RuleVo ruleVo = redisCache.get(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.RULE), RuleVo.class);
                 if (Optional.ofNullable(ruleVo).isPresent()) {
                     message = ruleVo.getMessage();
                     String ip = getIpAddress(request);
@@ -99,8 +99,8 @@ public class ApiRestrictService {
                     keyList.add(String.valueOf(ruleVo.getStatisticTimeType() == RuleTimeUnit.SECOND.getCode() ? ruleVo.getStatisticTime() : ruleVo.getStatisticTime() * 60));
                     keyList.add(String.valueOf(ruleVo.getThresholdValue()));
                     keyList.add(String.valueOf(ruleVo.getLimitTimeType() == RuleTimeUnit.SECOND.getCode() ? ruleVo.getLimitTime() : ruleVo.getLimitTime() * 60));
-                    keyList.add(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.RULE_LIMIT,key).getRelKey());
-                    List<Long> executeResultList = (ArrayList) distributCache.getInstance().execute(redisScript, keyList);
+                    keyList.add(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.RULE_LIMIT,key).getRelKey());
+                    List<Long> executeResultList = (ArrayList) redisCache.getInstance().execute(redisScript, keyList);
                     result = executeResultList.get(0);
                     count = executeResultList.get(1);
                     thresholdValue = executeResultList.get(2);

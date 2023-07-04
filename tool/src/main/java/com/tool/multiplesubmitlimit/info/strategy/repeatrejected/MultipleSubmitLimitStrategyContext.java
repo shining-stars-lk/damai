@@ -3,7 +3,7 @@ package com.tool.multiplesubmitlimit.info.strategy.repeatrejected;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 防重复提交触发时策略上下文
  * @author: k
  * @create: 2022-05-28

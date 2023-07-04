@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 将yml的配置和此对象绑定
  * @author: k
  * @create: 2022-05-28

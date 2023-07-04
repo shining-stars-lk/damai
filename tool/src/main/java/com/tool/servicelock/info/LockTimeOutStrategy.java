@@ -2,7 +2,7 @@ package com.tool.servicelock.info;
 
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 分布式锁失败处理接口实现类
  * @author: k
  * @create: 2022-05-28

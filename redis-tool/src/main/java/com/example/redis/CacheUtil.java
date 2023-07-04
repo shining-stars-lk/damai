@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 缓存工具类
  * @author: k
  * @create: 2022-05-28
@@ -56,10 +56,10 @@ public class CacheUtil {
     /**
      * 检查 redisKeyWrap 中的key是否为空或空的字符串
      *
-     * @param cacheKeyWrap
+     * @param RedisKeyWrap
      */
-    public static void checkNotBlank(CacheKeyWrap cacheKeyWrap) {
-        if (StringUtil.isEmpty(cacheKeyWrap.getRelKey())) {
+    public static void checkNotBlank(RedisKeyWrap RedisKeyWrap) {
+        if (StringUtil.isEmpty(RedisKeyWrap.getRelKey())) {
             throw new RuntimeException("请求参数缺失");
         }
     }
@@ -101,8 +101,8 @@ public class CacheUtil {
         }
     }
 
-    public static List<String> getBatchKey(Collection<CacheKeyWrap> list){
-        return list.stream().map(CacheKeyWrap::getRelKey).collect(Collectors.toList());
+    public static List<String> getBatchKey(Collection<RedisKeyWrap> list){
+        return list.stream().map(RedisKeyWrap::getRelKey).collect(Collectors.toList());
     }
 
 }

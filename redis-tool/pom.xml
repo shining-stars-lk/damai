@@ -10,9 +10,9 @@
     </parent>
 
 
-    <artifactId>distribute-cache</artifactId>
+    <artifactId>redis-tool</artifactId>
 
-    <name>distribute-cache</name>
+    <name>redis-tool</name>
     <description>分布式锁和防重复提交工具</description>
 
     <properties>

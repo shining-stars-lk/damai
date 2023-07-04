@@ -1,36 +1,36 @@
 package com.example.redis;
 
 
-import com.example.core.CacheKeyEnum;
+import com.example.core.RedisKeyEnum;
 
 import java.util.Objects;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 真实key构建类(不对外使用,只在缓存工具类中做中转)
  * @author: k
  * @create: 2022-05-28
  **/
-public final class CacheKeyWrap {
+public final class RedisKeyWrap {
     /**
      * 实际使用的key
      * */
     private String relKey;
 
-    private CacheKeyWrap() {}
+    private RedisKeyWrap() {}
 
-    private CacheKeyWrap(String relKey) {
+    private RedisKeyWrap(String relKey) {
         this.relKey = relKey;
     }
 
     /**
      * 构建真实的key
-     * @param cacheKeyEnum key的枚举
+     * @param RedisKeyEnum key的枚举
      * @param args 占位符的值
      * */
-    public static CacheKeyWrap cacheKeyBuild(CacheKeyEnum cacheKeyEnum, Object... args){
-        String redisRelKey = String.format(cacheKeyEnum.getKeyCode(),args);
-        return new CacheKeyWrap(redisRelKey);
+    public static RedisKeyWrap cacheKeyBuild(RedisKeyEnum RedisKeyEnum, Object... args){
+        String redisRelKey = String.format(RedisKeyEnum.getKeyCode(),args);
+        return new RedisKeyWrap(redisRelKey);
     }
 
     public String getRelKey() {
@@ -45,7 +45,7 @@ public final class CacheKeyWrap {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        CacheKeyWrap that = (CacheKeyWrap) o;
+        RedisKeyWrap that = (RedisKeyWrap) o;
         return relKey.equals(that.relKey);
     }
 

@@ -3,7 +3,7 @@ package com.tool.core;
 import java.io.Serializable;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 常量类
  * @author: k
  * @create: 2022-05-28

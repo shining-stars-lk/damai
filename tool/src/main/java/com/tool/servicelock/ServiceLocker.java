@@ -5,7 +5,7 @@ import org.redisson.api.RLock;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 分布式锁接口
  * @author: k
  * @create: 2022-05-28

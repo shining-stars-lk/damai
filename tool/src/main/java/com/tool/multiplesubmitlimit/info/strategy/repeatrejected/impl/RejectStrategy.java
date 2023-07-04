@@ -9,7 +9,7 @@ import javax.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 防重复提交触发时策略(快速失败)
  * @author: k
  * @create: 2022-05-28

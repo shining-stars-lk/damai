@@ -1,5 +1,5 @@
 # 提供常用的组件封装工具
-- `distribute-cache`缓存工具
+- `redis-tool`缓存工具
   - 提供对redis的操作封装。
   - 提供基于redisson实现的分布式锁功能，有注解和方法两种级别实现。
   - 提供基于redisson实现的防重复提交功能。

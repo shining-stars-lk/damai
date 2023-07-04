@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 生成键简单策略 REPEAT_LIMIT(标识)+类名+方法名+userId
  * @author: k
  * @create: 2022-05-28

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 防重复提交限制注解
  * @author: k
  * @create: 2022-05-28

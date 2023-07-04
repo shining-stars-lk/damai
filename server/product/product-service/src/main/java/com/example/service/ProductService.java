@@ -2,13 +2,13 @@ package com.example.service;
 
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
-import com.example.core.CacheKeyEnum;
+import com.example.core.RedisKeyEnum;
 import com.example.dto.GetDto;
 import com.example.dto.ProductDto;
 import com.example.entity.Product;
 import com.example.mapper.ProductMapper;
-import com.example.redis.CacheKeyWrap;
-import com.example.redis.DistributCache;
+import com.example.redis.RedisKeyWrap;
+import com.example.redis.RedisCache;
 import com.example.vo.GetVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -32,7 +32,7 @@ public class ProductService {
     private ProductMapper productMapper;
     
     @Autowired
-    private DistributCache distributCache;
+    private RedisCache redisCache;
     
     @Resource
     private UidGenerator uidGenerator; 
@@ -83,7 +83,7 @@ public class ProductService {
         if (productDto.getSaveRedis() != null && productDto.getSaveRedis() == 1) {
             productMapper.insert(product);
         }
-        distributCache.incrBy(CacheKeyWrap.cacheKeyBuild(CacheKeyEnum.PRODUCT_STOCK,String.valueOf(product.getId())),product.getStock());
+        redisCache.incrBy(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.PRODUCT_STOCK,String.valueOf(product.getId())),product.getStock());
         return true;
     }
 }

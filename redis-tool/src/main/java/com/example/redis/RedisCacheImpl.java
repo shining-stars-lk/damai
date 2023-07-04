@@ -3,8 +3,7 @@ package com.example.redis;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.core.StringUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.AllArgsConstructor;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.DefaultTypedTuple;
@@ -12,7 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.stereotype.Component;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,22 +24,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: redis分布式缓存实现
  * @author: k
  * @create: 2022-05-28
  **/
-@Component
-public class RedisCacheImpl implements DistributCache {
-
-    @Qualifier("myStringRedisTemplate")
-    @Autowired
+@AllArgsConstructor
+public class RedisCacheImpl implements RedisCache {
+    
     private StringRedisTemplate redisTemplate;
 
     @Override
-    public <T> T get(CacheKeyWrap cacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> T get(RedisKeyWrap RedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         // 如果取String类型 则直接取出返回
         String cachedValue = redisTemplate.opsForValue().get(key);
         if (String.class.isAssignableFrom(clazz)) {
@@ -50,16 +47,16 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public String getRange(CacheKeyWrap cacheKeyWrap, long start, long end) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public String getRange(RedisKeyWrap RedisKeyWrap, long start, long end) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForValue().get(key, start, end);
     };
 
     @Override
-    public <T> List<T> getValueIsList(CacheKeyWrap cacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> List<T> getValueIsList(RedisKeyWrap RedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String valueStr = redisTemplate.opsForValue().get(key);
         if (StringUtil.isEmpty(valueStr)) {
             return new ArrayList();
@@ -70,23 +67,23 @@ public class RedisCacheImpl implements DistributCache {
 
 
     @Override
-    public List<String> getKeys(List<CacheKeyWrap> keyList) {
+    public List<String> getKeys(List<RedisKeyWrap> keyList) {
         CacheUtil.checkNotEmpty(keyList);
         List<String> batchKey = CacheUtil.getBatchKey(keyList);
         return redisTemplate.opsForValue().multiGet(batchKey);
     }
 
     @Override
-    public Boolean hasKey(CacheKeyWrap cacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Boolean hasKey(RedisKeyWrap RedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.hasKey(key);
     }
 
     @Override
-    public Long getExpire(CacheKeyWrap cacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long getExpire(RedisKeyWrap RedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.getExpire(key);
     }
 
@@ -96,16 +93,16 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public Boolean move(CacheKeyWrap cacheKeyWrap, int dbIndex) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Boolean move(RedisKeyWrap RedisKeyWrap, int dbIndex) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.move(key, dbIndex);
     }
 
     @Override
-    public Boolean persist(CacheKeyWrap cacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Boolean persist(RedisKeyWrap RedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.persist(key);
     }
 
@@ -115,64 +112,64 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public void rename(CacheKeyWrap oldKey, CacheKeyWrap newKey) {
+    public void rename(RedisKeyWrap oldKey, RedisKeyWrap newKey) {
         CacheUtil.checkNotBlank(oldKey);
         CacheUtil.checkNotBlank(newKey);
         redisTemplate.rename(oldKey.getRelKey(), newKey.getRelKey());
     }
 
     @Override
-    public Boolean renameIfAbsent(CacheKeyWrap oldKey, CacheKeyWrap newKey) {
+    public Boolean renameIfAbsent(RedisKeyWrap oldKey, RedisKeyWrap newKey) {
         CacheUtil.checkNotBlank(oldKey);
         CacheUtil.checkNotBlank(newKey);
         return redisTemplate.renameIfAbsent(oldKey.getRelKey(), newKey.getRelKey());
     }
 
     @Override
-    public DataType type(CacheKeyWrap cacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public DataType type(RedisKeyWrap RedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.type(key);
     }
     
     @Override
-    public void set(CacheKeyWrap cacheKeyWrap, Object object) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public void set(RedisKeyWrap RedisKeyWrap, Object object) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String json = object instanceof String ? (String) object : JSON.toJSONString(object);
         redisTemplate.opsForValue().set(key, json);
     }
 
     @Override
-    public void set(CacheKeyWrap cacheKeyWrap, Object object, long ttl) {
-        set(cacheKeyWrap, object, ttl, CacheUtil.DEFAULT_TIME_UNIT);
+    public void set(RedisKeyWrap RedisKeyWrap, Object object, long ttl) {
+        set(RedisKeyWrap, object, ttl, CacheUtil.DEFAULT_TIME_UNIT);
     }
 
     @Override
-    public void set(CacheKeyWrap cacheKeyWrap, Object object, long ttl, TimeUnit timeUnit) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public void set(RedisKeyWrap RedisKeyWrap, Object object, long ttl, TimeUnit timeUnit) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String json = object instanceof String ? (String) object : JSON.toJSONString(object);
         redisTemplate.opsForValue().set(key, json, ttl, timeUnit);
     }
 
     @Override
-    public boolean setIfAbsent(CacheKeyWrap cacheKeyWrap, Object object) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public boolean setIfAbsent(RedisKeyWrap RedisKeyWrap, Object object) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String json = object instanceof String ? (String) object : JSON.toJSONString(object);
         return redisTemplate.opsForValue().setIfAbsent(key, json);
     }
 
     @Override
-    public Long size(CacheKeyWrap cacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long size(RedisKeyWrap RedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForValue().size(key);
     }
 
     @Override
-    public void multiSet(Map<CacheKeyWrap, ?> map) {
+    public void multiSet(Map<RedisKeyWrap, ?> map) {
         CacheUtil.checkNotEmpty(map);
         Map<String, String> mapForSave = new HashMap<>(map.size());
         map.forEach((hashKey, val) -> {
@@ -183,7 +180,7 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public boolean multiSetIfAbsent(Map<CacheKeyWrap, ?> map) {
+    public boolean multiSetIfAbsent(Map<RedisKeyWrap, ?> map) {
         CacheUtil.checkNotEmpty(map);
         Map<String, String> mapForSave = new HashMap<>(map.size());
         map.forEach((hashKey, val) -> {
@@ -194,50 +191,50 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public Long incrBy(CacheKeyWrap cacheKeyWrap, long increment) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long incrBy(RedisKeyWrap RedisKeyWrap, long increment) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForValue().increment(key, increment);
     }
 
     @Override
-    public Double incrByDouble(CacheKeyWrap cacheKeyWrap, double increment) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Double incrByDouble(RedisKeyWrap RedisKeyWrap, double increment) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForValue().increment(key, increment);
     }
 
     @Override
-    public Integer append(CacheKeyWrap cacheKeyWrap, String value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Integer append(RedisKeyWrap RedisKeyWrap, String value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForValue().append(key, value);
     }
 
     @Override
-    public void putHash(CacheKeyWrap cacheKeyWrap, String hashKey, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public void putHash(RedisKeyWrap RedisKeyWrap, String hashKey, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         redisTemplate.opsForHash().put(key, hashKey, jsonValue);
     }
 
     @Override
-    public void putHash(CacheKeyWrap cacheKeyWrap, String hashKey, Object value, long ttl) {
-        putHash(cacheKeyWrap, hashKey, value, ttl, CacheUtil.DEFAULT_TIME_UNIT);
+    public void putHash(RedisKeyWrap RedisKeyWrap, String hashKey, Object value, long ttl) {
+        putHash(RedisKeyWrap, hashKey, value, ttl, CacheUtil.DEFAULT_TIME_UNIT);
     }
 
     @Override
-    public void putHash(CacheKeyWrap cacheKeyWrap, String hashKey, Object value, long ttl, TimeUnit timeUnit) {
-        putHash(cacheKeyWrap, hashKey, value);
+    public void putHash(RedisKeyWrap RedisKeyWrap, String hashKey, Object value, long ttl, TimeUnit timeUnit) {
+        putHash(RedisKeyWrap, hashKey, value);
         // 设置过期时间
-        expire(cacheKeyWrap, ttl, timeUnit);
+        expire(RedisKeyWrap, ttl, timeUnit);
     }
 
     @Override
-    public void putHash(CacheKeyWrap cacheKeyWrap, Map<String, ?> map) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public void putHash(RedisKeyWrap RedisKeyWrap, Map<String, ?> map) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Map<String, String> mapForSave = new HashMap<>(map.size());
         map.forEach((hashKey, val) -> {
             String jsonValue = val instanceof String ? (String) val : JSON.toJSONString(val);
@@ -247,30 +244,30 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public void putHash(CacheKeyWrap cacheKeyWrap, Map<String, ?> map, long ttl) {
-        putHash(cacheKeyWrap, map, ttl, CacheUtil.DEFAULT_TIME_UNIT);
+    public void putHash(RedisKeyWrap RedisKeyWrap, Map<String, ?> map, long ttl) {
+        putHash(RedisKeyWrap, map, ttl, CacheUtil.DEFAULT_TIME_UNIT);
     }
 
     @Override
-    public void putHash(CacheKeyWrap cacheKeyWrap, Map<String, ?> map, long ttl, TimeUnit timeUnit) {
-        putHash(cacheKeyWrap, map);
-        expire(cacheKeyWrap, ttl, timeUnit);
+    public void putHash(RedisKeyWrap RedisKeyWrap, Map<String, ?> map, long ttl, TimeUnit timeUnit) {
+        putHash(RedisKeyWrap, map);
+        expire(RedisKeyWrap, ttl, timeUnit);
     }
 
     @Override
-    public Boolean putHashIfAbsent(CacheKeyWrap cacheKeyWrap, String hashKey, Object value){
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Boolean putHashIfAbsent(RedisKeyWrap RedisKeyWrap, String hashKey, Object value){
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotBlank(hashKey);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForHash().putIfAbsent(key, hashKey, jsonValue);
     }
 
     @Override
-    public <T> T getForHash(CacheKeyWrap cacheKeyWrap, String hashKey, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public <T> T getForHash(RedisKeyWrap RedisKeyWrap, String hashKey, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotBlank(hashKey);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         Object o = redisTemplate.opsForHash().get(key, hashKey);
         // 如果取String类型 则直接取出返回
         if (String.class.isAssignableFrom(clazz)) {
@@ -280,10 +277,10 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public <T> List<T> getValueIsListForHash(CacheKeyWrap cacheKeyWrap, String hashKey, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public <T> List<T> getValueIsListForHash(RedisKeyWrap RedisKeyWrap, String hashKey, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotBlank(hashKey);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         Object o = redisTemplate.opsForHash().get(key,hashKey);
         if (o == null) {
             return new ArrayList<>();
@@ -296,10 +293,10 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public <T> List<T> multiGetForHash(CacheKeyWrap cacheKeyWrap, List<String> hashKeys, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public <T> List<T> multiGetForHash(RedisKeyWrap RedisKeyWrap, List<String> hashKeys, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotBlank(hashKeys);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         List<Object> objHashKeys = new ArrayList<>();
         objHashKeys.addAll(hashKeys);
         List<Object> multiGetObj = redisTemplate.opsForHash().multiGet(key, objHashKeys);
@@ -311,9 +308,9 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public <T> List<T> getAllForHash(CacheKeyWrap cacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> List<T> getAllForHash(RedisKeyWrap RedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         List<Object> valuesObj = redisTemplate.opsForHash().values(key);
         if (String.class.isAssignableFrom(clazz)) {
             return (List<T>) valuesObj;
@@ -323,9 +320,9 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public <T> T indexForList(CacheKeyWrap cacheKeyWrap, long index, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> T indexForList(RedisKeyWrap RedisKeyWrap, long index, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String cachedValue = redisTemplate.opsForList().index(key, index);
         if (StringUtil.isEmpty(cachedValue)) {
             return null;
@@ -337,19 +334,19 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public Long leftPushForList(CacheKeyWrap cacheKeyWrap, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long leftPushForList(RedisKeyWrap RedisKeyWrap, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForList().leftPush(key, jsonValue);
     }
 
     @Override
-    public Long leftPushAllForList(CacheKeyWrap cacheKeyWrap, List<Object> valueList){
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long leftPushAllForList(RedisKeyWrap RedisKeyWrap, List<Object> valueList){
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(valueList);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         List<String> jsonList = new ArrayList<>(valueList.size());
         valueList.forEach(value -> {
             String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
@@ -359,39 +356,39 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public Long leftPushIfPresentForList(CacheKeyWrap cacheKeyWrap, Object value){
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long leftPushIfPresentForList(RedisKeyWrap RedisKeyWrap, Object value){
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForList().leftPushIfPresent(key, jsonValue);
     }
 
     @Override
-    public Long leftPushForList(CacheKeyWrap cacheKeyWrap, Object pivot, Object value){
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long leftPushForList(RedisKeyWrap RedisKeyWrap, Object pivot, Object value){
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(pivot);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonPivot = value instanceof String ? (String) pivot : JSON.toJSONString(pivot);
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForList().leftPush(key, jsonPivot, jsonValue);
     }
 
     @Override
-    public Long rightPushForList(CacheKeyWrap cacheKeyWrap, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long rightPushForList(RedisKeyWrap RedisKeyWrap, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForList().rightPush(key, jsonValue);
     }
 
     @Override
-    public Long rightPushAllForList(CacheKeyWrap cacheKeyWrap, List<Object> valueList){
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long rightPushAllForList(RedisKeyWrap RedisKeyWrap, List<Object> valueList){
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(valueList);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         List<String> jsonList = new ArrayList<>(valueList.size());
         valueList.forEach(value -> {
             String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
@@ -401,68 +398,68 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public Long rightPushIfPresentForList(CacheKeyWrap cacheKeyWrap, Object value){
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long rightPushIfPresentForList(RedisKeyWrap RedisKeyWrap, Object value){
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForList().rightPushIfPresent(key, jsonValue);
     }
 
     @Override
-    public Long rightPushForList(CacheKeyWrap cacheKeyWrap, Object pivot, Object value){
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long rightPushForList(RedisKeyWrap RedisKeyWrap, Object pivot, Object value){
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(pivot);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonPivot = value instanceof String ? (String) pivot : JSON.toJSONString(pivot);
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForList().rightPush(key, jsonPivot, jsonValue);
     }
 
     @Override
-    public void setForList(CacheKeyWrap cacheKeyWrap, long index, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public void setForList(RedisKeyWrap RedisKeyWrap, long index, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         redisTemplate.opsForList().set(key, index, jsonValue);
     }
 
     @Override
-    public <T> T leftPopForList(CacheKeyWrap cacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> T leftPopForList(RedisKeyWrap RedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String s = redisTemplate.opsForList().leftPop(key);
         return getComplex(s, clazz);
     }
 
     @Override
-    public <T> T leftPopBlockForList(CacheKeyWrap cacheKeyWrap, Class<T> clazz, long timeout, TimeUnit unit) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> T leftPopBlockForList(RedisKeyWrap RedisKeyWrap, Class<T> clazz, long timeout, TimeUnit unit) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String s = redisTemplate.opsForList().leftPop(key, timeout, unit);
         return getComplex(s, clazz);
     }
 
     @Override
-    public <T> T rightPopForList(CacheKeyWrap cacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> T rightPopForList(RedisKeyWrap RedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String s = redisTemplate.opsForList().rightPop(key);
         return getComplex(s, clazz);
     }
 
     @Override
-    public <T> T rightPopBlockForList(CacheKeyWrap cacheKeyWrap, Class<T> clazz, long timeout, TimeUnit unit) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> T rightPopBlockForList(RedisKeyWrap RedisKeyWrap, Class<T> clazz, long timeout, TimeUnit unit) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String s = redisTemplate.opsForList().rightPop(key, timeout, unit);
         return getComplex(s, clazz);
     }
 
     @Override
-    public <T> T rightPopAndLeftPushForList(CacheKeyWrap sourceKey, CacheKeyWrap destinationKey, Class<T> clazz) {
+    public <T> T rightPopAndLeftPushForList(RedisKeyWrap sourceKey, RedisKeyWrap destinationKey, Class<T> clazz) {
         CacheUtil.checkNotBlank(sourceKey);
         CacheUtil.checkNotBlank(destinationKey);
         String sourceRelKey = sourceKey.getRelKey();
@@ -472,7 +469,7 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public <T> T rightPopBlockAndLeftPushForList(CacheKeyWrap sourceKey, CacheKeyWrap destinationKey, Class<T> clazz, long timeout, TimeUnit unit) {
+    public <T> T rightPopBlockAndLeftPushForList(RedisKeyWrap sourceKey, RedisKeyWrap destinationKey, Class<T> clazz, long timeout, TimeUnit unit) {
         CacheUtil.checkNotBlank(sourceKey);
         CacheUtil.checkNotBlank(destinationKey);
         String sourceRelKey = sourceKey.getRelKey();
@@ -482,133 +479,133 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public <T> List<T> getAllForList(CacheKeyWrap cacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> List<T> getAllForList(RedisKeyWrap RedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         List list = redisTemplate.opsForList().range(key, 0, -1);
         return parseObjects(list, clazz);
     }
 
     @Override
-    public <T> List<T> rangeForList(CacheKeyWrap cacheKeyWrap, long start, long end, Class<T> clazz){
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> List<T> rangeForList(RedisKeyWrap RedisKeyWrap, long start, long end, Class<T> clazz){
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         List range = redisTemplate.opsForList().range(key, start, end);
         return parseObjects(range, clazz);
     }
 
     @Override
-    public Long removeForList(CacheKeyWrap cacheKeyWrap, long index, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long removeForList(RedisKeyWrap RedisKeyWrap, long index, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForList().remove(key, index, jsonValue);
     }
 
     @Override
-    public void trimForList(CacheKeyWrap cacheKeyWrap, long start, long end) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public void trimForList(RedisKeyWrap RedisKeyWrap, long start, long end) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         redisTemplate.opsForList().trim(key, start, end);
     }
 
     @Override
-    public Long lenForList(CacheKeyWrap cacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long lenForList(RedisKeyWrap RedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForList().size(key);
     }
 
     @Override
-    public Boolean hasKeyForHash(CacheKeyWrap cacheKeyWrap, String hashKey) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Boolean hasKeyForHash(RedisKeyWrap RedisKeyWrap, String hashKey) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotBlank(hashKey);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForHash().hasKey(key, hashKey);
     }
 
     @Override
-    public void del(CacheKeyWrap cacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public void del(RedisKeyWrap RedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         redisTemplate.delete(key);
     }
     
 
     @Override
-    public Long delForHash(CacheKeyWrap cacheKeyWrap, String hashKey) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long delForHash(RedisKeyWrap RedisKeyWrap, String hashKey) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotBlank(hashKey);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForHash().delete(key, hashKey);
     }
 
     @Override
-    public Long delForHash(CacheKeyWrap cacheKeyWrap, Collection<String> hashKeys) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long delForHash(RedisKeyWrap RedisKeyWrap, Collection<String> hashKeys) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotBlank(hashKeys);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForHash().delete(key, hashKeys.toArray());
     }
 
     @Override
-    public Long incrByForHash(CacheKeyWrap cacheKeyWrap, String hashKey, long increment) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long incrByForHash(RedisKeyWrap RedisKeyWrap, String hashKey, long increment) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotBlank(hashKey);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForHash().increment(key, hashKey, increment);
     }
 
     @Override
-    public Double incrByDoubleForHash(CacheKeyWrap cacheKeyWrap, String hashKey, double delta){
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Double incrByDoubleForHash(RedisKeyWrap RedisKeyWrap, String hashKey, double delta){
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotBlank(hashKey);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForHash().increment(key, hashKey, delta);
     }
 
     @Override
-    public Set<String> hashKeysForHash(CacheKeyWrap cacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Set<String> hashKeysForHash(RedisKeyWrap RedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set<Object> keys = redisTemplate.opsForHash().keys(key);
         return parseObjects(keys,String.class);
     }
 
     @Override
-    public Long sizeForHash(CacheKeyWrap cacheKeyWrap){
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long sizeForHash(RedisKeyWrap RedisKeyWrap){
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForHash().size(key);
     }
 
     @Override
-    public void del(Collection<CacheKeyWrap> keys) {
+    public void del(Collection<RedisKeyWrap> keys) {
         CacheUtil.checkNotEmpty(keys);
         List<String> batchKey = CacheUtil.getBatchKey(keys);
         redisTemplate.delete(batchKey);
     }
 
     @Override
-    public Boolean expire(CacheKeyWrap cacheKeyWrap, long ttl, TimeUnit timeUnit) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Boolean expire(RedisKeyWrap RedisKeyWrap, long ttl, TimeUnit timeUnit) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.expire(key, ttl, timeUnit);
     }
 
     @Override
-    public Long addForSet(CacheKeyWrap cacheKeyWrap, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long addForSet(RedisKeyWrap RedisKeyWrap, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForSet().add(key, jsonValue);
     }
 
     @Override
-    public Long addForSet(CacheKeyWrap cacheKeyWrap, List<?> values) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long addForSet(RedisKeyWrap RedisKeyWrap, List<?> values) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(values);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         List<String> jsonList = new ArrayList<>(values.size());
         values.forEach(value -> {
             String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
@@ -618,19 +615,19 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public Long removeForSet(CacheKeyWrap cacheKeyWrap, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long removeForSet(RedisKeyWrap RedisKeyWrap, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForSet().remove(key, jsonValue);
     }
 
     @Override
-    public Long removeForSet(CacheKeyWrap cacheKeyWrap, List<?> values) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long removeForSet(RedisKeyWrap RedisKeyWrap, List<?> values) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(values);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         List<String> jsonList = values.stream()
                 .map(value -> value instanceof String ? (String) value : JSON.toJSONString(value))
                 .collect(Collectors.toList());
@@ -638,231 +635,231 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public <T> T popForSet(CacheKeyWrap cacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> T popForSet(RedisKeyWrap RedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String cachedValue = redisTemplate.opsForSet().pop(key);
         return getComplex(cachedValue,clazz);
     }
 
     @Override
-    public boolean moveForSet(CacheKeyWrap cacheKeyWrap, Object value, CacheKeyWrap destCacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public boolean moveForSet(RedisKeyWrap RedisKeyWrap, Object value, RedisKeyWrap destRedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        CacheUtil.checkNotBlank(destCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        String destKey = destCacheKeyWrap.getRelKey();
+        CacheUtil.checkNotBlank(destRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        String destKey = destRedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForSet().move(key, jsonValue, destKey);
     }
 
     @Override
-    public Long sizeForSet(CacheKeyWrap cacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long sizeForSet(RedisKeyWrap RedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForSet().size(key);
     }
 
     @Override
-    public Boolean isMemberForSet(CacheKeyWrap cacheKeyWrap, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Boolean isMemberForSet(RedisKeyWrap RedisKeyWrap, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForSet().isMember(key, jsonValue);
     }
 
     @Override
-    public <T> Set<T> intersectForSet(CacheKeyWrap cacheKeyWrap, CacheKeyWrap otherCacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotBlank(otherCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        String otherKey = otherCacheKeyWrap.getRelKey();
+    public <T> Set<T> intersectForSet(RedisKeyWrap RedisKeyWrap, RedisKeyWrap otherRedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotBlank(otherRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        String otherKey = otherRedisKeyWrap.getRelKey();
         Set set = redisTemplate.opsForSet().intersect(key, otherKey);
         return parseObjects(set,clazz);
     }
 
     @Override
-    public <T> Set<T> intersectForSet(CacheKeyWrap cacheKeyWrap, Collection<CacheKeyWrap> otherCacheKeyWraps, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotEmpty(otherCacheKeyWraps);
-        String key = cacheKeyWrap.getRelKey();
-        List<String> otherKeys = CacheUtil.getBatchKey(otherCacheKeyWraps);
+    public <T> Set<T> intersectForSet(RedisKeyWrap RedisKeyWrap, Collection<RedisKeyWrap> otherRedisKeyWraps, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotEmpty(otherRedisKeyWraps);
+        String key = RedisKeyWrap.getRelKey();
+        List<String> otherKeys = CacheUtil.getBatchKey(otherRedisKeyWraps);
         Set set = redisTemplate.opsForSet().intersect(key, otherKeys);
         return parseObjects(set,clazz);
     }
 
     @Override
-    public Long intersectAndStoreForSet(CacheKeyWrap cacheKeyWrap, CacheKeyWrap otherCacheKeyWrap, CacheKeyWrap destCacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotBlank(otherCacheKeyWrap);
-        CacheUtil.checkNotBlank(destCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        String otherKey = otherCacheKeyWrap.getRelKey();
-        String destKey = destCacheKeyWrap.getRelKey();
+    public Long intersectAndStoreForSet(RedisKeyWrap RedisKeyWrap, RedisKeyWrap otherRedisKeyWrap, RedisKeyWrap destRedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotBlank(otherRedisKeyWrap);
+        CacheUtil.checkNotBlank(destRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        String otherKey = otherRedisKeyWrap.getRelKey();
+        String destKey = destRedisKeyWrap.getRelKey();
         return redisTemplate.opsForSet().intersectAndStore(key, otherKey, destKey);
     }
 
     @Override
-    public Long intersectAndStoreForSet(CacheKeyWrap cacheKeyWrap, Collection<CacheKeyWrap> otherCacheKeyWraps, CacheKeyWrap destCacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotEmpty(otherCacheKeyWraps);
-        CacheUtil.checkNotBlank(destCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        List<String> otherKeys = CacheUtil.getBatchKey(otherCacheKeyWraps);
-        String destKey = destCacheKeyWrap.getRelKey();
+    public Long intersectAndStoreForSet(RedisKeyWrap RedisKeyWrap, Collection<RedisKeyWrap> otherRedisKeyWraps, RedisKeyWrap destRedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotEmpty(otherRedisKeyWraps);
+        CacheUtil.checkNotBlank(destRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        List<String> otherKeys = CacheUtil.getBatchKey(otherRedisKeyWraps);
+        String destKey = destRedisKeyWrap.getRelKey();
         return redisTemplate.opsForSet().intersectAndStore(key, otherKeys, destKey);
     }
 
     @Override
-    public <T> Set<T> unionForSet(CacheKeyWrap cacheKeyWrap, CacheKeyWrap otherCacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotBlank(otherCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        String otherKey = otherCacheKeyWrap.getRelKey();
+    public <T> Set<T> unionForSet(RedisKeyWrap RedisKeyWrap, RedisKeyWrap otherRedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotBlank(otherRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        String otherKey = otherRedisKeyWrap.getRelKey();
         Set set = redisTemplate.opsForSet().union(key, otherKey);
         return parseObjects(set,clazz);
     }
 
     @Override
-    public <T> Set<T> unionForSet(CacheKeyWrap cacheKeyWrap, Collection<CacheKeyWrap> otherCacheKeyWraps, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotEmpty(otherCacheKeyWraps);
-        String key = cacheKeyWrap.getRelKey();
-        List<String> otherKeys = CacheUtil.getBatchKey(otherCacheKeyWraps);
+    public <T> Set<T> unionForSet(RedisKeyWrap RedisKeyWrap, Collection<RedisKeyWrap> otherRedisKeyWraps, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotEmpty(otherRedisKeyWraps);
+        String key = RedisKeyWrap.getRelKey();
+        List<String> otherKeys = CacheUtil.getBatchKey(otherRedisKeyWraps);
         Set set = redisTemplate.opsForSet().union(key, otherKeys);
         return parseObjects(set,clazz);
     }
 
     @Override
-    public Long unionAndStoreForSet(CacheKeyWrap cacheKeyWrap, CacheKeyWrap otherCacheKeyWrap, CacheKeyWrap destCacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotBlank(otherCacheKeyWrap);
-        CacheUtil.checkNotBlank(destCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        String otherKey = otherCacheKeyWrap.getRelKey();
-        String destKey = destCacheKeyWrap.getRelKey();
+    public Long unionAndStoreForSet(RedisKeyWrap RedisKeyWrap, RedisKeyWrap otherRedisKeyWrap, RedisKeyWrap destRedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotBlank(otherRedisKeyWrap);
+        CacheUtil.checkNotBlank(destRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        String otherKey = otherRedisKeyWrap.getRelKey();
+        String destKey = destRedisKeyWrap.getRelKey();
         return redisTemplate.opsForSet().unionAndStore(key, otherKey, destKey);
     }
 
     @Override
-    public Long unionAndStoreForSet(CacheKeyWrap cacheKeyWrap, Collection<CacheKeyWrap> otherCacheKeyWraps, CacheKeyWrap destCacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotEmpty(otherCacheKeyWraps);
-        CacheUtil.checkNotBlank(destCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        List<String> otherKeys = CacheUtil.getBatchKey(otherCacheKeyWraps);
-        String destKey = destCacheKeyWrap.getRelKey();
+    public Long unionAndStoreForSet(RedisKeyWrap RedisKeyWrap, Collection<RedisKeyWrap> otherRedisKeyWraps, RedisKeyWrap destRedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotEmpty(otherRedisKeyWraps);
+        CacheUtil.checkNotBlank(destRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        List<String> otherKeys = CacheUtil.getBatchKey(otherRedisKeyWraps);
+        String destKey = destRedisKeyWrap.getRelKey();
         return redisTemplate.opsForSet().unionAndStore(key, otherKeys, destKey);
     }
 
     @Override
-    public <T> Set<T> differenceForSet(CacheKeyWrap cacheKeyWrap, CacheKeyWrap otherCacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotBlank(otherCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        String otherKey = otherCacheKeyWrap.getRelKey();
+    public <T> Set<T> differenceForSet(RedisKeyWrap RedisKeyWrap, RedisKeyWrap otherRedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotBlank(otherRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        String otherKey = otherRedisKeyWrap.getRelKey();
         Set set = redisTemplate.opsForSet().difference(key, otherKey);
         return parseObjects(set,clazz);
     }
 
     @Override
-    public <T> Set<T> differenceForSet(CacheKeyWrap cacheKeyWrap, Collection<CacheKeyWrap> otherCacheKeyWraps, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotEmpty(otherCacheKeyWraps);
-        String key = cacheKeyWrap.getRelKey();
-        List<String> otherKeys = CacheUtil.getBatchKey(otherCacheKeyWraps);
+    public <T> Set<T> differenceForSet(RedisKeyWrap RedisKeyWrap, Collection<RedisKeyWrap> otherRedisKeyWraps, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotEmpty(otherRedisKeyWraps);
+        String key = RedisKeyWrap.getRelKey();
+        List<String> otherKeys = CacheUtil.getBatchKey(otherRedisKeyWraps);
         Set set = redisTemplate.opsForSet().difference(key, otherKeys);
         return parseObjects(set,clazz);
     }
 
     @Override
-    public Long differenceForSet(CacheKeyWrap cacheKeyWrap, CacheKeyWrap otherCacheKeyWrap, CacheKeyWrap destCacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotBlank(otherCacheKeyWrap);
-        CacheUtil.checkNotBlank(destCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        String otherKey = otherCacheKeyWrap.getRelKey();
-        String destKey = destCacheKeyWrap.getRelKey();
+    public Long differenceForSet(RedisKeyWrap RedisKeyWrap, RedisKeyWrap otherRedisKeyWrap, RedisKeyWrap destRedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotBlank(otherRedisKeyWrap);
+        CacheUtil.checkNotBlank(destRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        String otherKey = otherRedisKeyWrap.getRelKey();
+        String destKey = destRedisKeyWrap.getRelKey();
         return redisTemplate.opsForSet().differenceAndStore(key, otherKey, destKey);
     }
 
     @Override
-    public Long differenceForSet(CacheKeyWrap cacheKeyWrap, Collection<CacheKeyWrap> otherCacheKeyWraps, CacheKeyWrap destCacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotEmpty(otherCacheKeyWraps);
-        CacheUtil.checkNotBlank(destCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        List<String> otherKeys = CacheUtil.getBatchKey(otherCacheKeyWraps);
-        String destKey = destCacheKeyWrap.getRelKey();
+    public Long differenceForSet(RedisKeyWrap RedisKeyWrap, Collection<RedisKeyWrap> otherRedisKeyWraps, RedisKeyWrap destRedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotEmpty(otherRedisKeyWraps);
+        CacheUtil.checkNotBlank(destRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        List<String> otherKeys = CacheUtil.getBatchKey(otherRedisKeyWraps);
+        String destKey = destRedisKeyWrap.getRelKey();
         return redisTemplate.opsForSet().differenceAndStore(key, otherKeys, destKey);
     }
 
     @Override
-    public <T> Set<T> membersForSet(CacheKeyWrap cacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> Set<T> membersForSet(RedisKeyWrap RedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set members = redisTemplate.opsForSet().members(key);
         return parseObjects(members,clazz);
     }
 
     @Override
-    public <T> T randomMemberForSet(CacheKeyWrap cacheKeyWrap, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> T randomMemberForSet(RedisKeyWrap RedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String s = redisTemplate.opsForSet().randomMember(key);
         return getComplex(s, clazz);
     }
 
     @Override
-    public <T> List<T> randomMembersForSet(CacheKeyWrap cacheKeyWrap, long count, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> List<T> randomMembersForSet(RedisKeyWrap RedisKeyWrap, long count, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         List list = redisTemplate.opsForSet().randomMembers(key, count);
         return parseObjects(list,clazz);
     }
 
     @Override
-    public <T> Set<T> distinctRandomMembersForSet(CacheKeyWrap cacheKeyWrap, long count, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> Set<T> distinctRandomMembersForSet(RedisKeyWrap RedisKeyWrap, long count, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set set = redisTemplate.opsForSet().distinctRandomMembers(key, count);
         return parseObjects(set,clazz);
     }
 
     @Override
-    public Cursor<String> scanForSet(CacheKeyWrap cacheKeyWrap, ScanOptions options) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Cursor<String> scanForSet(RedisKeyWrap RedisKeyWrap, ScanOptions options) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Cursor<String> scan = redisTemplate.opsForSet().scan(key, options);
         return scan;
     }
 
     @Override
-    public void addForZSet(CacheKeyWrap cacheKeyWrap, Object value, Double score){
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public void addForZSet(RedisKeyWrap RedisKeyWrap, Object value, Double score){
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
         CacheUtil.checkNotEmpty(score);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         redisTemplate.opsForZSet().add(key,jsonValue,score);
     }
 
     @Override
-    public void addForZSet(CacheKeyWrap cacheKeyWrap, Object value, Double score, long ttl){
-        addForZSet(cacheKeyWrap,value,score,ttl, CacheUtil.DEFAULT_TIME_UNIT);
+    public void addForZSet(RedisKeyWrap RedisKeyWrap, Object value, Double score, long ttl){
+        addForZSet(RedisKeyWrap,value,score,ttl, CacheUtil.DEFAULT_TIME_UNIT);
     }
 
     @Override
-    public void addForZSet(CacheKeyWrap cacheKeyWrap, Object value, Double score, long ttl, TimeUnit timeUnit){
-        addForZSet(cacheKeyWrap,value,score);
-        expire(cacheKeyWrap, ttl, timeUnit);
+    public void addForZSet(RedisKeyWrap RedisKeyWrap, Object value, Double score, long ttl, TimeUnit timeUnit){
+        addForZSet(RedisKeyWrap,value,score);
+        expire(RedisKeyWrap, ttl, timeUnit);
     }
 
     @Override
-    public Long addForZSet(CacheKeyWrap cacheKeyWrap, Map<?, Double> map) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long addForZSet(RedisKeyWrap RedisKeyWrap, Map<?, Double> map) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set<ZSetOperations.TypedTuple<String>> collect =
                 map.entrySet()
                         .stream()
@@ -875,46 +872,46 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public Long addForZSet(CacheKeyWrap cacheKeyWrap, Map<?, Double> map, long ttl) {
-        return addForZSet(cacheKeyWrap, map, ttl, CacheUtil.DEFAULT_TIME_UNIT);
+    public Long addForZSet(RedisKeyWrap RedisKeyWrap, Map<?, Double> map, long ttl) {
+        return addForZSet(RedisKeyWrap, map, ttl, CacheUtil.DEFAULT_TIME_UNIT);
     }
 
     @Override
-    public Long addForZSet(CacheKeyWrap cacheKeyWrap, Map<?, Double> map, long ttl, TimeUnit timeUnit) {
-        Long count = addForZSet(cacheKeyWrap, map);
-        expire(cacheKeyWrap, ttl, timeUnit);
+    public Long addForZSet(RedisKeyWrap RedisKeyWrap, Map<?, Double> map, long ttl, TimeUnit timeUnit) {
+        Long count = addForZSet(RedisKeyWrap, map);
+        expire(RedisKeyWrap, ttl, timeUnit);
         return count;
     }
 
     @Override
-    public <T> Set<T> getRangeForZSet(CacheKeyWrap cacheKeyWrap, long start, long end, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> Set<T> getRangeForZSet(RedisKeyWrap RedisKeyWrap, long start, long end, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set resultSet = redisTemplate.opsForZSet().range(key, start, end);
         return parseObjects(resultSet,clazz);
     }
 
     @Override
-    public <T> Set<T> getReverseRangeForZSet(CacheKeyWrap cacheKeyWrap, long start, long end, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> Set<T> getReverseRangeForZSet(RedisKeyWrap RedisKeyWrap, long start, long end, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set resultSet = redisTemplate.opsForZSet().reverseRange(key, start, end);
         return parseObjects(resultSet,clazz);
     }
 
     @Override
-    public Long delForZSet(CacheKeyWrap cacheKeyWrap, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long delForZSet(RedisKeyWrap RedisKeyWrap, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForZSet().remove(key, jsonValue);
     }
 
     @Override
-    public Long delForZSet(CacheKeyWrap cacheKeyWrap, Collection<?> valueCollection) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long delForZSet(RedisKeyWrap RedisKeyWrap, Collection<?> valueCollection) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(valueCollection);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         List<String> jsonValueList = valueCollection.stream()
                 .map(value -> value instanceof String ? (String) value : JSON.toJSONString(value))
                 .distinct()
@@ -923,50 +920,50 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public Long delRangeForZSet(CacheKeyWrap cacheKeyWrap, long start, long end) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long delRangeForZSet(RedisKeyWrap RedisKeyWrap, long start, long end) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForZSet().removeRange(key, start, end);
     }
 
     @Override
-    public Double incrementScoreForZSet(CacheKeyWrap cacheKeyWrap, Object value, double delta) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Double incrementScoreForZSet(RedisKeyWrap RedisKeyWrap, Object value, double delta) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForZSet().incrementScore(key, jsonValue, delta);
     }
 
     @Override
-    public Long sizeForZSet(CacheKeyWrap cacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long sizeForZSet(RedisKeyWrap RedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForZSet().size(key);
     }
 
     @Override
-    public Long rankForZSet(CacheKeyWrap cacheKeyWrap, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long rankForZSet(RedisKeyWrap RedisKeyWrap, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForZSet().rank(key, jsonValue);
     }
 
     @Override
-    public Long reverseRankForZSet(CacheKeyWrap cacheKeyWrap, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Long reverseRankForZSet(RedisKeyWrap RedisKeyWrap, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForZSet().reverseRank(key, jsonValue);
     }
 
     @Override
-    public <T> Set<ZSetOperations.TypedTuple<T>> rangeWithScoreForZSet(CacheKeyWrap cacheKeyWrap, long start, long end, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> Set<ZSetOperations.TypedTuple<T>> rangeWithScoreForZSet(RedisKeyWrap RedisKeyWrap, long start, long end, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set<ZSetOperations.TypedTuple<String>> cacheSet = redisTemplate.opsForZSet().rangeWithScores(key, start, end);
         if (cacheSet == null) {
             return new HashSet<>();
@@ -975,153 +972,153 @@ public class RedisCacheImpl implements DistributCache {
     }
 
     @Override
-    public <T> Set<T> rangeByScoreForZSet(CacheKeyWrap cacheKeyWrap, double min, double max, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> Set<T> rangeByScoreForZSet(RedisKeyWrap RedisKeyWrap, double min, double max, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set set = redisTemplate.opsForZSet().rangeByScore(key, min, max);
         return parseObjects(set,clazz);
     }
 
     @Override
-    public <T> Set<ZSetOperations.TypedTuple<T>> rangeByScoreWithScoreForZSet(CacheKeyWrap cacheKeyWrap, double min, double max, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> Set<ZSetOperations.TypedTuple<T>> rangeByScoreWithScoreForZSet(RedisKeyWrap RedisKeyWrap, double min, double max, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set<ZSetOperations.TypedTuple<String>> cacheSet = redisTemplate.opsForZSet().rangeByScoreWithScores(key, min, max);
         return typedTupleStringParseObjects(cacheSet, clazz);
     }
 
     @Override
-    public <T> Set<ZSetOperations.TypedTuple<T>> rangeByScoreWithScoreForZSet(CacheKeyWrap cacheKeyWrap, double min, double max,
+    public <T> Set<ZSetOperations.TypedTuple<T>> rangeByScoreWithScoreForZSet(RedisKeyWrap RedisKeyWrap, double min, double max,
                                                                               long start, long end, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set<ZSetOperations.TypedTuple<String>> cacheSet = redisTemplate.opsForZSet().rangeByScoreWithScores(key, min, max, start, end);
         return typedTupleStringParseObjects(cacheSet, clazz);
     }
 
     @Override
-    public <T> Set<ZSetOperations.TypedTuple<T>> reverseRangeWithScoreForZSet(CacheKeyWrap cacheKeyWrap, long start, long end, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> Set<ZSetOperations.TypedTuple<T>> reverseRangeWithScoreForZSet(RedisKeyWrap RedisKeyWrap, long start, long end, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set<ZSetOperations.TypedTuple<String>> cacheSet = redisTemplate.opsForZSet().reverseRangeWithScores(key, start, end);
         return typedTupleStringParseObjects(cacheSet, clazz);
     }
 
     @Override
-    public <T> Set<T> reverseRangeByScoreForZSet(CacheKeyWrap cacheKeyWrap, double min, double max, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> Set<T> reverseRangeByScoreForZSet(RedisKeyWrap RedisKeyWrap, double min, double max, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set set = redisTemplate.opsForZSet().reverseRangeByScore(key, min, max);
         return parseObjects(set,clazz);
     }
 
     @Override
-    public <T> Set<ZSetOperations.TypedTuple<T>> reverseRangeByScoreWithScoreForZSet(CacheKeyWrap cacheKeyWrap, double min, double max, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> Set<ZSetOperations.TypedTuple<T>> reverseRangeByScoreWithScoreForZSet(RedisKeyWrap RedisKeyWrap, double min, double max, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set<ZSetOperations.TypedTuple<String>> cacheSet = redisTemplate.opsForZSet().reverseRangeByScoreWithScores(key, min, max);
         return typedTupleStringParseObjects(cacheSet, clazz);
     }
 
     @Override
-    public <T> Set<T> reverseRangeByScoreForZSet(CacheKeyWrap cacheKeyWrap, double min, double max, long start, long end, Class<T> clazz) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public <T> Set<T> reverseRangeByScoreForZSet(RedisKeyWrap RedisKeyWrap, double min, double max, long start, long end, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         Set set = redisTemplate.opsForZSet().reverseRangeByScore(key, min, max, start, end);
         return parseObjects(set, clazz);
     }
 
     @Override
-    public Long countForZSet(CacheKeyWrap cacheKeyWrap, double min, double max) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long countForZSet(RedisKeyWrap RedisKeyWrap, double min, double max) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForZSet().count(key, min, max);
     }
 
     @Override
-    public Long zCardForZSet(CacheKeyWrap cacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long zCardForZSet(RedisKeyWrap RedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForZSet().zCard(key);
     }
 
     @Override
-    public Double scoreByValueForZSet(CacheKeyWrap cacheKeyWrap, Object value) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
+    public Double scoreByValueForZSet(RedisKeyWrap RedisKeyWrap, Object value) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
         CacheUtil.checkNotEmpty(value);
-        String key = cacheKeyWrap.getRelKey();
+        String key = RedisKeyWrap.getRelKey();
         String jsonValue = value instanceof String ? (String) value : JSON.toJSONString(value);
         return redisTemplate.opsForZSet().score(key, jsonValue);
     }
 
     @Override
-    public Long removeRangeForZSet(CacheKeyWrap cacheKeyWrap, long start, long end) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long removeRangeForZSet(RedisKeyWrap RedisKeyWrap, long start, long end) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForZSet().removeRange(key, start, end);
     }
 
     @Override
-    public Long removeRangeByScoreForZSet(CacheKeyWrap cacheKeyWrap, double min, double max) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Long removeRangeByScoreForZSet(RedisKeyWrap RedisKeyWrap, double min, double max) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForZSet().removeRangeByScore(key, min, max);
     }
 
     @Override
-    public Long unionAndStoreForZSet(CacheKeyWrap cacheKeyWrap, CacheKeyWrap otherCacheKeyWrap, CacheKeyWrap destCacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotBlank(otherCacheKeyWrap);
-        CacheUtil.checkNotBlank(destCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        String otherKey = otherCacheKeyWrap.getRelKey();
-        String destKey = destCacheKeyWrap.getRelKey();
+    public Long unionAndStoreForZSet(RedisKeyWrap RedisKeyWrap, RedisKeyWrap otherRedisKeyWrap, RedisKeyWrap destRedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotBlank(otherRedisKeyWrap);
+        CacheUtil.checkNotBlank(destRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        String otherKey = otherRedisKeyWrap.getRelKey();
+        String destKey = destRedisKeyWrap.getRelKey();
         return redisTemplate.opsForZSet().unionAndStore(key, otherKey, destKey);
     }
 
     @Override
-    public Long unionAndStoreForZSet(CacheKeyWrap cacheKeyWrap, Collection<CacheKeyWrap> otherCacheKeyWraps, CacheKeyWrap destCacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotEmpty(otherCacheKeyWraps);
-        CacheUtil.checkNotBlank(destCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        List<String> otherKeys = CacheUtil.getBatchKey(otherCacheKeyWraps);
-        String destKey = destCacheKeyWrap.getRelKey();
+    public Long unionAndStoreForZSet(RedisKeyWrap RedisKeyWrap, Collection<RedisKeyWrap> otherRedisKeyWraps, RedisKeyWrap destRedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotEmpty(otherRedisKeyWraps);
+        CacheUtil.checkNotBlank(destRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        List<String> otherKeys = CacheUtil.getBatchKey(otherRedisKeyWraps);
+        String destKey = destRedisKeyWrap.getRelKey();
         return redisTemplate.opsForZSet().unionAndStore(key, otherKeys, destKey);
     }
 
     @Override
-    public Long intersectAndStoreForZSet(CacheKeyWrap cacheKeyWrap, CacheKeyWrap otherCacheKeyWrap, CacheKeyWrap destCacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotBlank(otherCacheKeyWrap);
-        CacheUtil.checkNotBlank(destCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        String otherKey = otherCacheKeyWrap.getRelKey();
-        String destKey = destCacheKeyWrap.getRelKey();
+    public Long intersectAndStoreForZSet(RedisKeyWrap RedisKeyWrap, RedisKeyWrap otherRedisKeyWrap, RedisKeyWrap destRedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotBlank(otherRedisKeyWrap);
+        CacheUtil.checkNotBlank(destRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        String otherKey = otherRedisKeyWrap.getRelKey();
+        String destKey = destRedisKeyWrap.getRelKey();
         return redisTemplate.opsForZSet().intersectAndStore(key, otherKey, destKey);
     }
 
     @Override
-    public Long intersectAndStoreForZSet(CacheKeyWrap cacheKeyWrap, Collection<CacheKeyWrap> otherCacheKeyWraps, CacheKeyWrap destCacheKeyWrap) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        CacheUtil.checkNotEmpty(otherCacheKeyWraps);
-        CacheUtil.checkNotBlank(destCacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
-        List<String> otherKeys = CacheUtil.getBatchKey(otherCacheKeyWraps);
-        String destKey = destCacheKeyWrap.getRelKey();
+    public Long intersectAndStoreForZSet(RedisKeyWrap RedisKeyWrap, Collection<RedisKeyWrap> otherRedisKeyWraps, RedisKeyWrap destRedisKeyWrap) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        CacheUtil.checkNotEmpty(otherRedisKeyWraps);
+        CacheUtil.checkNotBlank(destRedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        List<String> otherKeys = CacheUtil.getBatchKey(otherRedisKeyWraps);
+        String destKey = destRedisKeyWrap.getRelKey();
         return redisTemplate.opsForZSet().intersectAndStore(key, otherKeys, destKey);
     }
 
     @Override
-    public Cursor<ZSetOperations.TypedTuple<String>> scanForZSet(CacheKeyWrap cacheKeyWrap, ScanOptions options) {
-        CacheUtil.checkNotBlank(cacheKeyWrap);
-        String key = cacheKeyWrap.getRelKey();
+    public Cursor<ZSetOperations.TypedTuple<String>> scanForZSet(RedisKeyWrap RedisKeyWrap, ScanOptions options) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
         return redisTemplate.opsForZSet().scan(key, options);
     }
 
     @Override
-    public <T> T getByType(CacheKeyWrap cacheKeyWrap, Type genericReturnType){
-        String key = cacheKeyWrap.getRelKey();
+    public <T> T getByType(RedisKeyWrap RedisKeyWrap, Type genericReturnType){
+        String key = RedisKeyWrap.getRelKey();
         String s = redisTemplate.boundValueOps(key).get();
         if (StringUtil.isEmpty(s)) {
             return null;

@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 分布式锁切面
  * @author: k
  * @create: 2022-05-28

@@ -7,7 +7,7 @@ import com.tool.servicelock.redisson.impl.RedissonReentrantLocker;
 import org.redisson.api.RedissonClient;
 
 /**
- * @program: distribute-cache
+ * @program: redis-tool
  * @description: 分布式锁类型提供工厂
  * @author: k
  * @create: 2022-05-28
