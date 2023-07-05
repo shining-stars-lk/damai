@@ -88,7 +88,6 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-            <version>2.2.7.RELEASE</version>
         </dependency>
         <!-- nacos end -->
         <dependency>
