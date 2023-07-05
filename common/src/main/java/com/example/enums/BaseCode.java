@@ -10,29 +10,31 @@ public enum BaseCode {
     
     SUCCESS(0, "OK"),
     SYSTEM_ERROR(-1,"系统异常"),
-    RSA_SIGN_ERROR(1,"res签名验证失败"),
+    RSA_SIGN_ERROR(1000,"res签名验证失败"),
     
-    AES_ERROR(2,"aes验证失败"),
+    AES_ERROR(1001,"aes验证失败"),
     
-    CHANNEL_DATA(3,"渠道数据为空"),
+    CHANNEL_DATA(1002,"渠道数据为空"),
     
-    ARGUMENT_EMPTY(4,"基础参数为空"),
+    ARGUMENT_EMPTY(1003,"基础参数为空"),
     
-    SUBMIT_FREQUENT(5,"执行频繁，请稍后再试"),
+    HEAD_ARGUMENT_EMPTY(1004,"请求头基础参数为空"),
     
-    USER_ID_EMPTY(6,"用户id为空"),
+    CODE_EMPTY(1005,"code参数为空"),
     
-    USER_EMPTY(7,"用户为空"),
+    PARAMETER_ERROR(1005,"参数验证异常"),
     
-    CODE_EMPTY(8,"code参数为空"),
+    SUBMIT_FREQUENT(2000,"执行频繁，请稍后再试"),
     
-    DEPARTMENT_STRATEGY(9,"departmentStrategy策略实现未找到"),
+    USER_ID_EMPTY(3000,"用户id为空"),
     
-    PARAMETER_ERROR(10,"参数验证异常"),
+    USER_EMPTY(3001,"用户为空"),
     
-    PRODUCT_STOCK_NOT_ENOUGH(11,"库存不足"),
+    DEPARTMENT_STRATEGY(3002,"departmentStrategy策略实现未找到"),
     
-    JOB_INFO_NOT_EXIST(12,"jobInfo不存在");
+    PRODUCT_STOCK_NOT_ENOUGH(3003,"库存不足"),
+    
+    JOB_INFO_NOT_EXIST(3004,"jobInfo不存在");
     
     private Integer code;
     
