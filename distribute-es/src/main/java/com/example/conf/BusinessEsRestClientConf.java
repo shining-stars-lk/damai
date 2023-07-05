@@ -18,8 +18,8 @@ import org.elasticsearch.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,49 +27,22 @@ import java.util.Arrays;
 import java.util.Objects;
 
 @Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(BusinessEsProperties.class)
 @ConditionalOnProperty(value = "elasticsearch.ip", matchIfMissing = false)
 public class BusinessEsRestClientConf {
 	private static final Logger logger = LoggerFactory.getLogger(BusinessEsRestClientConf.class);
 	private static final int ADDRESS_LENGTH = 2;
 	private static final String HTTP_SCHEME = "http";
 
-	@Value("${elasticsearch.ip}")
-	private String[] ipAddress;
-	
-	@Value("${elasticsearch.userName:default}")
-	private String userName;
-	
-	@Value("${elasticsearch.passWord:default}")
-	private String passWord;
-	
-	@Value("${es.switch:true}")
-	private Boolean esSwitch;
-	
-	@Value("${es.type.switch:true}")
-	private Boolean esTypeSwitch;
-	
-	@Value("${elasticsearch.connectTimeOut:40000}")
-	private Integer connectTimeOut;
-	
-	@Value("${elasticsearch.socketTimeOut:40000}")
-	private Integer socketTimeOut;
-	
-	@Value("${elasticsearch.connectionRequestTimeOut:40000}")
-	private Integer connectionRequestTimeOut;
-	
-	@Value("${elasticsearch.maxConnectNum:400}")
-	private Integer maxConnectNum;
-	
-	@Value("${elasticsearch.maxConnectPerRoute:400}")
-	private Integer maxConnectPerRoute;
-
 	@Bean
-	public RestClient businessEsRestClient() {
-		HttpHost[] hosts = Arrays.stream(ipAddress).map(this::makeHttpHost).filter(Objects::nonNull)
+	public RestClient businessEsRestClient(BusinessEsProperties businessEsProperties) {
+		HttpHost[] hosts = Arrays.stream(businessEsProperties.getIp()).map(this::makeHttpHost).filter(Objects::nonNull)
 				.toArray(HttpHost[]::new);
 		logger.debug("hosts:{}", Arrays.toString(hosts));
 		
 		RestClientBuilder builder = RestClient.builder(hosts);
+		String userName = businessEsProperties.getUserName();
+		String passWord = businessEsProperties.getPassWord();
 		if (userName != null && !"default".equals(userName) && passWord != null && !"default".equals(passWord)) {
 			//开始设置用户名和密码
 			CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -82,7 +55,7 @@ public class BusinessEsRestClientConf {
 							.setDefaultIOReactorConfig(
 							IOReactorConfig.custom()
 									// 设置线程数
-									.setIoThreadCount(maxConnectNum) 
+									.setIoThreadCount(businessEsProperties.getMaxConnectNum()) 
 									.build());
 				}
 			});
@@ -93,16 +66,16 @@ public class BusinessEsRestClientConf {
 		builder.setDefaultHeaders(defaultHeaders);
 		// 设置相关参数
 		builder.setRequestConfigCallback(requestConfigBuilder -> requestConfigBuilder
-				.setConnectTimeout(connectTimeOut)
-				.setSocketTimeout(socketTimeOut)
-		.setConnectionRequestTimeout(connectionRequestTimeOut));
+				.setConnectTimeout(businessEsProperties.getConnectTimeOut())
+				.setSocketTimeout(businessEsProperties.getSocketTimeOut())
+		.setConnectionRequestTimeout(businessEsProperties.getConnectionRequestTimeOut()));
 		RestClient restClient = builder.build();
 		return restClient;
 	}
 	
 	@Bean
-	public BusinessEsUtil businessEsUtil(@Qualifier("businessEsRestClient")RestClient businessEsRestClient){
-		return new BusinessEsUtil(businessEsRestClient,esSwitch,esTypeSwitch);
+	public BusinessEsUtil businessEsUtil(@Qualifier("businessEsRestClient")RestClient businessEsRestClient, BusinessEsProperties businessEsProperties){
+		return new BusinessEsUtil(businessEsRestClient,businessEsProperties.getEsSwitch(),businessEsProperties.getEsTypeSwitch());
 	}
 
 	/**
