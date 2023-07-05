@@ -1,6 +1,6 @@
 package com.example.service;
 
-import com.example.client.ChannelDataClient;
+import com.example.client.BaseDataClient;
 import com.example.common.Result;
 import com.example.dto.GetChannelDataByCodeDto;
 import com.example.enums.BaseCode;
@@ -19,12 +19,12 @@ import org.springframework.stereotype.Service;
 public class ChannelDataService {
 
     @Autowired
-    private ChannelDataClient channelDataClient;
+    private BaseDataClient baseDataClient;
     
     public GetChannelDataVo getChannelDataByCode(String code){
         GetChannelDataByCodeDto getChannelDataByCodeDto = new GetChannelDataByCodeDto();
         getChannelDataByCodeDto.setCode(code);
-        Result<GetChannelDataVo> GetChannelDataResult = channelDataClient.getByCode(getChannelDataByCodeDto);
+        Result<GetChannelDataVo> GetChannelDataResult = baseDataClient.getByCode(getChannelDataByCodeDto);
         if (GetChannelDataResult.getCode() == BaseCode.SUCCESS.getCode()) {
             return GetChannelDataResult.getData();
         }

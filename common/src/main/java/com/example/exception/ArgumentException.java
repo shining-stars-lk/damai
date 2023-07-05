@@ -5,8 +5,7 @@
 
 package com.example.exception;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
 
@@ -17,8 +16,7 @@ import java.util.List;
  * @create: 2023-06-03
  **/
 
-@Setter
-@Getter
+@Data
 public class ArgumentException extends BaseException {
 
 	private Integer code;

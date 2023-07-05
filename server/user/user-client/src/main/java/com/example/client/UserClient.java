@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  * @create: 2023-04-17
  **/
 @Component
-@FeignClient(fallback = UserClientFallback.class)
+@FeignClient(value = "user-service",fallback = UserClientFallback.class)
 public interface UserClient {
     
     @GetMapping("/user/login")

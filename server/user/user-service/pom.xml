@@ -49,7 +49,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>channel-data-client</artifactId>
+            <artifactId>base-data-client</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
@@ -88,13 +88,16 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-            <version>2.2.7.RELEASE</version>
         </dependency>
         <!-- spring-cloud-starter-alibaba-nacos-discovery源码中nacos-common optional为true,所以这里要将common引入 -->
         <dependency>
             <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-common</artifactId>
             <version>2.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
         <!-- nacos end -->
         <dependency>
