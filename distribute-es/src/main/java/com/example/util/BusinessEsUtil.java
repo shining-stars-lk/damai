@@ -244,7 +244,7 @@ public class BusinessEsUtil {
         if (!esSwitch) {
             return new ArrayList<>();
         }
-        return query(indexName, indexType, null, queryDtoList, null, null, null, clazz);
+        return query(indexName, indexType, null, queryDtoList, null, null, null, null, null, clazz);
     }
     
     /**
@@ -262,7 +262,7 @@ public class BusinessEsUtil {
         if (!esSwitch) {
             return new ArrayList<>();
         }
-        return query(indexName, indexType, geoPointDto, queryDtoList, null, null, null, clazz);
+        return query(indexName, indexType, geoPointDto, queryDtoList, null, null, null, null,null,clazz);
     }
     
     /**
@@ -281,7 +281,7 @@ public class BusinessEsUtil {
         if (!esSwitch) {
             return new ArrayList<>();
         }
-        return query(indexName, indexType, null, queryDtoList, sortParam, null, sortOrder, clazz);
+        return query(indexName, indexType, null, queryDtoList, sortParam, null, sortOrder, null, null, clazz);
     }
     
     /**
@@ -300,7 +300,7 @@ public class BusinessEsUtil {
         if (!esSwitch) {
             return new ArrayList<>();
         }
-        return query(indexName, indexType, null, queryDtoList, null, geoPointDtoSortParam, sortOrder, clazz);
+        return query(indexName, indexType, null, queryDtoList, null, geoPointDtoSortParam, sortOrder,null,null, clazz);
     }
     
     
@@ -315,11 +315,13 @@ public class BusinessEsUtil {
      * @param sortParam 普通參數排序 不排序则为空 如果进行了排序，会返回es中的排序字段sort，需要用户在返回的实体类中添加sort字段
      * @param geoPointDtoSortParam 经纬度參數排序 不排序则为空 如果进行了排序，会返回es中的排序字段sort，需要用户在返回的实体类中添加sort字段
      * @param sortOrder 升序还是降序，为空则降序
+     * @param pageSize searchAfterSort搜索的页大小
+     * @param searchAfterSort sort值
      * @param clazz 返回的类型
      * @return
      * @throws IOException
      */
-    public <T> List<T> query(String indexName, String indexType, GeoPointDto geoPointDto, List<QueryDto> queryDtoList, String sortParam, GeoPointSortDto geoPointDtoSortParam, SortOrder sortOrder, Class<T> clazz) throws IOException {
+    public <T> List<T> query(String indexName, String indexType, GeoPointDto geoPointDto, List<QueryDto> queryDtoList, String sortParam, GeoPointSortDto geoPointDtoSortParam, SortOrder sortOrder, Integer pageSize, Object[] searchAfterSort, Class<T> clazz) throws IOException {
         if (!esSwitch) {
             return new ArrayList<>();
         }
@@ -372,6 +374,7 @@ public class BusinessEsUtil {
                 boolQuery.must(builds);
             }
         }
+        sourceBuilder.trackTotalHits(true);
         sourceBuilder.query(boolQuery);
         String string = sourceBuilder.toString();
         HttpEntity entity = new NStringEntity(string, ContentType.APPLICATION_JSON);
@@ -405,8 +408,8 @@ public class BusinessEsUtil {
                             
                             JSONArray jsonArray = data.getJSONArray("sort");
                             if (null != jsonArray && jsonArray.size() > 0) {
-                                Object object = jsonArray.get(0);
-                                jsonObject.put("sort",String.valueOf(object));
+                                Long sort = jsonArray.getLong(0);
+                                jsonObject.put("sort",sort);
                             }
                             list.add(JSONObject.parseObject(jsonObject.toJSONString(),clazz));
                         }
@@ -466,8 +469,8 @@ public class BusinessEsUtil {
                             
                             JSONArray jsonArray = data.getJSONArray("sort");
                             if (null != jsonArray && jsonArray.size() > 0) {
-                                Object object = jsonArray.get(0);
-                                jsonObject.put("sort",String.valueOf(object));
+                                Long sort = jsonArray.getLong(0);
+                                jsonObject.put("sort",sort);
                             }
                             list.add(JSONObject.parseObject(jsonObject.toJSONString(),clazz));
                         }
@@ -644,8 +647,8 @@ public class BusinessEsUtil {
     
                             JSONArray jsonArray = data.getJSONArray("sort");
                             if (null != jsonArray && jsonArray.size() > 0) {
-                                Object object = jsonArray.get(0);
-                                jsonObject.put("sort",String.valueOf(object));
+                                Long sort = jsonArray.getLong(0);
+                                jsonObject.put("sort",sort);
                             }
                             list.add(JSONObject.parseObject(jsonObject.toJSONString(),clazz));
                         }
