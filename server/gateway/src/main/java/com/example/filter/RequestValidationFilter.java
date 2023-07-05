@@ -51,13 +51,12 @@ import java.util.function.Function;
 
 import static com.example.constant.Constant.MARK_PARAMETER;
 import static com.example.constant.Constant.TRACE_ID;
-import static com.example.constant.GatewayConstant.AES_FLAG;
 import static com.example.constant.GatewayConstant.BUSINESS_BODY;
 import static com.example.constant.GatewayConstant.CHARSET;
 import static com.example.constant.GatewayConstant.CODE;
 import static com.example.constant.GatewayConstant.DEBUG;
+import static com.example.constant.GatewayConstant.ENCRYPT;
 import static com.example.constant.GatewayConstant.REQUEST_BODY;
-import static com.example.constant.GatewayConstant.RSA_FLAG;
 import static com.example.constant.GatewayConstant.TOKEN;
 
 /**
@@ -88,9 +87,6 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     
     @Resource
     private UidGenerator uidGenerator;
-
-    @Value("${verify.switch:true}")
-    private boolean verifySwitch;
     
     @Value("${aes.vector:default}")
     private String aesVector;
@@ -163,18 +159,18 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             bodyContent = JSON.parseObject(originalBody, Map.class);
         }
         String code = null;
-        String token;
+        String token;   
         String userId = null;
         String uri = request.getPath().value();
         String debug = request.getHeaders().getFirst(DEBUG);
         if (!(StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
             
-            String aesFlag = request.getHeaders().getFirst(AES_FLAG);
-            String rsaFlag = request.getHeaders().getFirst(RSA_FLAG);
+            String encrypt = request.getHeaders().getFirst(ENCRYPT);
             //应用渠道
             code = bodyContent.get(CODE);
             //token
             token = bodyContent.get(TOKEN);
+            
             if (StringUtil.isEmpty(code)) {
                 ArgumentError argumentError = new ArgumentError();
                 argumentError.setArgumentName(CODE);
@@ -183,12 +179,19 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 argumentErrorList.add(argumentError);
                 throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
             }
+            
+            if (StringUtil.isEmpty(encrypt)) {
+                ArgumentError argumentError = new ArgumentError();
+                argumentError.setArgumentName(encrypt);
+                argumentError.setMessage("encrypt请求头参数为空");
+                List<ArgumentError> argumentErrorList = new ArrayList<>();
+                argumentErrorList.add(argumentError);
+                throw new ArgumentException(BaseCode.HEAD_ARGUMENT_EMPTY.getCode(),argumentErrorList);
+            }
             GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
-            if (StringUtil.isNotEmpty(rsaFlag) && "true".equals(rsaFlag)) {
-                boolean checkFlag = SignUtil.rsa256Check(bodyContent, channelDataVo.getPublicKey(), CHARSET);
-                if (!checkFlag) {
-                    throw new ToolkitException(BaseCode.CHANNEL_DATA);
-                }
+            boolean checkFlag = SignUtil.rsa256Check(bodyContent, channelDataVo.getPublicKey(), CHARSET);
+            if (!checkFlag) {
+                throw new ToolkitException(BaseCode.CHANNEL_DATA);
             }
             
             boolean skipCheckTokenResult = skipCheckToken(uri);
@@ -206,7 +209,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 userId = userVo.getId();
             }
             
-            if (StringUtil.isNotEmpty(aesFlag) && "true".equals(aesFlag)) {
+            if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
                 String dec = AesForClient.decrypt(channelDataVo.getAesKey(), aesVector, bodyContent.get(BUSINESS_BODY));
                 requestBody = dec;
             }else {
