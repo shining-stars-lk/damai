@@ -16,13 +16,13 @@
 ## 添加配置信息
 ```yml
 #es开关
-es.switch = true
+elasticsearch.esSwitch = true
 #elasticsearch.userName=es用户名
 elasticsearch.userName = 
 #elasticsearch.passWord=es密码
 elasticsearch.passWord = 
-#es.type.switch=版本
-es.type.switch = false
+#兼容低版本type
+elasticsearch.esTypeSwitch = false
 #elasticsearch.ip=es地址
 elasticsearch.ip = 
 ```
@@ -33,19 +33,6 @@ elasticsearch.ip =
 @Autowired
 private BusinessEsUtil businessEsUtil;
 ```
-
-## 开关
-
-```java
-//使用开关，默认打开
-@Value("${es.switch:true}")
-```
-
-```java
-//是否需要type，默认打开(es6、7版本需要type es8不需要type)
-@Value("${es.type.switch:true}")
-```
-
 ## api使用
 
 直接查看每个api的注释
