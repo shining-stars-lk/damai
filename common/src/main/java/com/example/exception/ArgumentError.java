@@ -1,10 +1,8 @@
 package com.example.exception;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
-@Getter
+@Data
 public class ArgumentError {
 	
 	private String argumentName;

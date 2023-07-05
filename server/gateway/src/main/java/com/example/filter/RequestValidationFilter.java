@@ -92,8 +92,6 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     private String aesVector;
     
     
-    
-    
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
@@ -169,7 +167,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             //应用渠道
             code = bodyContent.get(CODE);
             //token
-            token = bodyContent.get(TOKEN);
+            token = request.getHeaders().getFirst(TOKEN);
             
             if (StringUtil.isEmpty(code)) {
                 ArgumentError argumentError = new ArgumentError();
@@ -205,7 +203,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             }
             
             if (!skipCheckTokenResult) {
-                UserVo userVo = tokenService.getUser(token, channelDataVo.getAesKey());
+                UserVo userVo = tokenService.getUser(token);
                 userId = userVo.getId();
             }
             

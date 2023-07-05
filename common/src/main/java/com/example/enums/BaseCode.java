@@ -24,6 +24,8 @@ public enum BaseCode {
     
     PARAMETER_ERROR(1005,"参数验证异常"),
     
+    TOKEN_EXPIRE(1006,"token过期"),
+    
     SUBMIT_FREQUENT(2000,"执行频繁，请稍后再试"),
     
     USER_ID_EMPTY(3000,"用户id为空"),

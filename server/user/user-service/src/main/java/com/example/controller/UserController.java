@@ -3,7 +3,6 @@ package com.example.controller;
 import com.example.common.Result;
 import com.example.dto.UserDto;
 import com.example.service.UserService;
-import com.example.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,8 +25,7 @@ public class UserController {
     private UserService userService;
     
     @PostMapping(value = "/login")
-    public Result<UserVo> login(@Valid  @RequestBody UserDto userDto) {
-        userService.login(userDto);
-        return Result.success();
+    public Result<String> login(@Valid @RequestBody UserDto userDto) {
+        return Result.success(userService.login(userDto));
     }
 }

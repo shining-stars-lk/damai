@@ -1,32 +1,27 @@
 package com.example.service;
 
+import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.example.client.ChannelDataClient;
-import com.example.common.Result;
+import com.example.client.BaseDataClient;
 import com.example.core.RedisKeyEnum;
-import com.example.dto.GetChannelDataByCodeDto;
 import com.example.dto.UserDto;
 import com.example.entity.User;
-import com.example.enums.BaseCode;
-import com.example.exception.ToolkitException;
+import com.example.jwt.TokenUtil;
 import com.example.mapper.UserMapper;
-import com.example.redis.RedisKeyWrap;
 import com.example.redis.RedisCache;
-import com.example.util.DesAlgorithm;
-import com.example.vo.GetChannelDataVo;
+import com.example.redis.RedisKeyWrap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -39,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class UserService {
     
+    private static final String TOKEN_SECRET = "CSYZWECHAT";
+    
     @Autowired
     private UserMapper userMapper;
     
@@ -49,9 +46,12 @@ public class UserService {
     private RedisCache redisCache;
     
     @Autowired
-    private ChannelDataClient channelDataClient;
+    private BaseDataClient baseDataClient;
     
+    @Value("${token.expire.time:86400000}")
+    private Long tokenExpireTime;
     
+    @Transactional
     public String login(final UserDto userDto) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("mobile", userDto.getMobile());
@@ -67,34 +67,17 @@ public class UserService {
             userMapper.updateById(user);
         }
         cacheUser(user);
-        return generateToken(user.getId(),userDto.getCode());
+        return createToken(user.getId());
     }
     
     public void cacheUser(User user){
         redisCache.set(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.USER_ID,user.getId()),user);
-        redisCache.expire(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.USER_ID,user.getId()),1, TimeUnit.DAYS);
+        redisCache.expire(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.USER_ID,user.getId()),tokenExpireTime + 1000,TimeUnit.MILLISECONDS);
     }
     
-    public String generateToken(String userId,String code){
-        String aesKey = getAesKey(code);
-        String token = DesAlgorithm.encrypt(userId, aesKey);
-        return token;
-    }
-    
-    public String getCode(){
-        RequestAttributes ra = RequestContextHolder.getRequestAttributes();
-        ServletRequestAttributes sra = (ServletRequestAttributes) ra;
-        HttpServletRequest request = sra.getRequest();
-        return Optional.ofNullable(request.getHeader("code")).orElseThrow(() -> new ToolkitException(BaseCode.CODE_EMPTY));
-    }
-    
-    public String getAesKey(String code){
-        GetChannelDataByCodeDto getChannelDataByCodeDto = new GetChannelDataByCodeDto();
-        getChannelDataByCodeDto.setCode(code);
-        Result<GetChannelDataVo> result = channelDataClient.getByCode(getChannelDataByCodeDto);
-        if (result.getCode() != Result.success().getCode()) {
-            throw new ToolkitException(result);
-        }
-        return Optional.ofNullable(result.getData()).map(GetChannelDataVo::getAesKey).orElseThrow(() -> new ToolkitException(BaseCode.CHANNEL_DATA));
+    public String createToken(String userId){
+        Map<String,String> map = new HashMap<>(4);
+        map.put("userId",userId);
+        return TokenUtil.createToken(String.valueOf(uidGenerator.getUID()), JSON.toJSONString(map),tokenExpireTime,TOKEN_SECRET);
     }
 }

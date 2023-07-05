@@ -22,7 +22,7 @@
         <module>department</module>
         <module>employee</module>
         <module>gateway</module>
-        <module>channel-data</module>
+        <module>base-data</module>
         <module>user</module>
         <module>server-case</module>
         <module>admin</module>

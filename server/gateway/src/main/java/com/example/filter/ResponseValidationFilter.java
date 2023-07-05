@@ -35,9 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import static com.example.constant.GatewayConstant.AES_FLAG;
 import static com.example.constant.GatewayConstant.CODE;
 import static com.example.constant.GatewayConstant.DEBUG;
+import static com.example.constant.GatewayConstant.ENCRYPT;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR;
 
 /**
@@ -138,7 +138,7 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = serverWebExchange.getRequest();
         String debug = request.getHeaders().getFirst(DEBUG);
         if (verifySwitch && (!StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
-            String aesFlag = request.getHeaders().getFirst(AES_FLAG);
+            String encrypt = request.getHeaders().getFirst(ENCRYPT);
             if (StringUtil.isNotEmpty(responseBody)) {
                 Result<Object> result = JSON.parseObject(responseBody, Result.class);
                 Object data = result.getData();
@@ -153,9 +153,9 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
                         throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
                     }
                     GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
-                    if (StringUtil.isNotEmpty(aesFlag) && "true".equals(aesFlag)) {
-                        String encrypt = AesForClient.encrypt(channelDataVo.getAesKey(), aesVector, JSON.toJSONString(data));
-                        result.setData(encrypt);
+                    if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
+                        String aesEncrypt = AesForClient.encrypt(channelDataVo.getAesKey(), aesVector, JSON.toJSONString(data));
+                        result.setData(aesEncrypt);
                         modifyResponseBody = JSON.toJSONString(result);
                     }
                 }

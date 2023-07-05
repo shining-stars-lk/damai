@@ -17,6 +17,6 @@ public class GatewayProperty {
     @Value("${api.limit.paths:#{null}}")
     private String[] apiRestrictPaths;
     
-    @Value("${skip.check.token.paths:/**/department/printTraceId}")
+    @Value("${skip.check.token.paths:/**/test/test,/**/user/login,/**/token/data/add}")
     private String[] skipCheckTokenPaths;
 }
