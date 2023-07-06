@@ -22,6 +22,7 @@
 		<module>arithmetic</module>
 		<module>record</module>
 		<module>server</module>
+		<module>server-client</module>
 		<module>course-case</module>
 	</modules>
 

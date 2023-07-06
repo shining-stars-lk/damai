@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.example</groupId>
+        <artifactId>toolkit</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+
+    <artifactId>server-client</artifactId>
+    <packaging>pom</packaging>
+
+    <name>server-client</name>
+    <description>服务feign接口</description>
+
+    <modules>
+        <module>order-client</module>
+        <module>product-client</module>
+        <module>department-client</module>
+        <module>employee-client</module>
+        <module>base-data-client</module>
+        <module>user-client</module>
+        <module>job-client</module>
+        <module>customize-client</module>
+    </modules>
+</project>
