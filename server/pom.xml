@@ -17,16 +17,16 @@
     <description>测试</description>
 
     <modules>
-        <module>order</module>
-        <module>product</module>
-        <module>department</module>
-        <module>employee</module>
+        <module>order-service</module>
+        <module>product-service</module>
+        <module>department-service</module>
+        <module>employee-service</module>
         <module>gateway</module>
-        <module>base-data</module>
-        <module>user</module>
+        <module>base-data-service</module>
+        <module>user-service</module>
         <module>server-case</module>
         <module>admin</module>
-        <module>job</module>
-        <module>customize</module>
+        <module>job-service</module>
+        <module>customize-service</module>
     </modules>
 </project>
