@@ -15,15 +15,17 @@ public class Rule {
     
     private String id;
 
-    private Integer statisticTime;
+    private Integer statTime;
     
-    private Integer statisticTimeType;
+    private Integer statTimeType;
     
-    private Integer thresholdValue;
+    private Integer threshold;
     
-    private Integer limitTime;
+    private Integer effectiveTime;
     
-    private Integer limitTimeType;
+    private Integer effectiveTimeType;
+    
+    private String limitApi;
     
     private String message;
     

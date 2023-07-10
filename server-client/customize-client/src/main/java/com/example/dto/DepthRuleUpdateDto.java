@@ -1,8 +1,8 @@
-package com.example.vo;
+package com.example.dto;
 
 import lombok.Data;
 
-import java.util.Date;
+import javax.validation.constraints.NotBlank;
 
 /**
  * @program: toolkit
@@ -11,9 +11,14 @@ import java.util.Date;
  * @create: 2023-06-30
  **/
 @Data
-public class RuleVo {
+public class DepthRuleUpdateDto {
     
+    @NotBlank
     private String id;
+    
+    private String startTimeWindow;
+    
+    private String endTimeWindow;
     
     private Integer statTime;
     
@@ -29,7 +34,5 @@ public class RuleVo {
     
     private String message;
     
-    private Integer status;
     
-    private Date createTime;
 }

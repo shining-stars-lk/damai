@@ -14,15 +14,17 @@ import javax.validation.constraints.NotNull;
 public class RuleDto {
     
     @NotNull
-    private Integer statisticTime;
+    private Integer statTime;
     @NotNull
-    private Integer statisticTimeType;
+    private Integer statTimeType;
     @NotNull
-    private Integer thresholdValue;
+    private Integer threshold;
     @NotNull
-    private Integer limitTime;
+    private Integer effectiveTime;
     @NotNull
-    private Integer limitTimeType;
+    private Integer effectiveTimeType;
+    @NotNull
+    private String limitApi;
     
     private String message;
 }
