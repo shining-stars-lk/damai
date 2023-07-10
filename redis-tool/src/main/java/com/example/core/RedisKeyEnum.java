@@ -22,6 +22,10 @@ public enum RedisKeyEnum {
     RULE("rule","调用限制规则的key","调用限制规则的value","k"),
     
     RULE_LIMIT("rule_limit","调用限制时间的key","调用限制时间的value","k"),
+    
+    DEPTH_RULE("depth_rule","深度调用限制规则的key","深度调用限制规则的value","k"),
+    
+    DEPTH_RULE_LIMIT("depth_rule_limit","深度调用限制时间的key","深度调用限制时间的value","k"),
     ;
 
     /**

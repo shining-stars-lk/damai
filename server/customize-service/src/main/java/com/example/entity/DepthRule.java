@@ -1,4 +1,4 @@
-package com.example.vo;
+package com.example.entity;
 
 import lombok.Data;
 
@@ -11,10 +11,14 @@ import java.util.Date;
  * @create: 2023-06-30
  **/
 @Data
-public class RuleVo {
+public class DepthRule {
     
     private String id;
     
+    private String startTimeWindow;
+    
+    private String endTimeWindow;
+
     private Integer statTime;
     
     private Integer statTimeType;

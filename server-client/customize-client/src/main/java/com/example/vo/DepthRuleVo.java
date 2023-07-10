@@ -11,9 +11,13 @@ import java.util.Date;
  * @create: 2023-06-30
  **/
 @Data
-public class RuleVo {
+public class DepthRuleVo {
     
     private String id;
+    
+    private String startTimeWindow;
+    
+    private String endTimeWindow;
     
     private Integer statTime;
     

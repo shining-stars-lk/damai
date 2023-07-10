@@ -41,6 +41,7 @@ public class RuleService {
     
     @Transactional
     public void add(RuleDto ruleDto) {
+        ruleMapper.delAll();
         Rule rule = new Rule();
         BeanUtils.copyProperties(ruleDto,rule);
         rule.setId(String.valueOf(uidGenerator.getUID()));
@@ -83,6 +84,4 @@ public class RuleService {
             }
         });
     }
-    
-    
 }
