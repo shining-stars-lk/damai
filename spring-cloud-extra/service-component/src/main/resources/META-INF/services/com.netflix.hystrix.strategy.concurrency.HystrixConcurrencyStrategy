@@ -1,1 +1,1 @@
-com.extra.hystrix.ExtraHystrixConcurrencyStrategy
+com.example.hystrix.ExtraHystrixConcurrencyStrategy
