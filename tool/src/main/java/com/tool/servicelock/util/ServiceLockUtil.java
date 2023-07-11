@@ -4,7 +4,7 @@ import com.tool.servicelock.ServiceLockInfoProvider;
 import com.tool.servicelock.ServiceLocker;
 import com.tool.servicelock.info.LockTimeOutStrategy;
 import com.tool.servicelock.redisson.LockType;
-import com.tool.servicelock.redisson.factory.RedissonLockFactory;
+import com.tool.servicelock.redisson.factory.ServiceLockFactory;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,12 +16,12 @@ import java.util.concurrent.TimeUnit;
  **/
 public class ServiceLockUtil {
     
-    private RedissonLockFactory redissonLockFactory;
+    private ServiceLockFactory serviceLockFactory;
 
     private ServiceLockInfoProvider distributedLockInfoProvider;
     
-    public ServiceLockUtil(RedissonLockFactory redissonLockFactory, ServiceLockInfoProvider distributedLockInfoProvider){
-        this.redissonLockFactory = redissonLockFactory;
+    public ServiceLockUtil(ServiceLockFactory serviceLockFactory, ServiceLockInfoProvider distributedLockInfoProvider){
+        this.serviceLockFactory = serviceLockFactory;
         this.distributedLockInfoProvider = distributedLockInfoProvider;
     }
 
@@ -33,7 +33,7 @@ public class ServiceLockUtil {
      * */
     public void execute(TaskRun taskRun,String name,String [] keys){
         String lockName = distributedLockInfoProvider.simpleGetLockName(name,keys);
-        ServiceLocker lock = redissonLockFactory.createLock(LockType.Reentrant);
+        ServiceLocker lock = serviceLockFactory.createLock(LockType.Reentrant);
         boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, 30);
         if (result) {
             try {
@@ -55,7 +55,7 @@ public class ServiceLockUtil {
      * */
     public <T> T submit(TaskCall<T> taskCall,String name,String [] keys){
         String lockName = distributedLockInfoProvider.simpleGetLockName(name,keys);
-        ServiceLocker lock = redissonLockFactory.createLock(LockType.Reentrant);
+        ServiceLocker lock = serviceLockFactory.createLock(LockType.Reentrant);
         boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, 30);
         if (result) {
             try {

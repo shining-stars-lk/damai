@@ -5,7 +5,7 @@ import com.tool.servicelock.ServiceLockInfoProvider;
 import com.tool.servicelock.ServiceLocker;
 import com.tool.servicelock.annotion.ServiceLock;
 import com.tool.servicelock.redisson.LockType;
-import com.tool.servicelock.redisson.factory.RedissonLockFactory;
+import com.tool.servicelock.redisson.factory.ServiceLockFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -32,12 +32,12 @@ public class ServiceLockAspect {
     private final Logger logger = LoggerFactory.getLogger(ServiceLockAspect.class);
 
     
-    private RedissonLockFactory redissonLockFactory;
+    private ServiceLockFactory serviceLockFactory;
     
     private ServiceLockInfoProvider serviceLockInfoProvider;
     
-    public ServiceLockAspect(RedissonLockFactory redissonLockFactory, ServiceLockInfoProvider serviceLockInfoProvider){
-        this.redissonLockFactory = redissonLockFactory;
+    public ServiceLockAspect(ServiceLockFactory serviceLockFactory, ServiceLockInfoProvider serviceLockInfoProvider){
+        this.serviceLockFactory = serviceLockFactory;
         this.serviceLockInfoProvider = serviceLockInfoProvider;
     }
 
@@ -49,7 +49,7 @@ public class ServiceLockAspect {
         long waitTime = servicelock.waitTime();
         TimeUnit timeUnit = servicelock.timeUnit();
 
-        ServiceLocker lock = redissonLockFactory.createLock(lockType);
+        ServiceLocker lock = serviceLockFactory.createLock(lockType);
         boolean result = lock.tryLock(lockName, timeUnit, waitTime);
 
         if (result) {

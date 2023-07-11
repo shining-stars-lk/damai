@@ -7,7 +7,7 @@ import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitL
 import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitStrategyFactory;
 import com.tool.servicelock.ServiceLocker;
 import com.tool.servicelock.redisson.LockType;
-import com.tool.servicelock.redisson.factory.RedissonLockFactory;
+import com.tool.servicelock.redisson.factory.ServiceLockFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -35,15 +35,15 @@ public class MultipleSubmitLimitAspect {
     private MultipleSubmitLimitInfoProvider repeatLimitInfoProvider;
 
     
-    private RedissonLockFactory redissonLockFactory;
+    private ServiceLockFactory serviceLockFactory;
 
     
     private MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory;
     
-    public MultipleSubmitLimitAspect(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider, RedissonLockFactory redissonLockFactory,
+    public MultipleSubmitLimitAspect(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider, ServiceLockFactory serviceLockFactory,
                                      MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory){
         this.repeatLimitInfoProvider = repeatLimitInfoProvider;
-        this.redissonLockFactory = redissonLockFactory;
+        this.serviceLockFactory = serviceLockFactory;
         this.repeatLimitStrategyFactory = repeatLimitStrategyFactory;
     }
 
@@ -67,7 +67,7 @@ public class MultipleSubmitLimitAspect {
         log.info("==repeat limit lockName:{} resultKeyName:{}==",lockName,resultKeyName);
         MultipleSubmitLimitHandler repeatLimitHandler = repeatLimitStrategyFactory.getMultipleSubmitLimitStrategy(repeatRejectedStrategy.getMsg());
 
-        ServiceLocker lock = redissonLockFactory.createLock(LockType.Reentrant);
+        ServiceLocker lock = serviceLockFactory.createLock(LockType.Reentrant);
         boolean result = false;
         if (timeout == 0) {
             result = lock.tryLock(lockName, TimeUnit.SECONDS, WAIT_TIME);

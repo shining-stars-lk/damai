@@ -12,12 +12,12 @@ import org.redisson.api.RedissonClient;
  * @author: k
  * @create: 2022-05-28
  **/
-public class RedissonLockFactory {
+public class ServiceLockFactory {
 
     
     private RedissonClient redissonClient;
     
-    public RedissonLockFactory(RedissonClient redissonClient){
+    public ServiceLockFactory(RedissonClient redissonClient){
         this.redissonClient = redissonClient;
     }
 
