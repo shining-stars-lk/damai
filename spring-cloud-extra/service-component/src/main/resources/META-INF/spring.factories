@@ -1,9 +1,9 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.extra.feign.ExtraFeignAutoConfiguration,\
-  com.nacosrefresh.conf.NacosServiceConfig,\
+  com.example.feign.ExtraFeignAutoConfiguration,\
+  com.example.nacosrefresh.conf.NacosServiceConfig,\
   com.extra.hystrix.ExtraHystrixAutoConfiguration,\
-  com.example.aspect.ExtraRibbonAutoConfiguration,\
-  com.extra.flowmonitor.config.FlowMonitorAutoConfiguration,\
-  com.filter.FilterAutoConfiguration
+  com.example.balance.ExtraRibbonAutoConfiguration,\
+  com.example.flowmonitor.config.FlowMonitorAutoConfiguration,\
+  com.example.filter.FilterAutoConfiguration
 org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
-  com.registercenter.RegisterCenterAutoConfigurationImportFilter
+  com.example.registercenter.RegisterCenterAutoConfigurationImportFilter
