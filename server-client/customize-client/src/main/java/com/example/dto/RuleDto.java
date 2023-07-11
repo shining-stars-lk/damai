@@ -24,7 +24,7 @@ public class RuleDto {
     private Integer effectiveTime;
     @NotNull
     private Integer effectiveTimeType;
-    @NotBlank
+    
     private String limitApi;
     
     private String message;
