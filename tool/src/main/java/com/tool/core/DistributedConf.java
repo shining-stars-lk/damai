@@ -3,7 +3,7 @@ package com.tool.core;
 import com.tool.servicelock.ServiceLockInfoProvider;
 import com.tool.servicelock.aspect.ServiceLockAspect;
 import com.tool.servicelock.redisson.config.RedissonAutoConfiguration;
-import com.tool.servicelock.redisson.factory.RedissonLockFactory;
+import com.tool.servicelock.redisson.factory.ServiceLockFactory;
 import com.tool.servicelock.util.ServiceLockUtil;
 import com.tool.operate.Operate;
 import com.tool.operate.impl.RedissonOperate;
@@ -30,8 +30,8 @@ import org.springframework.context.annotation.Bean;
 public class DistributedConf {
     
     @Bean
-    public RedissonLockFactory redissonLockFactory(RedissonClient redissonClient){
-        return new RedissonLockFactory(redissonClient);
+    public ServiceLockFactory redissonLockFactory(RedissonClient redissonClient){
+        return new ServiceLockFactory(redissonClient);
     }
     
     @Bean
@@ -40,8 +40,8 @@ public class DistributedConf {
     }
     
     @Bean
-    public ServiceLockAspect serviceLockAspect(RedissonLockFactory redissonLockFactory, ServiceLockInfoProvider serviceLockInfoProvider){
-        return new ServiceLockAspect(redissonLockFactory,serviceLockInfoProvider);
+    public ServiceLockAspect serviceLockAspect(ServiceLockFactory serviceLockFactory, ServiceLockInfoProvider serviceLockInfoProvider){
+        return new ServiceLockAspect(serviceLockFactory,serviceLockInfoProvider);
     }
     
     @Bean
@@ -55,9 +55,9 @@ public class DistributedConf {
     }
     
     @Bean
-    public MultipleSubmitLimitAspect multipleSubmitLimitAspect(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider, RedissonLockFactory redissonLockFactory,
+    public MultipleSubmitLimitAspect multipleSubmitLimitAspect(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider, ServiceLockFactory serviceLockFactory,
                                                        MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory){
-        return new MultipleSubmitLimitAspect(repeatLimitInfoProvider,redissonLockFactory,repeatLimitStrategyFactory);
+        return new MultipleSubmitLimitAspect(repeatLimitInfoProvider, serviceLockFactory,repeatLimitStrategyFactory);
     }
     
     @Bean
@@ -81,8 +81,8 @@ public class DistributedConf {
     }
     
     @Bean
-    public ServiceLockUtil serviceLockUtil(RedissonLockFactory redissonLockFactory, ServiceLockInfoProvider distributedLockInfoProvider){
-        return new ServiceLockUtil(redissonLockFactory,distributedLockInfoProvider);
+    public ServiceLockUtil serviceLockUtil(ServiceLockFactory serviceLockFactory, ServiceLockInfoProvider distributedLockInfoProvider){
+        return new ServiceLockUtil(serviceLockFactory,distributedLockInfoProvider);
     }
     
     @Bean
