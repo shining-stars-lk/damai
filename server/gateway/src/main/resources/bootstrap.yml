@@ -12,3 +12,7 @@ spring:
       config:
         server-addr: 82.157.255.105:8848
         file-extension: yaml
+
+api:
+  limit:
+    paths: /**/customize/test/test
