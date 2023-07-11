@@ -40,14 +40,24 @@ public class RuleService {
     private UidGenerator uidGenerator;
     
     @Transactional
-    public void add(RuleDto ruleDto) {
-        ruleMapper.delAll();
+    public void ruleAdd(RuleDto ruleDto) {
+        saveCache(add(ruleDto));
+    }
+    @Transactional
+    public String add(RuleDto ruleDto) {
+        delAll();
         Rule rule = new Rule();
         BeanUtils.copyProperties(ruleDto,rule);
         rule.setId(String.valueOf(uidGenerator.getUID()));
         rule.setCreateTime(DateUtils.now());
         ruleMapper.insert(rule);
-        saveCache(rule.getId());
+        return rule.getId();
+    }
+    
+    @Transactional
+    public void ruleUpdate(final RuleUpdateDto ruleUpdateDto) {
+        update(ruleUpdateDto);
+        saveCache(ruleUpdateDto.getId());
     }
     
     @Transactional
@@ -55,6 +65,12 @@ public class RuleService {
         Rule rule = new Rule();
         BeanUtils.copyProperties(ruleUpdateDto,rule);
         ruleMapper.updateById(rule);
+    }
+    
+    @Transactional
+    public void ruleUpdateStatus(final RuleStatusDto ruleStatusDto) {
+        updateStatus(ruleStatusDto);
+        saveCache(ruleStatusDto.getId());
     }
     
     @Transactional
@@ -72,6 +88,18 @@ public class RuleService {
             BeanUtils.copyProperties(rule,ruleVo);
         });
         return ruleVo;
+    }
+    
+    public RuleVo get() {
+        RuleVo ruleVo = new RuleVo();
+        Optional.ofNullable(ruleMapper.selectOne(null)).ifPresent(rule -> {
+            BeanUtils.copyProperties(rule,ruleVo);
+        });
+        return ruleVo;
+    }
+    
+    public void delAll(){
+        ruleMapper.delAll();
     }
     
     

@@ -40,12 +40,22 @@ public class DepthRuleService {
     private UidGenerator uidGenerator;
     
     @Transactional
+    public void depthRuleAdd(DepthRuleDto depthRuleDto) {
+        add(depthRuleDto);
+        saveCache();
+    }
+    @Transactional
     public void add(DepthRuleDto depthRuleDto) {
         DepthRule depthRule = new DepthRule();
         BeanUtils.copyProperties(depthRuleDto,depthRule);
         depthRule.setId(String.valueOf(uidGenerator.getUID()));
         depthRule.setCreateTime(DateUtils.now());
         depthRuleMapper.insert(depthRule);
+    }
+    
+    @Transactional
+    public void depthRuleUpdate(final DepthRuleUpdateDto depthRuleUpdateDto) {
+        update(depthRuleUpdateDto);
         saveCache();
     }
     
@@ -57,12 +67,16 @@ public class DepthRuleService {
     }
     
     @Transactional
+    public void depthRuleUpdateStatus(final DepthRuleStatusDto depthRuleStatusDto) {
+        updateStatus(depthRuleStatusDto);
+        saveCache();
+    }
+    @Transactional
     public void updateStatus(final DepthRuleStatusDto depthRuleStatusDto) {
         DepthRule depthRule = new DepthRule();
         depthRule.setId(depthRuleStatusDto.getId());
         depthRule.setStatus(depthRuleStatusDto.getStatus());
         depthRuleMapper.updateById(depthRule);
-        saveCache();
     }
     
     public List<DepthRuleVo> selectList() {
@@ -73,6 +87,11 @@ public class DepthRuleService {
             return depthRuleVo;
         }).collect(Collectors.toList());
         return depthRuleVos;
+    }
+    
+    @Transactional
+    public void delAll(){
+        depthRuleMapper.delAll();
     }
     
     

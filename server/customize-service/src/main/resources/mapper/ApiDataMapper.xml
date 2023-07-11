@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ApiDataMapper">
+    <resultMap id="apiData" type="com.example.entity.ApiData">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="head_version" property="headVersion" jdbcType="VARCHAR"/>
+        <result column="api_address" property="apiAddress" jdbcType="VARCHAR"/>
+        <result column="api_method" property="apiMethod" jdbcType="VARCHAR"/>
+        <result column="api_body" property="apiBody" jdbcType="VARCHAR"/>
+        <result column="api_params" property="apiParams" jdbcType="VARCHAR"/>
+        <result column="api_url" property="apiUrl" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="call_day_time" property="callDayTime" jdbcType="VARCHAR"/>
+        <result column="call_hour_time" property="callHourTime" jdbcType="VARCHAR"/>
+        <result column="call_minute_time" property="callMinuteTime" jdbcType="VARCHAR"/>
+        <result column="call_second_time" property="callSecondTime" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="pageList" resultMap="apiData">
+        select
+            id,head_version,api_address,api_method,api_body,api_params,api_url,create_time,
+            status,call_day_time,call_hour_time,call_minute_time,call_second_time,count(1) as statistics
+        from api_data
+        where status = 1
+        <if test='startDate != null and startDate != ""'>
+            and create_time <![CDATA[ >= ]]> #{startDate}
+        </if>
+        <if test='endDate != null and endDate != ""'>
+            and create_time <![CDATA[ <= ]]> #{endDate}
+        </if>
+        <if test='apiAddress != null and apiAddress != ""'>
+            and api_address like concat(#{apiAddress},'%')
+        </if>
+        <if test='apiUrl != null and apiUrl != ""'>
+            and api_url like concat(#{apiUrl},'%')
+        </if>
+        group by api_address, api_url
+        order by create_time desc
+    </select>
+</mapper>

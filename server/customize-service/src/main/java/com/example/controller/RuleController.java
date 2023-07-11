@@ -30,19 +30,19 @@ public class RuleController {
     
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Result add(@Valid @RequestBody RuleDto ruleDto) {
-        ruleService.add(ruleDto);
+        ruleService.ruleAdd(ruleDto);
         return Result.success();
     }
     
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public Result update(@Valid @RequestBody RuleUpdateDto ruleUpdateDto) {
-        ruleService.update(ruleUpdateDto);
+        ruleService.ruleUpdate(ruleUpdateDto);
         return Result.success();
     }
     
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     public Result updateStatus(RuleStatusDto ruleStatusDto){
-        ruleService.updateStatus(ruleStatusDto);
+        ruleService.ruleUpdateStatus(ruleStatusDto);
         return Result.success();
     }
     
