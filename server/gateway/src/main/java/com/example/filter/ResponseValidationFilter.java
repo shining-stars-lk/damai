@@ -49,13 +49,13 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.O
 @Component
 @Slf4j
 public class ResponseValidationFilter implements GlobalFilter, Ordered {
-    
+
     @Value("${verify.switch:true}")
     private boolean verifySwitch;
-    
+
     @Value("${aes.vector:default}")
     private String aesVector;
-    
+
     @Autowired
     private ChannelDataService channelDataService;
 
