@@ -39,4 +39,5 @@ public class ApiData {
     
     private String callSecondTime;
     
+    private Integer type;
 }

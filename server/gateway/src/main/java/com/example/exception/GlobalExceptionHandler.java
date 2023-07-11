@@ -35,7 +35,12 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         //3.设置响应状态吗
         boolean exceptionFlag = false;
         RequestTemporaryWrapper requestTemporaryWrapper = new RequestTemporaryWrapper();
-        if (ex instanceof ArgumentException) {
+        if (ex instanceof ToolkitException) {
+            ToolkitException toolkitException = (ToolkitException)ex;
+            Result result = Result.error(toolkitException.getCode(),toolkitException.getMessage());
+            requestTemporaryWrapper.setResult(result);
+            exceptionFlag = true;
+        }else if (ex instanceof ArgumentException) {
             ArgumentException ae = (ArgumentException)ex;
             Result<Object> result = Result.error(ae.getCode(), ae.getMessage());
             result.setData(ae.getArgumentErrorList());

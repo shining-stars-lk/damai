@@ -104,7 +104,7 @@ public class ApiRestrictService {
             String commonkey = stringBuilder.append("_").append(url).toString();
             try {
                 RuleVo ruleVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE), RuleVo.class);
-                    List<DepthRuleVo> depthRuleVoList = redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE), DepthRuleVo.class);
+                List<DepthRuleVo> depthRuleVoList = redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE), DepthRuleVo.class);
                 int apiRuleType = 0;
                 if (Optional.ofNullable(ruleVo).isPresent()) {
                     apiRuleType = 1;
