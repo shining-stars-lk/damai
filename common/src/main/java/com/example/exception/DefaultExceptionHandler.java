@@ -17,6 +17,14 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class DefaultExceptionHandler {
 
+    /*
+    * 业务异常
+    * */
+    @ExceptionHandler(value = ToolkitException.class)
+    public Result toolkitExceptionHandler(HttpServletRequest request, ToolkitException toolkitException) {
+        log.error("业务异常 method : {} url : {} query : {} ", request.getMethod(), getRequestUrl(request), getRequestQuery(request), toolkitException);
+        return Result.error(toolkitException.getCode(),toolkitException.getMessage());
+    }
     /**
      * 参数验证异常
      */
