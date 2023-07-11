@@ -28,6 +28,8 @@ public enum BaseCode {
     
     API_RULE_TRIGGER(1007,"用户调用太过频繁，稍后再试"),
     
+    API_RULE_TIME_WINDOW_INTERSECT(1008,"已有的时间范围已经包含"),
+    
     SUBMIT_FREQUENT(2000,"执行频繁，请稍后再试"),
     
     USER_ID_EMPTY(3000,"用户id为空"),

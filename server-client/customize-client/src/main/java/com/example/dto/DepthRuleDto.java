@@ -2,6 +2,7 @@ package com.example.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -13,9 +14,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class DepthRuleDto {
     
-    @NotNull
+    @NotBlank
     private String startTimeWindow;
-    @NotNull
+    @NotBlank
     private String endTimeWindow;
     @NotNull
     private Integer statTime;
@@ -27,8 +28,10 @@ public class DepthRuleDto {
     private Integer effectiveTime;
     @NotNull
     private Integer effectiveTimeType;
-    @NotNull
+    @NotBlank
     private String limitApi;
     
     private String message;
+    
+    private Integer status;
 }
