@@ -75,23 +75,23 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
 
     @Autowired
     private ChannelDataService channelDataService;
-    
+
     @Autowired
     private ApiRestrictService apiRestrictService;
-    
+
     @Autowired
     private TokenService tokenService;
-    
+
     @Autowired
     private GatewayProperty gatewayProperty;
-    
+
     @Resource
     private UidGenerator uidGenerator;
-    
+
     @Value("${aes.vector:default}")
     private String aesVector;
-    
-    
+
+
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
@@ -124,7 +124,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     private Mono<Void> readBody(ServerWebExchange exchange, GatewayFilterChain chain, Map<String,String> headMap){
         log.info("current thread readBody : {}",Thread.currentThread().getName());
         RequestTemporaryWrapper requestTemporaryWrapper = new RequestTemporaryWrapper();
-        
+
         ServerRequest serverRequest = ServerRequest.create(exchange, serverCodecConfigurer.getReaders());
         Mono<String> modifiedBody = serverRequest.bodyToMono(String.class).flatMap(originalBody -> {
             //进行业务验证，并将相关参数放入map
@@ -138,7 +138,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         HttpHeaders headers = new HttpHeaders();
         headers.putAll(exchange.getRequest().getHeaders());
         headers.remove(HttpHeaders.CONTENT_LENGTH);
-        
+
         CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
         return bodyInserter
                 .insert(outputMessage, new BodyInserterContext())
@@ -162,13 +162,13 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         String url = request.getPath().value();
         String debug = request.getHeaders().getFirst(DEBUG);
         if (!(StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
-            
+
             String encrypt = request.getHeaders().getFirst(ENCRYPT);
             //应用渠道
             code = bodyContent.get(CODE);
             //token
             token = request.getHeaders().getFirst(TOKEN);
-            
+
             if (StringUtil.isEmpty(code)) {
                 ArgumentError argumentError = new ArgumentError();
                 argumentError.setArgumentName(CODE);
@@ -177,7 +177,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 argumentErrorList.add(argumentError);
                 throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
             }
-            
+
             if (StringUtil.isEmpty(encrypt)) {
                 ArgumentError argumentError = new ArgumentError();
                 argumentError.setArgumentName(encrypt);
@@ -191,7 +191,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             if (!checkFlag) {
                 throw new ToolkitException(BaseCode.CHANNEL_DATA);
             }
-            
+
             boolean skipCheckTokenResult = skipCheckToken(url);
             if (!skipCheckTokenResult && StringUtil.isEmpty(token)) {
                 ArgumentError argumentError = new ArgumentError();
@@ -201,12 +201,12 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 argumentErrorList.add(argumentError);
                 throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
             }
-            
+
             if (!skipCheckTokenResult) {
                 UserVo userVo = tokenService.getUser(token);
                 userId = userVo.getId();
             }
-            
+
             if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
                 String dec = AesForClient.decrypt(channelDataVo.getAesKey(), aesVector, bodyContent.get(BUSINESS_BODY));
                 requestBody = dec;
@@ -260,7 +260,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     public int getOrder() {
         return -2;
     }
-    
+
     public boolean skipCheckToken(String url){
         if (gatewayProperty.getSkipCheckTokenPaths() != null && gatewayProperty.getSkipCheckTokenPaths().length > 0) {
             for (String skipCheckTokenPath : gatewayProperty.getSkipCheckTokenPaths()) {
