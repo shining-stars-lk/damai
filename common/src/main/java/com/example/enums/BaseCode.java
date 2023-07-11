@@ -26,6 +26,8 @@ public enum BaseCode {
     
     TOKEN_EXPIRE(1006,"token过期"),
     
+    API_RULE_TRIGGER(1007,"用户调用太过频繁，稍后再试"),
+    
     SUBMIT_FREQUENT(2000,"执行频繁，请稍后再试"),
     
     USER_ID_EMPTY(3000,"用户id为空"),

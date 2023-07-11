@@ -83,7 +83,7 @@ public class ProductService {
         if (productDto.getSaveRedis() != null && productDto.getSaveRedis() == 1) {
             productMapper.insert(product);
         }
-        redisCache.incrBy(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.PRODUCT_STOCK,String.valueOf(product.getId())),product.getStock());
+        redisCache.incrBy(RedisKeyWrap.createRedisKey(RedisKeyEnum.PRODUCT_STOCK,String.valueOf(product.getId())),product.getStock());
         return true;
     }
 }

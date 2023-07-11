@@ -124,7 +124,7 @@ public class OrderService {
         List<String> keyList = new ArrayList<>();
         String[] steps = new String[productDtoList.size()];
         for (int i = 0; i < productDtoList.size(); i++) {
-            keyList.add(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.PRODUCT_STOCK, productDtoList.get(i).getProductId()).getRelKey());
+            keyList.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PRODUCT_STOCK, productDtoList.get(i).getProductId()).getRelKey());
             steps[i] = String.valueOf(productDtoList.get(i).getProductAmount());
         }
         long count = (Long) redisCache.getInstance().execute(redisScript, keyList, steps);

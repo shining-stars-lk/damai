@@ -3,7 +3,7 @@ package com.example.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
-import com.example.conf.RequestWrapper;
+import com.example.conf.RequestTemporaryWrapper;
 import com.example.core.StringUtil;
 import com.example.enums.BaseCode;
 import com.example.exception.ArgumentError;
@@ -123,7 +123,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
 
     private Mono<Void> readBody(ServerWebExchange exchange, GatewayFilterChain chain, Map<String,String> headMap){
         log.info("current thread readBody : {}",Thread.currentThread().getName());
-        RequestWrapper requestWrapper = new RequestWrapper();
+        RequestTemporaryWrapper requestTemporaryWrapper = new RequestTemporaryWrapper();
         
         ServerRequest serverRequest = ServerRequest.create(exchange, serverCodecConfigurer.getReaders());
         Mono<String> modifiedBody = serverRequest.bodyToMono(String.class).flatMap(originalBody -> {
@@ -131,7 +131,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             Map<String, String> map = verify(originalBody, exchange);
             String body = map.get(REQUEST_BODY);
             map.remove(REQUEST_BODY);
-            requestWrapper.setMap(map);
+            requestTemporaryWrapper.setMap(map);
             return Mono.just(body);
         });
         BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
@@ -143,7 +143,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         return bodyInserter
                 .insert(outputMessage, new BodyInserterContext())
                 .then(Mono.defer(() -> chain.filter(
-                        exchange.mutate().request(decorateHead(exchange, headers, outputMessage, requestWrapper, headMap)).build()
+                        exchange.mutate().request(decorateHead(exchange, headers, outputMessage, requestTemporaryWrapper, headMap)).build()
                 )))
                 .onErrorResume((Function<Throwable, Mono<Void>>) throwable -> Mono.error(throwable));
     }
@@ -159,7 +159,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         String code = null;
         String token;   
         String userId = null;
-        String uri = request.getPath().value();
+        String url = request.getPath().value();
         String debug = request.getHeaders().getFirst(DEBUG);
         if (!(StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
             
@@ -192,7 +192,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 throw new ToolkitException(BaseCode.CHANNEL_DATA);
             }
             
-            boolean skipCheckTokenResult = skipCheckToken(uri);
+            boolean skipCheckTokenResult = skipCheckToken(url);
             if (!skipCheckTokenResult && StringUtil.isEmpty(token)) {
                 ArgumentError argumentError = new ArgumentError();
                 argumentError.setArgumentName(token);
@@ -214,7 +214,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 requestBody = bodyContent.get(BUSINESS_BODY);
             }
         }
-        apiRestrictService.apiRestrict(userId,uri,request);
+        apiRestrictService.apiRestrict(userId,url,request);
         Map<String,String> map = new HashMap<>(4);
         map.put(REQUEST_BODY,requestBody);
         if (StringUtil.isNotEmpty(code)) {
@@ -223,7 +223,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         return map;
     }
     //将网关层request请求头中的重要参数传递给后续的微服务中
-    private ServerHttpRequestDecorator decorateHead(ServerWebExchange exchange, HttpHeaders headers, CachedBodyOutputMessage outputMessage, RequestWrapper requestWrapper, Map<String,String> headMap){
+    private ServerHttpRequestDecorator decorateHead(ServerWebExchange exchange, HttpHeaders headers, CachedBodyOutputMessage outputMessage, RequestTemporaryWrapper requestTemporaryWrapper, Map<String,String> headMap){
         return new ServerHttpRequestDecorator(exchange.getRequest()){
             @Override
             public HttpHeaders getHeaders() {
@@ -231,7 +231,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 long contentLength = headers.getContentLength();
                 HttpHeaders newHeaders = new HttpHeaders();
                 newHeaders.putAll(headers);
-                Map<String, String> map = requestWrapper.getMap();
+                Map<String, String> map = requestTemporaryWrapper.getMap();
                 if (map != null) {
                     newHeaders.setAll(map);
                 }

@@ -99,9 +99,9 @@ public class DepthRuleService {
         List<DepthRule> depthRules = depthRuleMapper.selectList(null);
         depthRules = depthRules.stream().filter(depthRule -> depthRule.getStatus() == RuleStatus.RUN.getCode()).collect(Collectors.toList());
         if (depthRules.size() > 0) {
-            redisCache.set(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.RULE),depthRules);
+            redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE),depthRules);
         }else {
-            redisCache.del(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.RULE));
+            redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE));
         }
     }
 }

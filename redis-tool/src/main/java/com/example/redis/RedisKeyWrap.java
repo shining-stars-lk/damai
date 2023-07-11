@@ -28,7 +28,7 @@ public final class RedisKeyWrap {
      * @param RedisKeyEnum key的枚举
      * @param args 占位符的值
      * */
-    public static RedisKeyWrap cacheKeyBuild(RedisKeyEnum RedisKeyEnum, Object... args){
+    public static RedisKeyWrap createRedisKey(RedisKeyEnum RedisKeyEnum, Object... args){
         String redisRelKey = String.format(RedisKeyEnum.getKeyCode(),args);
         return new RedisKeyWrap(redisRelKey);
     }

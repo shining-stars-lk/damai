@@ -39,4 +39,6 @@ public class ApiDataDto {
     
     private String callSecondTime;
     
+    private Integer type;
+    
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 
 
 @Data
-public class RequestWrapper {
+public class RequestTemporaryWrapper {
     
     private Map<String,String> map;
     
