@@ -1,12 +1,16 @@
 package com.example.service;
 
+import cn.hutool.core.date.DateUtil;
 import com.baidu.fsg.uid.UidGenerator;
 import com.example.core.RedisKeyEnum;
+import com.example.core.StringUtil;
 import com.example.dto.DepthRuleDto;
 import com.example.dto.DepthRuleStatusDto;
 import com.example.dto.DepthRuleUpdateDto;
 import com.example.entity.DepthRule;
+import com.example.enums.BaseCode;
 import com.example.enums.RuleStatus;
+import com.example.exception.ToolkitException;
 import com.example.mapper.DepthRuleMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
@@ -41,9 +45,35 @@ public class DepthRuleService {
     
     @Transactional
     public void depthRuleAdd(DepthRuleDto depthRuleDto) {
+        check(depthRuleDto.getStartTimeWindow(),depthRuleDto.getEndTimeWindow());
         add(depthRuleDto);
         saveCache();
     }
+    
+    public void check(String startTimeWindow, String endTimeWindow){
+        if (StringUtil.isEmpty(startTimeWindow) || StringUtil.isEmpty(endTimeWindow)) {
+            return;
+        }
+        List<DepthRule> depthRules = depthRuleMapper.selectList(null);
+        depthRules = depthRules.stream().filter(depthRule -> depthRule.getStatus() == RuleStatus.RUN.getCode()).collect(Collectors.toList());
+        for (final DepthRule depthRule : depthRules) {
+            long checkStartTimeWindowTimestamp = getTimeWindowTimestamp(startTimeWindow);
+            long checkEndTimeWindowTimestamp = getTimeWindowTimestamp(endTimeWindow);
+            long startTimeWindowTimestamp = getTimeWindowTimestamp(depthRule.getStartTimeWindow());
+            long endTimeWindowTimestamp = getTimeWindowTimestamp(depthRule.getEndTimeWindow());
+            boolean checkStartLimitTimeResult = checkStartTimeWindowTimestamp >= startTimeWindowTimestamp && checkStartTimeWindowTimestamp <= endTimeWindowTimestamp;
+            boolean checkEndLimitTimeResult = checkEndTimeWindowTimestamp >= startTimeWindowTimestamp && checkEndTimeWindowTimestamp <= endTimeWindowTimestamp;
+            if (checkStartLimitTimeResult || checkEndLimitTimeResult) {
+                throw new ToolkitException(BaseCode.API_RULE_TIME_WINDOW_INTERSECT);
+            }
+        }
+    }
+    
+    public long getTimeWindowTimestamp(String timeWindow){
+        String today = DateUtil.today();
+        return DateUtil.parse(today + " " + timeWindow).getTime();
+    }
+    
     @Transactional
     public void add(DepthRuleDto depthRuleDto) {
         DepthRule depthRule = new DepthRule();

@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
+import com.example.BusinessThreadPool;
 import com.example.core.RedisKeyEnum;
 import com.example.core.StringUtil;
 import com.example.dto.ApiDataDto;
@@ -33,6 +34,8 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 /**
  * @program: toolkit
@@ -57,6 +60,8 @@ public class ApiRestrictService {
     private UidGenerator uidGenerator;
     
     private DefaultRedisScript redisScript;
+    
+    private ConcurrentHashMap<String,Long> zSetMap = new ConcurrentHashMap<>();
     
     @PostConstruct
     public void init(){
@@ -91,14 +96,12 @@ public class ApiRestrictService {
             String message = "";
             
             String ip = getIpAddress(request);
-            StringBuffer stringBuffer = new StringBuffer("rule_api_limit");
+            
             StringBuilder stringBuilder = new StringBuilder(ip);
             if (StringUtil.isNotEmpty(id)) {
                 stringBuilder.append("_").append(id);
             }
             String commonkey = stringBuilder.append("_").append(url).toString();
-            String rulekey = stringBuffer.append("_").append(commonkey).toString();
-            
             try {
                 RuleVo ruleVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE), RuleVo.class);
                     List<DepthRuleVo> depthRuleVoList = redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE), DepthRuleVo.class);
@@ -113,6 +116,8 @@ public class ApiRestrictService {
                 if (apiRuleType == 1 || apiRuleType == 2) {
                     List<String> parameters = new ArrayList<>();
                     parameters.add(String.valueOf(apiRuleType));
+                    StringBuffer stringBuffer = new StringBuffer("rule_api_limit");
+                    String rulekey = stringBuffer.append("_").append(commonkey).toString();
                     parameters.add(rulekey);
                     parameters.add(String.valueOf(ruleVo.getStatTimeType() == RuleTimeUnit.SECOND.getCode() ? ruleVo.getStatTime() : ruleVo.getStatTime() * 60));
                     parameters.add(String.valueOf(ruleVo.getThreshold()));
@@ -151,6 +156,7 @@ public class ApiRestrictService {
                                 .orElse(message);
                     }
                     log.info("api rule [key : {}], [triggerResult : {}], [triggerCallStat : {}], [apiCount : {}], [threshold : {}]",commonkey,triggerResult,triggerCallStat,apiCount,threshold);
+                    lazyDelZSetRuleStat(timeParameters,commonkey);
                 }
             }catch (Exception e) {
                 log.error("redis Lua eror", e);
@@ -220,5 +226,30 @@ public class ApiRestrictService {
         apiDataDto.setCallMinuteTime(DateUtils.nowStr(DateUtils.FORMAT_SECOND));
         apiDataDto.setType(type);
         Optional.ofNullable(apiDataMessageSend).ifPresent(send -> send.sendMessage(JSON.toJSONString(apiDataDto)));
+    }
+    
+    public void lazyDelZSetRuleStat(String[] timeParameters, String commonkey){
+        if (timeParameters == null || timeParameters.length <= 1) {
+            return;
+        }
+        boolean lazyDelFlag = false;
+        String zSetKey = RedisKeyWrap.createRedisKey(RedisKeyEnum.Z_SET_RULE_STAT,commonkey).getRelKey();
+        Long scoreTime = zSetMap.get(zSetKey);
+        if (scoreTime == null) {
+            scoreTime = System.currentTimeMillis();
+            zSetMap.put(zSetKey,scoreTime);
+            lazyDelFlag = true;
+        }else {
+            long diffValue = System.currentTimeMillis() - scoreTime;
+            if (diffValue >= 30000) {
+                lazyDelFlag = true;
+            }
+        }
+        if (lazyDelFlag) {
+            BusinessThreadPool.execute(() -> {
+                long mixScore = Stream.of(timeParameters).mapToLong(Long::valueOf).min().getAsLong();
+                redisCache.removeRangeByScoreForZSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.Z_SET_RULE_STAT,commonkey),0,mixScore);
+            });
+        }
     }
 }
