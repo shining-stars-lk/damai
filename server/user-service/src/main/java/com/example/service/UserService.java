@@ -71,8 +71,8 @@ public class UserService {
     }
     
     public void cacheUser(User user){
-        redisCache.set(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.USER_ID,user.getId()),user);
-        redisCache.expire(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.USER_ID,user.getId()),tokenExpireTime + 1000,TimeUnit.MILLISECONDS);
+        redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),user);
+        redisCache.expire(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),tokenExpireTime + 1000,TimeUnit.MILLISECONDS);
     }
     
     public String createToken(String userId){

@@ -2,6 +2,8 @@ package com.example.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @program: toolkit
  * @description:
@@ -9,9 +11,13 @@ import lombok.Data;
  * @create: 2023-06-30
  **/
 @Data
-public class RuleVo {
+public class DepthRuleVo {
     
     private String id;
+    
+    private String startTimeWindow;
+    
+    private String endTimeWindow;
     
     private Integer statTime;
     
@@ -28,4 +34,6 @@ public class RuleVo {
     private String message;
     
     private Integer status;
+    
+    private Date createTime;
 }

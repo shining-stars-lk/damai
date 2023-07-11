@@ -1,5 +1,7 @@
 package com.example.service;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.example.core.RedisKeyEnum;
@@ -10,9 +12,10 @@ import com.example.enums.RuleTimeUnit;
 import com.example.exception.ToolkitException;
 import com.example.kafka.ApiDataMessageSend;
 import com.example.property.GatewayProperty;
-import com.example.redis.RedisKeyWrap;
 import com.example.redis.RedisCache;
+import com.example.redis.RedisKeyWrap;
 import com.example.util.DateUtils;
+import com.example.vo.DepthRuleVo;
 import com.example.vo.RuleVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,48 +81,96 @@ public class ApiRestrictService {
         return false;
     }
     
-    public void apiRestrict(String id, String uri, ServerHttpRequest request){
-        if (checkApiRestrict(uri)) {
-            long result = 0L;
-            long count = 0L;
-            long thresholdValue = 0L;
+    public void apiRestrict(String id, String url, ServerHttpRequest request) {
+        if (checkApiRestrict(url)) {
+            long triggerResult = 0L;
+            long triggerCallStat = 0L;
+            long apiCount = 0L;
+            long threshold = 0L;
+            long messageIndex = -1L;
             String message = "";
-            try {
-                RuleVo ruleVo = redisCache.get(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.RULE), RuleVo.class);
-                if (Optional.ofNullable(ruleVo).isPresent()) {
-                    message = ruleVo.getMessage();
-                    String ip = getIpAddress(request);
-                    StringBuffer stringBuffer = new StringBuffer("apiLimit" + "_" + ip);
-                    if (StringUtil.isNotEmpty(id)) {
-                        stringBuffer.append("_").append(id);
-                    }
-                    String key = stringBuffer.append("_").append(uri).toString();
-                    List<String> keyList = new ArrayList<>();
-                    keyList.add(key);
-                    keyList.add(String.valueOf(ruleVo.getStatisticTimeType() == RuleTimeUnit.SECOND.getCode() ? ruleVo.getStatisticTime() : ruleVo.getStatisticTime() * 60));
-                    keyList.add(String.valueOf(ruleVo.getThresholdValue()));
-                    keyList.add(String.valueOf(ruleVo.getLimitTimeType() == RuleTimeUnit.SECOND.getCode() ? ruleVo.getLimitTime() : ruleVo.getLimitTime() * 60));
-                    keyList.add(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.RULE_LIMIT,key).getRelKey());
-                    List<Long> executeResultList = (ArrayList) redisCache.getInstance().execute(redisScript, keyList);
-                    result = executeResultList.get(0);
-                    count = executeResultList.get(1);
-                    thresholdValue = executeResultList.get(2);
-                    log.info("apiLimit key : {} result : {} count : {} thresholdValue : {}",key, result, count, thresholdValue);
-                }
-            } catch (Exception ex) {
-                log.error("redis Lua eror", ex);
+            
+            String ip = getIpAddress(request);
+            StringBuffer stringBuffer = new StringBuffer("rule_api_limit");
+            StringBuilder stringBuilder = new StringBuilder(ip);
+            if (StringUtil.isNotEmpty(id)) {
+                stringBuilder.append("_").append(id);
             }
-            if (result == 1) {
-                if (count == thresholdValue) {
-                    saveApiData(request,uri);
+            String commonkey = stringBuilder.append("_").append(url).toString();
+            String rulekey = stringBuffer.append("_").append(commonkey).toString();
+            
+            try {
+                RuleVo ruleVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE), RuleVo.class);
+                    List<DepthRuleVo> depthRuleVoList = redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE), DepthRuleVo.class);
+                int apiRuleType = 0;
+                if (Optional.ofNullable(ruleVo).isPresent()) {
+                    apiRuleType = 1;
+                    message = ruleVo.getMessage();
                 }
+                if (Optional.ofNullable(ruleVo).isPresent() && CollUtil.isNotEmpty(depthRuleVoList)) {
+                    apiRuleType = 2;
+                }
+                if (apiRuleType == 1 || apiRuleType == 2) {
+                    List<String> parameters = new ArrayList<>();
+                    parameters.add(String.valueOf(apiRuleType));
+                    parameters.add(rulekey);
+                    parameters.add(String.valueOf(ruleVo.getStatTimeType() == RuleTimeUnit.SECOND.getCode() ? ruleVo.getStatTime() : ruleVo.getStatTime() * 60));
+                    parameters.add(String.valueOf(ruleVo.getThreshold()));
+                    parameters.add(String.valueOf(ruleVo.getEffectiveTimeType() == RuleTimeUnit.SECOND.getCode() ? ruleVo.getEffectiveTime() : ruleVo.getEffectiveTime() * 60));
+                    parameters.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE_LIMIT,commonkey).getRelKey());
+                    parameters.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.Z_SET_RULE_STAT,commonkey).getRelKey());
+                    
+                    String[] timeParameters = {String.valueOf(System.currentTimeMillis())};
+                    if (apiRuleType == 2) {
+                        int timeIndex = 1;
+                        parameters.add(String.valueOf(depthRuleVoList.size()));
+                        String[] relTimeParameters = new String[2 * depthRuleVoList.size() + 1];
+                        relTimeParameters[0] = String.valueOf(System.currentTimeMillis());
+                        for (int i = 0; i < depthRuleVoList.size(); i++) {
+                            DepthRuleVo depthRuleVo = depthRuleVoList.get(i);
+                            parameters.add(String.valueOf(depthRuleVo.getStatTimeType() == RuleTimeUnit.SECOND.getCode() ? depthRuleVo.getStatTime() : depthRuleVo.getStatTime() * 60));
+                            parameters.add(String.valueOf(depthRuleVo.getThreshold()));
+                            parameters.add(String.valueOf(depthRuleVo.getEffectiveTimeType() == RuleTimeUnit.SECOND.getCode() ? depthRuleVo.getEffectiveTime() : depthRuleVo.getEffectiveTime() * 60));
+                            parameters.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE_LIMIT,i,commonkey).getRelKey());
+                            relTimeParameters[timeIndex] = String.valueOf(getTimeWindowTimestamp(depthRuleVo.getStartTimeWindow()));
+                            relTimeParameters[timeIndex+1] = String.valueOf(getTimeWindowTimestamp(depthRuleVo.getEndTimeWindow()));
+                            timeIndex = timeIndex + 2;
+                        }
+                        timeParameters = relTimeParameters;
+                    }
+                    List<Long> executeResult = (ArrayList)redisCache.getInstance().execute(redisScript, parameters, timeParameters);
+                    triggerResult = Optional.ofNullable(executeResult.get(0)).orElse(0L);
+                    triggerCallStat = Optional.ofNullable(executeResult.get(1)).orElse(0L);
+                    apiCount = Optional.ofNullable(executeResult.get(2)).orElse(0L);
+                    threshold = Optional.ofNullable(executeResult.get(3)).orElse(0L);
+                    messageIndex = Optional.ofNullable(executeResult.get(4)).orElse(-1L);
+                    if (messageIndex != -1) {
+                        message = Optional.ofNullable(depthRuleVoList.get((int)messageIndex))
+                                .map(DepthRuleVo::getMessage)
+                                .filter(StringUtil::isNotEmpty)
+                                .orElse(message);
+                    }
+                    log.info("api rule [key : {}], [triggerResult : {}], [triggerCallStat : {}], [apiCount : {}], [threshold : {}]",commonkey,triggerResult,triggerCallStat,apiCount,threshold);
+                }
+            }catch (Exception e) {
+                log.error("redis Lua eror", e);
+            }
+            if (triggerResult == 1) {
+                if (triggerCallStat == 1 || triggerCallStat == 2) {
+                    saveApiData(request, url, (int)triggerCallStat);
+                }
+                String defaultMessage = BaseCode.API_RULE_TRIGGER.getMsg();
                 if (StringUtil.isNotEmpty(message)) {
-                    throw new ToolkitException(BaseCode.SUBMIT_FREQUENT.getCode(),message);
-                }else {
-                    throw new ToolkitException(BaseCode.SUBMIT_FREQUENT);
+                    defaultMessage = message;
                 }
+                throw new ToolkitException(BaseCode.API_RULE_TRIGGER.getCode(),defaultMessage);
             }
         }
+    }
+    
+    public long getTimeWindowTimestamp(String timeWindow){
+        String today = DateUtil.today();
+        return DateUtil.parse(today + " " + timeWindow).getTime();
     }
     
     /**
@@ -157,7 +208,7 @@ public class ApiRestrictService {
         return ip;
     }
     
-    public void saveApiData(ServerHttpRequest request, String apiUrl){
+    public void saveApiData(ServerHttpRequest request, String apiUrl, Integer type){
         ApiDataDto apiDataDto = new ApiDataDto();
         apiDataDto.setId(String.valueOf(uidGenerator.getUID()));
         apiDataDto.setApiAddress(getIpAddress(request));
@@ -167,6 +218,7 @@ public class ApiRestrictService {
         apiDataDto.setCallHourTime(DateUtils.nowStr(DateUtils.FORMAT_HOUR));
         apiDataDto.setCallMinuteTime(DateUtils.nowStr(DateUtils.FORMAT_MINUTE));
         apiDataDto.setCallMinuteTime(DateUtils.nowStr(DateUtils.FORMAT_SECOND));
+        apiDataDto.setType(type);
         Optional.ofNullable(apiDataMessageSend).ifPresent(send -> send.sendMessage(JSON.toJSONString(apiDataDto)));
     }
 }

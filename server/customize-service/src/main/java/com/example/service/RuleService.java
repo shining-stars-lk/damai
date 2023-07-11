@@ -106,9 +106,9 @@ public class RuleService {
     public void saveCache(String id){
         Optional.ofNullable(ruleMapper.selectById(id)).ifPresent(rule -> {
             if (rule.getStatus() == RuleStatus.RUN.getCode()) {
-                redisCache.set(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.RULE),rule);
+                redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE),rule);
             }else {
-                redisCache.del(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.RULE));
+                redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE));
             }
         });
     }

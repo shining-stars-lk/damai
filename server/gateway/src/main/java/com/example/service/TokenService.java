@@ -41,7 +41,7 @@ public class TokenService {
         UserVo userVo = null;
         String userId = parseToken(token);
         if (StringUtil.isNotEmpty(userId)) {
-            userVo = redisCache.get(RedisKeyWrap.cacheKeyBuild(RedisKeyEnum.USER_ID, userId), UserVo.class);
+            userVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID, userId), UserVo.class);
         }
         return Optional.ofNullable(userVo).orElseThrow(() -> new ToolkitException(BaseCode.USER_EMPTY));
     }

@@ -1,7 +1,7 @@
 package com.example.exception;
 
 import com.example.common.Result;
-import com.example.conf.RequestWrapper;
+import com.example.conf.RequestTemporaryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
@@ -34,16 +34,16 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         //3.设置响应状态吗
         boolean exceptionFlag = false;
-        RequestWrapper requestWrapper = new RequestWrapper();
+        RequestTemporaryWrapper requestTemporaryWrapper = new RequestTemporaryWrapper();
         if (ex instanceof ArgumentException) {
             ArgumentException ae = (ArgumentException)ex;
             Result<Object> result = Result.error(ae.getCode(), ae.getMessage());
             result.setData(ae.getArgumentErrorList());
-            requestWrapper.setResult(result);
+            requestTemporaryWrapper.setResult(result);
             exceptionFlag = true;
         }else if (ex instanceof Exception) {
             Result result = Result.error(-100,"网络异常!");
-            requestWrapper.setResult(result);
+            requestTemporaryWrapper.setResult(result);
             exceptionFlag = true;
         }
         if (exceptionFlag) {
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                     ObjectMapper objectMapper = new ObjectMapper();
                     try {
                         //设置响应到response的数据
-                        return bufferFactory.wrap(objectMapper.writeValueAsBytes(requestWrapper.getResult()));
+                        return bufferFactory.wrap(objectMapper.writeValueAsBytes(requestTemporaryWrapper.getResult()));
                     } catch (JsonProcessingException e) {
                         e.printStackTrace();
                         return null;
