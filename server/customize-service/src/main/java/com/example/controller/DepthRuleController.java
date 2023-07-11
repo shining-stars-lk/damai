@@ -30,19 +30,19 @@ public class DepthRuleController {
     
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Result add(@Valid @RequestBody DepthRuleDto depthRuleDto) {
-        depthRuleService.add(depthRuleDto);
+        depthRuleService.depthRuleAdd(depthRuleDto);
         return Result.success();
     }
     
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public Result update(@Valid @RequestBody DepthRuleUpdateDto depthRuleUpdateDto) {
-        depthRuleService.update(depthRuleUpdateDto);
+        depthRuleService.depthRuleUpdate(depthRuleUpdateDto);
         return Result.success();
     }
     
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     public Result updateStatus(DepthRuleStatusDto depthRuleStatusDto){
-        depthRuleService.updateStatus(depthRuleStatusDto);
+        depthRuleService.depthRuleUpdateStatus(depthRuleStatusDto);
         return Result.success();
     }
     
