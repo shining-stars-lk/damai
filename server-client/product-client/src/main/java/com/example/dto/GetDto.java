@@ -1,7 +1,7 @@
 package com.example.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.swagger.annotations.ApiModel;
+import lombok.Data;
 
 /**
  * @program: toolkit
@@ -9,8 +9,8 @@ import lombok.Setter;
  * @author: k
  * @create: 2023-04-17
  **/
-@Getter
-@Setter
+@Data
+@ApiModel(value="GetDto", description ="订单")
 public class GetDto {
     
     private String id;

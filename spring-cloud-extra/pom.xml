@@ -17,6 +17,7 @@
     <modules>
         <module>job-async</module>
         <module>service-component</module>
+        <module>service-common</module>
         <module>sentinel-general</module>
     </modules>
 

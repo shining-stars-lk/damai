@@ -1,13 +1,15 @@
-package com.example.config;
+package com.example.swagger;
 
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import springfox.documentation.RequestHandler;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
@@ -19,19 +21,36 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.List;
 
-@Configuration
+/**
+ * @program: toolkit
+ * @description:
+ * @author: k
+ * @create: 2023-07-03
+ **/
 @EnableSwagger2
 @EnableKnife4j
 public class SwaggerConfiguration {
 
-    @Bean(value = "userApi")
+    @Bean
     @Order(value = 1)
     public Docket groupRestApi() {
+        
+        Predicate<RequestHandler> predicate = (requestHandler) -> {
+            boolean controllerStandardDocument = requestHandler.findControllerAnnotation(Api.class).isPresent();
+            boolean methodStandardDocument = requestHandler.findAnnotation(ApiOperation.class).isPresent();
+            if (controllerStandardDocument || methodStandardDocument) {
+                return true;
+            }else {
+                return false;
+            }
+        };
+        
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(groupApiInfo())
+                .useDefaultResponseMessages(false)
+                .forCodeGeneration(true)
                 .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any())
+                .apis(predicate)
                 .build();
     }
 

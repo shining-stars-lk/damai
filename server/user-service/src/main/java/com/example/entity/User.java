@@ -29,4 +29,6 @@ public class User {
     private String mobile;
     
     private Date editTime;
+    
+    private Integer logStatus;
 }

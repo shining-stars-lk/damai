@@ -1,7 +1,10 @@
 package com.example.vo;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.math.BigDecimal;
 
 /**
  * @program: toolkit
@@ -9,17 +12,25 @@ import lombok.Setter;
  * @author: k
  * @create: 2023-04-17
  **/
-@Setter
-@Getter
+@Data
+@ApiModel(value="GetOrderVo", description ="订单")
 public class GetOrderVo {
     
+    @ApiModelProperty(name ="id", dataType ="String", value ="订单id", required =true)
     private String id;
     
+    @ApiModelProperty(name ="name", dataType ="String", value ="订单名字", required =true)
     private String name;
     
+    @ApiModelProperty(name ="productId", dataType ="String", value ="产品id", required =true)
     private String productId;
     
+    @ApiModelProperty(name ="productName", dataType ="String", value ="产品名字", required =true)
     private String productName;
     
-    private Integer productNumber; 
+    @ApiModelProperty(name ="productPrice", dataType ="BigDecimal", value ="产品单价", required =true)
+    private BigDecimal productPrice;
+    
+    @ApiModelProperty(name ="productNumber", dataType ="Integer", value ="产品数量", required =true)
+    private Integer productNumber;
 }

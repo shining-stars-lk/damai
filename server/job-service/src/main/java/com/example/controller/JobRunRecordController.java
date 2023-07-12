@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.common.Result;
 import com.example.dto.JobCallBackDto;
 import com.example.service.JobRunRecordService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/jobRunRecord")
+@Api(tags = "jobRunRecord", description = "任务执行记录")
 public class JobRunRecordController {
     
     @Autowired
@@ -28,4 +30,6 @@ public class JobRunRecordController {
     public Result<Integer> callBack(@Valid @RequestBody JobCallBackDto JobCallBackDto) {
         return Result.success(jobRunRecordService.callBack(JobCallBackDto));
     }
+    
+    
 }
