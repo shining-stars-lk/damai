@@ -25,32 +25,34 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/rule")
-@Api("测试")
+@Api(tags = "rule", description = "规则")
 public class RuleController {
 
     @Autowired
     private RuleService ruleService;
     
-    @ApiOperation(value = "普通规则添加")
+    @ApiOperation(value = "添加普通规则")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Result add(@Valid @RequestBody RuleDto ruleDto) {
         ruleService.ruleAdd(ruleDto);
         return Result.success();
     }
     
-    @ApiOperation(value = "普通规则修改")
+    @ApiOperation(value = "修改普通规则")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public Result update(@Valid @RequestBody RuleUpdateDto ruleUpdateDto) {
         ruleService.ruleUpdate(ruleUpdateDto);
         return Result.success();
     }
     
+    @ApiOperation(value = "修改普通规则状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
     public Result updateStatus(RuleStatusDto ruleStatusDto){
         ruleService.ruleUpdateStatus(ruleStatusDto);
         return Result.success();
     }
     
+    @ApiOperation(value = "查询普通规则")
     @RequestMapping(value = "/get", method = RequestMethod.POST)
     public Result<RuleVo> get(RuleGetDto ruleGetDto){
         return Result.success(ruleService.get(ruleGetDto));

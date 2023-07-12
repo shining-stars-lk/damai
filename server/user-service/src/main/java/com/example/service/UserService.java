@@ -3,14 +3,18 @@ package com.example.service;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.example.client.BaseDataClient;
 import com.example.core.RedisKeyEnum;
 import com.example.dto.UserDto;
+import com.example.dto.logOutDto;
 import com.example.entity.User;
+import com.example.enums.UserLogStatus;
 import com.example.jwt.TokenUtil;
 import com.example.mapper.UserMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
+import com.example.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,5 +83,15 @@ public class UserService {
         Map<String,String> map = new HashMap<>(4);
         map.put("userId",userId);
         return TokenUtil.createToken(String.valueOf(uidGenerator.getUID()), JSON.toJSONString(map),tokenExpireTime,TOKEN_SECRET);
+    }
+    
+    public void logOut(final logOutDto logOutDto) {
+        User user = new User();
+        user.setMobile(logOutDto.getMobile());
+        user.setLogStatus(UserLogStatus.OUT.getCode());
+        user.setEditTime(DateUtils.now());
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(User::getMobile,logOutDto.getMobile());
+        userMapper.update(user,updateWrapper);
     }
 }

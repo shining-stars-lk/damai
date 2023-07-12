@@ -2,7 +2,7 @@ package com.example.service;
 
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
-import com.example.ProductDto;
+import com.example.dto.ProductDto;
 import com.example.client.ProductClient;
 import com.example.common.Result;
 import com.example.core.RedisKeyEnum;

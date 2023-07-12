@@ -1,26 +1,39 @@
 package com.example.vo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
 
+@ApiModel(value="GetChannelDataVo", description ="渠道数据")
 @Data
 public class GetChannelDataVo {
+    
+    @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
     private String id;
-
+    
+    @ApiModelProperty(name ="name", dataType ="String", value ="名称", required =true)
     private String name;
-
+    
+    @ApiModelProperty(name ="code", dataType ="String", value ="code码", required =true)
     private String code;
-
+    
+    @ApiModelProperty(name ="introduce", dataType ="String", value ="介绍", required =true)
     private String introduce;
-
+    
+    @ApiModelProperty(name ="createTime", dataType ="Date", value ="创建时间", required =true)
     private Date createTime;
-
+    
+    @ApiModelProperty(name ="status", dataType ="Integer", value ="装填 1:正常 0:禁用", required =true)
     private Integer status;
     
+    @ApiModelProperty(name ="introduce", dataType ="String", value ="rsa公钥", required =true)
     private String publicKey;
     
+    @ApiModelProperty(name ="secretKey", dataType ="String", value ="rsa私钥", required =true)
     private String secretKey;
     
+    @ApiModelProperty(name ="aesKey", dataType ="String", value ="aes私钥")
     private String aesKey;
 }

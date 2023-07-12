@@ -1,7 +1,8 @@
 package com.example.vo;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * @program: toolkit
@@ -9,11 +10,13 @@ import lombok.Setter;
  * @author: k
  * @create: 2023-04-17
  **/
-@Getter
-@Setter
+@Data
+@ApiModel(value="GetDepartmentVo", description ="部门")
 public class GetDepartmentVo {
     
+    @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
     private String id;
     
+    @ApiModelProperty(name ="name", dataType ="String", value ="名字")
     private String name;
 }

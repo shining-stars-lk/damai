@@ -44,6 +44,11 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
+            <artifactId>service-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
             <artifactId>base-data-client</artifactId>
             <version>${revision}</version>
         </dependency>

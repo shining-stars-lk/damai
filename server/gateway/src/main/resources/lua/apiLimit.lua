@@ -49,6 +49,10 @@ if (api_rule_type == 2) then
 
         threshold = depth_rule_threshold
 
+        if (current_Time > start_time_window) then
+            redis.call('zremrangebyscore',0,start_time_window - 1000)
+        end
+
         if (current_Time >= start_time_window and current_Time <= end_time_window) then
             local z_set_min_score = start_time_window;
             local z_set_max_score = current_Time;

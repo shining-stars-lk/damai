@@ -1,4 +1,4 @@
-package com.example.conf;
+package com.example.conf.swagger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 
+ * @program: toolkit
  * @description:
- * @author: lk
- * @create: 2022-10-31
+ * @author: k
+ * @create: 2023-07-03
  **/
 @RestController
 @RequestMapping("/swagger-resources")

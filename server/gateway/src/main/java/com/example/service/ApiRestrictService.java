@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
-import com.example.BusinessThreadPool;
 import com.example.core.RedisKeyEnum;
 import com.example.core.StringUtil;
 import com.example.dto.ApiDataDto;
@@ -32,10 +31,11 @@ import org.springframework.util.PathMatcher;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 /**
  * @program: toolkit
@@ -127,6 +127,7 @@ public class ApiRestrictService {
                     
                     String[] timeParameters = {String.valueOf(System.currentTimeMillis())};
                     if (apiRuleType == 2) {
+                        depthRuleVoList = sortStartTimeWindow(depthRuleVoList);
                         int timeIndex = 1;
                         parameters.add(String.valueOf(depthRuleVoList.size()));
                         String[] relTimeParameters = new String[2 * depthRuleVoList.size() + 1];
@@ -137,8 +138,8 @@ public class ApiRestrictService {
                             parameters.add(String.valueOf(depthRuleVo.getThreshold()));
                             parameters.add(String.valueOf(depthRuleVo.getEffectiveTimeType() == RuleTimeUnit.SECOND.getCode() ? depthRuleVo.getEffectiveTime() : depthRuleVo.getEffectiveTime() * 60));
                             parameters.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE_LIMIT,i,commonkey).getRelKey());
-                            relTimeParameters[timeIndex] = String.valueOf(getTimeWindowTimestamp(depthRuleVo.getStartTimeWindow()));
-                            relTimeParameters[timeIndex+1] = String.valueOf(getTimeWindowTimestamp(depthRuleVo.getEndTimeWindow()));
+                            relTimeParameters[timeIndex] = String.valueOf(depthRuleVo.getStartTimeWindowTimestamp());
+                            relTimeParameters[timeIndex+1] = String.valueOf(depthRuleVo.getEndTimeWindowTimestamp());
                             timeIndex = timeIndex + 2;
                         }
                         timeParameters = relTimeParameters;
@@ -156,7 +157,6 @@ public class ApiRestrictService {
                                 .orElse(message);
                     }
                     log.info("api rule [key : {}], [triggerResult : {}], [triggerCallStat : {}], [apiCount : {}], [threshold : {}]",commonkey,triggerResult,triggerCallStat,apiCount,threshold);
-                    lazyDelZSetRuleStat(timeParameters,commonkey);
                 }
             }catch (Exception e) {
                 log.error("redis Lua eror", e);
@@ -172,6 +172,14 @@ public class ApiRestrictService {
                 throw new ToolkitException(BaseCode.API_RULE_TRIGGER.getCode(),defaultMessage);
             }
         }
+    }
+    
+    public List<DepthRuleVo> sortStartTimeWindow(List<DepthRuleVo> depthRuleVoList){
+        return depthRuleVoList.stream().map(depthRuleVo -> {
+            depthRuleVo.setStartTimeWindowTimestamp(getTimeWindowTimestamp(depthRuleVo.getStartTimeWindow()));
+            depthRuleVo.setEndTimeWindowTimestamp((getTimeWindowTimestamp(depthRuleVo.getEndTimeWindow())));
+            return depthRuleVo;
+        }).sorted(Comparator.comparing(DepthRuleVo::getStartTimeWindowTimestamp)).collect(Collectors.toList());
     }
     
     public long getTimeWindowTimestamp(String timeWindow){
@@ -226,30 +234,5 @@ public class ApiRestrictService {
         apiDataDto.setCallMinuteTime(DateUtils.nowStr(DateUtils.FORMAT_SECOND));
         apiDataDto.setType(type);
         Optional.ofNullable(apiDataMessageSend).ifPresent(send -> send.sendMessage(JSON.toJSONString(apiDataDto)));
-    }
-    
-    public void lazyDelZSetRuleStat(String[] timeParameters, String commonkey){
-        if (timeParameters == null || timeParameters.length <= 1) {
-            return;
-        }
-        boolean lazyDelFlag = false;
-        String zSetKey = RedisKeyWrap.createRedisKey(RedisKeyEnum.Z_SET_RULE_STAT,commonkey).getRelKey();
-        Long scoreTime = zSetMap.get(zSetKey);
-        if (scoreTime == null) {
-            scoreTime = System.currentTimeMillis();
-            zSetMap.put(zSetKey,scoreTime);
-            lazyDelFlag = true;
-        }else {
-            long diffValue = System.currentTimeMillis() - scoreTime;
-            if (diffValue >= 30000) {
-                lazyDelFlag = true;
-            }
-        }
-        if (lazyDelFlag) {
-            BusinessThreadPool.execute(() -> {
-                long mixScore = Stream.of(timeParameters).mapToLong(Long::valueOf).min().getAsLong();
-                redisCache.removeRangeByScoreForZSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.Z_SET_RULE_STAT,commonkey),0,mixScore);
-            });
-        }
     }
 }

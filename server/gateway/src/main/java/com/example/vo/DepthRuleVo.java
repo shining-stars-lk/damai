@@ -17,7 +17,11 @@ public class DepthRuleVo {
     
     private String startTimeWindow;
     
+    private long startTimeWindowTimestamp;
+    
     private String endTimeWindow;
+    
+    private long endTimeWindowTimestamp;
     
     private Integer statTime;
     
