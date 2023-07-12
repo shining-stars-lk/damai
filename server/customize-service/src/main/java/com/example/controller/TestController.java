@@ -25,6 +25,26 @@ public class TestController {
     @ApiOperation(value = "测试")
     @RequestMapping(value = "/test", method = RequestMethod.POST)
     public Result<String> test(@Valid @RequestBody TestDto testDto) {
+        if (testDto.getSleepTime() != null) {
+            try {
+                Thread.sleep(testDto.getSleepTime());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        return Result.success(testDto.getId());
+    }
+    
+    @ApiOperation(value = "测试V2")
+    @RequestMapping(value = "/testV2", method = RequestMethod.POST)
+    public Result<String> testV2(@Valid @RequestBody TestDto testDto) {
+        if (testDto.getSleepTime() != null) {
+            try {
+                Thread.sleep(testDto.getSleepTime());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
         return Result.success(testDto.getId());
     }
 }
