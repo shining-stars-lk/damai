@@ -49,4 +49,7 @@ public class DepthRuleDto {
     
     @ApiModelProperty(name ="message", dataType ="String", value ="提示信息")
     private String message;
+    
+    @ApiModelProperty(name ="status", dataType ="Integer", value ="状态 1正常 0失效")
+    private Integer status;
 }
