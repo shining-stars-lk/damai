@@ -50,7 +50,7 @@ if (api_rule_type == 2) then
         threshold = depth_rule_threshold
 
         if (current_Time > start_time_window) then
-            redis.call('zremrangebyscore',0,start_time_window - 1000)
+            redis.call('zremrangebyscore',z_set_key,0,start_time_window - 1000)
         end
 
         if (current_Time >= start_time_window and current_Time <= end_time_window) then
