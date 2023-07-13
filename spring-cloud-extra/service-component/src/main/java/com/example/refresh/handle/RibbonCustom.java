@@ -1,4 +1,4 @@
-package com.example.nacosrefresh.handle;
+package com.example.refresh.handle;
 
 
 import com.example.core.SpringUtil;
@@ -19,7 +19,7 @@ import java.util.Map;
  * @create: 2022-06-01
  **/
 
-public class RibbonHandle {
+public class RibbonCustom {
 
     private static final String CONTEXTS_FIELD = "contexts";
 
@@ -66,17 +66,17 @@ public class RibbonHandle {
      * */
     public void updateRibbonCache(){
         try {
-            Map<String, ZoneAwareLoadBalancer> zoneAwareLoadBalancerMap = zoneAwareLoadBalancerMap();
+            Map<String, ZoneAwareLoadBalancer> loadBalancerMap = zoneAwareLoadBalancerMap();
             //循环更新每个fegin服务的ribbon服务缓存
-            for (Map.Entry<String, ZoneAwareLoadBalancer> zoneAwareLoadBalancerEntry : zoneAwareLoadBalancerMap.entrySet()) {
-                ZoneAwareLoadBalancer zoneAwareLoadBalancer = zoneAwareLoadBalancerEntry.getValue();
-                Class<? extends ZoneAwareLoadBalancer> aClass1 = zoneAwareLoadBalancer.getClass();
-                Field updateActionField = aClass1.getSuperclass().getDeclaredField(UPDATE_ACTION_FIELD);
+            for (Map.Entry<String, ZoneAwareLoadBalancer> entry : loadBalancerMap.entrySet()) {
+                ZoneAwareLoadBalancer balancer = entry.getValue();
+                Class<? extends ZoneAwareLoadBalancer> zoneAwareLoadBalancerClass = balancer.getClass();
+                Field updateActionField = zoneAwareLoadBalancerClass.getSuperclass().getDeclaredField(UPDATE_ACTION_FIELD);
                 updateActionField.setAccessible(true);
                 //1,反射拿到ZoneAwareLoadBalancer的父类DynamicServerListLoadBalancer中updateAction属性
                 //2,updateAction为接口，调用doUpDate()方法实际调用updateListOfServers()
                 //3,updateListOfServers()就是调用nacos服务并更新到ribbon自己的缓存中
-                ServerListUpdater.UpdateAction updateAction = (ServerListUpdater.UpdateAction)updateActionField.get(zoneAwareLoadBalancer);
+                ServerListUpdater.UpdateAction updateAction = (ServerListUpdater.UpdateAction)updateActionField.get(balancer);
                 //ribbon更新自己缓存的逻辑中，
                 //用的BaseLoadBalancer中的ReadWriteLock allServerLock = new ReentrantReadWriteLock()
                 //和ReadWriteLock upServerLock = new ReentrantReadWriteLock()
@@ -93,16 +93,16 @@ public class RibbonHandle {
         Map taotalMap = new HashMap();
         try {
             Map<String, ZoneAwareLoadBalancer> zoneAwareLoadBalancerMap = zoneAwareLoadBalancerMap();
-            for (Map.Entry<String, ZoneAwareLoadBalancer> zoneAwareLoadBalancerEntry : zoneAwareLoadBalancerMap.entrySet()) {
-                String serverName = zoneAwareLoadBalancerEntry.getKey();
-                ZoneAwareLoadBalancer zoneAwareLoadBalancer = zoneAwareLoadBalancerEntry.getValue();
-                Class<? extends ZoneAwareLoadBalancer> aClass1 = zoneAwareLoadBalancer.getClass();
+            for (Map.Entry<String, ZoneAwareLoadBalancer> entry : zoneAwareLoadBalancerMap.entrySet()) {
+                String serverName = entry.getKey();
+                ZoneAwareLoadBalancer balancer = entry.getValue();
+                Class<? extends ZoneAwareLoadBalancer> aClass1 = balancer.getClass();
                 Field allServerListField = aClass1.getSuperclass().getSuperclass().getDeclaredField(ALL_SERVER_LIST_FIELD);
                 allServerListField.setAccessible(true);
-                List<Server> allServerList = (List<Server>)allServerListField.get(zoneAwareLoadBalancer);
+                List<Server> allServerList = (List<Server>)allServerListField.get(balancer);
                 Field upServerListField = aClass1.getSuperclass().getSuperclass().getDeclaredField(UP_SERVER_LIST_FIELD);
                 upServerListField.setAccessible(true);
-                List<Server> upServerList = (List<Server>)upServerListField.get(zoneAwareLoadBalancer);
+                List<Server> upServerList = (List<Server>)upServerListField.get(balancer);
                 Map mapServerList = new HashMap();
                 mapServerList.put(ALL_SERVER_LIST_FIELD,allServerList);
                 mapServerList.put(UP_SERVER_LIST_FIELD,upServerList);

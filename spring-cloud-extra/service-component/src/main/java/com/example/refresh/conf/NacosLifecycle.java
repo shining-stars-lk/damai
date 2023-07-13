@@ -1,26 +1,26 @@
-package com.example.nacosrefresh.conf;
+package com.example.refresh.conf;
 
 
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
-import com.example.nacosrefresh.handle.ServiceHandle;
+import com.example.refresh.handle.NacosAndRibbonCustom;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.SmartLifecycle;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
-public class NacosServiceRefresher implements SmartLifecycle {
+public class NacosLifecycle implements SmartLifecycle {
     
     private final AtomicBoolean running = new AtomicBoolean(false);
 
-    private ServiceHandle serviceHandle;
+    private NacosAndRibbonCustom nacosAndRibbonCustom;
 
     private NacosDiscoveryProperties properties;
 
-    public NacosServiceRefresher(ServiceHandle serviceHandle, NacosDiscoveryProperties properties){
-        this.serviceHandle = serviceHandle;
+    public NacosLifecycle(NacosAndRibbonCustom nacosAndRibbonCustom, NacosDiscoveryProperties properties){
+        this.nacosAndRibbonCustom = nacosAndRibbonCustom;
         this.properties = properties;
     }
 
@@ -44,7 +44,7 @@ public class NacosServiceRefresher implements SmartLifecycle {
                 naming.subscribe(properties.getService(),event -> {
                     new Thread(() -> {
                         //收到服务端的响应后，进行刷新nacos和ribbon列表
-                        serviceHandle.updateNacosAndRibbonCache();
+                        nacosAndRibbonCustom.refreshNacosAndRibbonCache();
                         log.warn("updateNacosAndRibbonCache completed ...");
                     },"service-refresher-thread").start();
                 });
@@ -61,7 +61,7 @@ public class NacosServiceRefresher implements SmartLifecycle {
                 NamingService naming = NamingFactory.createNamingService(properties.getNacosProperties());
                 naming.unsubscribe(properties.getService(),event -> {
                     new Thread(() -> {
-                        serviceHandle.updateNacosAndRibbonCache();
+                        nacosAndRibbonCustom.refreshNacosAndRibbonCache();
                         log.warn("updateNacosAndRibbonCache completed ...");
                     },"service-refresher-thread").start();
                 });
