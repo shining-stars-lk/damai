@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.example.refresh.conf.RefreshConfig,\
+  com.example.stat.StatConfig
