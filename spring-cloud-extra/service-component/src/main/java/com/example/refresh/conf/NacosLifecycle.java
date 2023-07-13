@@ -5,24 +5,22 @@ import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.example.refresh.handle.NacosAndRibbonCustom;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.SmartLifecycle;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
+@AllArgsConstructor
 public class NacosLifecycle implements SmartLifecycle {
     
-    private final AtomicBoolean running = new AtomicBoolean(false);
+    private static final AtomicBoolean running = new AtomicBoolean(false);
 
-    private NacosAndRibbonCustom nacosAndRibbonCustom;
+    private final NacosAndRibbonCustom nacosAndRibbonCustom;
 
-    private NacosDiscoveryProperties properties;
-
-    public NacosLifecycle(NacosAndRibbonCustom nacosAndRibbonCustom, NacosDiscoveryProperties properties){
-        this.nacosAndRibbonCustom = nacosAndRibbonCustom;
-        this.properties = properties;
-    }
+    private final NacosDiscoveryProperties properties;
+    
 
     @Override
     public boolean isAutoStartup() {
@@ -56,7 +54,7 @@ public class NacosLifecycle implements SmartLifecycle {
 
     @Override
     public void stop() {
-        if (this.running.compareAndSet(true, false)) {
+        if (running.compareAndSet(true, false)) {
             try {
                 NamingService naming = NamingFactory.createNamingService(properties.getNacosProperties());
                 naming.unsubscribe(properties.getService(),event -> {
@@ -73,7 +71,7 @@ public class NacosLifecycle implements SmartLifecycle {
 
     @Override
     public boolean isRunning() {
-        return this.running.get();
+        return running.get();
     }
 
     @Override
