@@ -54,8 +54,8 @@ public class RefreshController {
     /**
      * 从nacos主动下线
      * */
-    @RequestMapping(value = "/LogoutService", method = RequestMethod.POST)
-    public Boolean LogoutService(HttpServletRequest request){
+    @RequestMapping(value = "/logoutService", method = RequestMethod.POST)
+    public Boolean logoutService(HttpServletRequest request){
         if (!(request.getServerName().equalsIgnoreCase("localhost") || request.getServerName().equalsIgnoreCase("127.0.0.1"))) {
             return false;
         }
