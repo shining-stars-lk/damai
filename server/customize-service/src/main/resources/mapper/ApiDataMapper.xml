@@ -21,7 +21,7 @@
     <select id="pageList" resultMap="apiData">
         select
             id,head_version,api_address,api_method,api_body,api_params,api_url,create_time,
-            status,call_day_time,call_hour_time,call_minute_time,call_second_time,count(1) as statistics
+            status,call_day_time,call_hour_time,call_minute_time,call_second_time,type,count(1) as statistics
         from api_data
         where status = 1
         <if test='startDate != null and startDate != ""'>
@@ -36,7 +36,7 @@
         <if test='apiUrl != null and apiUrl != ""'>
             and api_url like concat(#{apiUrl},'%')
         </if>
-        group by api_address, api_url
+        group by api_address, api_url, type
         order by create_time desc
     </select>
 </mapper>
