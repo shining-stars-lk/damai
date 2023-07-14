@@ -14,7 +14,7 @@ import springfox.documentation.swagger.web.UiConfigurationBuilder;
 /**
  * @program: toolkit
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-07-03
  **/
 

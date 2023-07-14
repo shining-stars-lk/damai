@@ -2,17 +2,17 @@ package com.example.refresh.conf;
 
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.cloud.nacos.registry.NacosAutoServiceRegistration;
-import com.example.refresh.handle.NacosCustom;
-import com.example.refresh.handle.RibbonCustom;
-import com.example.refresh.handle.NacosAndRibbonCustom;
+import com.example.refresh.custom.NacosCustom;
+import com.example.refresh.custom.RibbonCustom;
+import com.example.refresh.custom.NacosAndRibbonCustom;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 /**
- * @description: bean管理
- * @author: k
- * @create: 2022-06-08
+ * @description: 服务管理
+ * @author: kuan
+ * @create: 2023-06-08
  **/
 
 @EnableConfigurationProperties

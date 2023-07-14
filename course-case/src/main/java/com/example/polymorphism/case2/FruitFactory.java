@@ -7,7 +7,7 @@ import com.example.polymorphism.Fruit;
 /**
  * @program: toolkit
  * @description: 水果工厂
- * @author: k
+ * @author: kuan
  * @create: 2023-06-07
  **/
 public class FruitFactory {

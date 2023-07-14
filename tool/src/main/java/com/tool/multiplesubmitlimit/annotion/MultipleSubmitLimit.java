@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
 /**
  * @program: redis-tool
  * @description: 防重复提交限制注解
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 @Target(value= {ElementType.TYPE, ElementType.METHOD})
 @Retention(value= RetentionPolicy.RUNTIME)

@@ -8,8 +8,8 @@ import java.util.Objects;
 /**
  * @program: redis-tool
  * @description: 真实key构建类(不对外使用,只在缓存工具类中做中转)
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 public final class RedisKeyWrap {
     /**

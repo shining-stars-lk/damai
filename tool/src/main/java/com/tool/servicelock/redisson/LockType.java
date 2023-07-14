@@ -3,8 +3,8 @@ package com.tool.servicelock.redisson;
 /**
  * @program: redis-tool
  * @description: 分布式锁锁类型
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 public enum LockType {
     /**

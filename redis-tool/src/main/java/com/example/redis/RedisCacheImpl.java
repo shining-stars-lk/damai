@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 /**
  * @program: redis-tool
  * @description: redis分布式缓存实现
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 @AllArgsConstructor
 public class RedisCacheImpl implements RedisCache {

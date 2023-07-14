@@ -6,7 +6,7 @@ import java.util.concurrent.FutureTask;
 /**
  * @program: toolkit
  * @description: 演示callable的使用和特点
- * @author: k
+ * @author: kuan
  * @create: 2023-06-09
  **/
 public class Case1 {

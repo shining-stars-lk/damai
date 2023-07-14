@@ -36,10 +36,10 @@ import static com.alibaba.nacos.client.utils.LogUtils.NAMING_LOGGER;
 
 /**
  * A subscriber to notify eventListener callback.
- *
- * @author horizonzy
- * @since 1.4.1
- */
+ * @description:
+ * @author: kuan
+ * @create: 2023-06-01
+ **/
 public class InstancesChangeNotifier extends Subscriber<InstancesChangeEvent> {
     
     private final Map<String, ConcurrentHashSet<EventListener>> listenerMap = new ConcurrentHashMap<String, ConcurrentHashSet<EventListener>>();

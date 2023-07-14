@@ -12,8 +12,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 /**
  * @program: redis-tool
  * @description: redis配置
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 @ConditionalOnProperty("spring.redis.host")
 public class RedisToolConfig {

@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 /**
  * @program: record
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-02-21
  **/
 public class RecordBaseInfoProvider {

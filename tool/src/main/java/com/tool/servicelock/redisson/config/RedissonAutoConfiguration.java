@@ -18,8 +18,8 @@ import org.springframework.context.annotation.Bean;
 /**
  * @program: tool
  * @description: redisson信息配置加载类
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 @ConditionalOnProperty("redisson.address")
 @EnableConfigurationProperties(RedissonProperties.class)

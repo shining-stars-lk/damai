@@ -16,8 +16,8 @@ import java.util.StringJoiner;
 /**
  * @program: redis-tool
  * @description: 生成键通用策略 REPEAT_LIMIT(标识)+类名+方法名+参数名+userId
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 public class ParameterGenerateKeyStrategy implements GenerateKeyHandler {
     

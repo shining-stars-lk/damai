@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @program: 
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-04-24
  **/
 @ConfigurationProperties("flow.monitor")

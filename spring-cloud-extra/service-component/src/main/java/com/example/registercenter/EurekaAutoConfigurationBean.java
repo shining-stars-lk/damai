@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * @program: toolkit
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-06-30
  **/
 public class EurekaAutoConfigurationBean {

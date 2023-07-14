@@ -3,7 +3,7 @@ package com.alibaba.csp.sentinel.constant;
 /**
  * @program: toolkit
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-07-03
  **/
 public class SentinelConstant {

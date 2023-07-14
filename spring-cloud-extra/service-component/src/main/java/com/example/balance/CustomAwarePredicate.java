@@ -24,7 +24,7 @@ import static com.example.constant.Constant.MARK_PARAMETER;
 /**
  * @program: 灰度版本选择负载均衡选择器
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-04-17
  **/
 @Slf4j

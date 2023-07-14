@@ -30,9 +30,10 @@ import java.util.List;
 /**
  * ServiceInfo.
  *
- * @author nkorange
- * @author shizhengxing
- */
+ * @description:
+ * @author: kuan
+ * @create: 2023-06-01
+ **/
 @JsonInclude(Include.NON_NULL)
 public class ServiceInfo {
     

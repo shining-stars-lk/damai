@@ -46,8 +46,10 @@ import static com.alibaba.nacos.client.utils.LogUtils.NAMING_LOGGER;
 /**
  * Naming client service information holder.
  *
- * @author xiweng.yy
- */
+ * @description:
+ * @author: kuan
+ * @create: 2023-06-01
+ **/
 public class ServiceInfoHolder implements Closeable {
 
     private static final String JM_SNAPSHOT_PATH_PROPERTY = "JM.SNAPSHOT.PATH";

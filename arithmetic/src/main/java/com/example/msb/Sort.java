@@ -3,7 +3,7 @@ package com.example.msb;
 /**
  * @program: sort
  * @description: 排序
- * @author: k
+ * @author: kuan
  * @create: 2023-01-17
  **/
 public class Sort {

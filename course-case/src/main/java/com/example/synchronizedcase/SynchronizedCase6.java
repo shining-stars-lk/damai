@@ -6,7 +6,7 @@ package com.example.synchronizedcase;
  * 开启2个线程，一个线程中加上synchronized对象锁，循环50000次对result变量进行++自增，
  * 另一个线程加synchronized到此class上，循环50000次对result变量进行++自增，
  * 主线程等待10s后输出result值结果 
- * @author: k
+ * @author: kuan
  * @create: 2023-04-23
  **/
 public class SynchronizedCase6 {

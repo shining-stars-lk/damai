@@ -1,4 +1,4 @@
-package com.example.refresh.handle;
+package com.example.refresh.custom;
 
 
 import com.example.core.SpringUtil;
@@ -15,8 +15,8 @@ import java.util.Map;
 
 /**
  * @description: ribbon缓存管理
- * @author: k
- * @create: 2022-06-01
+ * @author: kuan
+ * @create: 2023-06-01
  **/
 
 public class RibbonCustom {
