@@ -103,13 +103,15 @@ public class ApiRestrictService {
             String commonkey = stringBuilder.append("_").append(url).toString();
             try {
                 List<DepthRuleVo> depthRuleVoList = new ArrayList<>();
-                
+                //查询规则 Hash结构 
+                //普通规则
                 RuleVo ruleVo = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH),RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE).getRelKey(),RuleVo.class);
-                
+                //深度规则
                 String depthRuleStr = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH),RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE).getRelKey(),String.class);
                 if (StringUtil.isNotEmpty(depthRuleStr)) {
                     depthRuleVoList = JSON.parseArray(depthRuleStr,DepthRuleVo.class);
                 }
+                //规则类型
                 int apiRuleType = 0;
                 if (Optional.ofNullable(ruleVo).isPresent()) {
                     apiRuleType = 1;
@@ -123,26 +125,41 @@ public class ApiRestrictService {
                     parameters.add(String.valueOf(apiRuleType));
                     StringBuffer stringBuffer = new StringBuffer("rule_api_limit");
                     String rulekey = stringBuffer.append("_").append(commonkey).toString();
+                    //普通规则中要进行统计请求数
                     parameters.add(rulekey);
+                    //普通规则中进行统计的时间
                     parameters.add(String.valueOf(ruleVo.getStatTimeType() == RuleTimeUnit.SECOND.getCode() ? ruleVo.getStatTime() : ruleVo.getStatTime() * 60));
+                    //普通规则中进行统计的阈值
                     parameters.add(String.valueOf(ruleVo.getThreshold()));
+                    //普通规则超过阈值后限制的时间
                     parameters.add(String.valueOf(ruleVo.getEffectiveTimeType() == RuleTimeUnit.SECOND.getCode() ? ruleVo.getEffectiveTime() : ruleVo.getEffectiveTime() * 60));
+                    //实现普通规则执行限制
                     parameters.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE_LIMIT,commonkey).getRelKey());
+                    //进行统计超过普通规则的数量sorted set结构
                     parameters.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.Z_SET_RULE_STAT,commonkey).getRelKey());
                     
                     String[] timeParameters = {String.valueOf(System.currentTimeMillis())};
                     if (apiRuleType == 2) {
+                        //将限制时间窗口进行排序
                         depthRuleVoList = sortStartTimeWindow(depthRuleVoList);
                         int timeIndex = 1;
+                        //深度规则的个数
                         parameters.add(String.valueOf(depthRuleVoList.size()));
+                        //深度规则的时间参数 
                         String[] relTimeParameters = new String[2 * depthRuleVoList.size() + 1];
+                        //第一个元素为当前请求时间
                         relTimeParameters[0] = String.valueOf(System.currentTimeMillis());
                         for (int i = 0; i < depthRuleVoList.size(); i++) {
                             DepthRuleVo depthRuleVo = depthRuleVoList.get(i);
+                            //深度规则中进行统计的时间
                             parameters.add(String.valueOf(depthRuleVo.getStatTimeType() == RuleTimeUnit.SECOND.getCode() ? depthRuleVo.getStatTime() : depthRuleVo.getStatTime() * 60));
+                            //深度规则中进行统计的阈值
                             parameters.add(String.valueOf(depthRuleVo.getThreshold()));
+                            //深度规则超过阈值后限制的时间
                             parameters.add(String.valueOf(depthRuleVo.getEffectiveTimeType() == RuleTimeUnit.SECOND.getCode() ? depthRuleVo.getEffectiveTime() : depthRuleVo.getEffectiveTime() * 60));
+                            //实现深度规则执行限制
                             parameters.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE_LIMIT,i,commonkey).getRelKey());
+                            //深度规则限制时间窗口
                             relTimeParameters[timeIndex] = String.valueOf(depthRuleVo.getStartTimeWindowTimestamp());
                             relTimeParameters[timeIndex+1] = String.valueOf(depthRuleVo.getEndTimeWindowTimestamp());
                             timeIndex = timeIndex + 2;
@@ -150,10 +167,15 @@ public class ApiRestrictService {
                         timeParameters = relTimeParameters;
                     }
                     List<Long> executeResult = (ArrayList)redisCache.getInstance().execute(redisScript, parameters, timeParameters);
+                    //是否需要进行限制
                     triggerResult = Optional.ofNullable(executeResult.get(0)).orElse(0L);
+                    //是否进行保存记录
                     triggerCallStat = Optional.ofNullable(executeResult.get(1)).orElse(0L);
+                    //请求数
                     apiCount = Optional.ofNullable(executeResult.get(2)).orElse(0L);
+                    //规则阈值
                     threshold = Optional.ofNullable(executeResult.get(3)).orElse(0L);
+                    //定制的规则提示语
                     messageIndex = Optional.ofNullable(executeResult.get(4)).orElse(-1L);
                     if (messageIndex != -1) {
                         message = Optional.ofNullable(depthRuleVoList.get((int)messageIndex))
