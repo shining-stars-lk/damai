@@ -19,6 +19,7 @@ public enum RedisKeyEnum {
     //分布式datacenter_id
     DISTRIBUTED_DATACENTER_ID("distributed_datacenter_id:%s","分布式datacenter_id","分布式datacenter_id的值","lk"),
     
+    ALL_RULE_HASH("all_rule_hash","所有规则的key","所有规则的Hash","k"),
     RULE("rule","调用限制规则的key","调用限制规则的value","k"),
     
     RULE_LIMIT("rule_limit_%s","调用限制时间的key","调用限制时间的value","k"),

@@ -2,11 +2,10 @@ package com.example.refresh.conf;
 
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.cloud.nacos.registry.NacosAutoServiceRegistration;
+import com.example.refresh.custom.NacosAndRibbonCustom;
 import com.example.refresh.custom.NacosCustom;
 import com.example.refresh.custom.RibbonCustom;
-import com.example.refresh.custom.NacosAndRibbonCustom;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -15,7 +14,7 @@ import org.springframework.context.annotation.Bean;
  * @create: 2023-06-08
  **/
 
-@EnableConfigurationProperties
+
 @AutoConfigureAfter({NacosAutoServiceRegistration.class})
 public class RefreshConfig {
 

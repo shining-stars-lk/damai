@@ -1,6 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.example.feign.ExtraFeignAutoConfiguration,\
-  com.example.refresh.conf.RefreshConfig,\
   com.extra.hystrix.ExtraHystrixAutoConfiguration,\
   com.example.balance.ExtraRibbonAutoConfiguration,\
   com.example.flowmonitor.config.FlowMonitorAutoConfiguration,\

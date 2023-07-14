@@ -2,7 +2,6 @@ package com.example.service;
 
 import cn.hutool.core.date.DateUtil;
 import com.baidu.fsg.uid.UidGenerator;
-import com.example.core.RedisKeyEnum;
 import com.example.core.StringUtil;
 import com.example.dto.DepthRuleDto;
 import com.example.dto.DepthRuleStatusDto;
@@ -13,7 +12,6 @@ import com.example.enums.RuleStatus;
 import com.example.exception.ToolkitException;
 import com.example.mapper.DepthRuleMapper;
 import com.example.redis.RedisCache;
-import com.example.redis.RedisKeyWrap;
 import com.example.util.DateUtils;
 import com.example.vo.DepthRuleVo;
 import org.springframework.beans.BeanUtils;
@@ -40,6 +38,8 @@ public class DepthRuleService {
     @Autowired
     private RedisCache redisCache;
     
+    @Autowired
+    private RuleService ruleService;
     @Resource
     private UidGenerator uidGenerator;
     
@@ -47,7 +47,7 @@ public class DepthRuleService {
     public void depthRuleAdd(DepthRuleDto depthRuleDto) {
         check(depthRuleDto.getStartTimeWindow(),depthRuleDto.getEndTimeWindow());
         add(depthRuleDto);
-        saveCache();
+        ruleService.saveAllRuleCache();
     }
     
     public void check(String startTimeWindow, String endTimeWindow){
@@ -86,7 +86,7 @@ public class DepthRuleService {
     @Transactional
     public void depthRuleUpdate(final DepthRuleUpdateDto depthRuleUpdateDto) {
         update(depthRuleUpdateDto);
-        saveCache();
+        ruleService.saveAllRuleCache();
     }
     
     @Transactional
@@ -99,7 +99,7 @@ public class DepthRuleService {
     @Transactional
     public void depthRuleUpdateStatus(final DepthRuleStatusDto depthRuleStatusDto) {
         updateStatus(depthRuleStatusDto);
-        saveCache();
+        ruleService.saveAllRuleCache();
     }
     @Transactional
     public void updateStatus(final DepthRuleStatusDto depthRuleStatusDto) {
@@ -122,16 +122,5 @@ public class DepthRuleService {
     @Transactional
     public void delAll(){
         depthRuleMapper.delAll();
-    }
-    
-    
-    public void saveCache(){
-        List<DepthRule> depthRules = depthRuleMapper.selectList(null);
-        depthRules = depthRules.stream().filter(depthRule -> depthRule.getStatus() == RuleStatus.RUN.getCode()).collect(Collectors.toList());
-        if (depthRules.size() > 0) {
-            redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE),depthRules);
-        }else {
-            redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE));
-        }
     }
 }
