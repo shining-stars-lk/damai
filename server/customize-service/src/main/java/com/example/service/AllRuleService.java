@@ -34,9 +34,7 @@ public class AllRuleService {
     
     @Transactional
     public void add(final AllRuleDto allRuleDto) {
-        ruleService.delAll();
-        String ruleId = ruleService.add(allRuleDto.getRuleDto());
-        ruleService.saveCache(ruleId);
+        ruleService.add(allRuleDto.getRuleDto());
         depthRuleService.delAll();
         List<DepthRuleDto> depthRuleDtoList = allRuleDto.getDepthRuleDtoList();
         if (CollUtil.isNotEmpty(depthRuleDtoList)) {
@@ -46,7 +44,7 @@ public class AllRuleService {
                 depthRuleService.add(depthRuleDto);
             }
         }
-        depthRuleService.saveCache();
+        ruleService.saveAllRuleCache();
     }
     
     public void checkTime(String startTimeWindow, String endTimeWindow, List<DepthRuleDto> depthRuleDtoList){

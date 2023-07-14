@@ -1,13 +1,17 @@
 package com.example.service;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baidu.fsg.uid.UidGenerator;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.core.RedisKeyEnum;
 import com.example.dto.RuleDto;
 import com.example.dto.RuleGetDto;
 import com.example.dto.RuleStatusDto;
 import com.example.dto.RuleUpdateDto;
+import com.example.entity.DepthRule;
 import com.example.entity.Rule;
 import com.example.enums.RuleStatus;
+import com.example.mapper.DepthRuleMapper;
 import com.example.mapper.RuleMapper;
 import com.example.redis.RedisKeyWrap;
 import com.example.redis.RedisCache;
@@ -19,6 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -36,12 +43,16 @@ public class RuleService {
     @Autowired
     private RedisCache redisCache;
     
+    @Autowired
+    private DepthRuleMapper depthRuleMapper;
+    
     @Resource
     private UidGenerator uidGenerator;
     
     @Transactional
     public void ruleAdd(RuleDto ruleDto) {
-        saveCache(add(ruleDto));
+        add(ruleDto);
+        saveAllRuleCache();
     }
     @Transactional
     public String add(RuleDto ruleDto) {
@@ -57,7 +68,7 @@ public class RuleService {
     @Transactional
     public void ruleUpdate(final RuleUpdateDto ruleUpdateDto) {
         update(ruleUpdateDto);
-        saveCache(ruleUpdateDto.getId());
+        saveAllRuleCache();
     }
     
     @Transactional
@@ -70,7 +81,7 @@ public class RuleService {
     @Transactional
     public void ruleUpdateStatus(final RuleStatusDto ruleStatusDto) {
         updateStatus(ruleStatusDto);
-        saveCache(ruleStatusDto.getId());
+        saveAllRuleCache();
     }
     
     @Transactional
@@ -79,7 +90,7 @@ public class RuleService {
         rule.setId(ruleStatusDto.getId());
         rule.setStatus(ruleStatusDto.getStatus());
         ruleMapper.updateById(rule);
-        saveCache(rule.getId());
+        saveAllRuleCache();
     }
     
     public RuleVo get(final RuleGetDto ruleGetDto) {
@@ -103,13 +114,24 @@ public class RuleService {
     }
     
     
-    public void saveCache(String id){
-        Optional.ofNullable(ruleMapper.selectById(id)).ifPresent(rule -> {
-            if (rule.getStatus() == RuleStatus.RUN.getCode()) {
-                redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE),rule);
-            }else {
-                redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE));
-            }
-        });
+    public void saveAllRuleCache(){
+        Map<String, Object> map = new HashMap<>(2);
+        
+        LambdaQueryWrapper<Rule> ruleQueryWrapper = new LambdaQueryWrapper<>();
+        ruleQueryWrapper.eq(Rule::getStatus,RuleStatus.RUN.getCode());
+        Rule rule = ruleMapper.selectOne(ruleQueryWrapper);
+        if (Optional.ofNullable(rule).isPresent()) {
+            map.put(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE).getRelKey(),rule);
+        }
+        LambdaQueryWrapper<DepthRule> depthRuleQueryWrapper = new LambdaQueryWrapper<>();
+        depthRuleQueryWrapper.eq(DepthRule::getStatus,RuleStatus.RUN.getCode());
+        List<DepthRule> depthRules = depthRuleMapper.selectList(depthRuleQueryWrapper);
+        if (CollUtil.isNotEmpty(depthRules)) {
+            map.put(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE).getRelKey(),depthRules);
+        }
+        redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH));
+        if (map.size() > 0) {
+            redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH),map);
+        }
     }
 }

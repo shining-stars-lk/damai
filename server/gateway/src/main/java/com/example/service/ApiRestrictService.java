@@ -1,6 +1,5 @@
 package com.example.service;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
@@ -103,14 +102,20 @@ public class ApiRestrictService {
             }
             String commonkey = stringBuilder.append("_").append(url).toString();
             try {
-                RuleVo ruleVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE), RuleVo.class);
-                List<DepthRuleVo> depthRuleVoList = redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE), DepthRuleVo.class);
+                List<DepthRuleVo> depthRuleVoList = new ArrayList<>();
+                
+                RuleVo ruleVo = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH),RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE).getRelKey(),RuleVo.class);
+                
+                String depthRuleStr = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH),RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE).getRelKey(),String.class);
+                if (StringUtil.isNotEmpty(depthRuleStr)) {
+                    depthRuleVoList = JSON.parseArray(depthRuleStr,DepthRuleVo.class);
+                }
                 int apiRuleType = 0;
                 if (Optional.ofNullable(ruleVo).isPresent()) {
                     apiRuleType = 1;
                     message = ruleVo.getMessage();
                 }
-                if (Optional.ofNullable(ruleVo).isPresent() && CollUtil.isNotEmpty(depthRuleVoList)) {
+                if (Optional.ofNullable(ruleVo).isPresent() && depthRuleVoList.size() > 0) {
                     apiRuleType = 2;
                 }
                 if (apiRuleType == 1 || apiRuleType == 2) {
