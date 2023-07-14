@@ -42,8 +42,11 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>When connection reconnect to server, redo the register and subscribe.
  *
- * @author xiweng.yy
- */
+ * @description:
+ * @author: kuan
+ * @create: 2023-06-01
+ **/
+
 public class NamingGrpcRedoService implements ConnectionEventListener {
     
     private static final String REDO_THREAD_NAME = "com.alibaba.nacos.client.naming.grpc.redo";

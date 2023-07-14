@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * @program: toolkit
  * @description: 通过service.register.type = nacos/eureka 来实现注册中心的切换
- * @author: k
+ * @author: kuan
  * @create: 2023-06-30
  **/
 public class RegisterCenterAutoConfigurationImportFilter implements AutoConfigurationImportFilter, EnvironmentAware {

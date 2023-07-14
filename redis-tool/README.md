@@ -44,8 +44,8 @@ private DistributCache distributCache;
 /**
  * @program: redis-tool
  * @description: 缓存 key管理
- * @author: k
- * @create: 2022-1-6
+ * @author: kuan
+ * @create: 2023-1-6
  **/
 public enum RedisKeyEnum {
     Key("key","键值测试","value为TestCacheDto类型","lk"),
@@ -68,8 +68,8 @@ public static RedisKeyWrap cacheKeyBuild(RedisKeyEnum RedisKeyEnum, Object... ar
 /**
  * @program: redis-tool
  * @description: 缓存 key管理
- * @author: k
- * @create: 2022-1-6
+ * @author: kuan
+ * @create: 2023-1-6
  **/
 public enum RedisKeyEnum {
     Key("key","键值测试","value为TestCacheDto类型","lk"),

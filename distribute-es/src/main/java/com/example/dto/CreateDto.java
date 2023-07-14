@@ -4,8 +4,8 @@ import lombok.Data;
 
 /**
  * @description:
- * @author: k
- * @create: 2022-08-31
+ * @author: kuan
+ * @create: 2023-08-31
  **/
 @Data
 public class CreateDto {

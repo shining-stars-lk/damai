@@ -3,8 +3,8 @@ package com.tool.multiplesubmitlimit.info;
 /**
  * @program: redis-tool
  * @description: 生成键策略枚举
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 public enum GenerateKeyStrategy {
 

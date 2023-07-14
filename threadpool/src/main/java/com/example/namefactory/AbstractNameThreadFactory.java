@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @description: 线程工厂抽象基类
- * @author: k
+ * @author: kuan
  * @create: 2021-12-16
  **/
 public abstract class AbstractNameThreadFactory implements ThreadFactory {

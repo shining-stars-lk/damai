@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: toolkit
  * @description: 讲解线程池的参数作用和运行流程
- * @author: k
+ * @author: kuan
  * @create: 2023-06-08
  **/
 public class Case1 {

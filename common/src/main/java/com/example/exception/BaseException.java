@@ -3,7 +3,7 @@ package com.example.exception;
 /**
  * @program: toolkit
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-06-03
  **/
 public class BaseException extends RuntimeException{

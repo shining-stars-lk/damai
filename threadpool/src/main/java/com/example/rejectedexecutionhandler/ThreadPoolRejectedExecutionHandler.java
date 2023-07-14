@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @description: 线程池异常处理
- * @author: k
+ * @author: kuan
  * @create: 2021-12-06
  **/
 public class ThreadPoolRejectedExecutionHandler {

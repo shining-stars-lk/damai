@@ -26,8 +26,8 @@ import java.util.List;
 /**
  * @program: redis-tool
  * @description: 基础解析类
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 public class BaseInfoProvider {
 

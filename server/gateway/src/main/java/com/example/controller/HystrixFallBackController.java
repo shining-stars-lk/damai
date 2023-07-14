@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @program: gateway
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-4-25
  **/
 @RestController

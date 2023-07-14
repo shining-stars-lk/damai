@@ -7,7 +7,7 @@ import io.micrometer.core.instrument.MeterRegistry;
  * @program: bjgoodwill-msa-scloud
  * @description:
  * @author: lk
- * @create: 2022-11-21
+ * @create: 2023-11-21
  **/
 
 public class StatIndicator {

@@ -10,8 +10,8 @@ import java.io.InputStream;
 /**
  * @program: redis-tool
  * @description: String工具类
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 public class StringUtil {
 	private final static Logger logger = LoggerFactory.getLogger(StringUtil.class);

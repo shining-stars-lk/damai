@@ -13,8 +13,8 @@ import java.util.List;
 /**
  * @program: redis-tool
  * @description: 锁业务名和标识进行组装并获取类
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 public class ServiceLockInfoProvider extends BaseInfoProvider {
 

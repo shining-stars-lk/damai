@@ -6,7 +6,7 @@ import com.example.entity.User;
 /**
  * @program: toolkit
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-06-09
  **/
 public class Case2 {

@@ -26,9 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author xiaojing
- * @author renhaojun
- */
+ *
+ * @description:
+ * @author: kuan
+ * @create: 2023-06-01
+ **/
 public class NacosServerList extends AbstractServerList<NacosServer> {
     
     private NacosDiscoveryProperties discoveryProperties;

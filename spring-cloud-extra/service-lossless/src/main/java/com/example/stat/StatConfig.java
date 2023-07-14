@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 /**
  * @program: toolkit
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-07-13
  **/
 public class StatConfig {

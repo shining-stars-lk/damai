@@ -9,10 +9,10 @@ import java.util.concurrent.Callable;
 
 /**
  * @description: 对线程池进行MDC获取requestId增强
- * @author: k
+ * @author: kuan
  * @create: 2021-12-06
  **/
-public class BaseThreadPoolMDC {
+public class BaseThreadPool {
 
     /**
      * 在执行线程池任务前，先获取父线程的MDC上下文
@@ -36,7 +36,7 @@ public class BaseThreadPoolMDC {
      * @param parentMdcContext 父线程的MDC上下文
      * @param parentHoldContext 父线程的hold上下文
      */
-    protected static Runnable wrapExecute(final Runnable runnable, final Map<String, String> parentMdcContext, final Map<String, String> parentHoldContext) {
+    protected static Runnable wrapTask(final Runnable runnable, final Map<String, String> parentMdcContext, final Map<String, String> parentHoldContext) {
         return () -> {
             Map<String, Map<String, String>> preprocess = preprocess(parentMdcContext, parentHoldContext);
             Map<String, String> holdContext = preprocess.get("holdContext");
@@ -57,7 +57,7 @@ public class BaseThreadPoolMDC {
      * @param parentMdcContext 父线程的MDC上下文
      * @param parentHoldContext 父线程的hold上下文
      */
-    protected static <T> Callable<T> wrapSubmit(Callable<T> task, final Map<String, String> parentMdcContext, final Map<String, String> parentHoldContext) {
+    protected static <T> Callable<T> wrapTask(Callable<T> task, final Map<String, String> parentMdcContext, final Map<String, String> parentHoldContext) {
         return () -> {
             Map<String, Map<String, String>> preprocess = preprocess(parentMdcContext, parentHoldContext);
             Map<String, String> holdContext = preprocess.get("holdContext");

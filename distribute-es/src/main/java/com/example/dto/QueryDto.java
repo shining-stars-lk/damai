@@ -6,8 +6,8 @@ import java.util.Date;
 
 /**
  * @description:
- * @author: k
- * @create: 2022-08-19
+ * @author: kuan
+ * @create: 2023-08-19
  **/
 @Data
 public class QueryDto {

@@ -3,7 +3,7 @@ package com.example.my;
 /**
  * @program: toolkit
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-01-18
  **/
 public class BinarySearch {

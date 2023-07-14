@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @program: toolkit
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-06-14
  **/
 @Data

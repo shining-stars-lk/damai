@@ -3,7 +3,7 @@ package com.example.polymorphism;
 /**
  * @program: toolkit
  * @description: 香蕉
- * @author: k
+ * @author: kuan
  * @create: 2023-06-07
  **/
 public class Banana implements Fruit{

@@ -1,12 +1,12 @@
-package com.example.refresh.handle;
+package com.example.refresh.custom;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @description: 服务管理
- * @author: k
- * @create: 2022-06-08
+ * @author: kuan
+ * @create: 2023-06-08
  **/
 public class NacosAndRibbonCustom {
 

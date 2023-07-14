@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: redis-tool
  * @description: 分布式缓存统一接口
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 public interface RedisCache {
 

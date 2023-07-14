@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: redis-tool
  * @description: 将yml的配置和此对象绑定
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 @ConfigurationProperties(prefix = RedissonProperties.PREFIX)
 @Data

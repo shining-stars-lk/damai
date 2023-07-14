@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 
 /**
  * @description:
- * @author: k
- * @create: 2022-09-15
+ * @author: kuan
+ * @create: 2023-09-15
  **/
 @Data
 public class GeoPointDto {

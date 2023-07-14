@@ -1,8 +1,8 @@
 package com.example.controller;
 
 
-import com.example.refresh.handle.NacosCustom;
-import com.example.refresh.handle.NacosAndRibbonCustom;
+import com.example.refresh.custom.NacosCustom;
+import com.example.refresh.custom.NacosAndRibbonCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,8 +13,8 @@ import java.util.Map;
 
 /**
  * @description:
- * @author: k
- * @create: 2022-06-08
+ * @author: kuan
+ * @create: 2023-06-08
  **/
 @RestController
 @RequestMapping("/refresh")

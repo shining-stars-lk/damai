@@ -15,7 +15,7 @@ import static com.example.constant.Constant.TRACE_ID;
 /**
  * @program: 将请求头的信息传递到下一个微服务链路中
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-04-17
  **/
 

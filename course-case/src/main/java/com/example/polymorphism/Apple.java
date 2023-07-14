@@ -3,7 +3,7 @@ package com.example.polymorphism;
 /**
  * @program: toolkit
  * @description: 苹果
- * @author: k
+ * @author: kuan
  * @create: 2023-06-07
  **/
 public class Apple implements Fruit{

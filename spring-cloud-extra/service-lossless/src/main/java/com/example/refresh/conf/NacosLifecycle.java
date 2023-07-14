@@ -4,13 +4,18 @@ package com.example.refresh.conf;
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
-import com.example.refresh.handle.NacosAndRibbonCustom;
+import com.example.refresh.custom.NacosAndRibbonCustom;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.SmartLifecycle;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * @description: 
+ * @author: kuan
+ * @create: 2023-06-01
+ **/
 @Slf4j
 @AllArgsConstructor
 public class NacosLifecycle implements SmartLifecycle {
@@ -43,7 +48,7 @@ public class NacosLifecycle implements SmartLifecycle {
                     new Thread(() -> {
                         //收到服务端的响应后，进行刷新nacos和ribbon列表
                         nacosAndRibbonCustom.refreshNacosAndRibbonCache();
-                        log.warn("updateNacosAndRibbonCache completed ...");
+                        log.warn("refreshNacosAndRibbonCache finish ...");
                     },"service-refresher-thread").start();
                 });
             }catch (Exception e) {

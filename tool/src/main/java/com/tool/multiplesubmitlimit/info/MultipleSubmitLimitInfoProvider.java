@@ -13,8 +13,8 @@ import java.util.Optional;
 /**
  * @program: redis-tool
  * @description: 防重复提交标识组装类
- * @author: k
- * @create: 2022-05-28
+ * @author: kuan
+ * @create: 2023-05-28
  **/
 public class MultipleSubmitLimitInfoProvider extends BaseInfoProvider {
 

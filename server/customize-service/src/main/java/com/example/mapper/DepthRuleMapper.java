@@ -6,7 +6,7 @@ import com.example.entity.DepthRule;
 /**
  * @program: toolkit
  * @description:
- * @author: k
+ * @author: kuan
  * @create: 2023-06-30
  **/
 public interface DepthRuleMapper extends BaseMapper<DepthRule> {
