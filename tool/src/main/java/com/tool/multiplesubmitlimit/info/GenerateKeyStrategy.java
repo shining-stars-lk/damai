@@ -7,9 +7,7 @@ package com.tool.multiplesubmitlimit.info;
  * @create: 2023-05-28
  **/
 public enum GenerateKeyStrategy {
-
-    SIMPLE_GENERATE_KEY_STRATEGY(1,"SIMPLE_GENERATE_KEY"),
-    PARAMETER_GENERATE_KEY_STRATEGY(2,"PARAMETER_GENERATE_KEY");
+    PARAMETER_GENERATE_KEY_STRATEGY(1,"PARAMETER_GENERATE_KEY");
 
     private Integer code;
 

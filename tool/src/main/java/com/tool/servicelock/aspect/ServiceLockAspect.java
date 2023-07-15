@@ -6,13 +6,12 @@ import com.tool.servicelock.ServiceLocker;
 import com.tool.servicelock.annotion.ServiceLock;
 import com.tool.servicelock.redisson.LockType;
 import com.tool.servicelock.redisson.factory.ServiceLockFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 
 import java.lang.reflect.InvocationTargetException;
@@ -25,16 +24,14 @@ import java.util.concurrent.TimeUnit;
  * @author: kuan
  * @create: 2023-05-28
  **/
+@Slf4j
 @Aspect
 @Order(-10)
 public class ServiceLockAspect {
-
-    private final Logger logger = LoggerFactory.getLogger(ServiceLockAspect.class);
-
     
-    private ServiceLockFactory serviceLockFactory;
+    private final ServiceLockFactory serviceLockFactory;
     
-    private ServiceLockInfoProvider serviceLockInfoProvider;
+    private final ServiceLockInfoProvider serviceLockInfoProvider;
     
     public ServiceLockAspect(ServiceLockFactory serviceLockFactory, ServiceLockInfoProvider serviceLockInfoProvider){
         this.serviceLockFactory = serviceLockFactory;
@@ -59,7 +56,7 @@ public class ServiceLockAspect {
                 lock.unlock(lockName);
             }
         }else {
-            logger.warn("Timeout while acquiring serviceLock:{}",lockName);
+            log.warn("Timeout while acquiring serviceLock:{}",lockName);
             //加锁失败,如果设置了自定义处理，则执行
             String customLockTimeoutStrategy = servicelock.customLockTimeoutStrategy();
             if (StringUtil.isNotEmpty(customLockTimeoutStrategy)) {
