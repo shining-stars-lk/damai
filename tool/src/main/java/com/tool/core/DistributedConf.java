@@ -1,21 +1,20 @@
 package com.tool.core;
 
+import com.tool.multiplesubmitlimit.aspect.MultipleSubmitLimitAspect;
+import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfoProvider;
+import com.tool.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyHandler;
+import com.tool.multiplesubmitlimit.info.strategy.generateKey.impl.ParameterGenerateKeyStrategy;
+import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitHandler;
+import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitStrategyFactory;
+import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.impl.RejectStrategy;
+import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.impl.SameResultStrategy;
+import com.tool.operate.Operate;
+import com.tool.operate.impl.RedissonOperate;
 import com.tool.servicelock.ServiceLockInfoProvider;
 import com.tool.servicelock.aspect.ServiceLockAspect;
 import com.tool.servicelock.redisson.config.RedissonAutoConfiguration;
 import com.tool.servicelock.redisson.factory.ServiceLockFactory;
 import com.tool.servicelock.util.ServiceLockUtil;
-import com.tool.operate.Operate;
-import com.tool.operate.impl.RedissonOperate;
-import com.tool.multiplesubmitlimit.aspect.MultipleSubmitLimitAspect;
-import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfoProvider;
-import com.tool.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyHandler;
-import com.tool.multiplesubmitlimit.info.strategy.generateKey.impl.ParameterGenerateKeyStrategy;
-import com.tool.multiplesubmitlimit.info.strategy.generateKey.impl.SimpleGenerateKeyStrategy;
-import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitHandler;
-import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitStrategyFactory;
-import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.impl.RejectStrategy;
-import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.impl.SameResultStrategy;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
@@ -63,11 +62,6 @@ public class DistributedConf {
     @Bean
     public GenerateKeyHandler parameterGenerateKeyStrategy(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider){
         return new ParameterGenerateKeyStrategy(repeatLimitInfoProvider);
-    }
-    
-    @Bean
-    public GenerateKeyHandler simpleGenerateKeyStrategy(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider){
-        return new SimpleGenerateKeyStrategy(repeatLimitInfoProvider);
     }
     
     @Bean

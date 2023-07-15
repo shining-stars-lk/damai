@@ -32,13 +32,13 @@ public class MultipleSubmitLimitAspect {
     private final long WAIT_TIME = 0;
 
     
-    private MultipleSubmitLimitInfoProvider repeatLimitInfoProvider;
+    private final MultipleSubmitLimitInfoProvider repeatLimitInfoProvider;
 
     
-    private ServiceLockFactory serviceLockFactory;
+    private final ServiceLockFactory serviceLockFactory;
 
     
-    private MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory;
+    private final MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory;
     
     public MultipleSubmitLimitAspect(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider, ServiceLockFactory serviceLockFactory,
                                      MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory){
