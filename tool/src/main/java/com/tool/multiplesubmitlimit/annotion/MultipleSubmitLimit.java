@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 /**
  * @program: redis-tool
  * @description: 防重复提交限制注解
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 @Target(value= {ElementType.TYPE, ElementType.METHOD})

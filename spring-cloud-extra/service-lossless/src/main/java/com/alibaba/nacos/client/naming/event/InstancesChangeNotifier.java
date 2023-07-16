@@ -37,7 +37,7 @@ import static com.alibaba.nacos.client.utils.LogUtils.NAMING_LOGGER;
 /**
  * A subscriber to notify eventListener callback.
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-01
  **/
 public class InstancesChangeNotifier extends Subscriber<InstancesChangeEvent> {

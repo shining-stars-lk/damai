@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * @description: 服务管理
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-08
  **/
 

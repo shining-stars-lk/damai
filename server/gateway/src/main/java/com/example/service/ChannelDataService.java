@@ -1,7 +1,7 @@
 package com.example.service;
 
 import com.example.client.BaseDataClient;
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.GetChannelDataByCodeDto;
 import com.example.enums.BaseCode;
 import com.example.exception.ToolkitException;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-04
  **/
 @Service
@@ -24,9 +24,9 @@ public class ChannelDataService {
     public GetChannelDataVo getChannelDataByCode(String code){
         GetChannelDataByCodeDto getChannelDataByCodeDto = new GetChannelDataByCodeDto();
         getChannelDataByCodeDto.setCode(code);
-        Result<GetChannelDataVo> GetChannelDataResult = baseDataClient.getByCode(getChannelDataByCodeDto);
-        if (GetChannelDataResult.getCode() == BaseCode.SUCCESS.getCode()) {
-            return GetChannelDataResult.getData();
+        ApiResponse<GetChannelDataVo> getChannelDataApiResponse = baseDataClient.getByCode(getChannelDataByCodeDto);
+        if (getChannelDataApiResponse.getCode() == BaseCode.SUCCESS.getCode()) {
+            return getChannelDataApiResponse.getData();
         }
         throw new ToolkitException("没有找到ChannelData");
     }

@@ -12,7 +12,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 /**
  * @program: redis-tool
  * @description: redis配置
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 @ConditionalOnProperty("spring.redis.host")

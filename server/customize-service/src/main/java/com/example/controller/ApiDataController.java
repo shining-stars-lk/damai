@@ -1,7 +1,7 @@
 package com.example.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.ApiDataDto;
 import com.example.service.ApiDataService;
 import com.example.vo.ApiDataVo;
@@ -18,7 +18,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-17
  **/
 @RestController
@@ -31,7 +31,7 @@ public class ApiDataController {
     
     @ApiOperation(value = "分页查询api调用记录")
     @RequestMapping(value = "/pageList", headers = "api-version=4.0.0", method = RequestMethod.POST)
-    public Result<Page<ApiDataVo>> pageList(@Valid @RequestBody ApiDataDto dto) {
-        return Result.success(apiDataService.pageList(dto));
+    public ApiResponse<Page<ApiDataVo>> pageList(@Valid @RequestBody ApiDataDto dto) {
+        return ApiResponse.ok(apiDataService.pageList(dto));
     }
 }

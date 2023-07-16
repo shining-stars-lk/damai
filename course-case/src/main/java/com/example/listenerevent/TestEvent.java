@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationEvent;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-09
  **/
 public class TestEvent extends ApplicationEvent {

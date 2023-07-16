@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Bean;
 /**
  * @program: tool
  * @description: redisson信息配置加载类
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 @ConditionalOnProperty("redisson.address")

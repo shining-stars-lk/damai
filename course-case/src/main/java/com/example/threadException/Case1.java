@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: toolkit
  * @description: 讲解线程异常
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-13
  **/
 public class Case1 {

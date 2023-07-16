@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.ChannelDataAddDto;
 import com.example.dto.GetChannelDataByCodeDto;
 import com.example.service.ChannelDataService;
@@ -18,7 +18,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-17
  **/
 @RestController
@@ -31,15 +31,15 @@ public class ChannelDataController {
     
     @ApiOperation(value = "通过code查询渠道数据")
     @PostMapping (value = "/getByCode")
-    public Result<GetChannelDataVo> getByCode(@Valid @RequestBody GetChannelDataByCodeDto getChannelDataByCodeDto) {
+    public ApiResponse<GetChannelDataVo> getByCode(@Valid @RequestBody GetChannelDataByCodeDto getChannelDataByCodeDto) {
         GetChannelDataVo getChannelDataVo = channelDataService.getByCode(getChannelDataByCodeDto);
-        return Result.success(getChannelDataVo);
+        return ApiResponse.ok(getChannelDataVo);
     }
     
     @ApiOperation(value = "添加渠道数据")
     @PostMapping(value = "/add")
-    public Result<Boolean> add(@Valid @RequestBody ChannelDataAddDto channelDataAddDto) {
+    public ApiResponse<Boolean> add(@Valid @RequestBody ChannelDataAddDto channelDataAddDto) {
         channelDataService.add(channelDataAddDto);
-        return Result.success(true);
+        return ApiResponse.ok(true);
     }
 }

@@ -47,7 +47,7 @@ import static com.alibaba.nacos.client.utils.LogUtils.NAMING_LOGGER;
  * Naming client service information holder.
  *
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-01
  **/
 public class ServiceInfoHolder implements Closeable {

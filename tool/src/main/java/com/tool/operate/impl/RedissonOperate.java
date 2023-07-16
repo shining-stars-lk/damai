@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: redis-tool
  * @description: redisson操作接口实现类
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 public class RedissonOperate implements Operate {

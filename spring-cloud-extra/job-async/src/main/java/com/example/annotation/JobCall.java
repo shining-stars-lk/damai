@@ -15,7 +15,7 @@ import static java.lang.annotation.ElementType.PARAMETER;
 /**
  * @program: toolkit
  * @description: job回调
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-28
  **/
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })

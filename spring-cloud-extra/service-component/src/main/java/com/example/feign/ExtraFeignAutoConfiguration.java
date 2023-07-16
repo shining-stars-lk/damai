@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 /**
  * @program: feign扩展插件配置类
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-17
  **/
 

@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.TestDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,7 +14,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-30
  **/
 @RestController
@@ -24,7 +24,7 @@ public class TestController {
     
     @ApiOperation(value = "测试")
     @RequestMapping(value = "/test", method = RequestMethod.POST)
-    public Result<String> test(@Valid @RequestBody TestDto testDto) {
+    public ApiResponse<String> test(@Valid @RequestBody TestDto testDto) {
         if (testDto.getSleepTime() != null) {
             try {
                 Thread.sleep(testDto.getSleepTime());
@@ -32,12 +32,12 @@ public class TestController {
                 Thread.currentThread().interrupt();
             }
         }
-        return Result.success(testDto.getId());
+        return ApiResponse.ok(testDto.getId());
     }
     
     @ApiOperation(value = "测试V2")
     @RequestMapping(value = "/testV2", method = RequestMethod.POST)
-    public Result<String> testV2(@Valid @RequestBody TestDto testDto) {
+    public ApiResponse<String> testV2(@Valid @RequestBody TestDto testDto) {
         if (testDto.getSleepTime() != null) {
             try {
                 Thread.sleep(testDto.getSleepTime());
@@ -45,6 +45,6 @@ public class TestController {
                 Thread.currentThread().interrupt();
             }
         }
-        return Result.success(testDto.getId());
+        return ApiResponse.ok(testDto.getId());
     }
 }

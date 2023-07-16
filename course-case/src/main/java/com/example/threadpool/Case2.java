@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: toolkit
  * @description: 讲解线程池的拒绝策略
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-08
  **/
 public class Case2 {

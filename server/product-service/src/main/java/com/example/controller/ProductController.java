@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.GetDto;
 import com.example.dto.ProductDto;
 import com.example.service.ProductService;
@@ -16,7 +16,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-17
  **/
 @RestController
@@ -37,8 +37,8 @@ public class ProductController {
     }
     
     @PostMapping(value = "/insert")
-    public Result<Boolean> insert(@Valid @RequestBody ProductDto productDto){
+    public ApiResponse<Boolean> insert(@Valid @RequestBody ProductDto productDto){
         Boolean result = productService.insert(productDto);
-        return Result.success(result);
+        return ApiResponse.ok(result);
     }
 }

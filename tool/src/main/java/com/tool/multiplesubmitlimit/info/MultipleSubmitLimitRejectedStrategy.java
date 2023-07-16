@@ -3,7 +3,7 @@ package com.tool.multiplesubmitlimit.info;
 /**
  * @program: redis-tool
  * @description: 防重复提交触发策略枚举
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 public enum MultipleSubmitLimitRejectedStrategy {

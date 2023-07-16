@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 
 /**
  * @description: 对线程池进行MDC获取requestId增强
- * @author: kuan
+ * @author: 星哥
  * @create: 2021-12-06
  **/
 public class BaseThreadPool {

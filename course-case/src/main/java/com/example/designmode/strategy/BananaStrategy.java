@@ -3,7 +3,7 @@ package com.example.designmode.strategy;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-09
  **/
 public class BananaStrategy implements FruitStrategy{

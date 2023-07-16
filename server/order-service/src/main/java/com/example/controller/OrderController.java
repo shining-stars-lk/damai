@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.GetOrderDto;
 import com.example.dto.InsertOrderDto;
 import com.example.dto.PayOrderDto;
@@ -17,7 +17,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-17
  **/
 @RestController
@@ -38,12 +38,12 @@ public class OrderController {
     }
     
     @PostMapping(value = "/insertOrder")
-    public Result<Boolean> insertOrder(@Valid @RequestBody InsertOrderDto dto) {
+    public ApiResponse<Boolean> insertOrder(@Valid @RequestBody InsertOrderDto dto) {
         return orderService.insert(dto);
     }
     
     @PostMapping(value = "/payOrder")
-    public Result<Boolean> payOrder(@Valid @RequestBody PayOrderDto dto) {
+    public ApiResponse<Boolean> payOrder(@Valid @RequestBody PayOrderDto dto) {
         return orderService.pay(dto);
     }
 }

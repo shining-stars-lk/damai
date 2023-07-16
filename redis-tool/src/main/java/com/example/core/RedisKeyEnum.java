@@ -4,7 +4,7 @@ package com.example.core;
 /**
  * @program: redis-tool
  * @description: redis的key，value管理枚举
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 public enum RedisKeyEnum {

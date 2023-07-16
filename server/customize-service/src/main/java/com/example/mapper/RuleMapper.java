@@ -6,7 +6,7 @@ import com.example.entity.Rule;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-30
  **/
 public interface RuleMapper extends BaseMapper<Rule> {

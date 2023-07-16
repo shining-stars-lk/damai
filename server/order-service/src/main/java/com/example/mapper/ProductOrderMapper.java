@@ -6,7 +6,7 @@ import com.example.entity.ProductOrder;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-14
  **/
 public interface ProductOrderMapper extends BaseMapper<ProductOrder> {

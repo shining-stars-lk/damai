@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.GetDepartmentDto;
 import com.example.dto.GetDeptDto;
 import com.example.service.DepartmentService;
@@ -18,7 +18,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-17
  **/
 @RestController
@@ -43,13 +43,13 @@ public class DepartmentController {
     
     @ApiOperation(value = "返回链路id")
     @PostMapping(value = "/printTraceId")
-    public Result printTraceId(){
-        return Result.success(departmentService.printTraceId());
+    public ApiResponse printTraceId(){
+        return ApiResponse.ok(departmentService.printTraceId());
     }
     
     @ApiOperation(value = "通过code查询部门列表")
     @PostMapping(value = "/getDeptListByCode")
-    public Result getDeptListByCode(@Valid @RequestBody GetDeptDto dto){
-        return Result.success(departmentService.getDeptListByCode(dto));
+    public ApiResponse getDeptListByCode(@Valid @RequestBody GetDeptDto dto){
+        return ApiResponse.ok(departmentService.getDeptListByCode(dto));
     } 
 }

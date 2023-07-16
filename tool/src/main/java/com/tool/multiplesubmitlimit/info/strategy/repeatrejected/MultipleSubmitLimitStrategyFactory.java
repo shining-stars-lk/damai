@@ -5,7 +5,7 @@ import java.util.Optional;
 /**
  * @program: redis-tool
  * @description: 防重复提交触发时策略工厂
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 public class MultipleSubmitLimitStrategyFactory {

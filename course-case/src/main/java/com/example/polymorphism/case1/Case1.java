@@ -7,7 +7,7 @@ import com.example.polymorphism.Fruit;
 /**
  * @program: toolkit
  * @description: 讲解多态
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-07
  **/
 public class Case1 {

@@ -1,6 +1,6 @@
 package com.example.client;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.GetChannelDataByCodeDto;
 import com.example.vo.GetChannelDataVo;
 import com.example.vo.TokenDataVo;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-17
  **/
 @Component
@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface BaseDataClient {
     
     @PostMapping("/channel/data/getByCode")
-    Result<GetChannelDataVo> getByCode(GetChannelDataByCodeDto dto);
+    ApiResponse<GetChannelDataVo> getByCode(GetChannelDataByCodeDto dto);
     
     @PostMapping (value = "/get")
-    Result<TokenDataVo> get();
+    ApiResponse<TokenDataVo> get();
 }

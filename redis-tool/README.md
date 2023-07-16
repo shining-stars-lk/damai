@@ -44,7 +44,7 @@ private DistributCache distributCache;
 /**
  * @program: redis-tool
  * @description: 缓存 key管理
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-1-6
  **/
 public enum RedisKeyEnum {
@@ -68,7 +68,7 @@ public static RedisKeyWrap cacheKeyBuild(RedisKeyEnum RedisKeyEnum, Object... ar
 /**
  * @program: redis-tool
  * @description: 缓存 key管理
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-1-6
  **/
 public enum RedisKeyEnum {

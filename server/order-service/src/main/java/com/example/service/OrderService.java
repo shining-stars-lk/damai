@@ -2,9 +2,9 @@ package com.example.service;
 
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
+import com.example.common.ApiResponse;
 import com.example.dto.ProductDto;
 import com.example.client.ProductClient;
-import com.example.common.Result;
 import com.example.core.RedisKeyEnum;
 import com.example.dto.GetDto;
 import com.example.dto.GetOrderDto;
@@ -42,7 +42,7 @@ import java.util.Optional;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-17
  **/
 @Service
@@ -119,7 +119,7 @@ public class OrderService {
         return getOrderVo;
     }
     
-    public Result<Boolean> insert(final InsertOrderDto dto) {
+    public ApiResponse<Boolean> insert(final InsertOrderDto dto) {
         List<ProductDto> productDtoList = dto.getProductDtoList();
         List<String> keyList = new ArrayList<>();
         String[] steps = new String[productDtoList.size()];
@@ -129,7 +129,7 @@ public class OrderService {
         }
         long count = (Long) redisCache.getInstance().execute(redisScript, keyList, steps);
         if (count == -1) {
-            return Result.error(BaseCode.PRODUCT_STOCK_NOT_ENOUGH);
+            return ApiResponse.error(BaseCode.PRODUCT_STOCK_NOT_ENOUGH);
         }
         if (orderMessageSend != null) {
             PsOrder order = new PsOrder();
@@ -156,7 +156,7 @@ public class OrderService {
             map.put("productOrderList",productOrderList);
             orderMessageSend.sendMessage(JSON.toJSONString(map));
         }
-        return Result.success(true);
+        return ApiResponse.ok(true);
     }
     
     @Transactional
@@ -169,15 +169,15 @@ public class OrderService {
         }
     }
     
-    public Result<Boolean> pay(final PayOrderDto dto) {
+    public ApiResponse<Boolean> pay(final PayOrderDto dto) {
         PsOrder psOrder = orderMapper.selectById(dto.getId());
         if (Optional.ofNullable(psOrder).isPresent()) {
             psOrder.setPayChannelType(dto.getPayChannelType());
             psOrder.setStatus(2);
             psOrder.setPayTime(new Date());
             orderMapper.updateById(psOrder);
-            Result.success(true);
+            ApiResponse.ok(true);
         }
-        return Result.success(false);
+        return ApiResponse.ok(false);
     }
 }

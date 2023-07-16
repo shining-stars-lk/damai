@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.DepthRuleDto;
 import com.example.dto.DepthRuleStatusDto;
 import com.example.dto.DepthRuleUpdateDto;
@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-30
  **/
 @RestController
@@ -33,28 +33,28 @@ public class DepthRuleController {
     
     @ApiOperation(value = "添加深度规则")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public Result add(@Valid @RequestBody DepthRuleDto depthRuleDto) {
+    public ApiResponse add(@Valid @RequestBody DepthRuleDto depthRuleDto) {
         depthRuleService.depthRuleAdd(depthRuleDto);
-        return Result.success();
+        return ApiResponse.ok();
     }
     
     @ApiOperation(value = "修改深度规则")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public Result update(@Valid @RequestBody DepthRuleUpdateDto depthRuleUpdateDto) {
+    public ApiResponse update(@Valid @RequestBody DepthRuleUpdateDto depthRuleUpdateDto) {
         depthRuleService.depthRuleUpdate(depthRuleUpdateDto);
-        return Result.success();
+        return ApiResponse.ok();
     }
     
     @ApiOperation(value = "修改深度规则装填")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
-    public Result updateStatus(DepthRuleStatusDto depthRuleStatusDto){
+    public ApiResponse updateStatus(DepthRuleStatusDto depthRuleStatusDto){
         depthRuleService.depthRuleUpdateStatus(depthRuleStatusDto);
-        return Result.success();
+        return ApiResponse.ok();
     }
     
     @ApiOperation(value = "查询深度规则")
     @RequestMapping(value = "/get", method = RequestMethod.POST)
-    public Result<List<DepthRuleVo>> get(){
-        return Result.success(depthRuleService.selectList());
+    public ApiResponse<List<DepthRuleVo>> get(){
+        return ApiResponse.ok(depthRuleService.selectList());
     }
 }

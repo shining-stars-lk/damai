@@ -31,7 +31,7 @@ import java.util.List;
  * ServiceInfo.
  *
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-01
  **/
 @JsonInclude(Include.NON_NULL)

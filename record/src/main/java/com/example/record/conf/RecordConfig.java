@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @program: record
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-02-20
  **/
 @Configuration(proxyBeanMethods = false)

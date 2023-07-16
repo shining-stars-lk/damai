@@ -1,6 +1,6 @@
 package com.example.client;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.JobCallBackDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-17
  **/
 @Component
@@ -21,5 +21,5 @@ import javax.validation.Valid;
 public interface JobClient {
     
     @RequestMapping(value = "jobRunRecord/callBack", method = RequestMethod.POST)
-    Result<Boolean> callBack(@Valid @RequestBody JobCallBackDto dto);
+    ApiResponse<Boolean> callBack(@Valid @RequestBody JobCallBackDto dto);
 }
