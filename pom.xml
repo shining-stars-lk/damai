@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>toolkit</artifactId>
+	<artifactId>cook-high-frame</artifactId>
 	<version>${revision}</version>
 	<packaging>pom</packaging>
 
 	<name>${project.artifactId}</name>
-	<description>工具组件</description>
+	<description>微服务高度定制化</description>
 
 	<modules>
 		<module>common</module>
