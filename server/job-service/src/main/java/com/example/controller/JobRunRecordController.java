@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.JobCallBackDto;
 import com.example.service.JobRunRecordService;
 import io.swagger.annotations.Api;
@@ -15,7 +15,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-28
  **/
 @RestController
@@ -27,8 +27,8 @@ public class JobRunRecordController {
     private JobRunRecordService jobRunRecordService;
     
     @RequestMapping(value = "/callBack",method = RequestMethod.POST)
-    public Result<Integer> callBack(@Valid @RequestBody JobCallBackDto JobCallBackDto) {
-        return Result.success(jobRunRecordService.callBack(JobCallBackDto));
+    public ApiResponse<Integer> callBack(@Valid @RequestBody JobCallBackDto JobCallBackDto) {
+        return ApiResponse.ok(jobRunRecordService.callBack(JobCallBackDto));
     }
     
     

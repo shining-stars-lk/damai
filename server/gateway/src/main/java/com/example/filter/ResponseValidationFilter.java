@@ -1,7 +1,7 @@
 package com.example.filter;
 
 import com.alibaba.fastjson.JSON;
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.core.StringUtil;
 import com.example.enums.BaseCode;
 import com.example.exception.ArgumentError;
@@ -140,8 +140,8 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
         if (verifySwitch && (!StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
             String encrypt = request.getHeaders().getFirst(ENCRYPT);
             if (StringUtil.isNotEmpty(responseBody)) {
-                Result<Object> result = JSON.parseObject(responseBody, Result.class);
-                Object data = result.getData();
+                ApiResponse<Object> apiResponse = JSON.parseObject(responseBody, ApiResponse.class);
+                Object data = apiResponse.getData();
                 if (data != null) {
                     String code = request.getHeaders().getFirst(CODE);
                     if (StringUtil.isEmpty(code)) {
@@ -155,8 +155,8 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
                     GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
                     if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
                         String aesEncrypt = AesForClient.encrypt(channelDataVo.getAesKey(), aesVector, JSON.toJSONString(data));
-                        result.setData(aesEncrypt);
-                        modifyResponseBody = JSON.toJSONString(result);
+                        apiResponse.setData(aesEncrypt);
+                        modifyResponseBody = JSON.toJSONString(apiResponse);
                     }
                 }
             }

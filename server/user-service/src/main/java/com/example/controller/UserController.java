@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.UserDto;
 import com.example.dto.logOutDto;
 import com.example.service.UserService;
@@ -17,7 +17,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-17
  **/
 @RestController
@@ -30,14 +30,14 @@ public class UserController {
     
     @ApiOperation(value = "登录")
     @PostMapping(value = "/login")
-    public Result<String> login(@Valid @RequestBody UserDto userDto) {
-        return Result.success(userService.login(userDto));
+    public ApiResponse<String> login(@Valid @RequestBody UserDto userDto) {
+        return ApiResponse.ok(userService.login(userDto));
     }
     
     @ApiOperation(value = "退出登录")
     @PostMapping(value = "/login")
-    public Result logOut(@Valid @RequestBody logOutDto logOutDto) {
+    public ApiResponse logOut(@Valid @RequestBody logOutDto logOutDto) {
         userService.logOut(logOutDto);
-        return Result.success();
+        return ApiResponse.ok();
     }
 }

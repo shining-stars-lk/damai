@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * @program: redis-tool
  * @description: redis分布式缓存实现
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 @AllArgsConstructor

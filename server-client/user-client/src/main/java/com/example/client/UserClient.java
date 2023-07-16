@@ -1,6 +1,6 @@
 package com.example.client;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.UserDto;
 import com.example.vo.UserVo;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-17
  **/
 @Component
@@ -18,5 +18,5 @@ import org.springframework.web.bind.annotation.GetMapping;
 public interface UserClient {
     
     @GetMapping("/user/login")
-    Result<UserVo> login(UserDto userDto);
+    ApiResponse<UserVo> login(UserDto userDto);
 }

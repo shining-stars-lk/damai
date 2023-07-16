@@ -9,7 +9,7 @@ import com.example.vo.ApiDataVo;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-14
  **/
 public interface ApiDataMapper extends BaseMapper<ApiData> {

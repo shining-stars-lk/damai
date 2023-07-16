@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: redis-tool
  * @description: 提供方法级别的分布式锁
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 public class ServiceLockUtil {

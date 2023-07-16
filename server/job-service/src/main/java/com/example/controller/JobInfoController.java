@@ -1,7 +1,7 @@
 package com.example.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.JobInfoDto;
 import com.example.dto.JobInfoDtoPage;
 import com.example.dto.RunJobDto;
@@ -20,7 +20,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-28
  **/
 @RestController
@@ -33,21 +33,21 @@ public class JobInfoController {
     
     @ApiOperation(value = "分页查询")
     @RequestMapping(value = "/pageList",method = RequestMethod.POST)
-    public Result<Page<JobInfo>> pageList(@Valid @RequestBody JobInfoDtoPage jobInfoDtoPage) {
+    public ApiResponse<Page<JobInfo>> pageList(@Valid @RequestBody JobInfoDtoPage jobInfoDtoPage) {
         Page<JobInfo> jobInfoPage = jobInfoService.pageList(jobInfoDtoPage);
-        return Result.success(jobInfoPage);
+        return ApiResponse.ok(jobInfoPage);
     }
     
     @ApiOperation(value = "添加任务")
     @RequestMapping(value = "/add",method = RequestMethod.POST)
-    public Result<Boolean> add(@Valid @RequestBody JobInfoDto jobInfoDto) {
+    public ApiResponse<Boolean> add(@Valid @RequestBody JobInfoDto jobInfoDto) {
         jobInfoService.add(jobInfoDto);
-        return Result.success(true);
+        return ApiResponse.ok(true);
     }
     
     @ApiOperation(value = "执行任务")
     @RequestMapping(value = "/runJob",method = RequestMethod.POST)
-    public Result<Object> runJob(@Valid @RequestBody RunJobDto runJobDto) {
-        return Result.success(jobInfoService.runJob(runJobDto));
+    public ApiResponse<Object> runJob(@Valid @RequestBody RunJobDto runJobDto) {
+        return ApiResponse.ok(jobInfoService.runJob(runJobDto));
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-28
  **/
 @Configuration

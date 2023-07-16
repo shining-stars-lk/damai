@@ -6,7 +6,7 @@ import java.util.concurrent.CountDownLatch;
  * @program: toolkit
  * @description: 开启5个线程，主线程执行await()进行阻塞，每个线程执行countDown()，当达到CountDownLatch初始化时设置的次数后
  *               主线程会继续执行
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-20
  **/
 public class CountDownLatchCase1 {

@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Bean;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-02-23
  **/
 @AutoConfigureAfter(RedissonAutoConfiguration.class)

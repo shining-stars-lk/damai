@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-14
  **/
 public interface OrderMapper extends BaseMapper<PsOrder> {

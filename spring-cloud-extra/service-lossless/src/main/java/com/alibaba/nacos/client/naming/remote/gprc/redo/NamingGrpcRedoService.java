@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
  * <p>When connection reconnect to server, redo the register and subscribe.
  *
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-01
  **/
 

@@ -3,7 +3,7 @@ package com.example.constant;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-09
  **/
 public class Constant {

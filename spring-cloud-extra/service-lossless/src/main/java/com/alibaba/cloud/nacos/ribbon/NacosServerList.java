@@ -28,7 +28,7 @@ import java.util.List;
 /**
  *
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-01
  **/
 public class NacosServerList extends AbstractServerList<NacosServer> {

@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: redis-tool
  * @description: 分布式锁(重入锁)
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 public class RedissonReentrantLocker implements ServiceLocker {

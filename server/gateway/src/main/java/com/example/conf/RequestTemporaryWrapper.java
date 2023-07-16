@@ -1,6 +1,6 @@
 package com.example.conf;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import lombok.Data;
 
 import java.util.Map;
@@ -11,5 +11,5 @@ public class RequestTemporaryWrapper {
     
     private Map<String,String> map;
     
-    private Result result;
+    private ApiResponse apiResponse;
 }

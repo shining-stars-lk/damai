@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.AllRuleDto;
 import com.example.service.AllRuleService;
 import com.example.vo.AllDepthRuleVo;
@@ -17,7 +17,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-07-11
  **/
 @RestController
@@ -31,14 +31,14 @@ public class AllRuleController {
     
     @ApiOperation(value = "添加所有规则")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public Result add(@Valid @RequestBody AllRuleDto allRuleDto) {
+    public ApiResponse add(@Valid @RequestBody AllRuleDto allRuleDto) {
         allRuleService.add(allRuleDto);
-        return Result.success();
+        return ApiResponse.ok();
     }
     
     @ApiOperation(value = "查询所有规则")
     @RequestMapping(value = "/get", method = RequestMethod.POST)
-    public Result<AllDepthRuleVo> get() {
-        return Result.success(allRuleService.get());
+    public ApiResponse<AllDepthRuleVo> get() {
+        return ApiResponse.ok(allRuleService.get());
     }
 }

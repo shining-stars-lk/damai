@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @program: redis-tool
  * @description: 防重复提交限制功能
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 @Aspect

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * 微服务流量监控加载 URI
  * @program: 
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-24
  **/
 public final class FlowMonitorVirtualUriLoader {

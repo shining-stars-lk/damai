@@ -5,7 +5,7 @@ import java.util.Random;
 /**
  * @program: 
  * @description: 每个线程向ThreadLocal设置值，再取值
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-19
  **/
 public class ThreadLocalCase1 {

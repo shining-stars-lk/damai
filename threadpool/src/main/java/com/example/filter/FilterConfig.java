@@ -6,7 +6,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-07-14
  **/
 public class FilterConfig {

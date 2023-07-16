@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-23
  **/
 public class RedisDisposableWorkerIdAssigner implements WorkerIdAssigner {

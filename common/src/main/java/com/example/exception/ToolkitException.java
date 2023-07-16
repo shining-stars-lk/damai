@@ -1,13 +1,13 @@
 package com.example.exception;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.enums.BaseCode;
 import lombok.Data;
 
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-03
  **/
 @Data
@@ -37,10 +37,10 @@ public class ToolkitException extends BaseException {
 		this.message = baseCode.getMsg();
 	}
 	
-	public ToolkitException(Result result) {
-		super(result.getMessage());
-		this.code = result.getCode();
-		this.message = result.getMessage();
+	public ToolkitException(ApiResponse apiResponse) {
+		super(apiResponse.getMessage());
+		this.code = apiResponse.getCode();
+		this.message = apiResponse.getMessage();
 	}
 
 	public ToolkitException(Throwable cause) {

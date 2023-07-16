@@ -9,7 +9,7 @@ import org.redisson.api.RedissonClient;
 /**
  * @program: redis-tool
  * @description: 分布式锁类型提供工厂
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 public class ServiceLockFactory {

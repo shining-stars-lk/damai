@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.RuleDto;
 import com.example.dto.RuleGetDto;
 import com.example.dto.RuleStatusDto;
@@ -20,7 +20,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-30
  **/
 @RestController
@@ -33,28 +33,28 @@ public class RuleController {
     
     @ApiOperation(value = "添加普通规则")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public Result add(@Valid @RequestBody RuleDto ruleDto) {
+    public ApiResponse add(@Valid @RequestBody RuleDto ruleDto) {
         ruleService.ruleAdd(ruleDto);
-        return Result.success();
+        return ApiResponse.ok();
     }
     
     @ApiOperation(value = "修改普通规则")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public Result update(@Valid @RequestBody RuleUpdateDto ruleUpdateDto) {
+    public ApiResponse update(@Valid @RequestBody RuleUpdateDto ruleUpdateDto) {
         ruleService.ruleUpdate(ruleUpdateDto);
-        return Result.success();
+        return ApiResponse.ok();
     }
     
     @ApiOperation(value = "修改普通规则状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
-    public Result updateStatus(RuleStatusDto ruleStatusDto){
+    public ApiResponse updateStatus(RuleStatusDto ruleStatusDto){
         ruleService.ruleUpdateStatus(ruleStatusDto);
-        return Result.success();
+        return ApiResponse.ok();
     }
     
     @ApiOperation(value = "查询普通规则")
     @RequestMapping(value = "/get", method = RequestMethod.POST)
-    public Result<RuleVo> get(RuleGetDto ruleGetDto){
-        return Result.success(ruleService.get(ruleGetDto));
+    public ApiResponse<RuleVo> get(RuleGetDto ruleGetDto){
+        return ApiResponse.ok(ruleService.get(ruleGetDto));
     }
 }

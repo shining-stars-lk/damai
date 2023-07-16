@@ -46,7 +46,7 @@ import java.util.Map;
 /**
  * @program: distribute-es
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-02-23
  **/
 public class BusinessEsUtil {

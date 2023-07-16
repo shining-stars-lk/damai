@@ -3,7 +3,7 @@ package com.tool.core;
 /**
  * @program: redis-tool
  * @description: 分布式锁业务名管理
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-05-28
  **/
 public class DistributedLockConstants {

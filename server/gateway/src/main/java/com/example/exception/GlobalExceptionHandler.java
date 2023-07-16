@@ -1,6 +1,6 @@
 package com.example.exception;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.conf.RequestTemporaryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 /**
  * @program: 
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-04-27
  **/
 @Component
@@ -37,18 +37,18 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         RequestTemporaryWrapper requestTemporaryWrapper = new RequestTemporaryWrapper();
         if (ex instanceof ToolkitException) {
             ToolkitException toolkitException = (ToolkitException)ex;
-            Result result = Result.error(toolkitException.getCode(),toolkitException.getMessage());
-            requestTemporaryWrapper.setResult(result);
+            ApiResponse apiResponse = ApiResponse.error(toolkitException.getCode(),toolkitException.getMessage());
+            requestTemporaryWrapper.setApiResponse(apiResponse);
             exceptionFlag = true;
         }else if (ex instanceof ArgumentException) {
             ArgumentException ae = (ArgumentException)ex;
-            Result<Object> result = Result.error(ae.getCode(), ae.getMessage());
-            result.setData(ae.getArgumentErrorList());
-            requestTemporaryWrapper.setResult(result);
+            ApiResponse<Object> apiResponse = ApiResponse.error(ae.getCode(), ae.getMessage());
+            apiResponse.setData(ae.getArgumentErrorList());
+            requestTemporaryWrapper.setApiResponse(apiResponse);
             exceptionFlag = true;
         }else if (ex instanceof Exception) {
-            Result result = Result.error(-100,"网络异常!");
-            requestTemporaryWrapper.setResult(result);
+            ApiResponse apiResponse = ApiResponse.error(-100,"网络异常!");
+            requestTemporaryWrapper.setApiResponse(apiResponse);
             exceptionFlag = true;
         }
         if (exceptionFlag) {
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                     ObjectMapper objectMapper = new ObjectMapper();
                     try {
                         //设置响应到response的数据
-                        return bufferFactory.wrap(objectMapper.writeValueAsBytes(requestTemporaryWrapper.getResult()));
+                        return bufferFactory.wrap(objectMapper.writeValueAsBytes(requestTemporaryWrapper.getApiResponse()));
                     } catch (JsonProcessingException e) {
                         e.printStackTrace();
                         return null;

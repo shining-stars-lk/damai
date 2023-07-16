@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.dto.TokenDataDto;
 import com.example.service.TokenDataService;
 import com.example.vo.TokenDataVo;
@@ -17,7 +17,7 @@ import javax.validation.Valid;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-17
  **/
 @RestController
@@ -30,15 +30,15 @@ public class TokenDataController {
     
     @ApiOperation(value = "获取token配置数据")
     @PostMapping (value = "/get")
-    public Result<TokenDataVo> get() {
+    public ApiResponse<TokenDataVo> get() {
         TokenDataVo tokenDataVo = tokenDataService.get();
-        return Result.success(tokenDataVo);
+        return ApiResponse.ok(tokenDataVo);
     }
     
     @ApiOperation(value = "添加token配置数据")
     @PostMapping(value = "/add")
-    public Result<Boolean> add(@Valid @RequestBody TokenDataDto tokenDataDto) {
+    public ApiResponse<Boolean> add(@Valid @RequestBody TokenDataDto tokenDataDto) {
         tokenDataService.add(tokenDataDto);
-        return Result.success(true);
+        return ApiResponse.ok(true);
     }
 }

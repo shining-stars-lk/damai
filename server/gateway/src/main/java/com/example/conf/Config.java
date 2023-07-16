@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * @program: gateway
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2024-4-25
  **/
 @Configuration

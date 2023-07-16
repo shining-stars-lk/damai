@@ -2,7 +2,7 @@ package com.example.callback;
 
 import com.alibaba.fastjson.JSON;
 import com.example.client.JobClient;
-import com.example.common.Result;
+import com.example.common.ApiResponse;
 import com.example.core.StringUtil;
 import com.example.dto.JobCallBackDto;
 import com.example.threadlocal.BaseParameterHolder;
@@ -16,7 +16,7 @@ import static com.example.constant.Constant.JOB_RUN_RECORD_ID;
 /**
  * @program: toolkit
  * @description:
- * @author: kuan
+ * @author: 星哥
  * @create: 2023-06-28
  **/
 @Slf4j
@@ -35,9 +35,9 @@ public class JobRunCallBack {
             jobCallBackDto.setJobId(jobInfoId);
             jobCallBackDto.setRunInfo(runInfo);
             jobCallBackDto.setRunStatus(runStatus);
-            Result<Boolean> result = jobClient.callBack(jobCallBackDto);
-            if (result.getCode() != Result.success().getCode().intValue()) {
-                log.error("callBack error dto : {} result : {}", JSON.toJSONString(jobCallBackDto),JSON.toJSONString(result));
+            ApiResponse<Boolean> apiResponse = jobClient.callBack(jobCallBackDto);
+            if (apiResponse.getCode() != ApiResponse.ok().getCode().intValue()) {
+                log.error("callBack error dto : {} apiResponse : {}", JSON.toJSONString(jobCallBackDto),JSON.toJSONString(apiResponse));
             }
         }
     }
