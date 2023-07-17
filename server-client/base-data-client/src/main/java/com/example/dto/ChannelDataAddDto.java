@@ -27,13 +27,13 @@ public class ChannelDataAddDto {
     @ApiModelProperty(name ="introduce", dataType ="String", value ="介绍", required =true)
     private String introduce;
     
-    @ApiModelProperty(name ="publicKey", dataType ="String", value ="rsa公钥", required =true)
+    @ApiModelProperty(name ="signPublicKey", dataType ="String", value ="rsa签名公钥", required =true)
     @NotBlank
-    private String publicKey;
+    private String signPublicKey;
     
-    @ApiModelProperty(name ="secretKey", dataType ="String", value ="rsa私钥", required =true)
+    @ApiModelProperty(name ="signSecretKey", dataType ="String", value ="rsa签名私钥", required =true)
     @NotBlank
-    private String secretKey;
+    private String signSecretKey;
     
     @ApiModelProperty(name ="aesKey", dataType ="String", value ="aes私钥")
     private String aesKey;

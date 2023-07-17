@@ -28,11 +28,11 @@ public class GetChannelDataVo {
     @ApiModelProperty(name ="status", dataType ="Integer", value ="装填 1:正常 0:禁用", required =true)
     private Integer status;
     
-    @ApiModelProperty(name ="introduce", dataType ="String", value ="rsa公钥", required =true)
-    private String publicKey;
+    @ApiModelProperty(name ="signPublicKey", dataType ="String", value ="rsa签名公钥", required =true)
+    private String signPublicKey;
     
-    @ApiModelProperty(name ="secretKey", dataType ="String", value ="rsa私钥", required =true)
-    private String secretKey;
+    @ApiModelProperty(name ="signSecretKey", dataType ="String", value ="rsa签名私钥", required =true)
+    private String signSecretKey;
     
     @ApiModelProperty(name ="aesKey", dataType ="String", value ="aes私钥")
     private String aesKey;
