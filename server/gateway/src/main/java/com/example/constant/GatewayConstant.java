@@ -20,6 +20,6 @@ public class GatewayConstant {
     
     public static final String TOKEN = "token";
     
-    public static final String DEBUG = "debug";
+    public static final String NO_VERIFY = "no_verify";
     
 }
