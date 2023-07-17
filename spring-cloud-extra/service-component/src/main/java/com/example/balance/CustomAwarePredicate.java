@@ -101,7 +101,7 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 				result = false;
 			}
 			
-			/*假如最后得到的结果为false，则再给负载均衡一次机会
+			/*假如最后得到的结果为false，再做一次匹配
 			 *
 			 * 如果所有服务端的配置均为spring.cloud.nacos.discovery.metadata.mark=true,而调用请求端的请求头中的mark为true，则也允许结果返回true做负载均衡
 			 *
