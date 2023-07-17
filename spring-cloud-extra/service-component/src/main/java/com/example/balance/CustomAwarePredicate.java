@@ -1,12 +1,15 @@
 package com.example.balance;
 
+import cn.hutool.core.collection.CollUtil;
 import com.alibaba.cloud.nacos.ribbon.NacosServer;
+import com.example.enums.BaseCode;
+import com.example.exception.ToolkitException;
+import com.example.threadlocal.BaseParameterHolder;
 import com.google.common.collect.Maps;
 import com.netflix.loadbalancer.AbstractServerPredicate;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.PredicateKey;
 import com.netflix.loadbalancer.Server;
-import com.example.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
@@ -42,22 +45,23 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 	}
 	
 	/**
-	 * 灰度规则：
-	 *  1. 请求中的参数:
-	 *  		mark=false //请求生产的服务
-	 *  		mark=true //请求灰度的服务
-	 *  2. 服务端的配置:
-	 *  		--spring.cloud.nacos.discovery.metadata.mark=false //代表生产的服务
-	 *  		--spring.cloud.nacos.discovery.metadata.mark=true //代表灰度的服务
+	 * 灰度调用服务的说明：
+	 * 
+	 * 请求服务中请求头中的参数 mark=false:请求生产的服务。 mark=true:请求灰度的服务
+	 * 
+	 * 被调用服务的配置:
+	 *   spring.cloud.nacos.discovery.metadata.mark=false:代表生产的服务
+	 *   spring.cloud.nacos.discovery.metadata.mark=true:代表灰度的服务
 	 *
-	 * 	3. 如果请求头中没有mark参数，或者该参数为空，或者该参数中的值不是true或false字符串(true/false不区分大小写)则认为mark=false
-	 *  4. 如果服务端的 --spring.cloud.nacos.discovery.metadata.mark 配置项没有配置，或者为空，或者该配置项中的值不是true或false字符串(true/false不区分大小写)则认为mark=false
-	 *  5. 判定:
-	 *  		3.1 如果所有服务端的配置项 --spring.cloud.nacos.discovery.metadata.mark=true，并且请求中的Header参数 mark=true
-	 *  			则，在该请求的n次调用中apply()函数都返回true，走负载均衡
-	 *  		3.2 否则服务器端的配置项 --spring.cloud.nacos.discovery.metadata.mark 必须与请求中的Header参数 mark 值相等 apply()函数才会返回true
-	 *  6. 对如上规则的总结如下:
-	 *  		生产的请求必须走生产的服务器(没有部署生产服务就进熔断器)，灰度的请求在有灰度服务部署的情况下必须走灰度的服务器，没有灰度服务部署的情况下则走生产的服务器
+	 * 如果请求服务中请求头没有mark参数，或者该参数中的值不是true或false字符串(不区分大小写)则认为mark=false
+	 * 
+	 * 如果被调用服务的 spring.cloud.nacos.discovery.metadata.mark 配置项没有配置，或者为空，或者该配置项中的值不是true或false字符串(不区分大小写)则认为mark=false
+	 * 判断逻辑:
+	 *   如果所有被调用服务端的配置项 --spring.cloud.nacos.discovery.metadata.mark=true，并且请求中的Header参数 mark=true，则在该请求的n次调用中apply()函数都返回true，走负载均衡
+	 *   否则被调用服务端的配置项 --spring.cloud.nacos.discovery.metadata.mark 必须与请求中的Header参数 mark 值相等 apply()函数才会返回true
+	 * 
+	 * 总结:
+	 *   生产的请求必须走生产的服务(没有部署生产服务就熔断)，灰度的请求在有灰度服务部署的情况下必须走灰度的，没有灰度服务的情况下则调用生产的服务
 	 */
 	@Override
     public boolean apply(PredicateKey input) {
@@ -99,23 +103,21 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 			
 			/*假如最后得到的结果为false，则再给负载均衡一次机会
 			 *
-			 * 1. 如果所有服务端的配置均为 --spring.cloud.nacos.discovery.metadata.mark=true
-			 * 	  而客户端请求Header中的 mark 为true，则也允许结果返回true做负载均衡。
+			 * 如果所有服务端的配置均为spring.cloud.nacos.discovery.metadata.mark=true,而调用请求端的请求头中的mark为true，则也允许结果返回true做负载均衡
 			 *
-			 * 2. 反之如果所有服务端的配置为  --spring.cloud.nacos.discovery.metadata.mark=true
-			 * 	  而客户端请求Header中的 mark 为false，则结果返回false,不允许做负载均衡。
+			 * 反之如果所有服务端的配置为spring.cloud.nacos.discovery.metadata.mark=true,而调用请求端的请求头中的mark为false，则结果返回false,不允许做负载均衡
 			 */
 			if(result == false && markFromRequest.equalsIgnoreCase(MARK_FLAG_TRUE)) {
 				if(customEnabledRule == null) {
-					throw new Exception("Ribbon在进行灰度负载选择时，metadataAwareRule值为空，请检查您的灰度代码");
+					throw new ToolkitException(BaseCode.CUSTOM_ENABLED_RULE_EMPTY);
 				}
 				ILoadBalancer iLoadBalancer = customEnabledRule.getLoadBalancer();
 				if(iLoadBalancer == null) {
-					throw new Exception("Ribbon在进行灰度负载选择时，iLoadBalancer值为空，请检查您的灰度代码");
+					throw new ToolkitException(BaseCode.I_LOAD_BALANCER_RULE_EMPTY);
 				}
 				List<Server> serverList = iLoadBalancer.getReachableServers();
-				if(serverList == null || serverList.isEmpty() == true) {
-					throw new Exception("Ribbon在进行灰度负载选择时，ReachableServers为空，请检查您的灰度代码,或者是否服务是否已经down掉");
+				if(CollUtil.isEmpty(serverList)) {
+					throw new ToolkitException(BaseCode.SERVER_LIST_EMPTY);
 				}
 				Map<String,String> map = Maps.newHashMap();
 				for (Server serverBalance : serverList) {
@@ -132,7 +134,6 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 				}
 			}
 		}catch (Exception e) {
-			//如果报异常，则请求会进入熔断器
 			result = false;
 			log.error("CustomAwarePredicate#apply error",e);
 		}

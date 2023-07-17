@@ -18,6 +18,12 @@ public enum BaseCode {
     
     AES_ERROR(1003,"aes验证失败"),
     
+    CUSTOM_ENABLED_RULE_EMPTY(1004,"customEnabledRule为空"),
+    
+    I_LOAD_BALANCER_RULE_EMPTY(1005,"iLoadBalancer为空"),
+    
+    SERVER_LIST_EMPTY(1006,"serverList为空，请检查灰度代码或者服务是否异常下线"),
+    
     CHANNEL_DATA(1050,"渠道数据为空"),
     
     ARGUMENT_EMPTY(1051,"基础参数为空"),
