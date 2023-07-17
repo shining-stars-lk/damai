@@ -1,6 +1,6 @@
 package com.example.record.es;
 
-import com.example.dto.CreateIndexDto;
+import com.example.dto.EsCreateIndexDto;
 import com.example.util.BusinessEsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,54 +40,54 @@ public class RecordEsUtils {
     }
     
     public void createIndex() throws IOException {
-        List<CreateIndexDto> list = new ArrayList<CreateIndexDto>();
+        List<EsCreateIndexDto> list = new ArrayList<EsCreateIndexDto>();
         
-        CreateIndexDto operatorName = new CreateIndexDto();
+        EsCreateIndexDto operatorName = new EsCreateIndexDto();
         operatorName.setParamName("operator_name");
         operatorName.setParamType("keyword");
         list.add(operatorName);
         
-        CreateIndexDto contentType = new CreateIndexDto();
+        EsCreateIndexDto contentType = new EsCreateIndexDto();
         contentType.setParamName("content_type");
         contentType.setParamType("keyword");
         list.add(contentType);
         
-        CreateIndexDto requestBody = new CreateIndexDto();
+        EsCreateIndexDto requestBody = new EsCreateIndexDto();
         requestBody.setParamName("request_body");
         requestBody.setParamType("keyword");
         list.add(requestBody);
         
-        CreateIndexDto method = new CreateIndexDto();
+        EsCreateIndexDto method = new EsCreateIndexDto();
         method.setParamName("method");
         method.setParamType("keyword");
         list.add(method);
         
-        CreateIndexDto parameter = new CreateIndexDto();
+        EsCreateIndexDto parameter = new EsCreateIndexDto();
         parameter.setParamName("parameter");
         parameter.setParamType("keyword");
         list.add(parameter);
         
-        CreateIndexDto requestURI = new CreateIndexDto();
+        EsCreateIndexDto requestURI = new EsCreateIndexDto();
         requestURI.setParamName("request_uri");
         requestURI.setParamType("keyword");
         list.add(requestURI);
         
-        CreateIndexDto ipAddress = new CreateIndexDto();
+        EsCreateIndexDto ipAddress = new EsCreateIndexDto();
         ipAddress.setParamName("ip_address");
         ipAddress.setParamType("keyword");
         list.add(ipAddress);
         
-        CreateIndexDto timestamp = new CreateIndexDto();
+        EsCreateIndexDto timestamp = new EsCreateIndexDto();
         timestamp.setParamName("@timestamp");
         timestamp.setParamType("date");
         list.add(timestamp);
         
-        CreateIndexDto content = new CreateIndexDto();
+        EsCreateIndexDto content = new EsCreateIndexDto();
         content.setParamName("content");
         content.setParamType("text");
         list.add(content);
         
-        CreateIndexDto result = new CreateIndexDto();
+        EsCreateIndexDto result = new EsCreateIndexDto();
         result.setParamName("result");
         result.setParamType("keyword");
         list.add(result);

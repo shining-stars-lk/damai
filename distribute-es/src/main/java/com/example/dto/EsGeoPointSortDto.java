@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  * @create: 2023-09-15
  **/
 @Data
-public class GeoPointSortDto {
+public class EsGeoPointSortDto {
     /**
      * 字段名
      * */
