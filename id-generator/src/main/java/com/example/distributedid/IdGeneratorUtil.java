@@ -15,7 +15,7 @@ import java.util.Map;
  * 全局ID生成器
  * 注：这些函数都不需要加同步机制，但数据库需要对相应的ID字段做unique约束，防止亿万分之一可能性的重复
  *
- * @author lk
+ * @author 星哥
  */
 public class IdGeneratorUtil {
     private final static Logger logger = LoggerFactory.getLogger(IdGeneratorUtil.class);

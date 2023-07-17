@@ -23,4 +23,8 @@ public class UserDto {
     
     @ApiModelProperty(name ="age", dataType ="Integer", value ="用户年龄", required =true)
     private Integer age;
+    
+    @ApiModelProperty(name ="code", dataType ="String", value ="平台code", required =true)
+    @NotBlank
+    private String code;
 }

@@ -2,8 +2,9 @@ package com.example.service;
 
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.example.client.BaseDataClient;
 import com.example.core.RedisKeyEnum;
 import com.example.dto.UserDto;
@@ -34,8 +35,8 @@ import java.util.concurrent.TimeUnit;
  * @author: 星哥
  * @create: 2023-04-17
  **/
-@Service
 @Slf4j
+@Service
 public class UserService {
     
     private static final String TOKEN_SECRET = "CSYZWECHAT";
@@ -57,8 +58,8 @@ public class UserService {
     
     @Transactional
     public String login(final UserDto userDto) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("mobile", userDto.getMobile());
+        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
+                .eq(User::getMobile, userDto.getMobile());
         User user = userMapper.selectOne(queryWrapper);
         if (user == null) {
             user = new User();
@@ -70,13 +71,8 @@ public class UserService {
             user.setEditTime(new Date());
             userMapper.updateById(user);
         }
-        cacheUser(user);
+        cacheUser(user.getMobile());
         return createToken(user.getId());
-    }
-    
-    public void cacheUser(User user){
-        redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),user);
-        redisCache.expire(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),tokenExpireTime + 1000,TimeUnit.MILLISECONDS);
     }
     
     public String createToken(String userId){
@@ -90,8 +86,28 @@ public class UserService {
         user.setMobile(logOutDto.getMobile());
         user.setLogStatus(UserLogStatus.OUT.getCode());
         user.setEditTime(DateUtils.now());
-        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.eq(User::getMobile,logOutDto.getMobile());
+        LambdaUpdateWrapper<User> updateWrapper = Wrappers.lambdaUpdate(User.class)
+                .eq(User::getMobile,logOutDto.getMobile());
         userMapper.update(user,updateWrapper);
+        delcacheUser(user.getMobile());
+    }
+    
+    public void cacheUser(String mobile){
+        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
+                .eq(User::getMobile, mobile);
+        User user = userMapper.selectOne(queryWrapper);
+        if (user != null) {
+            redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),user);
+            redisCache.expire(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),tokenExpireTime + 1000,TimeUnit.MILLISECONDS);
+        }
+    }
+    
+    public void delcacheUser(String mobile){
+        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
+                .eq(User::getMobile, mobile);
+        User user = userMapper.selectOne(queryWrapper);
+        if (user != null) {
+            redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()));
+        }
     }
 }

@@ -45,9 +45,9 @@ public class DepthRuleController {
         return ApiResponse.ok();
     }
     
-    @ApiOperation(value = "修改深度规则装填")
+    @ApiOperation(value = "修改深度规则状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
-    public ApiResponse updateStatus(DepthRuleStatusDto depthRuleStatusDto){
+    public ApiResponse updateStatus(@Valid @RequestBody DepthRuleStatusDto depthRuleStatusDto){
         depthRuleService.depthRuleUpdateStatus(depthRuleStatusDto);
         return ApiResponse.ok();
     }

@@ -47,14 +47,14 @@ public class RuleController {
     
     @ApiOperation(value = "修改普通规则状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
-    public ApiResponse updateStatus(RuleStatusDto ruleStatusDto){
+    public ApiResponse updateStatus(@Valid @RequestBody RuleStatusDto ruleStatusDto){
         ruleService.ruleUpdateStatus(ruleStatusDto);
         return ApiResponse.ok();
     }
     
     @ApiOperation(value = "查询普通规则")
     @RequestMapping(value = "/get", method = RequestMethod.POST)
-    public ApiResponse<RuleVo> get(RuleGetDto ruleGetDto){
+    public ApiResponse<RuleVo> get(@Valid @RequestBody RuleGetDto ruleGetDto){
         return ApiResponse.ok(ruleService.get(ruleGetDto));
     }
 }

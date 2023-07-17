@@ -2,6 +2,8 @@ package com.example.service;
 
 import cn.hutool.core.date.DateUtil;
 import com.baidu.fsg.uid.UidGenerator;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.example.core.StringUtil;
 import com.example.dto.DepthRuleDto;
 import com.example.dto.DepthRuleStatusDto;
@@ -54,8 +56,8 @@ public class DepthRuleService {
         if (StringUtil.isEmpty(startTimeWindow) || StringUtil.isEmpty(endTimeWindow)) {
             return;
         }
-        List<DepthRule> depthRules = depthRuleMapper.selectList(null);
-        depthRules = depthRules.stream().filter(depthRule -> depthRule.getStatus() == RuleStatus.RUN.getCode()).collect(Collectors.toList());
+        LambdaQueryWrapper<DepthRule> queryWrapper = Wrappers.lambdaQuery(DepthRule.class).eq(DepthRule::getStatus, RuleStatus.RUN.getCode());
+        List<DepthRule> depthRules = depthRuleMapper.selectList(queryWrapper);
         for (final DepthRule depthRule : depthRules) {
             long checkStartTimeWindowTimestamp = getTimeWindowTimestamp(startTimeWindow);
             long checkEndTimeWindowTimestamp = getTimeWindowTimestamp(endTimeWindow);

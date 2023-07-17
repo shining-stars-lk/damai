@@ -1,8 +1,10 @@
 package com.example.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -37,6 +39,8 @@ public class ApiDataVo {
     private String apiUrl;
     
     @ApiModelProperty(name ="createTime", dataType ="Date", value ="创建时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     
     @ApiModelProperty(name ="status", dataType ="Integer", value ="状态 1生效 0禁用", required =true)

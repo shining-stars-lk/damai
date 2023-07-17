@@ -3,7 +3,7 @@ package com.example.util;
 /**
  * @ClassName: Base64
  * @Description: 
- * @author lk
+ * @author 星哥
  * @date 2023-5-18
  */
 public final class Base64 {

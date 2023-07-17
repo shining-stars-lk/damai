@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  * DB WorkerID Assigner for UID Generator
  * </p>
  *
- * @author lk
+ * @author 星哥
  * @since 2023-5-16
  */
 @Data

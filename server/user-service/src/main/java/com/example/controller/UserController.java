@@ -35,7 +35,7 @@ public class UserController {
     }
     
     @ApiOperation(value = "退出登录")
-    @PostMapping(value = "/login")
+    @PostMapping(value = "/logOut")
     public ApiResponse logOut(@Valid @RequestBody logOutDto logOutDto) {
         userService.logOut(logOutDto);
         return ApiResponse.ok();

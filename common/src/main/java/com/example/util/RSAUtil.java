@@ -1,6 +1,10 @@
 package com.example.util;
 
 
+import com.alibaba.fastjson.JSON;
+import com.example.enums.BaseCode;
+import com.example.exception.ToolkitException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import sun.misc.BASE64Encoder;
 
@@ -22,29 +26,30 @@ import java.util.Map;
 /**
  * @ClassName: RSAUtil
  * @Description:
- * @author lk
+ * @author 星哥
  * @date 2023-5-18
  */
+@Slf4j
 public class RSAUtil {
 	
 	/**
 	 * RSA最大加密明文大小
 	 */
 	private static final int MAX_ENCRYPT_BLOCK = 117;
-
+	
 	/**
 	 * RSA最大解密密文大小
 	 */
 	private static final int MAX_DECRYPT_BLOCK = 256;
 	
-    public static final String KEY_ALGORITHM = "RSA";
+	public static final String KEY_ALGORITHM = "RSA";
     
     public static final String PUBLIC_KEY = "publicKey";
     public static final String PRIVATE_KEY = "privateKey";
 	
 	/**
 	 * 	生成 rsa 公钥私钥
-	 * @throws NoSuchAlgorithmException 
+	 * @throws NoSuchAlgorithmException
 	 */
 	public static Map<String, String> createKey() throws NoSuchAlgorithmException {
 		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_ALGORITHM);
@@ -61,7 +66,6 @@ public class RSAUtil {
 	}
 	
 	
-	
 	public static Map<String, String> createKey(int size) throws NoSuchAlgorithmException {
 		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_ALGORITHM);
 		keyPairGenerator.initialize(size);
@@ -75,12 +79,11 @@ public class RSAUtil {
 		map.put(PRIVATE_KEY, prikey);
 		return map;
 	}
-	 
-
+	
 	
 	/**
 	 * RSA加密
-	 * 
+	 *
 	 * @param data
 	 *            待加密数据
 	 * @param publicKey
@@ -112,10 +115,10 @@ public class RSAUtil {
 		// 加密后的字符串
 		return new String(Base64.encodeBase64(encryptedData));
 	}
-
+	
 	/**
 	 * RSA解密
-	 * 
+	 *
 	 * @param data
 	 *            待解密数据
 	 * @param privateKey
@@ -147,7 +150,7 @@ public class RSAUtil {
 		// 解密后的内容
 		return new String(decryptedData, "UTF-8");
 	}
-
+	
 	/**
 	 * 37 * 获取私钥 38 * 39 * @param privateKey 私钥字符串 40 * @return 41
 	 */
@@ -157,7 +160,7 @@ public class RSAUtil {
 		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decodedKey);
 		return keyFactory.generatePrivate(keySpec);
 	}
-
+	
 	/**
 	 * 根据私钥字符串进行解密
 	 * @param data
@@ -165,10 +168,15 @@ public class RSAUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String decryptByStrkey(String data, String privateKeyStr) throws Exception {
-		PrivateKey privateKey2 = RSAUtil.getPrivateKey(privateKeyStr);
-		String decryptstr = RSAUtil.decrypt(data, privateKey2);
-		return decryptstr;
+	public static String decrypt(String data, String privateKeyStr) {
+		try {
+			PrivateKey privateKey2 = RSAUtil.getPrivateKey(privateKeyStr);
+			String decryptstr = RSAUtil.decrypt(data, privateKey2);
+			return decryptstr;
+		}catch (Exception e) {
+			log.error("decrypt error",e);
+			throw new ToolkitException(BaseCode.RSA_DECRYPT_ERROR);
+		}
 	}
 	
 	/**
@@ -178,14 +186,20 @@ public class RSAUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String encrypt(String data, String publicKey) throws Exception {
-		PublicKey publicKeyTmp = RSAUtil.getPublicKey(publicKey);
-		return encrypt(data,publicKeyTmp);
+	public static String encrypt(String data, String publicKey)  {
+		try {
+			PublicKey publicKeyTmp = RSAUtil.getPublicKey(publicKey);
+			return encrypt(data,publicKeyTmp);
+		}catch (Exception e) {
+			log.error("encrypt error",e);
+			throw new ToolkitException(BaseCode.RSA_ENCRYPT_ERROR);
+		}
+			
 	}
-	
+		
 	/**
 	 * 获取公钥
-	 * 
+	 *
 	 * @param publicKey
 	 *            公钥字符串
 	 * @return
@@ -195,6 +209,18 @@ public class RSAUtil {
 		byte[] decodedKey = Base64.decodeBase64(publicKey.getBytes());
 		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decodedKey);
 		return keyFactory.generatePublic(keySpec);
+	}
+	
+	public static void main(String[] args) throws Exception {
+		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAirLDI4SPxLXAjk+CMJWrdREnQjJJQgEd7RAw+ZCPZKBFfkoPa5YjcYQzqtc4RPOszBZhPmGr732WLA0O2U0WFnPG6vva9x7pYQot4u5IoncRl7kBb89d1XdR5DZxKovQyDM91CkLikq8h0sBVTkfX2Jz34LmYd8TPQ4BSHUDE5h+f42WkUYG9PCaXvPg+yv4+1AwJeXI/wW181h1JQ5cmogFXIHEFOxS/wwtnoijwmRv/3nKhdyYZbpC2V7F2xq9jWuTBL01Oj3sRhbykHDW2aK2oJ53U5vqlaC6XsheCabMqeqjDPCa8rUjp10pWy7LneYxVigVuONOmlvt56ja7QIDAQAB";
+		String privateKey = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCKssMjhI/EtcCOT4Iwlat1ESdCMklCAR3tEDD5kI9koEV+Sg9rliNxhDOq1zhE86zMFmE+YavvfZYsDQ7ZTRYWc8bq+9r3HulhCi3i7kiidxGXuQFvz13Vd1HkNnEqi9DIMz3UKQuKSryHSwFVOR9fYnPfguZh3xM9DgFIdQMTmH5/jZaRRgb08Jpe8+D7K/j7UDAl5cj/BbXzWHUlDlyaiAVcgcQU7FL/DC2eiKPCZG//ecqF3JhlukLZXsXbGr2Na5MEvTU6PexGFvKQcNbZoragnndTm+qVoLpeyF4Jpsyp6qMM8JrytSOnXSlbLsud5jFWKBW4406aW+3nqNrtAgMBAAECggEAbCHOTSSOSZhBlTGbmHE3iT9kUhGOV60zPZ0/8XGouZTSWRE4UHJvE5M0DN9Z+TfY4gwYqF/RghdxOsq7ZuLYc4yz6oOMRNmOrZ8YAzIu4qrdxmHwItGSoFg0Oi3PsJHspgh9DakqXBjEPt5VHbI5KU5CdGFDZ85Y22LN0UWYrm8wOj6P4qJU/bXIOYYl4LfQRIdF6z/0a/ooi0JvQWfgiVMjymTaeF/aRNxqt2Mm09hWEfKUzYX96LINrCJ0DG/Rz+xyShW3rajOHxdY61gyIPybQcXehtacGW+DE/4M6KrWZYUoH/X3KUaXjq0Ed+Sj2cSmv30idcdyDsRmSK7VaQKBgQDOTVoMVhrzDAZf1DywMwSyObQJ4tFr1MwNLXD1wqRJta07448IuRGOdXoq4hoEw1gBAcHyWlIT/8hY7fiBvMi0YETL2gN+PWLhJL24dxR92ACsKP1j3cYM6b0HmfyrbTUuzk+dWcI835ADzWq+b093+EUI/7VZUAALowk2o/DtQwKBgQCsHEgxK7cW6nRLevssnnBIWQ5IlJlUsp/tqyn+IKwuUyJzJWRXvxag4UdMUcMOB/syw9XFyqBgEc+cY1jgoMVsacFyeAkUjfaxGro83H/Inx2Ge25zH/OxZkmL7kkz+bApKhmtHva8mCGu4ZHh0B6PFoffZV6idiAokgVmir/8DwKBgQCrDv5cfkUIRG9ApFXR7+uz8B61l8n39FFhl80zKjpZF/hVUUF3hSTmj8hFqIbUbjkZVKDBWFz4Uj2IZ4GH6cYtsik5MkN1OGc1seZR/wMRuboNBkvcs7YVXPYtSGR2rC3N6qmfGh7xpJngXUJmNxuYqVZsuMJhFPGEtKHeGZ+aywKBgHEPsyz59rCLHBJpm47YFhKwzf1IAOHu5biPdGqItBNKcZsKuTwbP5Y350pve59ABvh2RXxFe80gZi3p5XzKoGZzoqy7xdtG1wPI9wb8IsV8IT0y4H+oQcIL28ycoGIQaHTiPzPG33dMyPPFIrwgp7J/ropGYUCAMOf15K5T/4JpAoGAHwLE5jaJxK5VKKe9x4uPWcPLMgJY3s9J2dn1ZrZTOKqE0d9GCbSEhZNtGOrAzAmWdy3GC0rmP0Fs2DIyTJg9iPsn/ISt0PYvIzSJ6CQeAuEtsjdEdKiVa/um10XeD4dT4vAyMHJpg9WV2NR/vjiuk2YIM1CXo/r/7Gp6aiHY+Bc=";
+		Map<String,Object> businessBodyMap = new HashMap<>();
+		businessBodyMap.put("id","1");
+		businessBodyMap.put("sleepTime","10");
+		String encrypt = RSAUtil.encrypt(JSON.toJSONString(businessBodyMap), publicKey);
+		System.out.println("加密后:" + encrypt);
+		String decrypt = RSAUtil.decrypt(encrypt, privateKey);
+		System.out.println("解密后:" + decrypt);
 	}
 
 }

@@ -30,5 +30,7 @@ public class User {
     
     private Date editTime;
     
+    private String code;
+    
     private Integer logStatus;
 }

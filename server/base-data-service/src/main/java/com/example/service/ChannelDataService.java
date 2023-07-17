@@ -1,10 +1,12 @@
 package com.example.service;
 
 import com.baidu.fsg.uid.UidGenerator;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.example.dto.ChannelDataAddDto;
 import com.example.dto.GetChannelDataByCodeDto;
 import com.example.entity.ChannelData;
+import com.example.enums.Status;
 import com.example.mapper.ChannelDataMapper;
 import com.example.util.DateUtils;
 import com.example.vo.GetChannelDataVo;
@@ -34,8 +36,9 @@ public class ChannelDataService {
     
     public GetChannelDataVo getByCode(GetChannelDataByCodeDto dto){
         GetChannelDataVo getChannelDataVo = new GetChannelDataVo();
-        QueryWrapper<ChannelData> wrapper = new QueryWrapper();
-        wrapper.eq("status",1).eq("code",dto.getCode());
+        LambdaQueryWrapper<ChannelData> wrapper = Wrappers.lambdaQuery(ChannelData.class)
+                .eq(ChannelData::getStatus, Status.RUN.getCode())
+                .eq(ChannelData::getCode,dto.getCode());
         Optional.ofNullable(channelDataMapper.selectOne(wrapper)).ifPresent(channelData -> {
             BeanUtils.copyProperties(channelData,getChannelDataVo);
         });

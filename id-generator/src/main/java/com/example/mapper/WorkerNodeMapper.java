@@ -9,7 +9,7 @@
 // * DB WorkerID Assigner for UID Generator Mapper 接口
 // * </p>
 // *
-// * @author lk
+// * @author 星哥
 // * @since 2023-05-16
 // */
 //public interface WorkerNodeMapper extends BaseMapper<WorkerNode> {

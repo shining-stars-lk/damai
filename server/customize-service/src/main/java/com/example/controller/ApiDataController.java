@@ -30,7 +30,7 @@ public class ApiDataController {
     private ApiDataService apiDataService;
     
     @ApiOperation(value = "分页查询api调用记录")
-    @RequestMapping(value = "/pageList", headers = "api-version=4.0.0", method = RequestMethod.POST)
+    @RequestMapping(value = "/pageList",method = RequestMethod.POST)
     public ApiResponse<Page<ApiDataVo>> pageList(@Valid @RequestBody ApiDataDto dto) {
         return ApiResponse.ok(apiDataService.pageList(dto));
     }

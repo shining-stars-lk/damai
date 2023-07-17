@@ -38,4 +38,10 @@ public class ChannelDataAddDto {
     @ApiModelProperty(name ="aesKey", dataType ="String", value ="aes私钥")
     private String aesKey;
     
+    @ApiModelProperty(name ="dataPublicKey", dataType ="String", value ="rsa参数公钥")
+    private String dataPublicKey;
+    
+    @ApiModelProperty(name ="dataSecretKey", dataType ="String", value ="rsa参数私钥")
+    private String dataSecretKey;
+    
 }

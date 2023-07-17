@@ -14,7 +14,7 @@ import com.example.service.ApiRestrictService;
 import com.example.service.ChannelDataService;
 import com.example.service.TokenService;
 import com.example.threadlocal.BaseParameterHolder;
-import com.example.util.AesForClient;
+import com.example.util.RSAUtil;
 import com.example.util.SignUtil;
 import com.example.vo.GetChannelDataVo;
 import com.example.vo.UserVo;
@@ -177,16 +177,14 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 argumentErrorList.add(argumentError);
                 throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
             }
-
-            if (StringUtil.isEmpty(encrypt)) {
-                ArgumentError argumentError = new ArgumentError();
-                argumentError.setArgumentName(encrypt);
-                argumentError.setMessage("encrypt请求头参数为空");
-                List<ArgumentError> argumentErrorList = new ArrayList<>();
-                argumentErrorList.add(argumentError);
-                throw new ArgumentException(BaseCode.HEAD_ARGUMENT_EMPTY.getCode(),argumentErrorList);
-            }
+            
             GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
+            
+            if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
+                String decrypt = RSAUtil.decrypt(bodyContent.get(BUSINESS_BODY),channelDataVo.getDataSecretKey());
+                bodyContent.put(BUSINESS_BODY,decrypt);
+            }
+            
             boolean checkFlag = SignUtil.rsa256Check(bodyContent, channelDataVo.getSignPublicKey(), CHARSET);
             if (!checkFlag) {
                 throw new ToolkitException(BaseCode.CHANNEL_DATA);
@@ -206,13 +204,8 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 UserVo userVo = tokenService.getUser(token);
                 userId = userVo.getId();
             }
-
-            if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
-                String dec = AesForClient.decrypt(channelDataVo.getAesKey(), aesVector, bodyContent.get(BUSINESS_BODY));
-                requestBody = dec;
-            }else {
-                requestBody = bodyContent.get(BUSINESS_BODY);
-            }
+            
+            requestBody = bodyContent.get(BUSINESS_BODY);
         }
         apiRestrictService.apiRestrict(userId,url,request);
         Map<String,String> map = new HashMap<>(4);

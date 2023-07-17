@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @program: toolkit
@@ -48,6 +47,5 @@ public class DepthRuleUpdateDto {
     private String message;
     
     @ApiModelProperty(name ="startTimeWindow", dataType ="status", value ="状态 1生效 0禁用", required =true)
-    @NotNull
     private Integer status;
 }
