@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import static com.example.constant.GatewayConstant.CODE;
-import static com.example.constant.GatewayConstant.DEBUG;
+import static com.example.constant.GatewayConstant.NO_VERIFY;
 import static com.example.constant.GatewayConstant.ENCRYPT;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR;
 
@@ -133,8 +133,8 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
     private String checkResponseBody(final ServerWebExchange serverWebExchange, final String responseBody) {
         String modifyResponseBody = responseBody;
         ServerHttpRequest request = serverWebExchange.getRequest();
-        String debug = request.getHeaders().getFirst(DEBUG);
-        if (!(StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
+        String noVerify = request.getHeaders().getFirst(NO_VERIFY);
+        if (!(StringUtil.isNotEmpty(noVerify) && "true".equals(noVerify))) {
             String encrypt = request.getHeaders().getFirst(ENCRYPT);
             if (StringUtil.isNotEmpty(responseBody)) {
                 ApiResponse<Object> apiResponse = JSON.parseObject(responseBody, ApiResponse.class);

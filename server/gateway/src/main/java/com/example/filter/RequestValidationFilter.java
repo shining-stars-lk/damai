@@ -54,7 +54,7 @@ import static com.example.constant.Constant.TRACE_ID;
 import static com.example.constant.GatewayConstant.BUSINESS_BODY;
 import static com.example.constant.GatewayConstant.CHARSET;
 import static com.example.constant.GatewayConstant.CODE;
-import static com.example.constant.GatewayConstant.DEBUG;
+import static com.example.constant.GatewayConstant.NO_VERIFY;
 import static com.example.constant.GatewayConstant.ENCRYPT;
 import static com.example.constant.GatewayConstant.REQUEST_BODY;
 import static com.example.constant.GatewayConstant.TOKEN;
@@ -98,7 +98,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String traceId = request.getHeaders().getFirst(TRACE_ID);
         String mark = request.getHeaders().getFirst(MARK_PARAMETER);
-        String debug = request.getHeaders().getFirst(DEBUG);
+        String noVerify = request.getHeaders().getFirst(NO_VERIFY);
         if (StringUtil.isEmpty(traceId)) {
             traceId = String.valueOf(uidGenerator.getUID());
         }
@@ -106,8 +106,8 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         Map<String,String> headMap = new HashMap<>();
         headMap.put(TRACE_ID,traceId);
         headMap.put(MARK_PARAMETER,mark);
-        if (StringUtil.isNotEmpty(debug)) {
-            headMap.put(DEBUG,debug);
+        if (StringUtil.isNotEmpty(noVerify)) {
+            headMap.put(NO_VERIFY,noVerify);
         }
         BaseParameterHolder.setParameter(TRACE_ID,traceId);
         BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
@@ -160,8 +160,8 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         String token;   
         String userId = null;
         String url = request.getPath().value();
-        String debug = request.getHeaders().getFirst(DEBUG);
-        if (!(StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
+        String noVerify = request.getHeaders().getFirst(NO_VERIFY);
+        if (!(StringUtil.isNotEmpty(noVerify) && "true".equals(noVerify))) {
 
             String encrypt = request.getHeaders().getFirst(ENCRYPT);
             //应用渠道
