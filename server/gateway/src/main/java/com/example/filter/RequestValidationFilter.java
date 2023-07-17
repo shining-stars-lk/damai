@@ -187,7 +187,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 throw new ArgumentException(BaseCode.HEAD_ARGUMENT_EMPTY.getCode(),argumentErrorList);
             }
             GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
-            boolean checkFlag = SignUtil.rsa256Check(bodyContent, channelDataVo.getPublicKey(), CHARSET);
+            boolean checkFlag = SignUtil.rsa256Check(bodyContent, channelDataVo.getSignPublicKey(), CHARSET);
             if (!checkFlag) {
                 throw new ToolkitException(BaseCode.CHANNEL_DATA);
             }

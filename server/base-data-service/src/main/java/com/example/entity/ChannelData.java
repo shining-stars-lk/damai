@@ -18,9 +18,9 @@ public class ChannelData {
 
     private Integer status;
     
-    private String publicKey;
+    private String signPublicKey;
     
-    private String secretKey;
+    private String signSecretKey;
     
     private String aesKey;
 }
