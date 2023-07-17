@@ -36,4 +36,10 @@ public class GetChannelDataVo {
     
     @ApiModelProperty(name ="aesKey", dataType ="String", value ="aes私钥")
     private String aesKey;
+    
+    @ApiModelProperty(name ="dataPublicKey", dataType ="String", value ="rsa参数公钥", required =true)
+    private String dataPublicKey;
+    
+    @ApiModelProperty(name ="dataSecretKey", dataType ="String", value ="rsa参数私钥", required =true)
+    private String dataSecretKey;
 }

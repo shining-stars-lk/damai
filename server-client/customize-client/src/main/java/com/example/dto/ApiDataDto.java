@@ -1,8 +1,10 @@
 package com.example.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 
@@ -25,9 +27,13 @@ public class ApiDataDto {
     private Integer pageSize;
     
     @ApiModelProperty(name ="startDate", dataType ="String", value ="开始日期")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private String startDate;
     
     @ApiModelProperty(name ="endDate", dataType ="String", value ="结束日期")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private String endDate;
     
     @ApiModelProperty(name ="apiAddress", dataType ="String", value ="api的ip地址")

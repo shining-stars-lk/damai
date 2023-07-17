@@ -1,8 +1,10 @@
 package com.example.service;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.example.core.RedisKeyEnum;
 import com.example.dto.RuleDto;
 import com.example.dto.RuleGetDto;
@@ -13,9 +15,8 @@ import com.example.entity.Rule;
 import com.example.enums.RuleStatus;
 import com.example.mapper.DepthRuleMapper;
 import com.example.mapper.RuleMapper;
-import com.example.redis.RedisKeyWrap;
 import com.example.redis.RedisCache;
-import com.example.util.DateUtils;
+import com.example.redis.RedisKeyWrap;
 import com.example.vo.RuleVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -60,7 +62,7 @@ public class RuleService {
         Rule rule = new Rule();
         BeanUtils.copyProperties(ruleDto,rule);
         rule.setId(String.valueOf(uidGenerator.getUID()));
-        rule.setCreateTime(DateUtils.now());
+        rule.setCreateTime(DateUtil.date());
         ruleMapper.insert(rule);
         return rule.getId();
     }
@@ -117,20 +119,18 @@ public class RuleService {
     public void saveAllRuleCache(){
         Map<String, Object> map = new HashMap<>(2);
         
-        LambdaQueryWrapper<Rule> ruleQueryWrapper = new LambdaQueryWrapper<>();
-        ruleQueryWrapper.eq(Rule::getStatus,RuleStatus.RUN.getCode());
+        LambdaQueryWrapper<Rule> ruleQueryWrapper = Wrappers.lambdaQuery(Rule.class).eq(Rule::getStatus,RuleStatus.RUN.getCode());
         Rule rule = ruleMapper.selectOne(ruleQueryWrapper);
         if (Optional.ofNullable(rule).isPresent()) {
             map.put(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE).getRelKey(),rule);
         }
-        LambdaQueryWrapper<DepthRule> depthRuleQueryWrapper = new LambdaQueryWrapper<>();
-        depthRuleQueryWrapper.eq(DepthRule::getStatus,RuleStatus.RUN.getCode());
+        LambdaQueryWrapper<DepthRule> depthRuleQueryWrapper = Wrappers.lambdaQuery(DepthRule.class).eq(DepthRule::getStatus,RuleStatus.RUN.getCode());
         List<DepthRule> depthRules = depthRuleMapper.selectList(depthRuleQueryWrapper);
         if (CollUtil.isNotEmpty(depthRules)) {
             map.put(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE).getRelKey(),depthRules);
         }
         redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH));
-        if (map.size() > 0) {
+        if (map.size() > 0 && Objects.nonNull(map.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE).getRelKey()))) {
             redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH),map);
         }
     }

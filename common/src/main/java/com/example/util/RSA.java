@@ -23,7 +23,7 @@ import java.util.Arrays;
 /**
  * @ClassName: RSA
  * @Description:
- * @author lk
+ * @author 星哥
  * @date 2023-5-18
  */
 public class RSA {

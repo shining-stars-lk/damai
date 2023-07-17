@@ -12,23 +12,27 @@ public enum BaseCode {
     SYSTEM_ERROR(-1,"系统异常"),
     RSA_SIGN_ERROR(1000,"res签名验证失败"),
     
-    AES_ERROR(1001,"aes验证失败"),
+    RSA_DECRYPT_ERROR(1001,"res解密失败"),
     
-    CHANNEL_DATA(1002,"渠道数据为空"),
+    RSA_ENCRYPT_ERROR(1002,"res加密失败"),
     
-    ARGUMENT_EMPTY(1003,"基础参数为空"),
+    AES_ERROR(1003,"aes验证失败"),
     
-    HEAD_ARGUMENT_EMPTY(1004,"请求头基础参数为空"),
+    CHANNEL_DATA(1050,"渠道数据为空"),
     
-    CODE_EMPTY(1005,"code参数为空"),
+    ARGUMENT_EMPTY(1051,"基础参数为空"),
     
-    PARAMETER_ERROR(1005,"参数验证异常"),
+    HEAD_ARGUMENT_EMPTY(1052,"请求头基础参数为空"),
     
-    TOKEN_EXPIRE(1006,"token过期"),
+    CODE_EMPTY(1053,"code参数为空"),
     
-    API_RULE_TRIGGER(1007,"用户调用太过频繁，稍后再试"),
+    PARAMETER_ERROR(1054,"参数验证异常"),
     
-    API_RULE_TIME_WINDOW_INTERSECT(1008,"已有的时间范围已经包含"),
+    TOKEN_EXPIRE(1055,"token过期"),
+    
+    API_RULE_TRIGGER(1056,"用户调用太过频繁，稍后再试"),
+    
+    API_RULE_TIME_WINDOW_INTERSECT(1057,"已有的时间范围已经包含"),
     
     SUBMIT_FREQUENT(2000,"执行频繁，请稍后再试"),
     

@@ -258,7 +258,7 @@ public class ApiRestrictService {
         apiDataDto.setCallDayTime(DateUtils.nowStr(DateUtils.FORMAT_DATE));
         apiDataDto.setCallHourTime(DateUtils.nowStr(DateUtils.FORMAT_HOUR));
         apiDataDto.setCallMinuteTime(DateUtils.nowStr(DateUtils.FORMAT_MINUTE));
-        apiDataDto.setCallMinuteTime(DateUtils.nowStr(DateUtils.FORMAT_SECOND));
+        apiDataDto.setCallSecondTime(DateUtils.nowStr(DateUtils.FORMAT_SECOND));
         apiDataDto.setType(type);
         Optional.ofNullable(apiDataMessageSend).ifPresent(send -> send.sendMessage(JSON.toJSONString(apiDataDto)));
     }

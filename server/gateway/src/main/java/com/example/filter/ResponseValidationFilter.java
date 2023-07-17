@@ -7,7 +7,7 @@ import com.example.enums.BaseCode;
 import com.example.exception.ArgumentError;
 import com.example.exception.ArgumentException;
 import com.example.service.ChannelDataService;
-import com.example.util.AesForClient;
+import com.example.util.RSAUtil;
 import com.example.vo.GetChannelDataVo;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -43,15 +43,12 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.O
 /**
  * @program: toolkit
  * 参考 {@link org.springframework.cloud.gateway.filter.factory.rewrite.ModifyResponseBodyGatewayFilterFactory}
- * @author lk
+ * @author 星哥
  * @create: 2023-05-30
  */
 @Component
 @Slf4j
 public class ResponseValidationFilter implements GlobalFilter, Ordered {
-
-    @Value("${verify.switch:true}")
-    private boolean verifySwitch;
 
     @Value("${aes.vector:default}")
     private String aesVector;
@@ -137,7 +134,7 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
         String modifyResponseBody = responseBody;
         ServerHttpRequest request = serverWebExchange.getRequest();
         String debug = request.getHeaders().getFirst(DEBUG);
-        if (verifySwitch && (!StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
+        if (!(StringUtil.isNotEmpty(debug) && "true".equals(debug))) {
             String encrypt = request.getHeaders().getFirst(ENCRYPT);
             if (StringUtil.isNotEmpty(responseBody)) {
                 ApiResponse<Object> apiResponse = JSON.parseObject(responseBody, ApiResponse.class);
@@ -154,7 +151,7 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
                     }
                     GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
                     if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
-                        String aesEncrypt = AesForClient.encrypt(channelDataVo.getAesKey(), aesVector, JSON.toJSONString(data));
+                        String aesEncrypt = RSAUtil.encrypt(JSON.toJSONString(data),channelDataVo.getDataPublicKey());
                         apiResponse.setData(aesEncrypt);
                         modifyResponseBody = JSON.toJSONString(apiResponse);
                     }

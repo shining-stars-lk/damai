@@ -16,7 +16,7 @@ import java.security.SecureRandom;
 /**
  * @ClassName: AesForClient
  * @Description:
- * @author lk
+ * @author 星哥
  * @date 2023-5-18
  */
 @Slf4j

@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  *
- * @author lk
+ * @author 星哥
  * Content :记录注解
  */
 @Target(value= {ElementType.TYPE, ElementType.METHOD})

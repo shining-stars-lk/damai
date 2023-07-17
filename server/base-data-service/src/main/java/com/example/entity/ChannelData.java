@@ -23,4 +23,9 @@ public class ChannelData {
     private String signSecretKey;
     
     private String aesKey;
+    
+    private String dataPublicKey;
+    
+    private String dataSecretKey;
+    
 }

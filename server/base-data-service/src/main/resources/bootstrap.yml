@@ -1,6 +1,6 @@
 #服务端口
 server:
-  port: 8082
+  port: 6083
 # 应用名称
 spring:
   application:
