@@ -4,11 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.core.StringUtil;
-import com.example.dto.CreateIndexDto;
-import com.example.dto.GeoPointDto;
-import com.example.dto.GeoPointSortDto;
-import com.example.dto.QueryDto;
+import com.example.dto.EsCreateIndexDto;
+import com.example.dto.EsGeoPointDto;
+import com.example.dto.EsGeoPointSortDto;
+import com.example.dto.EsQueryDto;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
@@ -32,8 +33,6 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,9 +48,8 @@ import java.util.Map;
  * @author: 星哥
  * @create: 2023-02-23
  **/
+@Slf4j
 public class BusinessEsUtil {
-    
-    private static final Logger logger = LoggerFactory.getLogger(BusinessEsUtil.class);
     
     private RestClient restClient;
     
@@ -73,7 +71,7 @@ public class BusinessEsUtil {
      * @param indexType 索引类型
      * @param list 参数集合
      */
-    public void createIndex(String indexName, String indexType, List<CreateIndexDto> list) throws IOException {
+    public void createIndex(String indexName, String indexType, List<EsCreateIndexDto> list) throws IOException {
         if (!esSwitch) {
             return;
         }
@@ -86,9 +84,9 @@ public class BusinessEsUtil {
             builder = builder.startObject(indexType);
         }
         builder = builder.startObject("properties");
-        for (CreateIndexDto createIndexDto : list) {
-            String paramName = createIndexDto.getParamName();
-            String paramType = createIndexDto.getParamType();
+        for (EsCreateIndexDto esCreateIndexDto : list) {
+            String paramName = esCreateIndexDto.getParamName();
+            String paramType = esCreateIndexDto.getParamType();
             if ("text".equals(paramType)) {
                 Map<String,Map<String,Object>> map1 = new HashMap<>();
                 Map<String,Object> map2 = new HashMap<>();
@@ -139,7 +137,7 @@ public class BusinessEsUtil {
             return response.getStatusLine().getReasonPhrase().equals("OK");
         }catch (ResponseException e) {
             if (e.getResponse().getStatusLine().getStatusCode() == RestStatus.NOT_FOUND.getStatus()) {
-                logger.warn("索引不存在 indexName:{}, indexType:{}",indexName,indexType);
+                log.warn("index not exist ! indexName:{}, indexType:{}",indexName,indexType);
             }else {
                 throw e;
             }
@@ -235,16 +233,16 @@ public class BusinessEsUtil {
      *
      * @param indexName 索引名字
      * @param indexType 索引类型
-     * @param queryDtoList 参数
+     * @param esQueryDtoList 参数
      * @param clazz 返回的类型
      * @return
      * @throws IOException
      */
-    public <T> List<T> query(String indexName, String indexType, List<QueryDto> queryDtoList, Class<T> clazz) throws IOException {
+    public <T> List<T> query(String indexName, String indexType, List<EsQueryDto> esQueryDtoList, Class<T> clazz) throws IOException {
         if (!esSwitch) {
             return new ArrayList<>();
         }
-        return query(indexName, indexType, null, queryDtoList, null, null, null, null, null, clazz);
+        return query(indexName, indexType, null, esQueryDtoList, null, null, null, null, null, clazz);
     }
     
     /**
@@ -252,17 +250,17 @@ public class BusinessEsUtil {
      *
      * @param indexName 索引名字
      * @param indexType 索引类型
-     * @param geoPointDto 经纬度查询参数
-     * @param queryDtoList 参数
+     * @param esGeoPointDto 经纬度查询参数
+     * @param esQueryDtoList 参数
      * @param clazz 返回的类型
      * @return
      * @throws IOException
      */
-    public <T> List<T> query(String indexName, String indexType, GeoPointDto geoPointDto, List<QueryDto> queryDtoList, Class<T> clazz) throws IOException {
+    public <T> List<T> query(String indexName, String indexType, EsGeoPointDto esGeoPointDto, List<EsQueryDto> esQueryDtoList, Class<T> clazz) throws IOException {
         if (!esSwitch) {
             return new ArrayList<>();
         }
-        return query(indexName, indexType, geoPointDto, queryDtoList, null, null, null, null,null,clazz);
+        return query(indexName, indexType, esGeoPointDto, esQueryDtoList, null, null, null, null,null,clazz);
     }
     
     /**
@@ -270,18 +268,18 @@ public class BusinessEsUtil {
      *
      * @param indexName 索引名字
      * @param indexType 索引类型
-     * @param queryDtoList 参数
+     * @param esQueryDtoList 参数
      * @param sortParam 普通参数排序 不排序则为空 如果进行了排序，会返回es中的排序字段sort，需要用户在返回的实体类中添加sort字段
      * @param sortOrder 升序还是降序，为空则降序
      * @param clazz 返回的类型
      * @return
      * @throws IOException
      */
-    public <T> List<T> query(String indexName, String indexType, List<QueryDto> queryDtoList, String sortParam, SortOrder sortOrder, Class<T> clazz) throws IOException {
+    public <T> List<T> query(String indexName, String indexType, List<EsQueryDto> esQueryDtoList, String sortParam, SortOrder sortOrder, Class<T> clazz) throws IOException {
         if (!esSwitch) {
             return new ArrayList<>();
         }
-        return query(indexName, indexType, null, queryDtoList, sortParam, null, sortOrder, null, null, clazz);
+        return query(indexName, indexType, null, esQueryDtoList, sortParam, null, sortOrder, null, null, clazz);
     }
     
     /**
@@ -289,18 +287,18 @@ public class BusinessEsUtil {
      *
      * @param indexName 索引名字
      * @param indexType 索引类型
-     * @param queryDtoList 参数
+     * @param esQueryDtoList 参数
      * @param geoPointDtoSortParam 经纬度參數排序 不排序则为空 如果进行了排序，会返回es中的排序字段sort，需要用户在返回的实体类中添加sort字段
      * @param sortOrder 升序还是降序，为空则降序
      * @param clazz 返回的类型
      * @return
      * @throws IOException
      */
-    public <T> List<T> query(String indexName, String indexType, List<QueryDto> queryDtoList, GeoPointSortDto geoPointDtoSortParam, SortOrder sortOrder, Class<T> clazz) throws IOException {
+    public <T> List<T> query(String indexName, String indexType, List<EsQueryDto> esQueryDtoList, EsGeoPointSortDto geoPointDtoSortParam, SortOrder sortOrder, Class<T> clazz) throws IOException {
         if (!esSwitch) {
             return new ArrayList<>();
         }
-        return query(indexName, indexType, null, queryDtoList, null, geoPointDtoSortParam, sortOrder,null,null, clazz);
+        return query(indexName, indexType, null, esQueryDtoList, null, geoPointDtoSortParam, sortOrder,null,null, clazz);
     }
     
     
@@ -310,8 +308,8 @@ public class BusinessEsUtil {
      *
      * @param indexName 索引名字
      * @param indexType 索引类型
-     * @param geoPointDto 经纬度查询参数
-     * @param queryDtoList 参数
+     * @param esGeoPointDto 经纬度查询参数
+     * @param esQueryDtoList 参数
      * @param sortParam 普通參數排序 不排序则为空 如果进行了排序，会返回es中的排序字段sort，需要用户在返回的实体类中添加sort字段
      * @param geoPointDtoSortParam 经纬度參數排序 不排序则为空 如果进行了排序，会返回es中的排序字段sort，需要用户在返回的实体类中添加sort字段
      * @param sortOrder 升序还是降序，为空则降序
@@ -321,7 +319,7 @@ public class BusinessEsUtil {
      * @return
      * @throws IOException
      */
-    public <T> List<T> query(String indexName, String indexType, GeoPointDto geoPointDto, List<QueryDto> queryDtoList, String sortParam, GeoPointSortDto geoPointDtoSortParam, SortOrder sortOrder, Integer pageSize, Object[] searchAfterSort, Class<T> clazz) throws IOException {
+    public <T> List<T> query(String indexName, String indexType, EsGeoPointDto esGeoPointDto, List<EsQueryDto> esQueryDtoList, String sortParam, EsGeoPointSortDto geoPointDtoSortParam, SortOrder sortOrder, Integer pageSize, Object[] searchAfterSort, Class<T> clazz) throws IOException {
         if (!esSwitch) {
             return new ArrayList<>();
         }
@@ -342,19 +340,19 @@ public class BusinessEsUtil {
             sourceBuilder.sort(sort);
         }
         // 经纬度匹配
-        if (geoPointDto != null) {
-            QueryBuilder geoQuery = new GeoDistanceQueryBuilder(geoPointDto.getParamName()).distance(Long.MAX_VALUE, DistanceUnit.KILOMETERS)
-                    .point(geoPointDto.getLatitude().doubleValue(), geoPointDto.getLongitude().doubleValue()).geoDistance(GeoDistance.PLANE);
+        if (esGeoPointDto != null) {
+            QueryBuilder geoQuery = new GeoDistanceQueryBuilder(esGeoPointDto.getParamName()).distance(Long.MAX_VALUE, DistanceUnit.KILOMETERS)
+                    .point(esGeoPointDto.getLatitude().doubleValue(), esGeoPointDto.getLongitude().doubleValue()).geoDistance(GeoDistance.PLANE);
             sourceBuilder.query(geoQuery);
         }
         // 匹配
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        for (QueryDto queryDto : queryDtoList) {
-            String paramName = queryDto.getParamName();
-            Object paramValue = queryDto.getParamValue();
-            Date startTime = queryDto.getStartTime();
-            Date endTime = queryDto.getEndTime();
-            boolean analyse = queryDto.isAnalyse();
+        for (EsQueryDto esQueryDto : esQueryDtoList) {
+            String paramName = esQueryDto.getParamName();
+            Object paramValue = esQueryDto.getParamValue();
+            Date startTime = esQueryDto.getStartTime();
+            Date endTime = esQueryDto.getEndTime();
+            boolean analyse = esQueryDto.isAnalyse();
             
             if (paramValue != null) {
                 if (analyse) {
@@ -487,15 +485,15 @@ public class BusinessEsUtil {
      *
      * @param indexName 索引名字
      * @param indexType 索引类型
-     * @param queryDtoList 参数
+     * @param esQueryDtoList 参数
      * @param pageNo 页码
      * @param pageSize 页大小
      * @param clazz 返回的类型
      * @return
      * @throws IOException
      */
-    public <T> PageInfo<T> queryPage(String indexName, String indexType, List<QueryDto> queryDtoList, Integer pageNo, Integer pageSize, Class<T> clazz) throws IOException {
-        return queryPage(indexName, indexType, null, queryDtoList, null, null, pageNo, pageSize, clazz);
+    public <T> PageInfo<T> queryPage(String indexName, String indexType, List<EsQueryDto> esQueryDtoList, Integer pageNo, Integer pageSize, Class<T> clazz) throws IOException {
+        return queryPage(indexName, indexType, null, esQueryDtoList, null, null, pageNo, pageSize, clazz);
     }
     
     /**
@@ -503,7 +501,7 @@ public class BusinessEsUtil {
      *
      * @param indexName 索引名字
      * @param indexType 索引类型
-     * @param queryDtoList 参数
+     * @param esQueryDtoList 参数
      * @param sortParam 排序参数 不排序则为空 如果进行了排序，会返回es中的排序字段sort，需要用户在返回的实体类中添加sort字段
      * @param sortOrder 升序还是降序，为空则降序
      * @param pageNo 页码
@@ -512,8 +510,8 @@ public class BusinessEsUtil {
      * @return
      * @throws IOException
      */
-    public <T> PageInfo<T> queryPage(String indexName, String indexType, List<QueryDto> queryDtoList, String sortParam, SortOrder sortOrder, Integer pageNo, Integer pageSize, Class<T> clazz) throws IOException {
-        return queryPage(indexName, indexType, null, queryDtoList, sortParam, sortOrder, pageNo, pageSize, clazz);
+    public <T> PageInfo<T> queryPage(String indexName, String indexType, List<EsQueryDto> esQueryDtoList, String sortParam, SortOrder sortOrder, Integer pageNo, Integer pageSize, Class<T> clazz) throws IOException {
+        return queryPage(indexName, indexType, null, esQueryDtoList, sortParam, sortOrder, pageNo, pageSize, clazz);
     }
     
     /**
@@ -521,16 +519,16 @@ public class BusinessEsUtil {
      *
      * @param indexName 索引名字
      * @param indexType 索引类型
-     * @param geoPointDto 经纬度查询参数
-     * @param queryDtoList 参数
+     * @param esGeoPointDto 经纬度查询参数
+     * @param esQueryDtoList 参数
      * @param pageNo 页码
      * @param pageSize 页大小
      * @param clazz 返回的类型
      * @return
      * @throws IOException
      */
-    public <T> PageInfo<T> queryPage(String indexName, String indexType, GeoPointDto geoPointDto, List<QueryDto> queryDtoList, Integer pageNo, Integer pageSize, Class<T> clazz) throws IOException {
-        return queryPage(indexName, indexType, geoPointDto, queryDtoList, null, null, pageNo, pageSize, clazz);
+    public <T> PageInfo<T> queryPage(String indexName, String indexType, EsGeoPointDto esGeoPointDto, List<EsQueryDto> esQueryDtoList, Integer pageNo, Integer pageSize, Class<T> clazz) throws IOException {
+        return queryPage(indexName, indexType, esGeoPointDto, esQueryDtoList, null, null, pageNo, pageSize, clazz);
     }
     
     /**
@@ -538,8 +536,8 @@ public class BusinessEsUtil {
      *
      * @param indexName 索引名字
      * @param indexType 索引类型
-     * @param geoPointDto 经纬度查询参数
-     * @param queryDtoList 参数
+     * @param esGeoPointDto 经纬度查询参数
+     * @param esQueryDtoList 参数
      * @param sortParam 排序参数 不排序则为空 如果进行了排序，会返回es中的排序字段sort，需要用户在返回的实体类中添加sort字段
      * @param sortOrder 升序还是降序，为空则降序
      * @param pageNo 页码
@@ -548,7 +546,7 @@ public class BusinessEsUtil {
      * @return
      * @throws IOException
      */
-    public <T> PageInfo<T> queryPage(String indexName, String indexType, GeoPointDto geoPointDto, List<QueryDto> queryDtoList, String sortParam, SortOrder sortOrder, Integer pageNo, Integer pageSize, Class<T> clazz) throws IOException {
+    public <T> PageInfo<T> queryPage(String indexName, String indexType, EsGeoPointDto esGeoPointDto, List<EsQueryDto> esQueryDtoList, String sortParam, SortOrder sortOrder, Integer pageNo, Integer pageSize, Class<T> clazz) throws IOException {
         List<T> list = new ArrayList<>();
         PageInfo<T> pageInfo = new PageInfo<>(list);
         pageInfo.setPageNum(pageNo);
@@ -567,19 +565,19 @@ public class BusinessEsUtil {
             sourceBuilder.sort(sort);
         }
         // 经纬度匹配
-        if (geoPointDto != null) {
-            QueryBuilder geoQuery = new GeoDistanceQueryBuilder(geoPointDto.getParamName()).distance(Long.MAX_VALUE, DistanceUnit.KILOMETERS)
-                    .point(geoPointDto.getLatitude().doubleValue(), geoPointDto.getLongitude().doubleValue()).geoDistance(GeoDistance.PLANE);
+        if (esGeoPointDto != null) {
+            QueryBuilder geoQuery = new GeoDistanceQueryBuilder(esGeoPointDto.getParamName()).distance(Long.MAX_VALUE, DistanceUnit.KILOMETERS)
+                    .point(esGeoPointDto.getLatitude().doubleValue(), esGeoPointDto.getLongitude().doubleValue()).geoDistance(GeoDistance.PLANE);
             sourceBuilder.query(geoQuery);
         }
         // 匹配
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        for (QueryDto queryDto : queryDtoList) {
-            String paramName = queryDto.getParamName();
-            Object paramValue = queryDto.getParamValue();
-            Date startTime = queryDto.getStartTime();
-            Date endTime = queryDto.getEndTime();
-            boolean analyse = queryDto.isAnalyse();
+        for (EsQueryDto esQueryDto : esQueryDtoList) {
+            String paramName = esQueryDto.getParamName();
+            Object paramValue = esQueryDto.getParamValue();
+            Date startTime = esQueryDto.getStartTime();
+            Date endTime = esQueryDto.getEndTime();
+            boolean analyse = esQueryDto.isAnalyse();
             
             if (paramValue != null) {
                 if (analyse) {

@@ -8,15 +8,14 @@ import lombok.Data;
  * @create: 2023-08-31
  **/
 @Data
-public class CreateIndexDto {
+public class EsCreateDto {
     
     /**
      * 字段名
      * */
     private String paramName;
-    
     /**
-     * 字段类型
+     * 字段值
      * */
-    private String paramType;
+    private Object paramValue;
 }

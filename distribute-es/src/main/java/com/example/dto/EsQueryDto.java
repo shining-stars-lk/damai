@@ -10,7 +10,7 @@ import java.util.Date;
  * @create: 2023-08-19
  **/
 @Data
-public class QueryDto {
+public class EsQueryDto {
     /**
      * 字段名
      * */
