@@ -1,10 +1,8 @@
 package com.tool.servicelock;
 
-import com.tool.core.BaseInfoProvider;
 import com.example.core.StringUtil;
+import com.tool.core.BaseInfoProvider;
 import org.aspectj.lang.JoinPoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -17,8 +15,6 @@ import java.util.List;
  * @create: 2023-05-28
  **/
 public class ServiceLockInfoProvider extends BaseInfoProvider {
-
-    private final Logger logger = LoggerFactory.getLogger(ServiceLockInfoProvider.class);
 
     private static final String LOCK_NAME_PREFIX = "LOCK";
 
