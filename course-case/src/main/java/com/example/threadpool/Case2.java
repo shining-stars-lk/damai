@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description: 讲解线程池的拒绝策略
  * @author: 星哥
  * @create: 2023-06-08

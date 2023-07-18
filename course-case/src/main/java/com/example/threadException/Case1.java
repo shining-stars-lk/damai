@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description: 讲解线程异常
  * @author: 星哥
  * @create: 2023-06-13

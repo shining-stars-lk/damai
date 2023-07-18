@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description:
  * @author: 星哥
  * @create: 2023-06-29

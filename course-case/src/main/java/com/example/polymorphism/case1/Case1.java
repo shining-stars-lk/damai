@@ -5,7 +5,7 @@ import com.example.polymorphism.Banana;
 import com.example.polymorphism.Fruit;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description: 讲解多态
  * @author: 星哥
  * @create: 2023-06-07

@@ -25,8 +25,8 @@ import static com.example.constant.Constant.MARK_FLAG_TRUE;
 import static com.example.constant.Constant.MARK_PARAMETER;
 
 /**
- * @program: 灰度版本选择负载均衡选择器
- * @description:
+ * @program: cook-frame
+ * @description: 灰度版本选择负载均衡选择器
  * @author: 星哥
  * @create: 2023-04-17
  **/

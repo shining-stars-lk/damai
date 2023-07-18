@@ -1,9 +1,9 @@
 package com.tool.delayqueue;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description:
- * @author: lk
+ * @author: 星哥
  * @create: 2023-06-21
  **/
 public interface ExecuteConsumer {

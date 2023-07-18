@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.entity.JobInfo;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description:
- * @author: lk
+ * @author: 星哥
  * @create: 2023-06-28
  **/
 public interface JobInfoMapper extends BaseMapper<JobInfo> {

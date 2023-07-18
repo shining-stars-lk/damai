@@ -28,10 +28,10 @@ import org.apache.commons.lang.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 微服务流量监控来源客户端参数提供工厂
+ * 
  *
- * @program: 
- * @description:
+ * @program: cook-frame
+ * @description: 微服务流量监控来源客户端参数提供工厂
  * @author: 星哥
  * @create: 2023-04-24
  **/

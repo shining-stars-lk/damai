@@ -12,7 +12,7 @@ import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger.web.UiConfigurationBuilder;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description:
  * @author: 星哥
  * @create: 2023-07-03
