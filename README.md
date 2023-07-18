@@ -23,7 +23,7 @@ cook为烹饪的意思，高度定制和改造，本人又是一个吃货，本�
 # 架构图
 ![](https://gitee.com/lu-kuan/img/raw/main/img/202307181709511.jpg)
 # 功能简介
-![](https://files.mdnice.com/user/12133/932a3fb8-246d-41ff-bf90-606e5b45324c.png)
+![](https://gitee.com/lu-kuan/img/raw/main/img/202307181727820.png)
 # 结构模块
 
 # 技术选型
