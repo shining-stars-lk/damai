@@ -8,7 +8,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 82.157.255.105:8848
+        server-addr: www.cookframe.com:8848
       config:
-        server-addr: 82.157.255.105:8848
+        server-addr: www.cookframe.com:8848
         file-extension: yaml

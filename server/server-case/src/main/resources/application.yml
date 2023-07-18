@@ -37,7 +37,7 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 redisson:
   timeout: 3000
-  address: 82.157.255.105
+  address: www.cookframe.com
   port: 6379
   password: qaz123
   database: 5
