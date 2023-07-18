@@ -6,13 +6,13 @@ import java.util.Optional;
 
 /**
  * @program: toolkit
- * @description:
+ * @description: ThreadLocal操作持有器
  * @author: 星哥
  * @create: 2023-05-09
  **/
 public class BaseParameterHolder {
     
-    private static ThreadLocal<Map<String, String>> threadLocalMap = new ThreadLocal<>();
+    private static final ThreadLocal<Map<String, String>> threadLocalMap = new ThreadLocal<>();
     
     
     public static void setParameter(String name, String value) {

@@ -1,6 +1,8 @@
 package com.example.filter;
 
 
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.asymmetric.SignAlgorithm;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.example.conf.RequestTemporaryWrapper;
@@ -14,8 +16,8 @@ import com.example.service.ApiRestrictService;
 import com.example.service.ChannelDataService;
 import com.example.service.TokenService;
 import com.example.threadlocal.BaseParameterHolder;
-import com.example.util.RSAUtil;
-import com.example.util.SignUtil;
+import com.example.util.RSATool;
+import com.example.util.RsaSignTool;
 import com.example.vo.GetChannelDataVo;
 import com.example.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
@@ -52,10 +54,9 @@ import java.util.function.Function;
 import static com.example.constant.Constant.MARK_PARAMETER;
 import static com.example.constant.Constant.TRACE_ID;
 import static com.example.constant.GatewayConstant.BUSINESS_BODY;
-import static com.example.constant.GatewayConstant.CHARSET;
 import static com.example.constant.GatewayConstant.CODE;
-import static com.example.constant.GatewayConstant.NO_VERIFY;
 import static com.example.constant.GatewayConstant.ENCRYPT;
+import static com.example.constant.GatewayConstant.NO_VERIFY;
 import static com.example.constant.GatewayConstant.REQUEST_BODY;
 import static com.example.constant.GatewayConstant.TOKEN;
 
@@ -111,14 +112,15 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         }
         BaseParameterHolder.setParameter(TRACE_ID,traceId);
         BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
-        //if (HttpMethod.POST.equals(request.getMethod()) || HttpMethod.PUT.equals(request.getMethod())) {
-            //MediaType contentType = request.getHeaders().getContentType();
-            //if (MediaType.APPLICATION_JSON.equals(contentType)){
-                //application json请求
-                return readBody(exchange,chain,headMap);
-            //}
-        //}
-        //return chain.filter(exchange);
+//        if (HttpMethod.POST.equals(request.getMethod()) || HttpMethod.PUT.equals(request.getMethod())) {
+//            MediaType contentType = request.getHeaders().getContentType();
+//            if (MediaType.APPLICATION_JSON.equals(contentType)){
+//                //application json请求
+//                return readBody(exchange,chain,headMap);
+//            }
+//        }
+//        return chain.filter(exchange);
+        return readBody(exchange,chain,headMap);
     }
 
     private Mono<Void> readBody(ServerWebExchange exchange, GatewayFilterChain chain, Map<String,String> headMap){
@@ -181,11 +183,11 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
             
             if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
-                String decrypt = RSAUtil.decrypt(bodyContent.get(BUSINESS_BODY),channelDataVo.getDataSecretKey());
+                String decrypt = RSATool.decrypt(bodyContent.get(BUSINESS_BODY),channelDataVo.getDataSecretKey());
                 bodyContent.put(BUSINESS_BODY,decrypt);
             }
-            
-            boolean checkFlag = SignUtil.rsa256Check(bodyContent, channelDataVo.getSignPublicKey(), CHARSET);
+            SecureUtil.sign(SignAlgorithm.SHA256withRSA);
+            boolean checkFlag = RsaSignTool.verifyRsaSign256(bodyContent, channelDataVo.getSignPublicKey());
             if (!checkFlag) {
                 throw new ToolkitException(BaseCode.CHANNEL_DATA);
             }
