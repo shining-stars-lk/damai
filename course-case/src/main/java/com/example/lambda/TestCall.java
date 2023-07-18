@@ -1,9 +1,9 @@
 package com.example.lambda;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description:
- * @author: lk
+ * @author: 星哥
  * @create: 2023-06-09
  **/
 public interface TestCall {

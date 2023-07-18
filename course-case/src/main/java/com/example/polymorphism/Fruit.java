@@ -1,9 +1,9 @@
 package com.example.polymorphism;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description: 水果
- * @author: lk
+ * @author: 星哥
  * @create: 2023-06-07
  **/
 public interface Fruit {

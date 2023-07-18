@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description: 通过service.register.type = nacos/eureka 来实现注册中心的切换
  * @author: 星哥
  * @create: 2023-06-30

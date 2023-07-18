@@ -4,7 +4,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description: 演示callable的使用和特点
  * @author: 星哥
  * @create: 2023-06-09

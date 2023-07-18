@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description:
  * @author: 星哥
  * @create: 2023-05-23

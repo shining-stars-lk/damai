@@ -13,8 +13,8 @@ import static com.example.constant.Constant.CODE;
 import static com.example.constant.Constant.TRACE_ID;
 
 /**
- * @program: 将请求头的信息传递到下一个微服务链路中
- * @description:
+ * @program: cook-frame
+ * @description: 将请求头的信息传递到下一个微服务链路中
  * @author: 星哥
  * @create: 2023-04-17
  **/

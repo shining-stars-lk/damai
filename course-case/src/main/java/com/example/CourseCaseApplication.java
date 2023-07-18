@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description:
  * @author: 星哥
  * @create: 2023-06-09

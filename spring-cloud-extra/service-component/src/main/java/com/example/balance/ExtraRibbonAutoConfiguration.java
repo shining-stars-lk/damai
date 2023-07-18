@@ -7,7 +7,7 @@ import org.springframework.cloud.netflix.ribbon.RibbonClientConfiguration;
 import org.springframework.context.annotation.Bean;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description:
  * @author: 星哥
  * @create: 2023-04-17

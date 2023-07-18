@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.entity.Product;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description:
- * @author: lk
+ * @author: 星哥
  * @create: 2023-06-14
  **/
 public interface ProductMapper extends BaseMapper<Product> {

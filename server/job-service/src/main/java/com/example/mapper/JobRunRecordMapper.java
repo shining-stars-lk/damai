@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.entity.JobRunRecord;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description:
- * @author: lk
+ * @author: 星哥
  * @create: 2023-06-28
  **/
 public interface JobRunRecordMapper extends BaseMapper<JobRunRecord> {

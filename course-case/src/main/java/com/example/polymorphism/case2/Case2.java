@@ -3,7 +3,7 @@ package com.example.polymorphism.case2;
 import com.example.polymorphism.Fruit;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description: 讲解简单工厂
  * @author: 星哥
  * @create: 2023-06-07

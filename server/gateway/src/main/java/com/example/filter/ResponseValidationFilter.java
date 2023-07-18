@@ -41,7 +41,7 @@ import static com.example.constant.GatewayConstant.ENCRYPT;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * 参考 {@link org.springframework.cloud.gateway.filter.factory.rewrite.ModifyResponseBodyGatewayFilterFactory}
  * @author 星哥
  * @create: 2023-05-30

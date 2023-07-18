@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description: 内部数据库获取部门列表策略
  * @author: 星哥
  * @create: 2023-06-05

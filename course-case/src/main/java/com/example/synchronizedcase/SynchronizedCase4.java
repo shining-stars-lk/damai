@@ -1,7 +1,7 @@
 package com.example.synchronizedcase;
 
 /**
- * @program: toolkit
+ * @program: cook-frame
  * @description: 开启10个线程，每个线程中循环100次对result变量进行++自增，主线程等待10s后输出result值结果
  *               将synchronized添加在此class上，则锁的范围为此类，此范围大于实例对象范围
  * @author: 星哥
