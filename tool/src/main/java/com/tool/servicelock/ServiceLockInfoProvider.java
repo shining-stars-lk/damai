@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @program: redis-tool
+ * @program: cook-frame
  * @description: 锁业务名和标识进行组装并获取类
  * @author: 星哥
  * @create: 2023-05-28
