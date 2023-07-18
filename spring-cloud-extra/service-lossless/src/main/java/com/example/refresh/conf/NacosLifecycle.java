@@ -42,11 +42,9 @@ public class NacosLifecycle implements SmartLifecycle {
     public void start(){
         if (this.running.compareAndSet(false, true)) {
             try {
-                //开启订阅机制
                 NamingService naming = NamingFactory.createNamingService(properties.getNacosProperties());
                 naming.subscribe(properties.getService(),event -> {
                     new Thread(() -> {
-                        //收到服务端的响应后，进行刷新nacos和ribbon列表
                         nacosAndRibbonCustom.refreshNacosAndRibbonCache();
                         log.warn("refreshNacosAndRibbonCache finish ...");
                     },"service-refresher-thread").start();

@@ -211,7 +211,6 @@ public class FineGritHystrixGatewayFilterFactory
 		}
 		
 		public Config setUrlMap(Map<String, Integer> timeout) {
-			//yml中的map类型的key不支持"/"，改为用"-"
 			Map<String, Integer> map = new HashMap<>(timeout.size());
 			for (String key : timeout.keySet()) {
 				Integer value = timeout.get(key);
