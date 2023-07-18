@@ -21,27 +21,24 @@ import java.util.StringJoiner;
  **/
 public class ParameterGenerateKeyStrategy implements GenerateKeyHandler {
     
-    private MultipleSubmitLimitInfoProvider repeatLimitInfoProvider;
+    private MultipleSubmitLimitInfoProvider multipleSubmitLimitInfoProvider;
     
-    public ParameterGenerateKeyStrategy(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider){
-        this.repeatLimitInfoProvider = repeatLimitInfoProvider;
+    public ParameterGenerateKeyStrategy(MultipleSubmitLimitInfoProvider multipleSubmitLimitInfoProvider){
+        this.multipleSubmitLimitInfoProvider = multipleSubmitLimitInfoProvider;
     }
 
     @PostConstruct
     public void init(){
         GenerateKeyStrategyContext.put(GenerateKeyStrategy.PARAMETER_GENERATE_KEY_STRATEGY.getMsg(),this);
     }
-
-    /**
-     * 通用策略 REPEAT_LIMIT(标识)+类名+方法名+参数名+userId
-     * */
+    
     @Override
     public String generateKey(JoinPoint joinPoint) {
-        HttpServletRequest request = repeatLimitInfoProvider.getRequest();
+        HttpServletRequest request = multipleSubmitLimitInfoProvider.getRequest();
         String userId = request.getHeader(Constants.REPEAT_LIMIT_USERID);
 
         Object target = joinPoint.getTarget();
-        Method method = repeatLimitInfoProvider.getMethod(joinPoint);
+        Method method = multipleSubmitLimitInfoProvider.getMethod(joinPoint);
 
         String key = target.getClass().getName().concat(":").concat(method.getName());
         Object[] params = joinPoint.getArgs();
