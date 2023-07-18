@@ -10,6 +10,8 @@ public enum BaseCode {
     
     SUCCESS(0, "OK"),
     SYSTEM_ERROR(-1,"系统异常"),
+    
+    GENERATE_RSA_SIGN_ERROR(999,"生成res签名验证失败"),
     RSA_SIGN_ERROR(1000,"res签名验证失败"),
     
     RSA_DECRYPT_ERROR(1001,"res解密失败"),

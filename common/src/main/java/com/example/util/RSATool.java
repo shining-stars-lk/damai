@@ -1,36 +1,34 @@
 package com.example.util;
 
 
+import cn.hutool.crypto.KeyUtil;
 import com.alibaba.fastjson.JSON;
 import com.example.enums.BaseCode;
 import com.example.exception.ToolkitException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
-import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
 import java.security.KeyFactory;
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @ClassName: RSAUtil
+ * @ClassName: RSATool
  * @Description:
  * @author 星哥
  * @date 2023-5-18
  */
 @Slf4j
-public class RSAUtil {
+public class RSATool {
+	
+	private final static Integer KEY_SIZE = 2048;
 	
 	/**
 	 * RSA最大加密明文大小
@@ -48,36 +46,16 @@ public class RSAUtil {
     public static final String PRIVATE_KEY = "privateKey";
 	
 	/**
-	 * 	生成 rsa 公钥私钥
-	 * @throws NoSuchAlgorithmException
+	 * 生成公私钥
 	 */
-	public static Map<String, String> createKey() throws NoSuchAlgorithmException {
-		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_ALGORITHM);
-		keyPairGenerator.initialize(2048);
-		KeyPair keyPair = keyPairGenerator.generateKeyPair();
-		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-		String pubkey = new BASE64Encoder().encodeBuffer(publicKey.getEncoded()).replace("\r\n", "").replace("\n", "");
-		String prikey = new BASE64Encoder().encodeBuffer(privateKey.getEncoded()).replace("\r\n", "").replace("\n", "");
-		Map<String, String> map = new HashMap<String, String>();
-		map.put(PUBLIC_KEY, pubkey);
-		map.put(PRIVATE_KEY, prikey);
-		return map;
-	}
-	
-	
-	public static Map<String, String> createKey(int size) throws NoSuchAlgorithmException {
-		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_ALGORITHM);
-		keyPairGenerator.initialize(size);
-		KeyPair keyPair = keyPairGenerator.generateKeyPair();
-		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-		String pubkey = new BASE64Encoder().encodeBuffer(publicKey.getEncoded()).replace("\r\n", "").replace("\n", "");
-		String prikey = new BASE64Encoder().encodeBuffer(privateKey.getEncoded()).replace("\r\n", "").replace("\n", "");
-		Map<String, String> map = new HashMap<String, String>();
-		map.put(PUBLIC_KEY, pubkey);
-		map.put(PRIVATE_KEY, prikey);
-		return map;
+	public Map<String, String> getKey() {
+		Map<String, String> pubPriKey = new HashMap<>();
+		KeyPair keyPair = KeyUtil.generateKeyPair(KEY_ALGORITHM, KEY_SIZE);
+		String publicKeyStr = java.util.Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
+		String privateKeyStr = java.util.Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded());
+		pubPriKey.put(PUBLIC_KEY, publicKeyStr);
+		pubPriKey.put(PRIVATE_KEY, privateKeyStr);
+		return pubPriKey;
 	}
 	
 	
@@ -170,8 +148,8 @@ public class RSAUtil {
 	 */
 	public static String decrypt(String data, String privateKeyStr) {
 		try {
-			PrivateKey privateKey2 = RSAUtil.getPrivateKey(privateKeyStr);
-			String decryptstr = RSAUtil.decrypt(data, privateKey2);
+			PrivateKey privateKey2 = RSATool.getPrivateKey(privateKeyStr);
+			String decryptstr = RSATool.decrypt(data, privateKey2);
 			return decryptstr;
 		}catch (Exception e) {
 			log.error("decrypt error",e);
@@ -188,7 +166,7 @@ public class RSAUtil {
 	 */
 	public static String encrypt(String data, String publicKey)  {
 		try {
-			PublicKey publicKeyTmp = RSAUtil.getPublicKey(publicKey);
+			PublicKey publicKeyTmp = RSATool.getPublicKey(publicKey);
 			return encrypt(data,publicKeyTmp);
 		}catch (Exception e) {
 			log.error("encrypt error",e);
@@ -217,9 +195,9 @@ public class RSAUtil {
 		Map<String,Object> businessBodyMap = new HashMap<>();
 		businessBodyMap.put("id","1");
 		businessBodyMap.put("sleepTime","10");
-		String encrypt = RSAUtil.encrypt(JSON.toJSONString(businessBodyMap), publicKey);
+		String encrypt = RSATool.encrypt(JSON.toJSONString(businessBodyMap), publicKey);
 		System.out.println("加密后:" + encrypt);
-		String decrypt = RSAUtil.decrypt(encrypt, privateKey);
+		String decrypt = RSATool.decrypt(encrypt, privateKey);
 		System.out.println("解密后:" + decrypt);
 	}
 

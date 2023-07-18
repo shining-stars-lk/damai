@@ -14,13 +14,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
- * @ClassName: AesForClient
+ * @ClassName: Aes
  * @Description:
  * @author 星哥
  * @date 2023-5-18
  */
 @Slf4j
-public class AesForClient {
+public class Aes {
 	
 	private final static String AES = "AES";
 	

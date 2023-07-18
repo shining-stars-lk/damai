@@ -7,7 +7,7 @@ import com.example.enums.BaseCode;
 import com.example.exception.ArgumentError;
 import com.example.exception.ArgumentException;
 import com.example.service.ChannelDataService;
-import com.example.util.RSAUtil;
+import com.example.util.RSATool;
 import com.example.vo.GetChannelDataVo;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -151,8 +151,8 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
                     }
                     GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
                     if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
-                        String aesEncrypt = RSAUtil.encrypt(JSON.toJSONString(data),channelDataVo.getDataPublicKey());
-                        apiResponse.setData(aesEncrypt);
+                        String rsaEncrypt = RSATool.encrypt(JSON.toJSONString(data),channelDataVo.getDataPublicKey());
+                        apiResponse.setData(rsaEncrypt);
                         modifyResponseBody = JSON.toJSONString(apiResponse);
                     }
                 }
