@@ -44,25 +44,6 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 		this.customEnabledRule = customEnabledRule;
 	}
 	
-	/**
-	 * 灰度调用服务的说明：
-	 * 
-	 * 请求服务中请求头中的参数 mark=false:请求生产的服务。 mark=true:请求灰度的服务
-	 * 
-	 * 被调用服务的配置:
-	 *   spring.cloud.nacos.discovery.metadata.mark=false:代表生产的服务
-	 *   spring.cloud.nacos.discovery.metadata.mark=true:代表灰度的服务
-	 *
-	 * 如果请求服务中请求头没有mark参数，或者该参数中的值不是true或false字符串(不区分大小写)则认为mark=false
-	 * 
-	 * 如果被调用服务的 spring.cloud.nacos.discovery.metadata.mark 配置项没有配置，或者为空，或者该配置项中的值不是true或false字符串(不区分大小写)则认为mark=false
-	 * 判断逻辑:
-	 *   如果所有被调用服务端的配置项 --spring.cloud.nacos.discovery.metadata.mark=true，并且请求中的Header参数 mark=true，则在该请求的n次调用中apply()函数都返回true，走负载均衡
-	 *   否则被调用服务端的配置项 --spring.cloud.nacos.discovery.metadata.mark 必须与请求中的Header参数 mark 值相等 apply()函数才会返回true
-	 * 
-	 * 总结:
-	 *   生产的请求必须走生产的服务(没有部署生产服务就熔断)，灰度的请求在有灰度服务部署的情况下必须走灰度的，没有灰度服务的情况下则调用生产的服务
-	 */
 	@Override
     public boolean apply(PredicateKey input) {
 		boolean result;
@@ -87,11 +68,11 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 			}else {
 				markFromMetaData = metadata.get(MARK_PARAMETER);
 			}
-			//判断如果被调用端没有灰度配置则默认配置为生产环境
+			
 			if(markFromMetaData == null || !(markFromMetaData.equalsIgnoreCase(MARK_FLAG_FALSE) || markFromMetaData.equalsIgnoreCase(MARK_FLAG_TRUE))) {
 				markFromMetaData = MARK_FLAG_FALSE;
 			}
-			//判断如果请求端没有灰度标识则默认配置为生产环境
+			
 			if(markFromRequest == null || !(markFromRequest.equalsIgnoreCase(MARK_FLAG_FALSE) || markFromRequest.equalsIgnoreCase(MARK_FLAG_FALSE))) {
 				markFromRequest = MARK_FLAG_FALSE;
 			}
@@ -101,12 +82,6 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 				result = false;
 			}
 			
-			/*假如最后得到的结果为false，再做一次匹配
-			 *
-			 * 如果所有服务端的配置均为spring.cloud.nacos.discovery.metadata.mark=true,而调用请求端的请求头中的mark为true，则也允许结果返回true做负载均衡
-			 *
-			 * 反之如果所有服务端的配置为spring.cloud.nacos.discovery.metadata.mark=true,而调用请求端的请求头中的mark为false，则结果返回false,不允许做负载均衡
-			 */
 			if(result == false && markFromRequest.equalsIgnoreCase(MARK_FLAG_TRUE)) {
 				if(customEnabledRule == null) {
 					throw new ToolkitException(BaseCode.CUSTOM_ENABLED_RULE_EMPTY);
@@ -123,7 +98,7 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 				for (Server serverBalance : serverList) {
 					NacosServer server = (NacosServer) serverBalance;
 					String markFromBalance = server.getInstance().getMetadata().get(MARK_PARAMETER);
-					//判断如果被调用端没有灰度配置则默认配置为生产环境
+					
 					if(markFromBalance == null || !(markFromBalance.equalsIgnoreCase(MARK_FLAG_FALSE) || markFromBalance.equalsIgnoreCase(MARK_FLAG_TRUE))) {
 						markFromBalance = MARK_FLAG_FALSE;
 					}

@@ -67,11 +67,7 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
         return chain.filter(exchange.mutate().response(decorate(exchange)).build());
     }
 
-    /**
-     * 解决netty buffer默认长度1024导致的接受body不全问题
-     * @param exchange
-     * @return
-     */
+   
     @SuppressWarnings("unchecked")
     private ServerHttpResponse decorate(ServerWebExchange exchange) {
         return new ServerHttpResponseDecorator(exchange.getResponse()) {
@@ -89,8 +85,7 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
                         .create(exchange.getResponse().getStatusCode())
                         .headers(headers -> headers.putAll(httpHeaders))
                         .body(Flux.from(body)).build();
-
-                //修改responseBody
+                
                 Mono<String> modifiedBody = clientResponse
                         .bodyToMono(String.class)
                         .flatMap(originalBody -> modifyResponseBody().apply(exchange,originalBody));
@@ -110,11 +105,7 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
                             return getDelegate().writeWith(messageBody);
                         }));
             }
-
-            /**
-             * 修改responseBody
-             * @return apply 返回Mono<String>，数据是修改后的responseBody
-             */
+            
             private BiFunction<ServerWebExchange, String, Mono<String>> modifyResponseBody() {
                 return (serverWebExchange,responseBody) -> {
                     String modifyResponseBody = checkResponseBody(serverWebExchange, responseBody);

@@ -12,7 +12,7 @@ import java.util.concurrent.Callable;
 
 /**
  * @program: cook-frame
- * @description: 解决hystrix多线程的隔离策略下，request无法传递的问题，以及Hystrix只允许有一个并发策略的问题
+ * @description:
  * @author: 星哥
  * @create: 2023-04-17
  **/

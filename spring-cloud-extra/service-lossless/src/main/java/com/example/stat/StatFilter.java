@@ -30,6 +30,5 @@ public class StatFilter extends OncePerRequestFilter {
             log.error("prometheusIndicator.increment error",e);
         }
         filterChain.doFilter(request, response);
-        //如果是按吞吐量的指标则在过滤器后进行统计
     }
 }
