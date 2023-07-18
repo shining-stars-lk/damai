@@ -1,7 +1,7 @@
 package com.example.namefactory;
 
 /**
- * @description: 业务线程工厂
+ * @description: 线程工厂
  * @author: 星哥
  * @create: 2021-12-16 14:09
  **/

@@ -14,10 +14,10 @@ import java.io.IOException;
 import static com.example.constant.Constant.TRACE_ID;
 
 /**
- * @program: common
- * @description: 将requestId放入slf4j的MDC,用于后续获取
+ * @program: cook-frame
+ * @description: 
  * @author: 星哥
- * @create: 2021-11-08 16:48
+ * @create: 2022-11-08 16:48
  **/
 
 public class RequestContextFilter extends OncePerRequestFilter {

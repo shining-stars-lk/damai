@@ -5,20 +5,15 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * @description: 线程池异常处理
+ * @description: 
  * @author: 星哥
  * @create: 2021-12-06
  **/
 public class ThreadPoolRejectedExecutionHandler {
 
-    /**
-     * 服务应用名
-     */
     private static String threadPoolApplicationName = "business";
 
-    /**
-     * 业务线程池快速拒绝
-     */
+   
     public static class BusinessAbortPolicy implements RejectedExecutionHandler {
 
         public BusinessAbortPolicy() {

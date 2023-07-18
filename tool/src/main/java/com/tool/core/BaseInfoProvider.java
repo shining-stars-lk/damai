@@ -1,12 +1,9 @@
 package com.tool.core;
 
 
-
-import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfoProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.expression.MethodBasedEvaluationContext;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -29,13 +26,12 @@ import java.util.List;
  * @author: 星哥
  * @create: 2023-05-28
  **/
+@Slf4j
 public class BaseInfoProvider {
 
-    private final Logger logger = LoggerFactory.getLogger(MultipleSubmitLimitInfoProvider.class);
+    private final ParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
 
-    private ParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
-
-    private ExpressionParser parser = new SpelExpressionParser();
+    private final ExpressionParser parser = new SpelExpressionParser();
 
     public HttpServletRequest getRequest(){
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder
@@ -51,7 +47,7 @@ public class BaseInfoProvider {
                 method = joinPoint.getTarget().getClass().getDeclaredMethod(signature.getName(),
                         method.getParameterTypes());
             } catch (Exception e) {
-                logger.error("get method error ",e);
+                log.error("get method error ",e);
             }
         }
         return method;
