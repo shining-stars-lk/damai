@@ -66,4 +66,4 @@ cook为烹饪的意思，高度定制和改造，本人又是一个吃货，本�
 
 **扫二维码，备注cook**
 
-<img src="https://gitee.com/lu-kuan/img/raw/main/img/202307191011998.JPG" width=50% height=50%/>
+<img src="https://gitee.com/lu-kuan/img/raw/main/img/202307191011998.JPG" width=30% height=30%/>
