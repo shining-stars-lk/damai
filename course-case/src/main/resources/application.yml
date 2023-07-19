@@ -1,3 +1,7 @@
 test:
   password1: 030030
   password2: '030030'
+jasypt:
+  encryptor:
+    password: bgtjkjl!%^sdc
+    algorithm: PBEWithMD5AndDES  

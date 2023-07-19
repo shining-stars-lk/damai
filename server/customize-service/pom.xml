@@ -128,6 +128,11 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>3.0.5</version>
+        </dependency>
+        <dependency>
             <groupId>com.example</groupId>
             <artifactId>sentinel-common-general</artifactId>
             <version>${revision}</version>
