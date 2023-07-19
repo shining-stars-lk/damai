@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>cook-high-frame</artifactId>
+	<artifactId>cook-frame</artifactId>
 	<version>${revision}</version>
 	<packaging>pom</packaging>
 
