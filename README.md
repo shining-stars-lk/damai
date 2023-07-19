@@ -65,4 +65,6 @@ cook为烹饪的意思，高度定制和改造，本人又是一个吃货，本�
 对项目有什么疑问解决或者获取项目文档或者关注后续的更新，可以联系星哥本人，大家也可以一起加群讨论交流。
 
 **扫二维码，备注cook**
-![](https://gitee.com/lu-kuan/img/raw/main/img/202307191011998.JPG =150x150)
+
+![](https://gitee.com/lu-kuan/img/raw/main/img/202307191011998.JPG){width=50% height=50%}
+<img src="https://gitee.com/lu-kuan/img/raw/main/img/202307191011998.JPG" width=50% height=50%/>
