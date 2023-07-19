@@ -57,6 +57,7 @@ cook为烹饪的意思，高度定制和改造，本人又是一个吃货，本�
 | Hibernator-Validator| 验证框架           | http://hibernate.org/validator |
 | XXL-Job| 分布式定时任务框架           | 	http://www.xuxueli.com/xxl-job |
 # 总结的技术文档(随时可以访问 欢迎给出建议 密码:nmue)
+  **地址:**[https://www.yuque.com/u22210564/ugnoev](https://www.yuque.com/u22210564/ugnoev)
 ![](https://gitee.com/lu-kuan/img/raw/main/img/202307191009450.jpg)
 # 项目和重点复杂问题总结文档(联系本人获取)
 ![](https://gitee.com/lu-kuan/img/raw/main/img/202307191010774.jpg)
