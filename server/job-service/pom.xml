@@ -51,12 +51,6 @@
             <groupId>com.example</groupId>
             <artifactId>job-client</artifactId>
             <version>${revision}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.alibaba.cloud</groupId>
-                    <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
@@ -93,6 +87,11 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>service-hystrix</artifactId>
+            <version>${revision}</version>
         </dependency>
         <!-- nacos start -->
         <dependency>

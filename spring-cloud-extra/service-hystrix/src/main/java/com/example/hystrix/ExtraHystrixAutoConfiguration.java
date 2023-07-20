@@ -1,4 +1,4 @@
-package com.extra.hystrix;
+package com.example.hystrix;
 
 import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
