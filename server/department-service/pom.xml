@@ -88,6 +88,11 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>service-hystrix</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <!-- nacos start -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

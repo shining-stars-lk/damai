@@ -20,6 +20,7 @@
         <module>service-common</module>
         <module>sentinel-general</module>
         <module>service-lossless</module>
+        <module>service-hystrix</module>
     </modules>
 
 </project>
