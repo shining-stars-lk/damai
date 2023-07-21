@@ -41,6 +41,7 @@
 		<module>server-client</module>
 		<module>course-case</module>
 		<module>cook-async-agent</module>
+		<module>threadlocal-tool</module>
 	</modules>
 
 	<properties>

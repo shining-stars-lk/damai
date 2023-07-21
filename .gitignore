@@ -6,7 +6,7 @@ target/
 logs/
 
 ### Agent ###
-agent/
+cookasyncagent/
 **/dependency-reduced-pom.xml
 
 ### STS ###
