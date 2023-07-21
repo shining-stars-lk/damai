@@ -1,6 +1,5 @@
 package com.example.service;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.Account;
 import com.example.mapper.AccountMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class AccountService extends ServiceImpl<AccountMapper,Account> {
+public class AccountService {
 
     @Autowired
     private AccountMapper accountMapper;
+    
+    public Account getById(String id){
+        return accountMapper.selectById(id);
+    }
 }

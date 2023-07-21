@@ -5,6 +5,10 @@ target/
 !**/src/test/**/target/
 logs/
 
+### Agent ###
+agent/
+**/dependency-reduced-pom.xml
+
 ### STS ###
 .apt_generated
 .classpath
