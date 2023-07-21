@@ -21,6 +21,8 @@ package com.example.agent.plugin.thread;
 
 import com.example.agent.plugin.thread.wrapper.CallableWrapper;
 import com.example.agent.plugin.thread.wrapper.RunnableWrapper;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -36,13 +38,15 @@ public class ThreadPoolSubmitMethodInterceptor extends AbstractThreadingPoolInte
             Callable callable = (Callable) param;
             Map<String, String> contextForTask = getContextForTask();
             Map<String, String> contextForHold = getContextForHold();
-            return new CallableWrapper(callable,contextForTask,contextForHold);
+            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            return new CallableWrapper(callable,contextForTask,contextForHold,requestAttributes);
         }
         if (param instanceof Runnable) {
             Runnable runnable = (Runnable) param;
             Map<String, String> contextForTask = getContextForTask();
             Map<String, String> contextForHold = getContextForHold();
-            return new RunnableWrapper(runnable,contextForTask,contextForHold);
+            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            return new RunnableWrapper(runnable,contextForTask,contextForHold,requestAttributes);
         }
         return null;
     }
