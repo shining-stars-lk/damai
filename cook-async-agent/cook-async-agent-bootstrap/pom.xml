@@ -125,12 +125,12 @@
                         </goals>
                         <configuration>
                             <target>
-                                <mkdir dir="${project.basedir}/../agent" />
-                                <copy file="${project.build.directory}/cook-async-agent.jar" tofile="${project.basedir}/../agent/cook-async-agent.jar" overwrite="true" />
-                                <mkdir dir="${project.basedir}/../agent/config" />
-                                <mkdir dir="${project.basedir}/../agent/logs" />
-                                <copydir src="${project.basedir}/../config" dest="${project.basedir}/../agent/config" forceoverwrite="true" />
-                                <copydir src="${project.basedir}/../dist-material" dest="${project.basedir}/../agent" />
+                                <mkdir dir="${project.basedir}/../cookasyncagent" />
+                                <copy file="${project.build.directory}/cook-async-agent.jar" tofile="${project.basedir}/../cookasyncagent/cook-async-agent.jar" overwrite="true" />
+                                <mkdir dir="${project.basedir}/../cookasyncagent/config" />
+                                <mkdir dir="${project.basedir}/../cookasyncagent/logs" />
+                                <copydir src="${project.basedir}/../config" dest="${project.basedir}/../cookasyncagent/config" forceoverwrite="true" />
+                                <copydir src="${project.basedir}/../dist-material" dest="${project.basedir}/../cookasyncagent" />
                             </target>
                         </configuration>
                     </execution>

@@ -36,7 +36,7 @@
         <shade.net.bytebuddy.source>net.bytebuddy</shade.net.bytebuddy.source>
         <shade.net.bytebuddy.target>${shade.package}.${shade.net.bytebuddy.source}</shade.net.bytebuddy.target>
 
-        <agent.package.dest.dir>${project.build.directory}${sdk.plugin.related.dir}/../../../agent
+        <agent.package.dest.dir>${project.build.directory}${sdk.plugin.related.dir}/../../../cookasyncagent
         </agent.package.dest.dir>
         <plugin.dest.dir>${agent.package.dest.dir}/plugins</plugin.dest.dir>
 
