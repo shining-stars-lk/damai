@@ -6,10 +6,10 @@ import org.slf4j.MDC;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
+/*
  * @program: cook-frame
  * @description:
- * @author: k
+ * @author: 星哥
  * @create: 2023-07-21
  **/
 public class BaseWrapper {
