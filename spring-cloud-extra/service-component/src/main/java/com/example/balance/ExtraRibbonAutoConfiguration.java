@@ -4,7 +4,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.netflix.ribbon.RibbonClientConfiguration;
-import org.springframework.context.annotation.Bean;
 
 /**
  * @program: cook-frame
@@ -18,8 +17,8 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(ExtraRibbonProperties.class)
 public class ExtraRibbonAutoConfiguration {
     
-    @Bean
-    public CustomEnabledRule discoveryEnabledRule(ExtraRibbonProperties extraRibbonProperties){
-        return new CustomEnabledRule(extraRibbonProperties);
-    }
+//    @Bean
+//    public CustomEnabledRule discoveryEnabledRule(ExtraRibbonProperties extraRibbonProperties){
+//        return new CustomEnabledRule(extraRibbonProperties);
+//    }
 }
