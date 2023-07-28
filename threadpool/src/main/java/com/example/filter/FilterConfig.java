@@ -12,7 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class FilterConfig {
 
     @Bean
-    public OncePerRequestFilter requestContextFilter(){
-        return new RequestContextFilter();
+    public OncePerRequestFilter requestParamContextFilter(){
+        return new RequestParamContextFilter();
     }
 }
