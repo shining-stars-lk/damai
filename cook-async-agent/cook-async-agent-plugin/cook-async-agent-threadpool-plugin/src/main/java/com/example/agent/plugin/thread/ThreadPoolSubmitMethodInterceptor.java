@@ -19,6 +19,7 @@
 package com.example.agent.plugin.thread;
 
 
+import com.example.agent.plugin.thread.enhance.ServiceRequestEnhanceOperation;
 import com.example.agent.plugin.thread.wrapper.CallableWrapper;
 import com.example.agent.plugin.thread.wrapper.RunnableWrapper;
 import org.springframework.web.context.request.RequestAttributes;
@@ -39,6 +40,9 @@ public class ThreadPoolSubmitMethodInterceptor extends AbstractThreadingPoolInte
             Map<String, String> contextForTask = getContextForTask();
             Map<String, String> contextForHold = getContextForHold();
             RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            if (requestAttributes != null) {
+                requestAttributes = ServiceRequestEnhanceOperation.enhanceRequestAttributes(requestAttributes);
+            }
             return new CallableWrapper(callable,contextForTask,contextForHold,requestAttributes);
         }
         if (param instanceof Runnable) {
@@ -46,6 +50,9 @@ public class ThreadPoolSubmitMethodInterceptor extends AbstractThreadingPoolInte
             Map<String, String> contextForTask = getContextForTask();
             Map<String, String> contextForHold = getContextForHold();
             RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            if (requestAttributes != null) {
+                requestAttributes = ServiceRequestEnhanceOperation.enhanceRequestAttributes(requestAttributes);
+            }
             return new RunnableWrapper(runnable,contextForTask,contextForHold,requestAttributes);
         }
         return null;
