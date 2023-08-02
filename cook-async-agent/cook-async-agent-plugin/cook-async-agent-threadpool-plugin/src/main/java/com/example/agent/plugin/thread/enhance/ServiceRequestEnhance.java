@@ -21,8 +21,8 @@ public class ServiceRequestEnhance extends HttpServletRequestWrapper {
     }
 
     private Map<String, List<String>> operateHeaders(HttpServletRequest request) {
-        // 不区分大小写Key的Map用于适配不同的Web容器对于大小写Header的不同处理逻辑
-        Map<String, List<String>> headers = new LinkedCaseInsensitiveMap<List<String>>();
+        // 不区分大小写的Key的Map
+        Map<String, List<String>> headers = new LinkedCaseInsensitiveMap<>();
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
