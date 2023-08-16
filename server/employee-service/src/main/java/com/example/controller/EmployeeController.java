@@ -25,6 +25,12 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
     
+    @ApiOperation(value = "testAgent")
+    @PostMapping(value = "/testAgent")
+    public boolean testAgent() {
+        return employeeService.testAgent();
+    }
+    
     @ApiOperation(value = "查询职员")
     @PostMapping(value = "/getEmployee")
     public GetEmployeeVo getEmployee(@RequestBody GetEmployeeDto getOrderDto) throws Exception {
