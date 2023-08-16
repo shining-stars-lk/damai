@@ -11,6 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @program: cook-frame
  * @description:
@@ -20,6 +24,8 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class EmployeeService {
+    
+    private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(2,2,30, TimeUnit.SECONDS,new ArrayBlockingQueue<>(10));
     
     @Autowired
     private DepartmentClient departmentClient;
@@ -50,5 +56,18 @@ public class EmployeeService {
         getEmployeeVo.setName("橘子员工-1");
         log.info("getEmployeeV2执行 GetDepartmentDto : {}", JSON.toJSONString(getEmployeeVo));
         return getEmployeeVo;
+    }
+    
+    public boolean testAgent() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("任务执行");
+            }
+        });
+        thread.start();
+        
+        threadPoolExecutor.execute(() -> System.out.println("线程池执行"));
+        return true;
     }
 }
