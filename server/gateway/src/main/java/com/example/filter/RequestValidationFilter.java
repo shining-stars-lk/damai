@@ -126,21 +126,18 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     private Mono<Void> readBody(ServerWebExchange exchange, GatewayFilterChain chain, Map<String,String> headMap){
         log.info("current thread readBody : {}",Thread.currentThread().getName());
         RequestTemporaryWrapper requestTemporaryWrapper = new RequestTemporaryWrapper();
-
+        
         ServerRequest serverRequest = ServerRequest.create(exchange, serverCodecConfigurer.getReaders());
-        Mono<String> modifiedBody = serverRequest.bodyToMono(String.class).flatMap(originalBody -> {
-            //进行业务验证，并将相关参数放入map
-            Map<String, String> map = verify(originalBody, exchange);
-            String body = map.get(REQUEST_BODY);
-            map.remove(REQUEST_BODY);
-            requestTemporaryWrapper.setMap(map);
-            return Mono.just(body);
-        });
+        Mono<String> modifiedBody = serverRequest
+                .bodyToMono(String.class)
+                .flatMap(originalBody -> Mono.just(execute(requestTemporaryWrapper,originalBody,exchange)))
+                .switchIfEmpty(Mono.defer(() -> Mono.just(execute(requestTemporaryWrapper,"",exchange))));
+        
         BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
         HttpHeaders headers = new HttpHeaders();
         headers.putAll(exchange.getRequest().getHeaders());
         headers.remove(HttpHeaders.CONTENT_LENGTH);
-
+        
         CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
         return bodyInserter
                 .insert(outputMessage, new BodyInserterContext())
@@ -149,8 +146,17 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 )))
                 .onErrorResume((Function<Throwable, Mono<Void>>) throwable -> Mono.error(throwable));
     }
+    
+    public String execute(RequestTemporaryWrapper requestTemporaryWrapper,String requestBody,ServerWebExchange exchange){
+        //进行业务验证，并将相关参数放入map
+        Map<String, String> map = doExecute(requestBody, exchange);
+        String body = map.get(REQUEST_BODY);
+        map.remove(REQUEST_BODY);
+        requestTemporaryWrapper.setMap(map);
+        return body;
+    }
 
-    private Map<String,String> verify(String originalBody,ServerWebExchange exchange){
+    private Map<String,String> doExecute(String originalBody,ServerWebExchange exchange){
         log.info("current thread verify: {}",Thread.currentThread().getName());
         ServerHttpRequest request = exchange.getRequest();
         String requestBody = originalBody;
