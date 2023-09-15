@@ -13,7 +13,7 @@
         <Property name="PROJECT_NAME">server-case</Property>
         <Property name="ENV">local</Property>
         <Property name="FILE_NAME">log</Property>
-        <Property name="PATTERN">[server-case] [%X{traceId}] %d{yyyy-MM-dd HH:mm:ss} %5p %c{1}:%L - %m%n</Property>
+        <Property name="PATTERN">${sys:applicationName} [%X{traceId}] %d{yyyy-MM-dd HH:mm:ss} %5p %c{1}:%L - %m%n</Property>
         <Property name="ENCODING">UTF-8</Property>
         <Property name="CUSTOM_MESSAGE_KEY">com.example</Property>
     </Properties>
