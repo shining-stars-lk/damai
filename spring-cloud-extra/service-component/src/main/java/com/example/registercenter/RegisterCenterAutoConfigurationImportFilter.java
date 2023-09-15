@@ -36,11 +36,11 @@ public class RegisterCenterAutoConfigurationImportFilter implements AutoConfigur
         
         if (NACOS.equals(type)) {
             for (int i = 0; i < autoConfigurationClasses.length; i++) {
-                match[i] = eurekaAutoConfigurationBeanNameMap.get(autoConfigurationClasses[i]) == null ? true : false;
+                match[i] = eurekaAutoConfigurationBeanNameMap.get(autoConfigurationClasses[i]) == null;
             }
         }else if (EUREKA.equals(type)) {
             for (int i = 0; i < autoConfigurationClasses.length; i++) {
-                match[i] = nacosAutoConfigurationBeanNameMap.get(autoConfigurationClasses[i]) == null ? true : false;
+                match[i] = nacosAutoConfigurationBeanNameMap.get(autoConfigurationClasses[i]) == null;
             }
         }else {
             for (int i = 0; i < autoConfigurationClasses.length; i++) {
