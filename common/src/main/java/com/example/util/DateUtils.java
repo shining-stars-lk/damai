@@ -200,6 +200,16 @@ public class DateUtils {
     public static Date parseDateTimeStamp(String dateTimeStampStr) {
         return parse(dateTimeStampStr, FORMAT_MILLISECOND);
     }
+    
+    /**
+     * 将时间戳转化为日期
+     *
+     * @param timestamp
+     * @return
+     */
+    public static Date parse(Long timestamp) {
+        return new Date(timestamp);
+    }
  
     /**
      * 将字符串格式时间转化为 Date 格式时间
