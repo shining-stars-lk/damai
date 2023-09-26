@@ -27,14 +27,14 @@ public class ApiStatMethodNodeService {
         String classMethod = stack.peek();
         String[] classMethodSplit = classMethod.split("#");
         String parentClassName = classMethodSplit[0];
-        String parentMothodName = classMethodSplit[1];
-        String parentMothodType = classMethodSplit[2];
+        String parentMethodName = classMethodSplit[1];
+        String parentMethodType = classMethodSplit[2];
         ApiStatMethodNode parent = new ApiStatMethodNode();
-        parent.setId(parentClassName + "." + parentMothodName);
+        parent.setId(parentClassName + "." + parentMethodName);
         parent.setClassName(parentClassName);
-        parent.setMethodName(parentMothodName);
-        parent.setName(parentClassName.substring(parentClassName.lastIndexOf(".") + 1) + "." + parentMothodName);
-        parent.setApiStatMethodType(ApiStatCommon.getMethodType(parentMothodType));
+        parent.setMethodName(parentMethodName);
+        parent.setName(parentClassName.substring(parentClassName.lastIndexOf(".") + 1) + "." + parentMethodName);
+        parent.setApiStatMethodType(ApiStatCommon.getMethodType(parentMethodType));
         return parent;
     }
 
