@@ -12,6 +12,17 @@ import org.aopalliance.intercept.MethodInvocation;
 public class ApiStatRunTimeHandler implements MethodInterceptor {
     @Override
     public Object invoke(final MethodInvocation invocation) throws Throwable {
-        return invocation.proceed();
+        boolean exceptionEnable = false;
+        long begin = System.nanoTime();
+        Object result = null;
+        try {
+            result = invocation.proceed();
+            long end = System.nanoTime();
+        }catch (Throwable e) {
+            throw e;
+        }finally {
+            
+        }
+        return result;
     }
 }
