@@ -41,6 +41,7 @@
 		<module>server-client</module>
 		<module>course-case</module>
 		<module>threadlocal-tool</module>
+		<module>api-stat</module>
 	</modules>
 
 	<properties>
