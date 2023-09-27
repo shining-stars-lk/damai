@@ -65,4 +65,9 @@ management:
 
 ko-time:
   pointcut: execution(* com.example..*.*(..))
-  saver: redis  
+  exceptionEnable: true
+#  saver: redis  
+  
+api-stat:
+  pointcut: execution(* com.example..*.*(..))
+  enable: true

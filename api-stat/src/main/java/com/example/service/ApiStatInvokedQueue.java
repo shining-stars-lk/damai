@@ -27,8 +27,7 @@ public class ApiStatInvokedQueue {
         for(;;) {
             try {
                 ApiStatInvokedInfo apiStatInvokedInfo = blockingQueue.take();
-                apiStatInvokedHandler.onInvoked(apiStatInvokedInfo.getCurrent(),apiStatInvokedInfo.getParent(),
-                        apiStatInvokedInfo.getNames(),apiStatInvokedInfo.getValues());
+                apiStatInvokedHandler.onInvoked(apiStatInvokedInfo);
             } catch (Exception e) {
                 e.printStackTrace();
             }

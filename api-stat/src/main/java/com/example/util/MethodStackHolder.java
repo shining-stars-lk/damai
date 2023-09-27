@@ -37,12 +37,12 @@ public class MethodStackHolder {
     }
 
     public static void clear() {
-        Stack<ApiStatMethodNode> queue = threadLocal.get();
-        if (queue==null) {
+        Stack<ApiStatMethodNode> stack = threadLocal.get();
+        if (stack==null) {
             return;
         }
-        queue.pop();
-        if (queue.isEmpty()) {
+        stack.pop();
+        if (stack.isEmpty()) {
             threadLocal.remove();
         }
     }

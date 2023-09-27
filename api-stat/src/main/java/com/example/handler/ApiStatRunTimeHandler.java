@@ -31,14 +31,17 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
         ApiStatMethodNode parentMethodNode = ApiStatMethodNodeService.getParentMethodNode();
         MethodStackHolder.putMethod(methodInvocation);
         ApiStatInvokedInfo apiStatInvokedInfo = new ApiStatInvokedInfo();
+        boolean exceptionFlag = false;
         try {
             obj = methodInvocation.proceed();
-            long end = System.nanoTime();
-            apiStatInvokedInfo = ApiStatCommon.getApiStatInvokedInfo(methodInvocation, parentMethodNode, ((end - begin) / 1000000.0));
         } catch (Throwable t) {
+            exceptionFlag = true;
             throw t;
         } finally {
+            long end = System.nanoTime();
+            apiStatInvokedInfo = ApiStatCommon.getApiStatInvokedInfo(methodInvocation, parentMethodNode, ((end - begin) / 1000000.0),exceptionFlag);
             apiStatInvokedQueue.add(apiStatInvokedInfo);
+            MethodStackHolder.clear();
         }
         return obj;
     }

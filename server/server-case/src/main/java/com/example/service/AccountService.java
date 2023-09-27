@@ -14,6 +14,9 @@ public class AccountService {
     private AccountMapper accountMapper;
     
     public Account getById(String id){
+        if ("1".equals(id)) {
+            throw new RuntimeException("自定义异常");
+        }
         return new Account();
 //        return accountMapper.selectById(id);
     }

@@ -8,6 +8,7 @@ import java.lang.reflect.Parameter;
 public class ApiStatInvokedInfo {
     private ApiStatMethodNode current;
     private ApiStatMethodNode parent;
+    private boolean exceptionFlag;
     Parameter[] names;
     Object[] values;
 
