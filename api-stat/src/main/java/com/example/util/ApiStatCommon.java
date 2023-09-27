@@ -136,7 +136,7 @@ public class ApiStatCommon {
         return value == null || "".equals(value) || ((value instanceof String) && ((String) value).trim().length() == 0);
     }
 
-    public static ApiStatInvokedInfo getApiStatInvokedInfo(MethodInvocation invocation, ApiStatMethodNode parent, double runTime) {
+    public static ApiStatInvokedInfo getApiStatInvokedInfo(MethodInvocation invocation, ApiStatMethodNode parent, double runTime, boolean exceptionFlag) {
         ApiStatMethodNode currentMethod = ApiStatMethodNodeService.getCurrentMethodNode(invocation, runTime);
         parent = checkControllerParent(parent, currentMethod);
         ApiStatInvokedInfo invokedInfo = new ApiStatInvokedInfo();
@@ -144,6 +144,7 @@ public class ApiStatCommon {
         invokedInfo.setParent(parent);
         invokedInfo.setNames(invocation.getMethod().getParameters());
         invokedInfo.setValues(invocation.getArguments());
+        invokedInfo.setExceptionFlag(exceptionFlag);
         return invokedInfo;
     }
 

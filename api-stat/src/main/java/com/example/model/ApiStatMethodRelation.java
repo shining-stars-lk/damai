@@ -10,4 +10,5 @@ public class ApiStatMethodRelation {
     private Double avgRunTime = 0.0;
     private Double maxRunTime = 0.0;
     private Double minRunTime = 10000.0;
+    private Long exceptionCount = 0L;
 }

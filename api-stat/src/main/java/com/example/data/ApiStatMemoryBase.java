@@ -38,7 +38,7 @@ public class ApiStatMemoryBase {
         }
     }
 
-    public ApiStatMethodRelation addApiStatMethodRelation(ApiStatMethodNode sourceMethodNode, ApiStatMethodNode targetMethodNode) {
+    public ApiStatMethodRelation addApiStatMethodRelation(ApiStatMethodNode sourceMethodNode, ApiStatMethodNode targetMethodNode, boolean execptionFlag) {
         if (null == sourceMethodNode || null == targetMethodNode ) {
             return null;
         }
@@ -51,25 +51,29 @@ public class ApiStatMemoryBase {
         if (methodRelations.containsKey(targetMethodNode.getId()+sourceMethodNode.getId())) {
             return null;
         }
-        ApiStatMethodRelation methodRelation = new ApiStatMethodRelation();
-        methodRelation.setSourceId(sourceMethodNode.getId());
-        methodRelation.setTargetId(targetMethodNode.getId());
-        methodRelation.setId(sourceMethodNode.getId() + targetMethodNode.getId());
-        methodRelation.setAvgRunTime(targetMethodNode.getValue());
-        methodRelation.setMaxRunTime(targetMethodNode.getValue());
-        methodRelation.setMinRunTime(targetMethodNode.getValue());
-        ApiStatMethodRelation old = methodRelations.get(methodRelation.getId());
-        if (null == old) {
-            methodRelations.put(methodRelation.getId(), methodRelation);
-            return methodRelation;
-        } else {
-            BigDecimal bg = BigDecimal.valueOf((methodRelation.getAvgRunTime() + old.getAvgRunTime()) / 2.0);
+        String oldApiStatMethodRelationId = sourceMethodNode.getId() + targetMethodNode.getId();
+        ApiStatMethodRelation oldApiStatMethodRelation = methodRelations.get(oldApiStatMethodRelationId);
+        if (oldApiStatMethodRelation == null) {
+            oldApiStatMethodRelation = new ApiStatMethodRelation();
+            oldApiStatMethodRelation.setSourceId(sourceMethodNode.getId());
+            oldApiStatMethodRelation.setTargetId(targetMethodNode.getId());
+            oldApiStatMethodRelation.setId(oldApiStatMethodRelationId);
+            oldApiStatMethodRelation.setAvgRunTime(targetMethodNode.getValue());
+            oldApiStatMethodRelation.setMaxRunTime(targetMethodNode.getValue());
+            oldApiStatMethodRelation.setMinRunTime(targetMethodNode.getValue());
+            oldApiStatMethodRelation.setExceptionCount(execptionFlag ? 1L : 0L);
+            methodRelations.put(oldApiStatMethodRelationId,oldApiStatMethodRelation);
+        }else {
+            BigDecimal bg = BigDecimal.valueOf((targetMethodNode.getValue() + oldApiStatMethodRelation.getAvgRunTime()) / 2.0);
             double avg = bg.setScale(2, RoundingMode.HALF_UP).doubleValue();
-            old.setAvgRunTime(avg);
-            old.setMaxRunTime(methodRelation.getMaxRunTime() > old.getMaxRunTime() ? methodRelation.getMaxRunTime() : old.getMaxRunTime());
-            old.setMinRunTime(methodRelation.getMinRunTime() < old.getMinRunTime() ? methodRelation.getMinRunTime() : old.getMinRunTime());
-            return old;
+            oldApiStatMethodRelation.setAvgRunTime(avg);
+            oldApiStatMethodRelation.setMaxRunTime(targetMethodNode.getValue() > oldApiStatMethodRelation.getMaxRunTime() ? targetMethodNode.getValue() : oldApiStatMethodRelation.getMaxRunTime());
+            oldApiStatMethodRelation.setMinRunTime(targetMethodNode.getValue() < oldApiStatMethodRelation.getMinRunTime() ? targetMethodNode.getValue() : oldApiStatMethodRelation.getMinRunTime());
+            if (execptionFlag) {
+                oldApiStatMethodRelation.setExceptionCount(oldApiStatMethodRelation.getExceptionCount() + 1);
+            }
         }
+        return oldApiStatMethodRelation;
     }
     
     public Map<String, ApiStatMethodNode> getMethodNodes() {
