@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.example.config.LoadConfig
+  com.example.config.ApiStatAutoConfig
