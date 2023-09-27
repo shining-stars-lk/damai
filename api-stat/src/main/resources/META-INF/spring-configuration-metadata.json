@@ -1,0 +1,235 @@
+{
+  "groups": [
+    {
+      "name": "ko-time",
+      "type": "cn.langpy.kotime.config.DefaultConfig",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "ko-time.context-path",
+      "type": "java.lang.String",
+      "defaultValue": "http://localhost:8080",
+      "description": "server url for static resources",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.enable",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "to enable kotime",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.exception-enable",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "to enable exception listener",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.log-enable",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "to print log in console",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.language",
+      "defaultValue": "chinese",
+      "type": "java.lang.String",
+      "description": "to select language for viewer",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.log-language",
+      "defaultValue": "chinese",
+      "type": "java.lang.String",
+      "description": "to select language for log printed",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig",
+      "deprecation": {
+        "level": "warning",
+        "replacement": "ko-time.language"
+      }
+    },
+    {
+      "name": "ko-time.pointcut",
+      "type": "java.lang.String",
+      "description": "pointcut for aop",
+      "defaultValue": "execution(* com.example..*.*(..))",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.saver",
+      "type": "java.lang.String",
+      "defaultValue": "memory",
+      "description": "a place to store data",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.data-source",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "datasource",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.data-prefix",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "dataPrefix",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.data-reset",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "to delete all data",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.redis-template",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "StringRedisTemplate‘s bean",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.thread-num",
+      "type": "java.lang.Integer",
+      "defaultValue": 2,
+      "description": "number of thread to store data",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.threshold",
+      "type": "java.lang.Double",
+      "defaultValue": 800.0,
+      "description": "red will appear if avgRunTime>threshold",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.discard-rate",
+      "type": "java.lang.Double",
+      "defaultValue": 0.3,
+      "description": "data will be discard if Math.random()<discard-rate",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.auth-enable",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "to enable authentication",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.version-notice",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "to enable version-notice",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.auth-expire",
+      "type": "java.lang.Long",
+      "defaultValue":43200 ,
+      "description": "expire within 43200 s",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.user-name",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "userName for authentication",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.password",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "password for authentication",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.param-analyse",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "the charger of analysing params",
+      "sourceType": "cn.langpy.kotime.config.DefaultConfig"
+    },
+    {
+      "name": "ko-time.mail-host",
+      "type": "java.lang.String",
+      "defaultValue": "smtp.qq.com",
+      "description": "host of email"
+    },
+    {
+      "name": "ko-time.mail-port",
+      "type": "java.lang.Integer",
+      "defaultValue": 587,
+      "description": "port of email"
+    },
+    {
+      "name": "ko-time.mail-protocol",
+      "type": "java.lang.String",
+      "defaultValue": "smtp",
+      "description": "protocol of email"
+    } ,
+    {
+      "name": "ko-time.mail-encoding",
+      "type": "java.lang.String",
+      "defaultValue": "UTF-8",
+      "description": "encoding of email"
+    },
+    {
+      "name": "ko-time.mail-user",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "sender of email"
+    },
+    {
+      "name": "ko-time.mail-receivers",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "receivers of email"
+    },
+    {
+      "name": "ko-time.mail-code",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "code of email"
+    },
+    {
+      "name": "ko-time.mail-threshold",
+      "type": "java.lang.Integer",
+      "defaultValue": 4,
+      "description": "trigger thresold of email"
+    },
+    {
+      "name": "ko-time.mail-scope",
+      "type": "java.lang.String",
+      "defaultValue": "Controller",
+      "description": "trigger scope of email"
+    },
+    {
+      "name": "ko-time.static-token",
+      "type": "java.lang.String",
+      "defaultValue": "",
+      "description": "static token of html"
+    },
+    {
+      "name": "ko-time.mail-enable",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "to enable email"
+    },
+    {
+      "name": "ko-time.property-file",
+      "type": "java.lang.String",
+      "defaultValue": "dynamic.properties",
+      "description": "dynamic properties"
+    }
+  ],
+  "hints": []
+}

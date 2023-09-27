@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Agent-Class: cn.langpy.kotime.RedefineClass
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Created-By: zhangchang
