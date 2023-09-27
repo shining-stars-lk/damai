@@ -1,0 +1,974 @@
+
+<head>
+    <meta charset="UTF-8">
+    <title>KoTime</title>
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.2.2/dist/css/uikit.min.css"/>-->
+    <!-- UIkit JS -->
+<!--    <script src="https://cdn.jsdelivr.net/npm/uikit@3.2.2/dist/js/uikit.min.js"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/uikit@3.2.2/dist/js/uikit-icons.min.js"></script>-->
+    <style>
+        UIKitCss
+    </style>
+    <script>
+        UIKitJs;
+        uiKitIconsJs;
+        MetricFlowJs;
+        jQueryJs;
+        var graph;
+        var d = 180;
+        var globalThreshold = globalThresholdValue;
+        var globalNeedLogin = globalNeedLoginValue;
+        var staticTokenVisit = staticTokenVisitValue;
+        var staticToken = staticTokenValue;
+        var globalToken = staticTokenVisit?staticToken:sessionStorage.getItem("kotimeToken");
+        var globalToken = sessionStorage.getItem("kotimeToken");
+        let globalIsLogin = false;
+        
+        function concatToken(url) {
+            if (globalNeedLogin) {
+                if (url.indexOf('?')>-1) {
+                    url += '&kotoken='+globalToken;
+                }else {
+                    url += '?kotoken='+globalToken;
+                }
+            }
+            return url
+        }
+
+        let methodParamMap  = new Map();
+        function paramGraph(e) {
+            let  clickNode = e.currentTarget;
+            if (clickNode==null){
+                return
+            };
+            let clickNodeId = clickNode.id;
+            if (methodParamMap.has(clickNodeId+"ana")) {
+                graph.removeNode(clickNodeId+"ana")
+                methodParamMap.delete(clickNodeId+"ana")
+            }else {
+                $.get(concatToken('contextPath/koTime/getParamGraph'+"?methodId="+clickNodeId.replace('node','')), function (data) {
+                    let datas = []
+                    for(let key in data) {
+                        datas.push( {"name":key+"：avg "+data[key]['avgRunTime']+" ms"})
+                    };
+                    let paramGraphData = {
+                        "id":clickNodeId+"ana",
+                        "from":clickNodeId,
+                        "title":{'name':"Combination of parameters"},
+                        "data":datas,
+                        'style':{
+                            'title-color':'#427b72',
+                            'border-color':'#427b72',
+                            'data-font-size':'10px',
+                            'title-font-size':'12px'
+                        }
+                    }
+                    let clickNodeX =  Number(clickNode.getAttribute("x"));
+                    let clickNodeY =  Number(clickNode.getAttribute("y"));
+                    graph.createNode(paramGraphData,clickNodeX,clickNodeY-100);
+                    // graph.createNode(paramGraphData,e.x+150,e.y-30);
+                    methodParamMap.set(clickNodeId+"ana","")
+                });
+            }
+        }
+        function formData(data) {
+            if (data['avgRunTime']>globalThreshold) {
+                data['style'] = {
+                    'title-color':'#c71335',
+                    'border-color':'#c71335',
+                    'data-font-size':'10px',
+                    'title-font-size':'12px'
+                }
+            }
+            else{
+                data['style'] = {
+                    'title-color':'#375d46',
+                    'border-color':'#375d46',
+                    'data-font-size':'10px',
+                    'title-font-size':'12px'
+                }
+            };
+            data['title'] = {'name':data['name']};
+            data['data'] = [
+                {'name':'<span style="color:gray">type：</span>'+data['methodType']},
+                {'name':'<span style="color:gray">avg time：</span>'+data['avgRunTime']+' ms'},
+                {'name':'<span style="color:gray">max time：</span>'+data['maxRunTime']+' ms'},
+                {'name':'<span style="color:gray">min time：</span>'+data['minRunTime']+' ms'}
+            ];
+            if (data['exceptionNum']!=null && data['exceptionNum']>0) {
+                data['data'].push({'name':'<span style="color:gray">number of exception：</span>'+data['exceptionNum']});
+            }
+            data["dblclick"]="paramGraph";
+            return data;
+        };
+
+
+        function showMethods(name) {
+            let exceptionDetailDom = document.getElementById('layerDemo');
+            exceptionDetailDom.innerHTML = "";
+            let options = {
+                'link-start-offsetx':8,
+                'link-start-offsety':0,
+                'link-end-offsetx':+10,
+                'link-end-offsety':0,
+                'link-width-offset':0
+            };
+            graph = new MetricFlow("layerDemo",options);
+            graph.threshold = globalThreshold;
+            UIkit.notification.closeAll();
+            UIkit.modal(document.getElementById("modal-method")).show();
+
+            $.get(concatToken('contextPath/koTime/getTree?methodName=' + name), function (data) {
+                let rootX = 100;
+                let rootY = $(window).get(0).innerHeight / 2-50;
+                data['x'] = rootX;
+                data['y'] = rootY;
+                graph.createNodes(data,formData);
+
+            });
+
+        };
+
+        function showExceptions(id,message) {
+            $.get(concatToken('contextPath/koTime/getMethodsByExceptionId?exceptionId=' + id+'&message='+message), function (data) {
+                let html = '';
+                for (let i = 0; i < data.length; i++) {
+                    html +=
+                        "<ul class=\"uk-list uk-list-divider\">\n" +
+                        "\t<li id=\"exception-class\">Class："+data[i].occurClassName+"</li>\n" +
+                        "\t<li id=\"exception-method\">Method："+data[i].methodName+"</li>\n" +
+                        "\t<li id=\"exception-line\">line：<span class=\"uk-label uk-label-success\">"+data[i].location+"</span></li>\n" +
+                        "\t<li id=\"exception-message\">exception message：<span class=\"uk-label uk-label-danger\">"+data[i].message+"</span></li>\n" +
+                        "</ul>"
+                    if (data.length-1>i) {
+                        html +='<hr class="uk-divider-icon">'
+                    }
+                };
+
+                let exceptionDetailDom = document.getElementById('exception-detail');
+                exceptionDetailDom.innerHTML = html;
+                UIkit.notification.closeAll();
+                UIkit.modal(document.getElementById("modal-exception")).show();
+            });
+        };
+
+        function login() {
+            let userId = $("#userName").val()
+            let password = $("#userPassword").val()
+            if (userId==undefined || userId.length<1 || password==undefined || password.length<1 ) {
+                UIkit.notification.closeAll()
+                UIkit.notification("<font color='red'>Error username or password</font>",{});
+                return
+            }
+            $.ajax({
+                type:'POST',
+                url:"contextPath/koTime/login",
+                data:JSON.stringify({'userName':userId,'password':password}),
+                dataType:'json',
+                headers: {'Content-Type': 'application/json' },
+                success:function (re) {
+                    if (re['state']==1) {
+                        UIkit.notification("<font color='green'>Logined</font>",{});
+                        UIkit.notification.closeAll()
+                        sessionStorage.setItem("kotimeToken", re["token"]);
+                        location.reload();
+                    }else {
+                        UIkit.notification("<font color='red'>Error username or password</font>",{});
+                    }
+                },
+                error:function (re) {
+                    console.log(re)
+                }
+            });
+        }
+        function searchTip(e){
+            let question =  $('#searchText').val()
+            $.get(concatToken('contextPath/koTime/getApiTips?question='+question), function (data) {
+                $("#condidates").html("")
+                for (let i = 0; i < data.length; i++) {
+                    let name = data[i];
+                    $("#condidates").append('<option value="'+name+'"/>');
+                };
+            });
+        }
+
+        function searchApis(e) {
+            if (e.keyCode == 13) {
+                let question =  $('#searchText').val()
+                $.get(concatToken('contextPath/koTime/getApis?question='+question), function (data) {
+                    let element = document.getElementById('apiList');
+                    html = '';
+                    for (let i = 0; i < data.length; i++) {
+                        let className = data[i]['className'];
+                        let methodName = data[i]['methodName'];
+                        let avgRunTime = data[i]['avgRunTime'];
+                        let methodType = data[i]['methodType'];
+                        let routeName = data[i]['routeName'];
+                        let apiId = className+"."+methodName;
+                        let  color = avgRunTime>globalThreshold?'danger':'success';
+
+                        if (methodType=='Controller' && routeName!=null && routeName!='') {
+                            html += "<li onclick=\"showMethods('"+apiId+"')\" style='color: #333;font-weight: 400;font-size: 14px;' id=\""+apiId+"-list\">"+ className+"#<span style='font-size: 16px;font-weight: 500;'>"+methodName+"</span>&nbsp(<span style='font-size: 14px;font-weight: 430;color:#032b11'>"+routeName+"</span>)&nbsp &nbsp<span style='font-size: 10px;text-transform: lowercase' class=\"uk-label uk-label-"+color+"\">avg  "+avgRunTime+" ms</span></li>";
+                        }else{
+                            html += "<li onclick=\"showMethods('"+apiId+"')\" style='color: #333;font-weight: 400;font-size: 14px;' id=\""+apiId+"-list\">"+ className+"#<span style='font-size: 16px;font-weight: 500;'>"+methodName+"</span>&nbsp &nbsp<span style='font-size: 10px;text-transform: lowercase' class=\"uk-label uk-label-"+color+"\">avg  "+avgRunTime+" ms</span></li>";
+                        }
+                    };
+                    element.innerHTML = html;
+                });
+                $('#searchText').val('');
+            }
+        }
+
+        function updateClass(){
+            // document.querySelector("#classForm").submit();
+            var formData = new FormData();
+            var file = document.querySelector('#classFile').files[0];
+            if (file==null || file==undefined) {
+                UIkit.notification("<font color='red'>Null file</font>",{});
+                return;
+            }
+            var className = document.querySelector("#className").value
+            if (className==null || className==undefined || className.length<2) {
+                UIkit.notification("<font color='red'>Null class name</font>",{});
+                return;
+            }
+            formData.append('classFile', file);
+            formData.append('className', className );
+
+            $.ajax({
+                url: concatToken('contextPath/koTime/updateClass'),
+                type: 'POST',
+                cache: false,
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: "json",
+                success: function (res) {
+                    if (res['state']==1) {
+                        UIkit.notification.closeAll();
+                        UIkit.notification("<font color='green'>Success</font>",{});
+                    }else {
+                        UIkit.notification.closeAll();
+                        UIkit.notification("<font color='red'>"+res['message']+"</font>",{});
+                    }
+                },
+                error: function (XmlHttpRequest, textStatus, errorThrown) {
+                    UIkit.notification.closeAll();
+                    UIkit.notification("<font color='red'>Fail</font>",{});
+                    location.reload();
+                },
+                complete: function () {}
+            })
+        }
+
+        function updateDynamicProperties(){
+            let propertiesDom = document.querySelector("#dynamicText");
+            let propertiesText = propertiesDom.value;
+            if (propertiesText && propertiesText.indexOf("=")>0) {
+                $.ajax({
+                    type:'POST',
+                    url:concatToken('contextPath/koTime/updateDynamicProperties'),
+                    data:JSON.stringify({
+                        text:propertiesText
+                    }),
+                    dataType:'json',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    success:function (re) {
+                        UIkit.notification.closeAll();
+                        UIkit.notification("<font color='green'>更新成功</font>",{});
+                    }
+                });
+            }else {
+                UIkit.notification.closeAll();
+                UIkit.notification("<font color='red'>更新失败，请正确编写配置！</font>",{});
+            }
+
+        }
+
+        function loadDynamicProperties() {
+            $.get(concatToken('contextPath/koTime/getDynamicProperties'), function (data) {
+                let text = data['data'];
+                document.querySelector("#dynamicText").value = text;
+            });
+        }
+
+        function loadLatestVersion(){
+            /*get the latest version so that you can update kotime immediately*/
+            $.ajax({
+                url: 'http://www.kotime.cn/common/latestVersion?version=2.3.7',
+                type: 'GET',
+                cache: false,
+                dataType: "json",
+                async: true,
+                success: function (res) {
+                    if (res['state']==1) {
+                        document.querySelector("#version-notice").innerHTML=res['content']['versionNo']
+                    }
+                },
+                error: function (XmlHttpRequest, textStatus, errorThrown) {
+
+                },
+                complete: function () {}
+            })
+        }
+        function loadCpuInfo() {
+            $.get(concatToken('contextPath/koTime/getCpuInfo'), function (data) {
+                let systemLoad = data['systemLoad']*100;
+                let userRate = data['userRate']*100;
+                let sysRate = data['sysRate']*100;
+                let logicalNum = data['logicalNum'];
+                let waitRate = data['waitRate']*100;
+
+                var systemLoadDom = document.querySelector("#systemLoad");
+                if (systemLoad>50) {
+                    systemLoadDom.style.color='#cc0c0c';
+                }else {
+                    systemLoadDom.style.color='#29da93';
+                };
+                systemLoadDom.innerHTML = `${systemLoad.toFixed(2)}%`;
+                document.querySelector("#cpuSysRate").innerHTML = `${sysRate.toFixed(2)}%`;
+                document.querySelector("#cpuUserRate").innerHTML = `${userRate.toFixed(2)}%`;
+                document.querySelector("#cpuWaitRate").innerHTML = `${waitRate.toFixed(2)}%`;
+                document.querySelector("#cpuLogicalAmount").innerHTML = `CPU Usage(${logicalNum})：`;
+
+            });
+        }
+        function loadHeapMemoryInfo() {
+            $.get(concatToken('contextPath/koTime/getHeapMemoryInfo'), function (data) {
+                let initValue = data['initValue']/1024/1024;
+                let maxValue = data['maxValue']/1024/1024;
+                let usedValue = data['usedValue']/1024/1024;
+                let usedRate = data['usedRate']*100;
+                var heapUsedRateDom = document.querySelector("#heapUsedRate");
+                if (usedRate>50) {
+                    heapUsedRateDom.style.color='#cc0c0c';
+                }else {
+                    heapUsedRateDom.style.color='#29da93';
+                };
+                document.querySelector("#heapInit").innerHTML = `${initValue.toFixed()}M`;
+                document.querySelector("#heapMax").innerHTML = `${maxValue.toFixed()}M`;
+                document.querySelector("#heapUsed").innerHTML = `${usedValue.toFixed()}M`;
+                heapUsedRateDom.innerHTML = `${usedRate.toFixed(2)}%`;
+            });
+        }
+        function loadPhysicalMemoryInfo() {
+            $.get(concatToken('contextPath/koTime/getPhysicalMemoryInfo'), function (data) {
+                let initValue = data['initValue']/1024/1024;
+                let thisUsedValue = data['thisUsedValue']/1024/1024;
+                let usedValue = data['usedValue']/1024/1024;
+                let usedRate = data['usedRate']*100;
+                var physicalUsedRateDom = document.querySelector("#physicalUsedRate");
+                if (usedRate>50) {
+                    physicalUsedRateDom.style.color='#cc0c0c';
+                }else {
+                    physicalUsedRateDom.style.color='#29da93';
+                };
+                physicalUsedRateDom.innerHTML = `${usedRate.toFixed(2)}%`;
+                document.querySelector("#physicalAmount").innerHTML = `${initValue.toFixed()}M`;
+                document.querySelector("#physicalUsed").innerHTML = `${usedValue.toFixed()}M`;
+                document.querySelector("#thisUsed").innerHTML = `${thisUsedValue.toFixed()}M`;
+            });
+        }
+
+        function loadConfig() {
+            $.get(concatToken('contextPath/koTime/getConfig'), function (data) {
+                let versionNoticeEnable = data['versionNotice'];
+                if (versionNoticeEnable) {
+                    loadLatestVersion();
+                }
+                let exceptionEnable = data['exceptionEnable'];
+
+                let exceptionEnableDom = document.getElementById('exceptionEnable');
+                exceptionEnableDom.checked = exceptionEnable;
+
+
+                let kotimeEnable = data['enable'];
+                let kotimeEnableDom = document.getElementById('kotimeEnable');
+                kotimeEnableDom.checked = kotimeEnable;
+
+                let apiTip = document.getElementById('apiTip');
+                apiTip.innerHTML = kotimeEnable==true?"We can see interfaces after invoking methods!":"KoTime switch was closed!";
+
+
+                let threshold = data['threshold'];
+                let timeThresholdDom = document.getElementById('timeThreshold');
+                timeThresholdDom.value = threshold;
+
+                let logEnable = data['logEnable'];
+                let logEnableDom = document.getElementById('logEnable');
+                logEnableDom.checked = logEnable;
+
+                let mailEnable = data['mailEnable'];
+                let mailEnableDom = document.getElementById('mailEnable');
+                mailEnableDom.checked = mailEnable;
+
+                let language = data['language'];
+                $("#languageSwitch").val(language)
+            });
+        }
+
+        function addConfigEvent() {
+
+            document.getElementById('kotimeEnable').onclick = function(){
+                $.ajax({type:'POST',url:concatToken('contextPath/koTime/updateConfig'),data:JSON.stringify({enable:document.getElementById('kotimeEnable').checked}),dataType:'json', headers: {'Content-Type': 'application/json' }});
+                UIkit.notification("<font color='green'>OK</font>",{});
+            };
+
+            document.getElementById('exceptionEnable').onclick = function(){
+                $.ajax({type:'POST',url:concatToken('contextPath/koTime/updateConfig'),data:JSON.stringify({exceptionEnable:document.getElementById('exceptionEnable').checked}),dataType:'json', headers: {'Content-Type': 'application/json' }});
+                UIkit.notification("<font color='green'>OK</font>",{});
+            };
+
+            document.getElementById('logEnable').onclick = function(){
+                $.ajax({type:'POST',url:concatToken('contextPath/koTime/updateConfig'),data:JSON.stringify({logEnable:document.getElementById('logEnable').checked}),dataType:'json', headers: {'Content-Type': 'application/json' }});
+                UIkit.notification("<font color='green'>OK</font>",{});
+            };
+
+            document.getElementById('mailEnable').onclick = function(){
+                $.ajax({type:'POST',url:concatToken('contextPath/koTime/updateConfig'),data:JSON.stringify({mailEnable:document.getElementById('mailEnable').checked}),dataType:'json', headers: {'Content-Type': 'application/json' }});
+                UIkit.notification("<font color='green'>OK</font>",{});
+            };
+
+            document.getElementById('languageSwitch').onchange = function(){
+                let selectedObj = document.getElementById('languageSwitch');
+                $.ajax({type:'POST',url:concatToken('contextPath/koTime/updateConfig'),data:JSON.stringify({language:selectedObj.options[selectedObj.selectedIndex].value}),dataType:'json', headers: {'Content-Type': 'application/json' }});
+                UIkit.notification("<font color='green'>OK</font>",{});
+            };
+
+
+            document.getElementById("timeThresholdYes").onclick = function(){
+                $.ajax({type:'POST',url:concatToken('contextPath/koTime/updateConfig'),data:JSON.stringify({threshold:document.getElementById('timeThreshold').value}),dataType:'json', headers: {'Content-Type': 'application/json' }});
+                UIkit.notification("<font color='green'>OK</font>",{});
+            };
+
+            document.getElementById("clearDataYes").onclick = function(){
+                $.ajax({type:'POST',url:'contextPath/koTime/clearData?kotoken='+globalToken,dataType:'json', headers: {'Content-Type': 'application/json' }});
+                UIkit.notification("<font color='green'>OK</font>",{});
+            };
+        }
+
+        function loadStatistic() {
+            $.get(concatToken('contextPath/koTime/getStatistic'), function (data) {
+                let totalNum = data['totalNum'];
+                let systemTotalNum = document.getElementById("systemTotalNum");
+                systemTotalNum.innerHTML=totalNum;
+
+                let normalNum = data['normalNum'];
+                let systemNormalNum = document.getElementById("systemNormalNum");
+                systemNormalNum.innerHTML=normalNum;
+
+                let delayNum = data['delayNum'];
+                let systemDelayNum = document.getElementById("systemDelayNum");
+                systemDelayNum.innerHTML=delayNum;
+
+                let avgRunTime = data['avgRunTime'];
+                let systemAvgRunTime = document.getElementById("systemAvgRunTime");
+                systemAvgRunTime.innerHTML=avgRunTime;
+                if (avgRunTime>globalThreshold) {
+                    document.getElementById("systemAvgRunTime").style.color='#cc0c0c';
+                }else {
+                    document.getElementById("systemAvgRunTime").style.color='#29da93';
+                };
+
+                let maxRunTime = data['maxRunTime'];
+                let systemMaxRunTime = document.getElementById("systemMaxRunTime");
+                systemMaxRunTime.innerHTML=maxRunTime;
+                if (maxRunTime>globalThreshold) {
+                    document.getElementById("systemMaxRunTime").style.color='#cc0c0c';
+                }else {
+                    document.getElementById("systemMaxRunTime").style.color='#29da93';
+                };
+
+
+                let minRunTime = data['minRunTime'];
+                let systemMinRunTime = document.getElementById("systemMinRunTime");
+                systemMinRunTime.innerHTML=minRunTime;
+                if (minRunTime>globalThreshold) {
+                    document.getElementById("systemMinRunTime").style.color='#cc0c0c';
+                }else {
+                    document.getElementById("systemMinRunTime").style.color='#29da93';
+                };
+            });
+        }
+
+        function loadApis() {
+            let searchText = $("#searchText").val();
+            $.get(concatToken('contextPath/koTime/getApis?question='+searchText), function (data) {
+                let element = document.getElementById('apiList');
+                html = '';
+                for (let i = 0; i < data.length; i++) {
+                    let className = data[i]['className'];
+                    let methodName = data[i]['methodName'];
+                    let avgRunTime = data[i]['avgRunTime'];
+                    let methodType = data[i]['methodType'];
+                    let routeName = data[i]['routeName'];
+
+                    let apiId = className+"."+methodName;
+                    let  color = avgRunTime>globalThreshold?'danger':'success';
+                    if (methodType=='Controller' && routeName!=null && routeName!='') {
+                        html += "<li onclick=\"showMethods('"+apiId+"')\" style='color: #333;font-weight: 400;font-size: 14px;' id=\""+apiId+"-list\">"+ className+"#<span style='font-size: 16px;font-weight: 500;'>"+methodName+"</span>&nbsp(<span style='font-size: 14px;font-weight: 430;color:#032b11'>"+routeName+"</span>)&nbsp &nbsp<span style='font-size: 10px;text-transform: lowercase' class=\"uk-label uk-label-"+color+"\">avg  "+avgRunTime+" ms</span></li>";
+                    }else{
+                        html += "<li onclick=\"showMethods('"+apiId+"')\" style='color: #333;font-weight: 400;font-size: 14px;' id=\""+apiId+"-list\">"+ className+"#<span style='font-size: 16px;font-weight: 500;'>"+methodName+"</span>&nbsp &nbsp<span style='font-size: 10px;text-transform: lowercase' class=\"uk-label uk-label-"+color+"\">avg  "+avgRunTime+" ms</span></li>";
+                    }
+                };
+                element.innerHTML = html;
+            });
+
+        }
+
+        function loadExceptions() {
+            $.get(concatToken('contextPath/koTime/getExceptions'), function (data) {
+                let element = document.getElementById('exceptionList');
+                html = '';
+                for (let i = 0; i < data.length; i++) {
+                    let id = data[i]['id'];
+                    let className = data[i]['className'];
+                    let message = data[i]['message'];
+                    html += "<li onclick=\"showExceptions('"+id+"','"+message+"')\" style='' id=\""+id+"\"><span style='font-size: 16px;font-weight: 500;'>"+className+"</span>&nbsp &nbsp<span style='font-size: 10px;' class=\"uk-label uk-label-danger\">"+message+"</span></li>";
+                };
+                element.innerHTML = html;
+            });
+
+        }
+
+        function refreshData() {
+            $.get(concatToken('contextPath/koTime/isLogin'), function (data) {
+                globalIsLogin  = data['isLogin']==1?true:false;
+                if (globalNeedLogin==true && globalIsLogin == false) {
+                    UIkit.modal(document.getElementById("modal-login")).show();
+                    return;
+                }else {
+                    loadStatistic();
+                    loadConfig();
+                    addConfigEvent();
+                    loadApis();
+                    loadExceptions();
+                    loadCpuInfo();
+                    loadHeapMemoryInfo();
+                    loadPhysicalMemoryInfo();
+                    loadThreadsInfo();
+                    loadDynamicProperties();
+                }
+            });
+        }
+        let threadMap = new Map();
+        function loadThreadsInfo(queryState) {
+            queryState = queryState || '';
+            $.get(concatToken('contextPath/koTime/getThreadsInfo?state='+queryState), function (data) {
+                let statistics = data['statistics'];
+                let all = statistics['all'];
+                let RUNNABLE = statistics['RUNNABLE'] || 0;
+                let BLOCKED = statistics['BLOCKED'] || 0;
+                let WAITING = statistics['WAITING'] || 0;
+                let TIMED_WAITING = statistics['TIMED_WAITING'] || 0;
+
+                document.querySelector("#threadNum").innerHTML = all;
+                document.querySelector("#runnableNum").innerHTML = RUNNABLE;
+                document.querySelector("#blockedNum").innerHTML = BLOCKED;
+                document.querySelector("#waitingNum").innerHTML = WAITING;
+                document.querySelector("#timedWaitingNum").innerHTML = TIMED_WAITING;
+
+                let element = document.getElementById('threadList');
+                let html = '';
+                let threads = data['threads'];
+                let colors = {
+                    'RUNNABLE':'#32d296',
+                    'BLOCKED':'#cc0c0c',
+                    'WAITING':'#ad7070',
+                    'TIMED_WAITING':'#ad7070'
+                }
+                for (let i = 0; i < threads.length; i++) {
+                    let thread = threads[i];
+                    let id = thread['id'];
+                    let name = thread['name'];
+                    let classType = thread['classType'];
+                    let state = thread['state'];
+                    let stacks = thread['stacks'];
+                    threadMap[id+''] = stacks;
+                    html+=`<li onclick="showThreadInfo('${id}')" style='color: #333;font-weight: 400;font-size: 14px;'>id=<span style="font-size: 16px;font-weight: 500;">${id}</span>&nbsp; &nbsp;name=${name}&nbsp; &nbsp;class=${classType}&nbsp; &nbsp;<span style='font-size: 10px;background-color: ${colors[state]};' class="uk-label uk-label-success">${state}</span></li>`;
+                }
+                element.innerHTML = html;
+            });
+        }
+
+        function showThreadInfo(id) {
+            let stacks = threadMap[id];
+            let html = '';
+            for (let i = 0; i < stacks.length; i++) {
+                let stack = stacks[i];
+                let className = stack['className']
+                let methodName = stack['methodName']
+                let fileName = stack['fileName']
+                let lineNumber = stack['lineNumber']
+                html+=`<li style='color: #333;font-weight: 400;font-size: 14px;'>${className}.${methodName}&nbsp; &nbsp;<span style='font-size: 10px;background-color: darkslategray;text-transform: unset' class="uk-label uk-label-success">${fileName}：${lineNumber}</span></li>`;
+
+            }
+            let threadDetailDom = document.getElementById('thread-detail');
+            threadDetailDom.innerHTML = html;
+            UIkit.notification.closeAll();
+            UIkit.modal(document.getElementById("modal-thread")).show();
+        }
+
+        $(document).ready(function () {
+            refreshData();
+        });
+
+    </script>
+</head>
+<!--endreplace-->
+<body  style="background-color: #f2f3f2" >
+
+<nav class="uk-navbar-container" style="background-color: #404b67;height: 85px" uk-navbar>
+    <div class="uk-navbar-center">
+        <div class="uk-grid-small" uk-grid>
+            <div  onclick="refreshData()"  style="margin-top: 20px;font-size: 24px;color: white;cursor: pointer" class="uk-width-expand" >KoTime</div>
+        </div>
+    </div>
+</nav>
+
+<ul class="uk-flex-center" uk-tab style="background-color: #404b67;margin-top: 0px;">
+    <li id="zl" class="uk-active"><a href="#"  style="color: #edeef1;font-size: 14px;text-transform: capitalize">Summary</a></li>
+    <li id="jklb"><a href="#"  style="color: #edeef1;font-size: 14px;text-transform: capitalize">Interfaces</a></li>
+    <li><a href="#"  style="color: #edeef1;font-size: 14px;text-transform: capitalize">Exceptions</a></li>
+    <li><a href="#"  style="color: #edeef1;font-size: 14px;text-transform: capitalize">Threads</a></li>
+    <li><a href="#"  style="color: #edeef1;font-size: 14px;text-transform: capitalize">Hot update</a></li>
+    <li><a href="#"  style="color: #edeef1;font-size: 14px;text-transform: capitalize">Configurations</a></li>
+    <li><a href="#"  style="color: #edeef1;font-size: 14px;text-transform: capitalize">Contact me</a><span title="Latest release"  style="position: absolute;top:-10px;left: 90%;border-radius: 5px;text-transform: unset" class="uk-label" id="version-notice" onclick="window.location.href='http://www.kotime.cn/docs/kaiyuan#/v220/introduce'"></span></li>
+</ul>
+
+<ul class="uk-switcher uk-margin">
+    <li style="margin-left: 30%;margin-right: 30%;">
+        <ul class="uk-flex-left" uk-tab>
+            <li class="uk-active"><a href="#" style="text-transform: capitalize" >Number of Interface</a></li>
+        </ul>
+        <div style="margin-top: 20px;" class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid>
+            <div>
+                <div id="systemTotalNum-div" style="border-radius: 10px;background-color: #fefffe;padding: 20px"
+                     className="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 10px;color: #3b3f4f">All</span><br>
+                    <span style="font-size: 30px;color: #020718;font-weight: bold" id="systemTotalNum">0</span>
+                </div>
+            </div>
+            <div>
+                <div id="systemDelayNum-div" style="border-radius: 10px;background-color: #fefffe;padding: 20px"
+                     className="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 10px;color: #3b3f4f">Delayed</span>
+                    <br>
+                    <span style="font-size: 30px;color: #cc0c0c;font-weight: bold" id="systemDelayNum">0</span></div>
+            </div>
+            <div>
+                <div id="systemNormalNum-div" style="border-radius: 10px;background-color: #fefffe;padding: 20px"
+                     className="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 10px;color: #3b3f4f">Normal</span>
+                    <br>
+                    <span style="font-size: 30px;color: #29da93;font-weight: bold" id="systemNormalNum">0</span></div>
+            </div>
+        </div>
+
+        <ul style="margin-top: 10px;" class="uk-flex-left" uk-tab>
+            <li class="uk-active"><a href="#"  style="text-transform: capitalize">Response Time</a></li>
+        </ul>
+        <div style="margin-top: 10px;" class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid>
+            <div>
+                <div id="systemAvgRunTime-div" style="border-radius: 10px;background-color: #fefffe;padding: 20px"
+                     className="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 10px;color: #3b3f4f">Avg（ms）</span>
+                    <br>
+                    <span style="font-size: 30px;color: #020718;font-weight: bold" id="systemAvgRunTime">0</span></div>
+            </div>
+            <div>
+                <div id="systemMaxRunTime-div" style="border-radius: 10px;background-color: #fefffe;padding: 20px"
+                     className="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 10px;color: #3b3f4f">Max（ms）</span>
+                    <br>
+                    <span style="font-size: 30px;color: #020718;font-weight: bold" id="systemMaxRunTime">0</span></div>
+            </div>
+            <div>
+                <div id="systemMinRunTime-div" style="border-radius: 10px;background-color: #fefffe;padding: 20px"
+                     className="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 10px;color: #3b3f4f">Min（ms）</span>
+                    <br>
+                    <span style="font-size: 30px;color: #020718;font-weight: bold" id="systemMinRunTime">0</span></div>
+            </div>
+        </div>
+        <ul class="uk-flex-left" uk-tab>
+            <li class="uk-active"><a href="#" style="text-transform: capitalize">System Usage</a></li>
+        </ul>
+        <div style="margin-top: 20px;" class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid>
+            <div>
+                <div id="cpuInfo-div" style="border-radius: 10px;background-color: #fefffe;padding: 20px" class="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 12px;color: #3b3f4f;justify-content: space-around;text-transform: unset" id="cpuLogicalAmount">CPU Usage：</span><span style="font-size: 15px;color: #020718;font-weight: bold" id="systemLoad" >0</span>
+                    <hr style="margin-top: 7px">
+                    <ul class="uk-list-bullet" style="text-align: left;margin-top: -13px">
+                        <li style="margin-top: -2px;"><span style="font-size: 8px;color: #3b3f4f;text-transform: unset">User Usage：</span><span style="font-size: 12px;color: #020718;font-weight: bold" id="cpuUserRate" >0</span></li>
+                        <li style="margin-top: -2px;"><span style="font-size: 8px;color: #3b3f4f;text-transform: unset">System Usage：</span><span style="font-size: 12px;color: #020718;font-weight: bold" id="cpuSysRate" >0</span></li>
+                        <li style="margin-top: -2px;"><span style="font-size: 8px;color: #3b3f4f;text-transform: unset">IO Wait Rate：</span><span style="font-size: 12px;color: #020718;font-weight: bold" id="cpuWaitRate" >0</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div id="heapMemory-div" style="border-radius: 10px;background-color: #fefffe;padding: 20px" class="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 12px;color: #3b3f4f;justify-content: space-around;text-transform: unset">Heap Memory：</span><span style="font-size: 15px;color: #020718;font-weight: bold" id="heapUsedRate" >0</span>
+                    <hr style="margin-top: 7px">
+                    <ul class="uk-list-bullet" style="text-align: left;margin-top: -13px">
+                        <li style="margin-top: -2px;"><span style="font-size: 8px;color: #3b3f4f;text-transform: unset">Init：</span><span style="font-size: 12px;color: #020718;font-weight: bold" id="heapInit" >0</span></li>
+                        <li style="margin-top: -2px;"><span style="font-size: 8px;color: #3b3f4f;text-transform: unset">Max：</span><span style="font-size: 12px;color: #020718;font-weight: bold" id="heapMax" >0</span></li>
+                        <li style="margin-top: -2px;"><span style="font-size: 8px;color: #3b3f4f;text-transform: unset">Used：</span><span style="font-size: 12px;color: #020718;font-weight: bold" id="heapUsed" >0</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div id="physicalMemory-div" style="border-radius: 10px;background-color: #fefffe;padding: 20px" class="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 12px;color: #3b3f4f;justify-content: space-around;text-transform: unset">Physical Memory：</span><span style="font-size: 15px;color: #020718;font-weight: bold" id="physicalUsedRate" >0</span>
+                    <hr style="margin-top: 7px">
+                    <ul class="uk-list-bullet" style="text-align: left;margin-top: -13px">
+                        <li style="margin-top: -2px;"><span style="font-size: 8px;color: #3b3f4f;text-transform: unset">All：</span><span style="font-size: 12px;color: #020718;font-weight: bold" id="physicalAmount" >0</span></li>
+                        <li style="margin-top: -2px;"><span style="font-size: 8px;color: #3b3f4f;text-transform: unset">Used：</span><span style="font-size: 12px;color: #020718;font-weight: bold" id="physicalUsed" >0</span></li>
+                        <li style="margin-top: -2px;"><span style="font-size: 8px;color: #3b3f4f;text-transform: unset">ThisUsed：</span><span style="font-size: 12px;color: #020718;font-weight: bold" id="thisUsed" >0</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="uk-alert-success" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p id="apiTip">Please call apis before visiting this page!</p>
+        </div>
+    </li>
+    <li style="margin-left: 20%;margin-right: 20%;">
+        <div style="left: 35%;width: 350px;" class="uk-search uk-search-default">
+            <span uk-search-icon></span>
+            <input list="condidates" id="searchText" style="border-top: none;border-right: none;border-left: none;border-bottom: 1px solid lightgreen;color:#213121" class="uk-search-input" type="search" placeholder="search method name or class name..." oninput="searchTip(event);" onkeydown="searchApis(event);">
+            <datalist id="condidates" onkeydown="searchApis(event);">
+            </datalist>
+        </div>
+        <ul id="apiList" style="background-color: rgba(245,242,242,0.96);padding: 10px;overflow-y: auto;max-height: 70%" class="uk-list uk-list-divider">
+            <li>method 1 1&nbsp<span class="uk-label uk-label-success">0</span></li>
+        </ul>
+    </li>
+    <li style="margin-left: 20%;margin-right: 20%;">
+        <ul id="exceptionList" style="background-color: rgba(245,242,242,0.96);padding: 10px;overflow-y: auto;max-height: 73%" class="uk-list uk-list-divider">
+            <li>exception 1 1&nbsp<span class="uk-label uk-label-danger">closed</span></li>
+        </ul>
+    </li>
+    <li style="margin-left: 30%;margin-right: 30%;">
+        <ul class="uk-flex-left" uk-tab>
+            <li class="uk-active"><a href="#" style="text-transform: capitalize">Number of thread</a></li>
+        </ul>
+        <div style="margin-top: 20px;" class="uk-grid-small uk-child-width-expand@s uk-text-center" uk-grid>
+            <div>
+                <div onclick="loadThreadsInfo('')" id="threadNum-div" style="cursor:pointer;border-radius: 10px;background-color: #fefffe;padding: 20px" class="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 10px;color: #3b3f4f">ALL</span><br>
+                    <span style="font-size: 30px;color: #020718;font-weight: bold" id="threadNum" >0</span>
+                </div>
+            </div>
+            <div>
+                <div onclick="loadThreadsInfo('RUNNABLE')" id="runnableNum-div" style="cursor:pointer;border-radius: 10px;background-color: #fefffe;padding: 20px" class="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 10px;color: #3b3f4f">RUNNABLE</span>
+                    <br>
+                    <span style="font-size: 30px;color: #29da93;font-weight: bold" id="runnableNum">0</span>
+                </div>
+            </div>
+            <div>
+                <div onclick="loadThreadsInfo('BLOCKED')" id="blockedNum-div" style="cursor:pointer;border-radius: 10px;background-color: #fefffe;padding: 20px" class="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 10px;color: #3b3f4f">BLOCKED</span>
+                    <br>
+                    <span style="font-size: 30px;color: #cc0c0c;font-weight: bold" id="blockedNum">0</span></div>
+            </div>
+            <div>
+                <div onclick="loadThreadsInfo('WAITING')" id="waitingNum-div" style="cursor:pointer;border-radius: 10px;background-color: #fefffe;padding: 20px" class="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 10px;color: #3b3f4f">WAITING</span>
+                    <br>
+                    <span style="font-size: 30px;color: #ad7070;font-weight: bold" id="waitingNum">0</span></div>
+            </div>
+            <div>
+                <div onclick="loadThreadsInfo('TIMED_WAITING')" id="timedWaitingNum-div" style="cursor:pointer;border-radius: 10px;background-color: #fefffe;padding: 20px" class="uk-card uk-card-default uk-card-body uk-label-success">
+                    <span style="font-size: 10px;color: #3b3f4f">TIMED_WAITING</span>
+                    <br>
+                    <span style="font-size: 30px;color: #ad7070;font-weight: bold" id="timedWaitingNum">0</span></div>
+            </div>
+        </div>
+        <ul class="uk-flex-left" uk-tab>
+            <li class="uk-active"><a href="#" style="text-transform: capitalize">Threads</a></li>
+        </ul>
+        <ul id="threadList" style="background-color: rgba(245,242,242,0.96);padding: 10px;overflow-y: auto;max-height: 65%" class="uk-list uk-list-divider">
+            <li>thread 1 1&nbsp<span class="uk-label uk-label-success">0</span></li>
+        </ul>
+    </li>
+    <li style="margin-left: 35%;margin-right: 35%;">
+        <div class="uk-card uk-card-default uk-card-body">
+            <div id="classForm" >
+                <div uk-form-custom="target: true"  class="uk-form-controls">
+                    <input id="classFile" name="classFile"  type="file" >
+                    <input id="form-file" style="width: 500px;border-radius: 5px"  class="uk-input" type="text" placeholder="class file needed to update：compiled class file" >
+                </div>
+                <br>
+                <br>
+                <input id="className" name="className" style="width: 500px;border-radius: 5px" class="uk-input" id="" type="text" placeholder="class name needed to update ：com.xx.xx.TestService" >
+                <br>
+                <br>
+                <button type="button"  onclick="updateClass();" style="width: 500px;background-color: #19985d;border-radius: 5px"  class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">OK</button>
+            </div>
+        </div>
+    </li>
+    <li style="margin-left: 30%;margin-right: 30%;">
+        <ul class="uk-flex-left" uk-tab>
+            <li class="uk-active"><a href="#" style="text-transform: unset">KoTime Configuration</a></li>
+            <li class=""><a href="#"  style="text-transform: unset">dynamic.properties Configuration</a></li>
+        </ul>
+        <ul class="uk-switcher uk-margin">
+            <li>
+                <div style="margin-top: 20px;" class="uk-grid-small uk-child-width-expand@s uk-text-left uk-card uk-card-default uk-card-body"  style="border-radius: 5px" uk-grid>
+                    <div class="layui-tab-item">
+                        <label >KoTime switch：</label> <input id='kotimeEnable' type="checkbox" checked>
+                        <br>
+                        <label >exception switch：</label> <input id='exceptionEnable' type="checkbox">
+                        <br>
+                        <label >console log switch：</label> <input id='logEnable' type="checkbox">
+                        <br>
+                        <label >email switch：</label> <input id='mailEnable' type="checkbox">
+                        <br>
+                        <label>language switch：</label>
+                        <select id="languageSwitch" >
+                            <option  value="chinese">Chinese</option>
+                            <option value="english">English</option>
+                        </select>
+                        <br>
+                        <label >time threshold：</label> <input id='timeThreshold' type="input"><button style="background-color: #177ce1;border: 1px solid #177ce1;cursor: pointer;color: white" id="timeThresholdYes">OK</button>
+                        <br>
+                        <label >clear data：</label><button style="background-color: #177ce1;border: 1px solid #177ce1;cursor: pointer;color: white" id="clearDataYes">OK</button>
+                        <br>
+                        <br>
+                        <br>
+                        <div class="uk-alert-success" uk-alert>
+                            <a class="uk-alert-close" uk-close></a>
+                            <p>Please refresh this page after updating configurations</p>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="uk-card uk-card-default uk-card-body" style="border-radius: 5px">
+                    <textarea id="dynamicText" class="uk-textarea" placeholder="" wrap="off" style="overflow-y: auto;height: 65%;resize: none;overflow-x: auto;"></textarea>
+                    <br>
+                    <br>
+                    <button type="button"  onclick="updateDynamicProperties();" style="width: 100%;background-color: #19985d;border-radius: 5px"  class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">OK</button>
+                </div>
+            </li>
+        </ul>
+
+    </li>
+    <li style="margin-left: 30%;margin-right: 30%;">
+        <script src='https://gitee.com/huoyo/ko-time/widget_preview' async defer></script>
+        <div id="osc-gitee-widget-tag"></div>
+        <style>
+            .osc_pro_color {color: #ffffff !important;}
+            .osc_panel_color {background-color: #1e252b !important;}
+            .osc_background_color {background-color: #323d47 !important;}
+            .osc_border_color {border-color: #455059 !important;}
+            .osc_desc_color {color: #d7deea !important;}
+            .osc_link_color * {color: #99a0ae !important;}
+        </style>
+        <br>
+        <div class="uk-alert-success" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <a href="http://www.kotime.cn/#doc?version=v2.3.7">Technical support</a><br>
+            <a href="http://www.kotime.cn/#products?version=v2.3.7">KoTime Pro</a><br>
+            <a href="http://www.kotime.cn/person?version=v2.3.7">Local plugin</a></div>
+    </li>
+</ul>
+<div id="modal-thread" uk-modal>
+    <div class="uk-modal-dialog" style="width: 75%">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div  class="uk-modal-body uk-margin-auto-vertical" uk-overflow-auto>
+            <ul id="thread-detail" style="background-color: rgba(245,242,242,0.96);padding: 10px;overflow-y: auto;max-height: 70%" class="uk-list uk-list-divider">
+            </ul>
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+            <button class="uk-button uk-button-primary  uk-modal-close" type="button">OK</button>
+        </div>
+
+    </div>
+</div>
+<div id="modal-exception" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div id="exception-detail" class="uk-modal-body uk-margin-auto-vertical" uk-overflow-auto>
+
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+            <button class="uk-button uk-button-primary  uk-modal-close" type="button">OK</button>
+        </div>
+
+    </div>
+</div>
+
+<div id="modal-method" class="uk-modal-full" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+        <div class="uk-grid-collapse uk-child-width-1-1@s uk-flex-middle" uk-grid>
+            <div uk-height-viewport>
+                <div id="layerDemo" width="1200px" height="900px">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-login" class="uk-modal-full" uk-modal>
+
+    <div class="uk-modal-dialog" style="background-color: rgb(242, 243, 242)">
+        <div class="uk-grid-collapse uk-child-width-1-1@s uk-flex-middle" uk-grid>
+            <div   uk-height-viewport>
+
+                <div class="uk-text-center" uk-grid>
+                    <div class="uk-width-1-3@m">
+                    </div>
+                    <div class="uk-width-1-3@m" style="margin-top: 100px;">
+                        <form  class="uk-card uk-card-default uk-card-body" style="border-radius: 5px">
+                            <div class="uk-margin">
+                                <div class="uk-inline">
+                                    <div style="font-size: 35px;" class="uk-width-expand" >KoTime</div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="uk-margin">
+                                <div class="uk-inline">
+                                    <span class="uk-form-icon" uk-icon="icon: user"></span>
+                                    <input id="userName" class="uk-input" type="text">
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <div class="uk-inline">
+                                    <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: lock"></span>
+                                    <input id="userPassword" type="password" class="uk-input" >
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <div class="uk-inline">
+                                    <a class="uk-button uk-button-default uk-label-success" style="border-radius: 5px" onclick="login();"  >OK</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="uk-width-1-3@m">
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!--<div class="uk-margin-medium-bottom" style="position:absolute;top:95%;left:45%;text-align:center;">-->
+<!--    <ul class="uk-flex-center" uk-tab>-->
+<!--        <li class=""><a style="font-size: 7px;text-transform:capitalize" href="#">@2021 Huoyo</a></li>-->
+<!--    </ul>-->
+<!--</div>-->
+
+</body>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>ko-time-retrans</artifactId>
+    <groupId>cn.langpy</groupId>
+    <version>1.0.0</version>
+    <name>ko-time-retrans</name>
+    <build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.5.5</version>
+            <configuration>
+                <!--使用MANIFEST.MF 或者如下配置 任选一个-->
+              <!--  <archive>
+                    &lt;!&ndash;自动添加META-INF/MANIFEST.MF &ndash;&gt;
+                    <manifest>
+                        <addClasspath>true</addClasspath>
+                    </manifest>
+                    <manifestEntries>
+                        <Premain-Class>com.rickiyang.learn.PreMainTraceAgent</Premain-Class>
+                        <Agent-Class>com.rickiyang.learn.PreMainTraceAgent</Agent-Class>
+                        <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                        <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                    </manifestEntries>
+                </archive>-->
+                <archive>
+                    <manifestFile>
+                        src/main/resources/MANIFEST.MF
+                    </manifestFile>
+                </archive>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+            </configuration>
+            <!--下面是为了使用 mvn package命令，如果不加则使用mvn assembly-->
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>attached</goal>
+                    </goals>
+                    <phase>package</phase>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+
+
+</project>
