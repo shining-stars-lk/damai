@@ -1,5 +1,6 @@
 package com.example.config;
 
+import com.example.rel.operate.MethodQueueOperate;
 import com.example.service.ApiStatInvokedQueue;
 import lombok.AllArgsConstructor;
 
@@ -16,8 +17,12 @@ public class ApiStatInit {
 
     private final ApiStatInvokedQueue apiStatInvokedQueue;
     
+    private final MethodQueueOperate methodQueueOperate;
     @PostConstruct
     public void init()  {
-        new Thread(apiStatInvokedQueue::onInveked).start();
+        //new Thread(apiStatInvokedQueue::onInveked).start();
+        new Thread(methodQueueOperate::takeTask).start();
     }
+    
+    
 }

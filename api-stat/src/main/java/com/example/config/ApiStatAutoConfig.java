@@ -2,6 +2,11 @@ package com.example.config;
 
 import com.example.data.ApiStatMemoryBase;
 import com.example.handler.ApiStatRunTimeHandler;
+import com.example.rel.MethodDataStackHolder;
+import com.example.rel.handler.MethodHierarchyTransferHandler;
+import com.example.rel.operate.MethodDataOperate;
+import com.example.rel.operate.MethodHierarchyTransferOperate;
+import com.example.rel.operate.MethodQueueOperate;
 import com.example.service.ApiStatInvokedHandler;
 import com.example.service.ApiStatInvokedQueue;
 import lombok.Data;
@@ -24,11 +29,39 @@ import org.springframework.context.annotation.Bean;
 public class ApiStatAutoConfig {
     
     @Bean
-    public AspectJExpressionPointcutAdvisor apiStatAdvisor(ApiStatProperties apiStatProperties,ApiStatInvokedQueue apiStatInvokedQueue) {
+    public MethodDataStackHolder methodDataStackHolder(){
+        return new MethodDataStackHolder();
+    }
+    @Bean
+    public MethodDataOperate methodDataOperate(MethodDataStackHolder methodDataStackHolder){
+        return new MethodDataOperate(methodDataStackHolder);
+    }
+    
+    @Bean
+    public MethodHierarchyTransferOperate methodHierarchyTransferOperate(MethodDataOperate methodDataOperate){
+        return new MethodHierarchyTransferOperate(methodDataOperate);
+    }
+    
+    @Bean
+    public MethodQueueOperate methodQueueOperate(MethodHierarchyTransferHandler methodHierarchyTransferHandler){
+        return new MethodQueueOperate(methodHierarchyTransferHandler);
+    }
+    
+    @Bean
+    public MethodHierarchyTransferHandler methodHierarchyTransferHandler(){
+        return new MethodHierarchyTransferHandler();
+    }
+    
+    @Bean
+    public AspectJExpressionPointcutAdvisor apiStatAdvisor(ApiStatProperties apiStatProperties,ApiStatInvokedQueue apiStatInvokedQueue,
+                                                           MethodDataOperate methodDataOperate,MethodDataStackHolder methodDataStackHolder,
+                                                           MethodHierarchyTransferOperate methodHierarchyTransferOperate,
+                                                           MethodQueueOperate methodQueueOperate) {
         log.info("api stat load");
         AspectJExpressionPointcutAdvisor advisor = new AspectJExpressionPointcutAdvisor();
         advisor.setExpression(apiStatProperties.getPointcut());
-        advisor.setAdvice(new ApiStatRunTimeHandler(apiStatProperties,apiStatInvokedQueue));
+        advisor.setAdvice(new ApiStatRunTimeHandler(apiStatProperties,apiStatInvokedQueue,methodDataOperate,methodDataStackHolder,
+                methodHierarchyTransferOperate,methodQueueOperate));
         return advisor;
     }
     
@@ -48,8 +81,8 @@ public class ApiStatAutoConfig {
     }
     
     @Bean
-    public ApiStatInit apiStatInit(ApiStatInvokedQueue apiStatInvokedQueue){
-        return new ApiStatInit(apiStatInvokedQueue);
+    public ApiStatInit apiStatInit(ApiStatInvokedQueue apiStatInvokedQueue,MethodQueueOperate methodQueueOperate){
+        return new ApiStatInit(apiStatInvokedQueue,methodQueueOperate);
     }
     
 }
