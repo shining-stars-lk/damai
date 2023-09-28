@@ -6,6 +6,8 @@ import com.example.util.MethodType;
 import lombok.AllArgsConstructor;
 import org.aopalliance.intercept.MethodInvocation;
 
+import java.math.BigDecimal;
+
 /**
  * @program: cook-frame
  * @description:
@@ -17,7 +19,7 @@ public class MethodHierarchyTransferOperate {
     
     private final MethodDataOperate methodDataOperate;
     
-    public MethodHierarchyTransfer getMethodHierarchyTransfer(MethodInvocation methodInvocation, MethodData parentMethodData, double runTime, boolean exceptionFlag) {
+    public MethodHierarchyTransfer getMethodHierarchyTransfer(MethodInvocation methodInvocation, MethodData parentMethodData, BigDecimal runTime, boolean exceptionFlag) {
         MethodData currentMethodData = methodDataOperate.getCurrentMethodNode(methodInvocation, runTime);
         parentMethodData = checkControllerParent(parentMethodData, currentMethodData);
         MethodHierarchyTransfer methodHierarchyTransfer = new MethodHierarchyTransfer();
