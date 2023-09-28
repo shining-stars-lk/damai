@@ -58,6 +58,11 @@
             <artifactId>oshi-core</artifactId>
             <version>${oshi-core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>redis-tool</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 
     

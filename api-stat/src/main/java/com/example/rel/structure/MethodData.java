@@ -3,6 +3,8 @@ package com.example.rel.structure;
 import com.example.util.MethodType;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @program: cook-frame
  * @description:
@@ -21,6 +23,8 @@ public class MethodData {
     private Integer argumentCount;
     
     private MethodType methodType;
+    
+    private BigDecimal runTime;
     
     private String api;
 }

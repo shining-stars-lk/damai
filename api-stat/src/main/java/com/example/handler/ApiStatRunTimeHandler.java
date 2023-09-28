@@ -13,6 +13,9 @@ import lombok.AllArgsConstructor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * @program: cook-frame
  * @description:
@@ -37,7 +40,7 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
     @Override
     public Object invoke(final MethodInvocation methodInvocation) throws Throwable {
         Object obj = null;
-        long begin = System.nanoTime();
+        long start = System.nanoTime();
         //ApiStatMethodNode parentMethodNode = ApiStatMethodNodeService.getParentMethodNode();
         MethodData parentMethodData = methodDataOperate.getParentMethodData();
         //MethodStackHolder.putMethod(methodInvocation);
@@ -51,9 +54,11 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
             exceptionFlag = true;
             throw t;
         } finally {
-            long end = System.nanoTime();
+            long runTime = System.nanoTime() - start;
             //apiStatInvokedInfo = ApiStatCommon.getApiStatInvokedInfo(methodInvocation, parentMethodNode, ((end - begin) / 1000000.0),exceptionFlag);
-            methodHierarchyTransfer = methodHierarchyTransferOperate.getMethodHierarchyTransfer(methodInvocation,parentMethodData,((end - begin) / 1000000.0),exceptionFlag);
+            
+            BigDecimal runTimeBigDecimal = new BigDecimal(String.valueOf(runTime)).divide(new BigDecimal(1000000), 2, RoundingMode.HALF_UP);
+            methodHierarchyTransfer = methodHierarchyTransferOperate.getMethodHierarchyTransfer(methodInvocation,parentMethodData,runTimeBigDecimal,exceptionFlag);
             //apiStatInvokedQueue.add(apiStatInvokedInfo);
             methodQueueOperate.add(methodHierarchyTransfer);
             MethodStackHolder.clear();

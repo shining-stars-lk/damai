@@ -7,7 +7,10 @@ import com.example.util.MethodType;
 import lombok.AllArgsConstructor;
 import org.aopalliance.intercept.MethodInvocation;
 
+import java.math.BigDecimal;
 import java.util.Stack;
+
+import static com.example.rel.constant.ApiStatConstant.METHOD_DATA_SPLIT;
 
 /**
  * @program: cook-frame
@@ -34,15 +37,14 @@ public class MethodDataOperate {
         return stack.peek();
     }
     
-    public MethodData getCurrentMethodNode(MethodInvocation pjp, double runTime) {
+    public MethodData getCurrentMethodNode(MethodInvocation pjp, BigDecimal runTime) {
         String className = pjp.getMethod().getDeclaringClass().getName();
         String methodName = pjp.getMethod().getName();
         MethodData methodData = new MethodData();
-        methodData.setId(className + "." + methodName);
+        methodData.setId(className + METHOD_DATA_SPLIT + methodName);
         methodData.setClassName(className);
         methodData.setMethodName(methodName);
-        //BigDecimal bg = BigDecimal.valueOf(runTime);
-        //runTime = bg.setScale(2, RoundingMode.HALF_UP).doubleValue()
+        methodData.setRunTime(runTime);
         methodData.setMethodType(ApiStatCommon.getMethodType(pjp));
         if (methodData.getMethodType()==MethodType.Controller) {
             methodData.setApi(ApiStatCommon.getRoute(pjp));

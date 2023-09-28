@@ -29,6 +29,19 @@ public enum RedisKeyEnum {
     DEPTH_RULE("depth_rule","深度调用限制规则的key","深度调用限制规则的value","k"),
     
     DEPTH_RULE_LIMIT("depth_rule_limit_%s_%s","深度调用限制时间的key","深度调用限制时间的value","k"),
+    
+    API_STAT_CONTROLLER_METHOD_DATA("api_stat_controller_method_data_%s","controller的key","controller的value","lk"),
+    
+    API_STAT_SERVICE_METHOD_DATA("api_stat_service_method_data_%s","service的key","service的value","lk"),
+    
+    API_STAT_DTO_METHOD_DATA("api_stat_dto_method_data_%s","dto的key","dto的value","lk"),
+    
+    API_STAT_METHOD_HIERARCHY("api_stat_method_Hierarchy_%s","method_Hierarchy的key","method_Hierarchy的value","lk"),
+    
+    API_STAT_CONTROLLER_CHILDREN_LIST("api_stat_controller_children_list_%s","api_stat_controller_children_list的key","api_stat_controller_children_list的value","lk"),
+    
+    API_STAT_SERVICE_CHILDREN_LIST("api_stat_service_children_list_%s","api_stat_service_children_list的key","api_stat_service_children_list的value","lk"),
+    
     ;
 
     /**
