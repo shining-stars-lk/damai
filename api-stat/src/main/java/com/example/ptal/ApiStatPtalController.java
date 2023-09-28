@@ -24,6 +24,6 @@ public class ApiStatPtalController {
     
     @PostMapping(value = "getApis") 
     public List<ApiStatMethodInfo> getApis(){
-        return null;
+        return apiStatMemoryBase.getControllers();
     }
 }

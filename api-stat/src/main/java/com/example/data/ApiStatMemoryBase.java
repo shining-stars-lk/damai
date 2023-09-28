@@ -3,14 +3,17 @@ package com.example.data;
 
 import com.example.model.ApiStatMethodNode;
 import com.example.model.ApiStatMethodRelation;
+import com.example.ptal.model.ApiStatMethodInfo;
 import com.example.util.ApiStatCommon;
 import com.example.util.MethodType;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
 
 
 public class ApiStatMemoryBase {
@@ -82,5 +85,36 @@ public class ApiStatMemoryBase {
     
     public Map<String, ApiStatMethodRelation> getMethodRelations() {
         return methodRelations;
+    }
+    
+    public List<ApiStatMethodInfo> getControllers() {
+        List<ApiStatMethodInfo> methodInfos = new ArrayList<>();
+        for (ApiStatMethodNode methodNode : methodNodes.values()) {
+            if (MethodType.Controller == methodNode.getMethodType()) {
+                String id = methodNode.getId();
+                Optional<ApiStatMethodRelation> relations = methodRelations.values().stream().filter(methodRelation -> methodRelation.getTargetId().equals(id)).findFirst();
+                ApiStatMethodRelation relation = null;
+                if (relations.isPresent()) {
+                    relation = relations.get();
+                } else {
+                    continue;
+                }
+                ApiStatMethodInfo methodInfo = new ApiStatMethodInfo();
+                methodInfo.setId(methodNode.getId());
+                methodInfo.setName(methodNode.getName());
+                methodInfo.setClassName(methodNode.getClassName());
+                methodInfo.setMethodName(methodNode.getMethodName());
+                methodInfo.setMethodType(methodNode.getMethodType());
+                methodInfo.setRouteName(methodNode.getRouteName());
+                methodInfo.setValue(relation.getAvgRunTime());
+                methodInfo.setAvgRunTime(relation.getAvgRunTime());
+                methodInfo.setMaxRunTime(relation.getMaxRunTime());
+                methodInfo.setMinRunTime(relation.getMinRunTime());
+                if (!methodInfos.contains(methodInfo)) {
+                    methodInfos.add(methodInfo);
+                }
+            }
+        }
+        return methodInfos;
     }
 }
