@@ -1,16 +1,20 @@
 package com.example.rel.handler;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.example.core.RedisKeyEnum;
 import com.example.enums.MethodType;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
 import com.example.structure.MethodData;
+import com.example.structure.MethodDetailData;
 import com.example.structure.MethodHierarchy;
 import com.example.structure.MethodHierarchyTransfer;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 
 import static com.example.rel.constant.ApiStatConstant.METHOD_DATA_SPLIT;
 
@@ -33,10 +37,14 @@ public class MethodHierarchyTransferHandler {
         
         addMethodData(currentMethodData);
         addMethodData(parentMethodData);
-        
-        addMethodHierarchy(parentMethodData,currentMethodData,methodHierarchyTransfer.isExceptionFlag());
-        
-        addList(parentMethodData,currentMethodData);
+
+        BigDecimal executeTime = addMethodHierarchy(parentMethodData, currentMethodData, methodHierarchyTransfer.isExceptionFlag());
+
+        if (currentMethodData.getMethodType() == MethodType.Controller) {
+            addControllerSortedSet(currentMethodData,executeTime);
+        }
+
+        addChildren(parentMethodData,currentMethodData);
     }
     
     public void addMethodData(MethodData methodData){
@@ -52,9 +60,9 @@ public class MethodHierarchyTransferHandler {
         }
     }
     
-    public void addMethodHierarchy(MethodData parentMethodData,MethodData currentMethodData,boolean exceptionFlag){
+    public BigDecimal addMethodHierarchy(MethodData parentMethodData,MethodData currentMethodData,boolean exceptionFlag){
         if (parentMethodData == null || currentMethodData == null) {
-            return;
+            return null;
         }
         String oldMethodHierarchyId = parentMethodData.getId() + METHOD_DATA_SPLIT +currentMethodData.getId();
         MethodHierarchy oldMethodHierarchy = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_HIERARCHY, oldMethodHierarchyId), MethodHierarchy.class);
@@ -85,16 +93,27 @@ public class MethodHierarchyTransferHandler {
             }
         }
         redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_HIERARCHY,oldMethodHierarchyId), oldMethodHierarchy);
+        return oldMethodHierarchy.getAvgExecuteTime();
+    }
+
+    public void addControllerSortedSet(MethodData methodData,BigDecimal executeTime){
+        if (methodData == null) {
+            return;
+        }
+        MethodDetailData methodDetailData = new MethodDetailData();
+        BeanUtils.copyProperties(methodData,methodDetailData);
+        methodDetailData.setAvgExecuteTime(executeTime);
+        redisCache.addForZSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_SORTED_SET),methodDetailData,executeTime.doubleValue());
     }
     
-    public void addList(MethodData parentMethodData,MethodData currentMethodData){
+    public void addChildren(MethodData parentMethodData,MethodData currentMethodData){
         if (parentMethodData == null || currentMethodData == null) {
             return;
         }
         if (parentMethodData.getMethodType() == MethodType.Controller) {
-            redisCache.leftPushForList(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_CHILDREN_LIST,parentMethodData.getId()),currentMethodData.getId());
+            redisCache.addForSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_CHILDREN_SET,parentMethodData.getId()),currentMethodData.getId());
         } else if (parentMethodData.getMethodType() == MethodType.Service) {
-            redisCache.leftPushForList(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_SERVICE_CHILDREN_LIST,parentMethodData.getId()),currentMethodData.getId());
+            redisCache.addForSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_SERVICE_CHILDREN_SET,parentMethodData.getId()),currentMethodData.getId());
         }
     }
 }
