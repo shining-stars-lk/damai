@@ -1,0 +1,40 @@
+#服务端口
+server:
+  port: 6666
+# 应用名称
+spring:
+  application:
+    name: service-case
+  redis:
+    host: www.cookframe.com
+    port: 6379
+    password: qaz123
+    database: 0
+
+logging:
+  level:
+    example:
+      mapper : debug
+    tracer: trace
+redisson:
+  timeout: 3000
+  address: www.cookframe.com
+  port: 6379
+  password: qaz123
+  database: 5
+  connectionPoolSize: 64
+  connectionMinimumIdleSize: 10
+  
+management:
+  endpoints:
+    web:
+      exposure:
+        # 开启所有的endpoints(不包含shutdown)
+        include: "*"
+  endpoint:
+    health:
+      # 开启对所有用户暴露详细的应用健康信息
+      show-details: always
+      probes:
+        # 将只在k8s环境生效的配置改为在任何情况下也可以启动(如/actuator/health/liveness，/actuator/health/readiness)
+        enabled: true
