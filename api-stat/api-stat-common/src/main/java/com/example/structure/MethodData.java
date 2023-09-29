@@ -5,6 +5,7 @@ import com.example.enums.MethodType;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * @program: cook-frame
@@ -28,4 +29,17 @@ public class MethodData {
     private BigDecimal runTime;
     
     private String api;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MethodData)) return false;
+        MethodData that = (MethodData) o;
+        return getId().equals(that.getId()) && getClassName().equals(that.getClassName()) && getMethodName().equals(that.getMethodName()) && Objects.equals(getArgumentCount(), that.getArgumentCount()) && getMethodType() == that.getMethodType() && Objects.equals(getRunTime(), that.getRunTime()) && Objects.equals(getApi(), that.getApi());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getClassName(), getMethodName(), getArgumentCount(), getMethodType(), getRunTime(), getApi());
+    }
 }

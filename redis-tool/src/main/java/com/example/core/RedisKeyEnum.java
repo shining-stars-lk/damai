@@ -37,10 +37,12 @@ public enum RedisKeyEnum {
     API_STAT_DTO_METHOD_DATA("api_stat_dto_method_data_%s","dto的key","dto的value","lk"),
     
     API_STAT_METHOD_HIERARCHY("api_stat_method_Hierarchy_%s","method_Hierarchy的key","method_Hierarchy的value","lk"),
+
+    API_STAT_CONTROLLER_SORTED_SET("api_stat_controller_sorted_set","api_stat_controller_sorted_set的key","api_stat_controller_sorted_set的value","lk"),
+
+    API_STAT_CONTROLLER_CHILDREN_SET("api_stat_controller_children_set_%s","api_stat_controller_children_set的key","api_stat_controller_children_set的value","lk"),
     
-    API_STAT_CONTROLLER_CHILDREN_LIST("api_stat_controller_children_list_%s","api_stat_controller_children_list的key","api_stat_controller_children_list的value","lk"),
-    
-    API_STAT_SERVICE_CHILDREN_LIST("api_stat_service_children_list_%s","api_stat_service_children_list的key","api_stat_service_children_list的value","lk"),
+    API_STAT_SERVICE_CHILDREN_SET("api_stat_service_children_set_%s","api_stat_service_children_set的key","api_stat_service_children_set的value","lk"),
     
     ;
 
