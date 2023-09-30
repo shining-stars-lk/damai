@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class AouStatSystemApplication {
+public class ApiStatSystemApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AouStatSystemApplication.class, args);
+        SpringApplication.run(ApiStatSystemApplication.class, args);
     }
 
 }
