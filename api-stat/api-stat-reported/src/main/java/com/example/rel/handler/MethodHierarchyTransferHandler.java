@@ -1,6 +1,5 @@
 package com.example.rel.handler;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.example.core.RedisKeyEnum;
 import com.example.enums.MethodType;
 import com.example.redis.RedisCache;
@@ -14,7 +13,6 @@ import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
 
 import static com.example.rel.constant.ApiStatConstant.METHOD_DATA_SPLIT;
 
@@ -56,7 +54,7 @@ public class MethodHierarchyTransferHandler {
         } else if (methodData.getMethodType() == MethodType.Service) {
             redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_SERVICE_METHOD_DATA,methodData.getId()),methodData);
         } else if (methodData.getMethodType() == MethodType.Dao) {
-            redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_DTO_METHOD_DATA,methodData.getId()),methodData);
+            redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_DAO_METHOD_DATA,methodData.getId()),methodData);
         }
     }
     
