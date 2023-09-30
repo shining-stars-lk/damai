@@ -29,7 +29,7 @@ public class ApiStatSystemController {
     }
 
     @PostMapping(value = "/getApiChainList")
-    public List getMethodChainList(String controllerMethod){
+    public MethodDetailData getMethodChainList(String controllerMethod){
         return apiStatSystemService.getMethodChainList(controllerMethod);
     }
 

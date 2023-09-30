@@ -34,7 +34,7 @@ public enum RedisKeyEnum {
     
     API_STAT_SERVICE_METHOD_DATA("api_stat_service_method_data_%s","service的key","service的value","lk"),
     
-    API_STAT_DTO_METHOD_DATA("api_stat_dto_method_data_%s","dto的key","dto的value","lk"),
+    API_STAT_DAO_METHOD_DATA("api_stat_dao_method_data_%s","dao的key","dao的value","lk"),
     
     API_STAT_METHOD_HIERARCHY("api_stat_method_Hierarchy_%s","method_Hierarchy的key","method_Hierarchy的value","lk"),
 
