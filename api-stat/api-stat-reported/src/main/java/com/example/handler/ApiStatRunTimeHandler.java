@@ -41,11 +41,8 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
     public Object invoke(final MethodInvocation methodInvocation) throws Throwable {
         Object obj = null;
         long start = System.nanoTime();
-        //ApiStatMethodNode parentMethodNode = ApiStatMethodNodeService.getParentMethodNode();
         MethodData parentMethodData = methodDataOperate.getParentMethodData();
-        //MethodStackHolder.putMethod(methodInvocation);
         methodDataStackHolder.putMethodData(methodInvocation);
-        //ApiStatInvokedInfo apiStatInvokedInfo = new ApiStatInvokedInfo();
         MethodHierarchyTransfer methodHierarchyTransfer = new MethodHierarchyTransfer();
         boolean exceptionFlag = false;
         try {
@@ -55,11 +52,8 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
             throw t;
         } finally {
             long runTime = System.nanoTime() - start;
-            //apiStatInvokedInfo = ApiStatCommon.getApiStatInvokedInfo(methodInvocation, parentMethodNode, ((end - begin) / 1000000.0),exceptionFlag);
-            
             BigDecimal runTimeBigDecimal = new BigDecimal(String.valueOf(runTime)).divide(new BigDecimal(1000000), 2, RoundingMode.HALF_UP);
             methodHierarchyTransfer = methodHierarchyTransferOperate.getMethodHierarchyTransfer(methodInvocation,parentMethodData,runTimeBigDecimal,exceptionFlag);
-            //apiStatInvokedQueue.add(apiStatInvokedInfo);
             methodQueueOperate.add(methodHierarchyTransfer);
             MethodStackHolder.clear();
         }
