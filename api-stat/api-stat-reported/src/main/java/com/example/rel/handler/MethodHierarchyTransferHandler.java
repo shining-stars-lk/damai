@@ -33,11 +33,12 @@ public class MethodHierarchyTransferHandler {
         MethodData currentMethodData = methodHierarchyTransfer.getCurrentMethodData();
         MethodData parentMethodData = methodHierarchyTransfer.getParentMethodData();
         
-        addMethodData(currentMethodData);
-        addMethodData(parentMethodData);
+        //addMethodData(currentMethodData);
+        //addMethodData(parentMethodData);
 
-        BigDecimal executeTime = addMethodHierarchy(parentMethodData, currentMethodData, methodHierarchyTransfer.isExceptionFlag());
-
+        //BigDecimal executeTime = addMethodHierarchy(parentMethodData, currentMethodData, methodHierarchyTransfer.isExceptionFlag());
+        //addMethodDetail(parentMethodData,false);
+        BigDecimal executeTime = addMethodDetail(currentMethodData,methodHierarchyTransfer.isExceptionFlag());
         if (currentMethodData.getMethodType() == MethodType.Controller) {
             addControllerSortedSet(currentMethodData,executeTime);
         }
@@ -92,6 +93,40 @@ public class MethodHierarchyTransferHandler {
         }
         redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_HIERARCHY,oldMethodHierarchyId), oldMethodHierarchy);
         return oldMethodHierarchy.getAvgExecuteTime();
+    }
+
+    public BigDecimal addMethodDetail(MethodData methodData,boolean exceptionFlag){
+        if (methodData == null) {
+            return null;
+        }
+        String oldMethodDetailId = methodData.getId();
+        MethodDetailData oldMethodDetailData = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_DETAIL, oldMethodDetailId), MethodDetailData.class);
+        if (oldMethodDetailData == null) {
+            oldMethodDetailData = new MethodDetailData();
+            BeanUtils.copyProperties(methodData,oldMethodDetailData);
+            oldMethodDetailData.setAvgExecuteTime(methodData.getRunTime());
+            oldMethodDetailData.setMaxExecuteTime(methodData.getRunTime());
+            oldMethodDetailData.setMinExecuteTime(methodData.getRunTime());
+            oldMethodDetailData.setExceptionCount(exceptionFlag ? 1L : 0L);
+        }else {
+            BigDecimal newAvgExecuteTime = (methodData.getRunTime().add(oldMethodDetailData.getAvgExecuteTime())).divide(new BigDecimal("2"),2,RoundingMode.HALF_UP);
+            oldMethodDetailData.setAvgExecuteTime(newAvgExecuteTime);
+            BigDecimal newMaxExecuteTime = oldMethodDetailData.getMaxExecuteTime();
+            if (methodData.getRunTime().compareTo(oldMethodDetailData.getMaxExecuteTime()) > 0) {
+                newMaxExecuteTime = methodData.getRunTime();
+            }
+            BigDecimal newMinExecuteTime = oldMethodDetailData.getMinExecuteTime();
+            if (methodData.getRunTime().compareTo(oldMethodDetailData.getMinExecuteTime()) < 0) {
+                newMinExecuteTime = methodData.getRunTime();
+            }
+            oldMethodDetailData.setMaxExecuteTime(newMaxExecuteTime);
+            oldMethodDetailData.setMinExecuteTime(newMinExecuteTime);
+            if (exceptionFlag) {
+                oldMethodDetailData.setExceptionCount(oldMethodDetailData.getExceptionCount() + 1);
+            }
+        }
+        redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_DETAIL,oldMethodDetailId), oldMethodDetailData);
+        return oldMethodDetailData.getAvgExecuteTime();
     }
 
     public void addControllerSortedSet(MethodData methodData,BigDecimal executeTime){
