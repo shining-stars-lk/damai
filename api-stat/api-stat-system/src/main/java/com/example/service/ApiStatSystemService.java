@@ -1,16 +1,19 @@
 package com.example.service;
 
 import com.example.core.RedisKeyEnum;
+import com.example.dto.ControllerMethodPage;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
 import com.example.structure.MethodData;
 import com.example.structure.MethodDetailData;
 import com.example.structure.MethodHierarchy;
+import com.example.vo.Page;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +27,27 @@ public class ApiStatSystemService {
     private RedisCache redisCache;
 
     public Set<MethodDetailData> getControllerMethods() {
-        Set<ZSetOperations.TypedTuple<MethodDetailData>> typedTuples = redisCache.rangeWithScoreForZSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_SORTED_SET), 0, -1, MethodDetailData.class);
+        Set<ZSetOperations.TypedTuple<MethodDetailData>> typedTuples = redisCache.reverseRangeWithScoreForZSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_SORTED_SET), 0, -1, MethodDetailData.class);
         Set<MethodDetailData> set = typedTuples.stream().map(ZSetOperations.TypedTuple::getValue).collect(Collectors.toSet());
         return set;
+    }
+
+    public Page<MethodDetailData> getControllerMethodsPage(ControllerMethodPage controllerMethodPage){
+        Long pageNo = controllerMethodPage.getPageNo();
+        Long pageSize = controllerMethodPage.getPageSize();
+        Long totalRecord = redisCache.sizeForZSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_SORTED_SET));
+        Long pageTotal=totalRecord/pageSize + 1;
+
+        // 计算起始索引和结束索引
+        long start = (pageNo - 1) * pageSize;
+        long end = start + pageSize - 1;
+        Set<ZSetOperations.TypedTuple<MethodDetailData>> typedTuples = redisCache.reverseRangeWithScoreForZSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_SORTED_SET), start, end, MethodDetailData.class);
+        List<MethodDetailData> list = typedTuples.stream().map(ZSetOperations.TypedTuple::getValue).collect(Collectors.toList());
+        Page<MethodDetailData> page = new Page<>();
+        page.setPageTotal(pageTotal);
+        page.setTotalRecord(totalRecord);
+        page.setData(list);
+        return page;
     }
 
     public MethodDetailData getMethodChainList(String controllerMethod) {
