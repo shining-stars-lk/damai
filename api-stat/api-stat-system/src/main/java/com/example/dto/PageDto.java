@@ -7,8 +7,8 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-@ApiModel(value="ControllerMethodPage", description ="ControllerMethodPage")
-public class ControllerMethodPage {
+@ApiModel(value="PageDto", description ="PageDto")
+public class PageDto {
 
     @ApiModelProperty(name ="pageNo", dataType ="Long", value ="当前页码", required =true)
     @NotNull
