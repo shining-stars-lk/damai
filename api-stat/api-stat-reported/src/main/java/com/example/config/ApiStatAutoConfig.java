@@ -1,6 +1,8 @@
 package com.example.config;
 
 import com.example.ApiStatThreadPool;
+import com.example.common.ApiStatCommon;
+import com.example.common.impl.ApiStatSingleServiceCommon;
 import com.example.event.ApiStatEventHandler;
 import com.example.event.ApiStatEventPush;
 import com.example.handler.ApiStatRunTimeHandler;
@@ -68,6 +70,11 @@ public class ApiStatAutoConfig {
         advisor.setAdvice(new ApiStatRunTimeHandler(methodDataOperate,methodDataStackHolder,
                 methodHierarchyTransferOperate,methodQueueOperate));
         return advisor;
+    }
+
+    @Bean
+    public ApiStatCommon ApiStatSingleServiceCommon(){
+        return new ApiStatSingleServiceCommon();
     }
 
     @Bean

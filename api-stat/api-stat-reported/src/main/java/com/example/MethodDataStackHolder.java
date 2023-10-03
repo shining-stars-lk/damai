@@ -1,13 +1,8 @@
 package com.example;
 
-import com.example.enums.MethodLevel;
 import com.example.structure.MethodData;
-import com.example.util.ApiStatCommon;
-import org.aopalliance.intercept.MethodInvocation;
 
 import java.util.Stack;
-
-import static com.example.constant.ApiStatConstant.METHOD_DATA_SPLIT;
 
 /**
  * @program: cook-frame
