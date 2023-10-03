@@ -44,8 +44,8 @@ public class ApiStatAutoConfig {
     }
     
     @Bean
-    public MethodHierarchyTransferOperate methodHierarchyTransferOperate(MethodDataOperate methodDataOperate){
-        return new MethodHierarchyTransferOperate(methodDataOperate);
+    public MethodHierarchyTransferOperate methodHierarchyTransferOperate(){
+        return new MethodHierarchyTransferOperate();
     }
     
     @Bean

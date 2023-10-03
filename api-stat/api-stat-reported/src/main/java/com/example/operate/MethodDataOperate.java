@@ -37,17 +37,21 @@ public class MethodDataOperate {
         return stack.peek();
     }
     
-    public MethodData getCurrentMethodNode(MethodInvocation pjp, BigDecimal runTime) {
-        String className = pjp.getMethod().getDeclaringClass().getName();
-        String methodName = pjp.getMethod().getName();
+    public MethodData getCurrentMethodNode(MethodInvocation methodInvocation, BigDecimal runTime) {
+        return getMethodData(methodInvocation,runTime);
+    }
+
+    public MethodData getMethodData(MethodInvocation methodInvocation, BigDecimal runTime){
+        String className = methodInvocation.getMethod().getDeclaringClass().getName();
+        String methodName = methodInvocation.getMethod().getName();
         MethodData methodData = new MethodData();
         methodData.setId(className + METHOD_DATA_SPLIT + methodName);
         methodData.setClassName(className);
         methodData.setMethodName(methodName);
         methodData.setRunTime(runTime);
-        methodData.setMethodLevel(ApiStatCommon.getMethodLevel(pjp));
+        methodData.setMethodLevel(ApiStatCommon.getMethodLevel(methodInvocation));
         if (methodData.getMethodLevel()== MethodLevel.Controller) {
-            methodData.setApi(ApiStatCommon.getRoute(pjp));
+            methodData.setApi(ApiStatCommon.getRoute(methodInvocation));
         }
         return methodData;
     }

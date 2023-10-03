@@ -36,7 +36,6 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
         Object obj = null;
         long start = System.nanoTime();
         MethodData parentMethodData = methodDataOperate.getParentMethodData();
-        methodDataStackHolder.putMethodData(methodInvocation);
         MethodHierarchyTransfer methodHierarchyTransfer = new MethodHierarchyTransfer();
         boolean exceptionFlag = false;
         try {
@@ -47,7 +46,10 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
         } finally {
             long runTime = System.nanoTime() - start;
             BigDecimal runTimeBigDecimal = new BigDecimal(String.valueOf(runTime)).divide(new BigDecimal(1000000), 2, RoundingMode.HALF_UP);
-            methodHierarchyTransfer = methodHierarchyTransferOperate.getMethodHierarchyTransfer(methodInvocation,parentMethodData,runTimeBigDecimal,exceptionFlag);
+            MethodData currentMethodData = methodDataOperate.getCurrentMethodNode(methodInvocation, runTimeBigDecimal);
+            methodDataStackHolder.putMethodData(currentMethodData);
+            methodHierarchyTransfer = methodHierarchyTransferOperate.getMethodHierarchyTransfer(methodInvocation,parentMethodData,
+                    currentMethodData,exceptionFlag);
             methodQueueOperate.add(methodHierarchyTransfer);
             methodDataStackHolder.remove();
         }

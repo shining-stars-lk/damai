@@ -14,14 +14,11 @@ import java.math.BigDecimal;
  * @author: k
  * @create: 2023-09-28
  **/
-@AllArgsConstructor
 public class MethodHierarchyTransferOperate {
     
-    private final MethodDataOperate methodDataOperate;
-    
-    public MethodHierarchyTransfer getMethodHierarchyTransfer(MethodInvocation methodInvocation, MethodData parentMethodData, BigDecimal runTime, boolean exceptionFlag) {
-        MethodData currentMethodData = methodDataOperate.getCurrentMethodNode(methodInvocation, runTime);
-        parentMethodData = checkControllerParent(parentMethodData, currentMethodData);
+    public MethodHierarchyTransfer getMethodHierarchyTransfer(MethodInvocation methodInvocation, MethodData parentMethodData,
+                                                              MethodData currentMethodData, boolean exceptionFlag) {
+        //parentMethodData = checkControllerParent(parentMethodData, currentMethodData);
         MethodHierarchyTransfer methodHierarchyTransfer = new MethodHierarchyTransfer();
         methodHierarchyTransfer.setCurrentMethodData(currentMethodData);
         methodHierarchyTransfer.setParentMethodData(parentMethodData);
