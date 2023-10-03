@@ -1,4 +1,4 @@
-package com.example.rel;
+package com.example;
 
 import com.example.enums.MethodType;
 import com.example.structure.MethodData;
@@ -7,7 +7,7 @@ import org.aopalliance.intercept.MethodInvocation;
 
 import java.util.Stack;
 
-import static com.example.rel.constant.ApiStatConstant.METHOD_DATA_SPLIT;
+import static com.example.constant.ApiStatConstant.METHOD_DATA_SPLIT;
 
 /**
  * @program: cook-frame
@@ -46,7 +46,7 @@ public class MethodDataStackHolder {
         return threadLocal.get();
     }
     
-    public void clear() {
+    public void remove() {
         Stack<MethodData> stack = threadLocal.get();
         if (stack==null) {
             return;

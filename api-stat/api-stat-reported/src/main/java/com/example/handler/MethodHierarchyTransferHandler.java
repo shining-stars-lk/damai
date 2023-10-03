@@ -1,4 +1,4 @@
-package com.example.rel.handler;
+package com.example.handler;
 
 import com.example.core.RedisKeyEnum;
 import com.example.enums.MethodType;
@@ -14,7 +14,7 @@ import org.springframework.beans.BeanUtils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import static com.example.rel.constant.ApiStatConstant.METHOD_DATA_SPLIT;
+import static com.example.constant.ApiStatConstant.METHOD_DATA_SPLIT;
 
 /**
  * @program: cook-frame

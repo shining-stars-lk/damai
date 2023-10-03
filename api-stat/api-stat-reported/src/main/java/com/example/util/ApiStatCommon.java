@@ -2,9 +2,6 @@ package com.example.util;
 
 
 import com.example.enums.MethodType;
-import com.example.model.ApiStatInvokedInfo;
-import com.example.model.ApiStatMethodNode;
-import com.example.service.ApiStatMethodNodeService;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.stereotype.Controller;
@@ -117,49 +114,6 @@ public class ApiStatCommon {
         } else {
             return MethodType.Others;
         }
-    }
-
-    public static MethodType getMethodType(String className) {
-        className = className.toLowerCase();
-        if (className.contains("controller")) {
-            return MethodType.Controller;
-        } else if (className.contains("service")) {
-            return MethodType.Service;
-        } else if (className.contains("dao") || className.contains("mapper") || className.contains("com.sun.proxy.$Proxy")) {
-            return MethodType.Dao;
-        } else {
-            return MethodType.Others;
-        }
-    }
-    
-
-    public static boolean isEmpty(Object value) {
-        return value == null || "".equals(value) || ((value instanceof String) && ((String) value).trim().length() == 0);
-    }
-
-    public static ApiStatInvokedInfo getApiStatInvokedInfo(MethodInvocation invocation, ApiStatMethodNode parent, double runTime, boolean exceptionFlag) {
-        ApiStatMethodNode currentMethod = ApiStatMethodNodeService.getCurrentMethodNode(invocation, runTime);
-        parent = checkControllerParent(parent, currentMethod);
-        ApiStatInvokedInfo invokedInfo = new ApiStatInvokedInfo();
-        invokedInfo.setCurrent(currentMethod);
-        invokedInfo.setParent(parent);
-        invokedInfo.setNames(invocation.getMethod().getParameters());
-        invokedInfo.setValues(invocation.getArguments());
-        invokedInfo.setExceptionFlag(exceptionFlag);
-        return invokedInfo;
-    }
-
-    private static ApiStatMethodNode checkControllerParent(ApiStatMethodNode parent, ApiStatMethodNode current) {
-        if (current.getMethodType() == MethodType.Controller) {
-            parent = new ApiStatMethodNode();
-            parent.setId("org.springframework.web.servlet.DispatcherServlet.doDispatch");
-            parent.setClassName("DispatcherServlet");
-            parent.setMethodName("doDispatch");
-            parent.setName("DispatcherServlet.doDispatch");
-            parent.setMethodType(MethodType.Dispatcher);
-            return parent;
-        }
-        return parent;
     }
 
 }

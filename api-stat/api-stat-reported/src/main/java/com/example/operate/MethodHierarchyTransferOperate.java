@@ -1,4 +1,4 @@
-package com.example.rel.operate;
+package com.example.operate;
 
 import com.example.enums.MethodType;
 import com.example.structure.MethodData;

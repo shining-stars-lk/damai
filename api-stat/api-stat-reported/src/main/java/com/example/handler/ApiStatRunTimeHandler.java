@@ -1,14 +1,12 @@
 package com.example.handler;
 
-import com.example.config.ApiStatProperties;
-import com.example.rel.MethodDataStackHolder;
-import com.example.rel.operate.MethodDataOperate;
-import com.example.rel.operate.MethodHierarchyTransferOperate;
-import com.example.rel.operate.MethodQueueOperate;
+import com.example.MethodDataStackHolder;
+import com.example.operate.MethodDataOperate;
+import com.example.operate.MethodHierarchyTransferOperate;
+import com.example.operate.MethodQueueOperate;
 import com.example.structure.MethodData;
 import com.example.structure.MethodHierarchyTransfer;
-import com.example.service.ApiStatInvokedQueue;
-import com.example.util.MethodStackHolder;
+
 import lombok.AllArgsConstructor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -24,10 +22,6 @@ import java.math.RoundingMode;
  **/
 @AllArgsConstructor
 public class ApiStatRunTimeHandler implements MethodInterceptor {
-    
-    private final ApiStatProperties apiStatProperties;
-    
-    private final ApiStatInvokedQueue apiStatInvokedQueue;
     
     private final MethodDataOperate methodDataOperate;
     
@@ -55,7 +49,7 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
             BigDecimal runTimeBigDecimal = new BigDecimal(String.valueOf(runTime)).divide(new BigDecimal(1000000), 2, RoundingMode.HALF_UP);
             methodHierarchyTransfer = methodHierarchyTransferOperate.getMethodHierarchyTransfer(methodInvocation,parentMethodData,runTimeBigDecimal,exceptionFlag);
             methodQueueOperate.add(methodHierarchyTransfer);
-            MethodStackHolder.clear();
+            methodDataStackHolder.remove();
         }
         return obj;
     }
