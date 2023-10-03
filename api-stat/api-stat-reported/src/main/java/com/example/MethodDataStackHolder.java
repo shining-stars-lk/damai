@@ -23,21 +23,13 @@ public class MethodDataStackHolder {
         threadLocal = new ThreadLocal<>();
     }
     
-    public void putMethodData(MethodInvocation methodInvocation) {
-        String className = methodInvocation.getMethod().getDeclaringClass().getName();
-        String methodName = methodInvocation.getMethod().getName();
+    public void putMethodData(MethodData methodData) {
         Stack<MethodData> stack = null;
         if (threadLocal.get() == null) {
             stack = new Stack<>();
         }else {
             stack = threadLocal.get();
         }
-        MethodLevel methodLevel = ApiStatCommon.getMethodLevel(methodInvocation);
-        MethodData methodData = new MethodData();
-        methodData.setId(className + METHOD_DATA_SPLIT + methodName);
-        methodData.setMethodName(methodName);
-        methodData.setClassName(className);
-        methodData.setMethodLevel(methodLevel);
         stack.add(methodData);
         threadLocal.set(stack);
     }

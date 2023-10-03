@@ -14,13 +14,14 @@ public class MethodQueueOperate {
     private final BlockingQueue<MethodHierarchyTransfer> blockingQueue = new ArrayBlockingQueue<>(5000);
     
     private final MethodHierarchyTransferHandler methodHierarchyTransferHandler;
+
     
     public MethodQueueOperate(MethodHierarchyTransferHandler methodHierarchyTransferHandler){
         this.methodHierarchyTransferHandler = methodHierarchyTransferHandler;
     }
 
     public void add(MethodHierarchyTransfer methodHierarchyTransfer) {
-        blockingQueue.add(methodHierarchyTransfer);
+        blockingQueue.offer(methodHierarchyTransfer);
     }
     
 
@@ -30,7 +31,7 @@ public class MethodQueueOperate {
                 MethodHierarchyTransfer methodHierarchyTransfer = blockingQueue.take();
                 methodHierarchyTransferHandler.consumer(methodHierarchyTransfer);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("consumer task error",e);
             }
         }
     }
