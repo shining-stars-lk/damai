@@ -1,6 +1,8 @@
 package com.example.handler;
 
+import com.example.config.ApiStatProperties;
 import com.example.core.RedisKeyEnum;
+import com.example.core.StringUtil;
 import com.example.enums.MethodLevel;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
@@ -10,9 +12,14 @@ import com.example.structure.MethodHierarchy;
 import com.example.structure.MethodHierarchyTransfer;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.example.constant.ApiStatConstant.METHOD_DATA_SPLIT;
 
@@ -23,16 +30,25 @@ import static com.example.constant.ApiStatConstant.METHOD_DATA_SPLIT;
  * @create: 2023-09-28
  **/
 @AllArgsConstructor
-public class MethodHierarchyTransferHandler {
+public class MethodHierarchyTransferHandler implements EnvironmentAware {
     
     private final RedisCache redisCache;
+
+    private final ApiStatProperties apiStatProperties;
+
+    private Environment environment;
+
+    public MethodHierarchyTransferHandler(RedisCache redisCache,ApiStatProperties apiStatProperties){
+        this.redisCache = redisCache;
+        this.apiStatProperties = apiStatProperties;
+    }
     
     public void consumer(MethodHierarchyTransfer methodHierarchyTransfer){
         MethodData currentMethodData = methodHierarchyTransfer.getCurrentMethodData();
         MethodData parentMethodData = methodHierarchyTransfer.getParentMethodData();
         BigDecimal executeTime = addMethodDetail(currentMethodData,methodHierarchyTransfer.isExceptionFlag());
         if (currentMethodData.getMethodLevel() == MethodLevel.Controller) {
-            addControllerSortedSet(currentMethodData,executeTime);
+            addControllerSortedSet(currentMethodData,apiStatProperties,environment,executeTime);
         }
 
         addChildren(parentMethodData,currentMethodData);
@@ -121,8 +137,28 @@ public class MethodHierarchyTransferHandler {
         return oldMethodDetailData.getAvgExecuteTime();
     }
 
-    public void addControllerSortedSet(MethodData methodData,BigDecimal executeTime){
+    public boolean checkNoReported(MethodData methodData,ApiStatProperties apiStatProperties,Environment environment){
+        String applicationName = environment.getProperty("spring.application.name");
+        Map<String, String[]> noReported = apiStatProperties.getNoReported();
+        String[] apis = null;
+        if (!Objects.isNull(noReported)) {
+            apis = noReported.get(applicationName);
+        }
+        if (!Objects.isNull(apis)) {
+            for (String api : apis) {
+                if (StringUtil.isNotEmpty(methodData.getApi()) && methodData.getApi().equals(api)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void addControllerSortedSet(MethodData methodData,ApiStatProperties apiStatProperties,Environment environment,BigDecimal executeTime){
         if (methodData == null) {
+            return;
+        }
+        if (checkNoReported(methodData,apiStatProperties,environment)) {
             return;
         }
         MethodDetailData methodDetailData = new MethodDetailData();
@@ -140,5 +176,10 @@ public class MethodHierarchyTransferHandler {
         } else if (parentMethodData.getMethodLevel() == MethodLevel.Service) {
             redisCache.addForSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_SERVICE_CHILDREN_SET,parentMethodData.getId()),currentMethodData.getId());
         }
+    }
+
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 }

@@ -63,8 +63,8 @@ public class ApiStatAutoConfig {
     }
     
     @Bean
-    public MethodHierarchyTransferHandler methodHierarchyTransferHandler(RedisCache redisCache){
-        return new MethodHierarchyTransferHandler(redisCache);
+    public MethodHierarchyTransferHandler methodHierarchyTransferHandler(RedisCache redisCache,ApiStatProperties apiStatProperties){
+        return new MethodHierarchyTransferHandler(redisCache,apiStatProperties);
     }
     
     @Bean
