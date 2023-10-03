@@ -3,7 +3,7 @@ package com.example.operate;
 import com.example.enums.MethodLevel;
 import com.example.MethodDataStackHolder;
 import com.example.structure.MethodData;
-import com.example.util.ApiStatCommon;
+import com.example.common.ApiStatCommon;
 import lombok.AllArgsConstructor;
 import org.aopalliance.intercept.MethodInvocation;
 
@@ -22,6 +22,8 @@ import static com.example.constant.ApiStatConstant.METHOD_DATA_SPLIT;
 public class MethodDataOperate {
     
     private final MethodDataStackHolder methodDataStackHolder;
+
+    private final ApiStatCommon apiStatCommon;
     
     
     public MethodData getParentMethodData() {
@@ -49,9 +51,9 @@ public class MethodDataOperate {
         methodData.setClassName(className);
         methodData.setMethodName(methodName);
         methodData.setRunTime(runTime);
-        methodData.setMethodLevel(ApiStatCommon.getMethodLevel(methodInvocation));
+        methodData.setMethodLevel(apiStatCommon.getMethodLevel(methodInvocation));
         if (methodData.getMethodLevel()== MethodLevel.Controller) {
-            methodData.setApi(ApiStatCommon.getRoute(methodInvocation));
+            methodData.setApi(apiStatCommon.getRoute(methodInvocation));
         }
         return methodData;
     }
