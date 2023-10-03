@@ -15,6 +15,7 @@ import com.example.operate.MethodQueueOperate;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -35,14 +36,20 @@ public class ApiStatAutoConfig {
     public ApiStatThreadPool apiStatThreadPool(){
         return new ApiStatThreadPool();
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ApiStatCommon ApiStatSingleServiceCommon(){
+        return new ApiStatSingleServiceCommon();
+    }
     
     @Bean
     public MethodDataStackHolder methodDataStackHolder(){
         return new MethodDataStackHolder();
     }
     @Bean
-    public MethodDataOperate methodDataOperate(MethodDataStackHolder methodDataStackHolder){
-        return new MethodDataOperate(methodDataStackHolder);
+    public MethodDataOperate methodDataOperate(MethodDataStackHolder methodDataStackHolder,ApiStatCommon apiStatCommon){
+        return new MethodDataOperate(methodDataStackHolder,apiStatCommon);
     }
     
     @Bean
@@ -70,11 +77,6 @@ public class ApiStatAutoConfig {
         advisor.setAdvice(new ApiStatRunTimeHandler(methodDataOperate,methodDataStackHolder,
                 methodHierarchyTransferOperate,methodQueueOperate));
         return advisor;
-    }
-
-    @Bean
-    public ApiStatCommon ApiStatSingleServiceCommon(){
-        return new ApiStatSingleServiceCommon();
     }
 
     @Bean

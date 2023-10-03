@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.example.constant.ApiStatConstant.*;
+
 public class ApiStatSingleServiceCommon implements ApiStatCommon {
     @Override
     public MethodLevel getMethodLevel(MethodInvocation pjp) {
@@ -20,11 +22,11 @@ public class ApiStatSingleServiceCommon implements ApiStatCommon {
             return MethodLevel.Dao;
         }
         String className = pjp.getMethod().getDeclaringClass().getName().toLowerCase();
-        if (className.contains("controller")) {
+        if (className.contains(CONTROLLER)) {
             return MethodLevel.Controller;
-        } else if (className.contains("service")) {
+        } else if (className.contains(SERVICE)) {
             return MethodLevel.Service;
-        } else if (className.contains("dao") || className.contains("mapper") || className.contains("com.sun.proxy.$Proxy")) {
+        } else if (className.contains(DAO) || className.contains(MAPPER)) {
             return MethodLevel.Dao;
         } else {
             return MethodLevel.Others;

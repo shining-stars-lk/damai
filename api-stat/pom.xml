@@ -15,9 +15,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>api-stat-reported</module>
         <module>api-stat-system</module>
 		<module>api-stat-common</module>
+        <module>api-stat-reported-single-service</module>
+        <module>api-stat-reported-cloud-service</module>
     </modules>
 
 </project>
