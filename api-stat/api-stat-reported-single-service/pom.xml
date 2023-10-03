@@ -10,10 +10,10 @@
     </parent>
 
 
-    <artifactId>api-stat-reported</artifactId>
+    <artifactId>api-stat-reported-single-service</artifactId>
 
-    <name>api-stat-reported</name>
-    <description>api统计</description>
+    <name>api-stat-reported-single-service</name>
+    <description>api单体服务统计</description>
 
     <properties>
         <java.version>1.8</java.version>
