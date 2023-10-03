@@ -3,6 +3,8 @@ package com.example.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Map;
+
 /**
  * @program: cook-frame
  * @description:
@@ -17,5 +19,7 @@ public class ApiStatProperties {
     
     private boolean enable;
     
-    private String pointcut; 
+    private String pointcut;
+
+    private Map<String,String[]> noReported;
 }
