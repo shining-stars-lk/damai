@@ -1,7 +1,7 @@
 package com.example.handler;
 
 import com.example.core.RedisKeyEnum;
-import com.example.enums.MethodType;
+import com.example.enums.MethodLevel;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
 import com.example.structure.MethodData;
@@ -39,7 +39,7 @@ public class MethodHierarchyTransferHandler {
         //BigDecimal executeTime = addMethodHierarchy(parentMethodData, currentMethodData, methodHierarchyTransfer.isExceptionFlag());
         //addMethodDetail(parentMethodData,false);
         BigDecimal executeTime = addMethodDetail(currentMethodData,methodHierarchyTransfer.isExceptionFlag());
-        if (currentMethodData.getMethodType() == MethodType.Controller) {
+        if (currentMethodData.getMethodLevel() == MethodLevel.Controller) {
             addControllerSortedSet(currentMethodData,executeTime);
         }
 
@@ -50,11 +50,11 @@ public class MethodHierarchyTransferHandler {
         if (methodData == null) {
             return;
         }
-        if (methodData.getMethodType() == MethodType.Controller) {
+        if (methodData.getMethodLevel() == MethodLevel.Controller) {
             redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_METHOD_DATA,methodData.getId()),methodData);
-        } else if (methodData.getMethodType() == MethodType.Service) {
+        } else if (methodData.getMethodLevel() == MethodLevel.Service) {
             redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_SERVICE_METHOD_DATA,methodData.getId()),methodData);
-        } else if (methodData.getMethodType() == MethodType.Dao) {
+        } else if (methodData.getMethodLevel() == MethodLevel.Dao) {
             redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_DAO_METHOD_DATA,methodData.getId()),methodData);
         }
     }
@@ -143,9 +143,9 @@ public class MethodHierarchyTransferHandler {
         if (parentMethodData == null || currentMethodData == null) {
             return;
         }
-        if (parentMethodData.getMethodType() == MethodType.Controller) {
+        if (parentMethodData.getMethodLevel() == MethodLevel.Controller) {
             redisCache.addForSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_CHILDREN_SET,parentMethodData.getId()),currentMethodData.getId());
-        } else if (parentMethodData.getMethodType() == MethodType.Service) {
+        } else if (parentMethodData.getMethodLevel() == MethodLevel.Service) {
             redisCache.addForSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_SERVICE_CHILDREN_SET,parentMethodData.getId()),currentMethodData.getId());
         }
     }

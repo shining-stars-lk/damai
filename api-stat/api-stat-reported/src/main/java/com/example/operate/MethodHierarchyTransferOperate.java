@@ -1,6 +1,6 @@
 package com.example.operate;
 
-import com.example.enums.MethodType;
+import com.example.enums.MethodLevel;
 import com.example.structure.MethodData;
 import com.example.structure.MethodHierarchyTransfer;
 import lombok.AllArgsConstructor;
@@ -32,12 +32,12 @@ public class MethodHierarchyTransferOperate {
     }
     
     private MethodData checkControllerParent(MethodData parent, MethodData current) {
-        if (current.getMethodType() == MethodType.Controller) {
+        if (current.getMethodLevel() == MethodLevel.Controller) {
             parent = new MethodData();
             parent.setId("org.springframework.web.servlet.DispatcherServlet.doDispatch");
             parent.setClassName("DispatcherServlet");
             parent.setMethodName("doDispatch");
-            parent.setMethodType(MethodType.Dispatcher);
+            parent.setMethodLevel(MethodLevel.Servlet);
             return parent;
         }
         return parent;

@@ -1,6 +1,6 @@
 package com.example.operate;
 
-import com.example.enums.MethodType;
+import com.example.enums.MethodLevel;
 import com.example.MethodDataStackHolder;
 import com.example.structure.MethodData;
 import com.example.util.ApiStatCommon;
@@ -31,7 +31,7 @@ public class MethodDataOperate {
             methodData.setId("org.springframework.web.servlet.DispatcherServlet.doDispatch");
             methodData.setClassName("DispatcherServlet");
             methodData.setMethodName("doDispatch");
-            methodData.setMethodType(MethodType.Dispatcher);
+            methodData.setMethodLevel(MethodLevel.Servlet);
             return methodData;
         }
         return stack.peek();
@@ -45,8 +45,8 @@ public class MethodDataOperate {
         methodData.setClassName(className);
         methodData.setMethodName(methodName);
         methodData.setRunTime(runTime);
-        methodData.setMethodType(ApiStatCommon.getMethodType(pjp));
-        if (methodData.getMethodType()==MethodType.Controller) {
+        methodData.setMethodLevel(ApiStatCommon.getMethodLevel(pjp));
+        if (methodData.getMethodLevel()== MethodLevel.Controller) {
             methodData.setApi(ApiStatCommon.getRoute(pjp));
         }
         return methodData;

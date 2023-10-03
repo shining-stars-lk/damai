@@ -1,7 +1,7 @@
 package com.example.util;
 
 
-import com.example.enums.MethodType;
+import com.example.enums.MethodLevel;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.stereotype.Controller;
@@ -95,24 +95,24 @@ public class ApiStatCommon {
         return null;
     }
 
-    public static MethodType getMethodType(MethodInvocation pjp) {
+    public static MethodLevel getMethodLevel(MethodInvocation pjp) {
         Class<?> targetClass = pjp.getThis().getClass();
         if (targetClass.getAnnotation(Controller.class) != null || targetClass.getAnnotation(RestController.class) != null) {
-            return MethodType.Controller;
+            return MethodLevel.Controller;
         } else if (targetClass.getAnnotation(Service.class) != null) {
-            return MethodType.Service;
+            return MethodLevel.Service;
         } else if (targetClass.getAnnotation(Repository.class) != null) {
-            return MethodType.Dao;
+            return MethodLevel.Dao;
         }
         String className = pjp.getMethod().getDeclaringClass().getName().toLowerCase();
         if (className.contains("controller")) {
-            return MethodType.Controller;
+            return MethodLevel.Controller;
         } else if (className.contains("service")) {
-            return MethodType.Service;
+            return MethodLevel.Service;
         } else if (className.contains("dao") || className.contains("mapper") || className.contains("com.sun.proxy.$Proxy")) {
-            return MethodType.Dao;
+            return MethodLevel.Dao;
         } else {
-            return MethodType.Others;
+            return MethodLevel.Others;
         }
     }
 

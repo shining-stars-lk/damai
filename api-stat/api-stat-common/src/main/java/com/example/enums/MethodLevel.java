@@ -1,12 +1,10 @@
 package com.example.enums;
 
-/**
- * zhangchang
- */
-public enum MethodType {
+
+public enum MethodLevel {
     Controller,
     Service,
     Dao,
-    Dispatcher,
+    Servlet,
     Others;
 }

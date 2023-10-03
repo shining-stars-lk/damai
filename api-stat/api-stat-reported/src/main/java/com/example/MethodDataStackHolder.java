@@ -1,6 +1,6 @@
 package com.example;
 
-import com.example.enums.MethodType;
+import com.example.enums.MethodLevel;
 import com.example.structure.MethodData;
 import com.example.util.ApiStatCommon;
 import org.aopalliance.intercept.MethodInvocation;
@@ -32,12 +32,12 @@ public class MethodDataStackHolder {
         }else {
             stack = threadLocal.get();
         }
-        MethodType methodType = ApiStatCommon.getMethodType(methodInvocation);
+        MethodLevel methodLevel = ApiStatCommon.getMethodLevel(methodInvocation);
         MethodData methodData = new MethodData();
         methodData.setId(className + METHOD_DATA_SPLIT + methodName);
         methodData.setMethodName(methodName);
         methodData.setClassName(className);
-        methodData.setMethodType(methodType);
+        methodData.setMethodLevel(methodLevel);
         stack.add(methodData);
         threadLocal.set(stack);
     }
