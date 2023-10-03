@@ -1,7 +1,7 @@
-package com.example.rel.operate;
+package com.example.operate;
 
 
-import com.example.rel.handler.MethodHierarchyTransferHandler;
+import com.example.handler.MethodHierarchyTransferHandler;
 import com.example.structure.MethodHierarchyTransfer;
 import lombok.extern.slf4j.Slf4j;
 

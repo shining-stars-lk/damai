@@ -1,4 +1,4 @@
-package com.example.rel.constant;
+package com.example.constant;
 
 /**
  * @program: cook-frame

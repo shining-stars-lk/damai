@@ -1,7 +1,7 @@
-package com.example.rel.operate;
+package com.example.operate;
 
 import com.example.enums.MethodType;
-import com.example.rel.MethodDataStackHolder;
+import com.example.MethodDataStackHolder;
 import com.example.structure.MethodData;
 import com.example.util.ApiStatCommon;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import java.math.BigDecimal;
 import java.util.Stack;
 
-import static com.example.rel.constant.ApiStatConstant.METHOD_DATA_SPLIT;
+import static com.example.constant.ApiStatConstant.METHOD_DATA_SPLIT;
 
 /**
  * @program: cook-frame

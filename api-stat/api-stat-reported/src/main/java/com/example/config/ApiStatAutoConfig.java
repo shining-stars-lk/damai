@@ -1,13 +1,14 @@
 package com.example.config;
 
+import com.example.ApiStatThreadPool;
 import com.example.data.ApiStatMemoryBase;
 import com.example.handler.ApiStatRunTimeHandler;
 import com.example.redis.RedisCache;
-import com.example.rel.MethodDataStackHolder;
-import com.example.rel.handler.MethodHierarchyTransferHandler;
-import com.example.rel.operate.MethodDataOperate;
-import com.example.rel.operate.MethodHierarchyTransferOperate;
-import com.example.rel.operate.MethodQueueOperate;
+import com.example.MethodDataStackHolder;
+import com.example.handler.MethodHierarchyTransferHandler;
+import com.example.operate.MethodDataOperate;
+import com.example.operate.MethodHierarchyTransferOperate;
+import com.example.operate.MethodQueueOperate;
 import com.example.service.ApiStatInvokedHandler;
 import com.example.service.ApiStatInvokedQueue;
 import lombok.Data;
@@ -28,6 +29,11 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(ApiStatProperties.class)
 @ConditionalOnProperty(value = "api-stat.enable")
 public class ApiStatAutoConfig {
+
+    @Bean
+    public ApiStatThreadPool apiStatThreadPool(){
+        return new ApiStatThreadPool();
+    }
     
     @Bean
     public MethodDataStackHolder methodDataStackHolder(){
@@ -58,7 +64,6 @@ public class ApiStatAutoConfig {
                                                            MethodDataOperate methodDataOperate,MethodDataStackHolder methodDataStackHolder,
                                                            MethodHierarchyTransferOperate methodHierarchyTransferOperate,
                                                            MethodQueueOperate methodQueueOperate) {
-        log.info("api stat load");
         AspectJExpressionPointcutAdvisor advisor = new AspectJExpressionPointcutAdvisor();
         advisor.setExpression(apiStatProperties.getPointcut());
         advisor.setAdvice(new ApiStatRunTimeHandler(apiStatProperties,apiStatInvokedQueue,methodDataOperate,methodDataStackHolder,
