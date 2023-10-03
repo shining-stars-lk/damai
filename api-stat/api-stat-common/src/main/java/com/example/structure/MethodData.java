@@ -1,7 +1,7 @@
 package com.example.structure;
 
 
-import com.example.enums.MethodType;
+import com.example.enums.MethodLevel;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -24,7 +24,7 @@ public class MethodData {
     
     private Integer argumentCount;
     
-    private MethodType methodType;
+    private MethodLevel methodLevel;
     
     private BigDecimal runTime;
     
@@ -35,11 +35,11 @@ public class MethodData {
         if (this == o) return true;
         if (!(o instanceof MethodData)) return false;
         MethodData that = (MethodData) o;
-        return getId().equals(that.getId()) && getClassName().equals(that.getClassName()) && getMethodName().equals(that.getMethodName()) && Objects.equals(getArgumentCount(), that.getArgumentCount()) && getMethodType() == that.getMethodType() && Objects.equals(getRunTime(), that.getRunTime()) && Objects.equals(getApi(), that.getApi());
+        return getId().equals(that.getId()) && getClassName().equals(that.getClassName()) && getMethodName().equals(that.getMethodName()) && Objects.equals(getArgumentCount(), that.getArgumentCount()) && getMethodLevel() == that.getMethodLevel() && Objects.equals(getRunTime(), that.getRunTime()) && Objects.equals(getApi(), that.getApi());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getClassName(), getMethodName(), getArgumentCount(), getMethodType(), getRunTime(), getApi());
+        return Objects.hash(getId(), getClassName(), getMethodName(), getArgumentCount(), getMethodLevel(), getRunTime(), getApi());
     }
 }
