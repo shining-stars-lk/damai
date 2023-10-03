@@ -1,7 +1,8 @@
 package com.example.config;
 
 import com.example.ApiStatThreadPool;
-import com.example.data.ApiStatMemoryBase;
+import com.example.event.ApiStatEventHandler;
+import com.example.event.ApiStatEventPush;
 import com.example.handler.ApiStatRunTimeHandler;
 import com.example.redis.RedisCache;
 import com.example.MethodDataStackHolder;
@@ -9,8 +10,6 @@ import com.example.handler.MethodHierarchyTransferHandler;
 import com.example.operate.MethodDataOperate;
 import com.example.operate.MethodHierarchyTransferOperate;
 import com.example.operate.MethodQueueOperate;
-import com.example.service.ApiStatInvokedHandler;
-import com.example.service.ApiStatInvokedQueue;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor;
@@ -60,35 +59,24 @@ public class ApiStatAutoConfig {
     }
     
     @Bean
-    public AspectJExpressionPointcutAdvisor apiStatAdvisor(ApiStatProperties apiStatProperties,ApiStatInvokedQueue apiStatInvokedQueue,
-                                                           MethodDataOperate methodDataOperate,MethodDataStackHolder methodDataStackHolder,
+    public AspectJExpressionPointcutAdvisor apiStatAdvisor(ApiStatProperties apiStatProperties, MethodDataOperate methodDataOperate,
+                                                           MethodDataStackHolder methodDataStackHolder,
                                                            MethodHierarchyTransferOperate methodHierarchyTransferOperate,
                                                            MethodQueueOperate methodQueueOperate) {
         AspectJExpressionPointcutAdvisor advisor = new AspectJExpressionPointcutAdvisor();
         advisor.setExpression(apiStatProperties.getPointcut());
-        advisor.setAdvice(new ApiStatRunTimeHandler(apiStatProperties,apiStatInvokedQueue,methodDataOperate,methodDataStackHolder,
+        advisor.setAdvice(new ApiStatRunTimeHandler(methodDataOperate,methodDataStackHolder,
                 methodHierarchyTransferOperate,methodQueueOperate));
         return advisor;
     }
-    
+
     @Bean
-    public ApiStatMemoryBase apiStatMemoryBase(){
-        return new ApiStatMemoryBase();
+    public ApiStatEventPush apiStatEventPush(){
+        return new ApiStatEventPush();
     }
-    
+
     @Bean
-    public ApiStatInvokedHandler apiStatInvokedHandler(ApiStatMemoryBase apiStatMemoryBase){
-        return new ApiStatInvokedHandler(apiStatMemoryBase);
+    public ApiStatEventHandler apiStatEventHandler(MethodQueueOperate methodQueueOperate){
+        return new ApiStatEventHandler(methodQueueOperate);
     }
-    
-    @Bean
-    public ApiStatInvokedQueue apiStatInvokedQueue(ApiStatInvokedHandler apiStatInvokedHandler){
-        return new ApiStatInvokedQueue(apiStatInvokedHandler);
-    }
-    
-    @Bean
-    public ApiStatInit apiStatInit(ApiStatInvokedQueue apiStatInvokedQueue,MethodQueueOperate methodQueueOperate){
-        return new ApiStatInit(apiStatInvokedQueue,methodQueueOperate);
-    }
-    
 }
