@@ -13,11 +13,15 @@ import com.example.structure.MethodHierarchyTransfer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.example.constant.ApiStatConstant.SPRING_APPLICATION_NAME;
 
 public class RedisDataSave implements DataSave, EnvironmentAware {
 
@@ -26,6 +30,8 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
     private final ApiStatProperties apiStatProperties;
 
     private Environment environment;
+
+    private PathMatcher matcher = new AntPathMatcher();
 
     public RedisDataSave(RedisCache redisCache,ApiStatProperties apiStatProperties){
         this.redisCache = redisCache;
@@ -78,7 +84,7 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
     }
 
     public boolean checkNoReported(MethodData methodData,ApiStatProperties apiStatProperties,Environment environment){
-        String applicationName = environment.getProperty("spring.application.name");
+        String applicationName = environment.getProperty(SPRING_APPLICATION_NAME);
         Map<String, String[]> noReported = apiStatProperties.getNoReported();
         String[] apis = null;
         if (!Objects.isNull(noReported)) {
@@ -86,7 +92,7 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
         }
         if (!Objects.isNull(apis)) {
             for (String api : apis) {
-                if (StringUtil.isNotEmpty(methodData.getApi()) && methodData.getApi().equals(api)) {
+                if (StringUtil.isNotEmpty(methodData.getApi()) && matcher.match(api,methodData.getApi())) {
                     return true;
                 }
             }

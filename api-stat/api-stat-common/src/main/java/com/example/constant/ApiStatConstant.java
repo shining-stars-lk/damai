@@ -20,4 +20,6 @@ public class ApiStatConstant {
 
     public final static String FEIGN = "com.sun.proxy.$Proxy";
 
+    public final static String SPRING_APPLICATION_NAME = "spring.application.name";
+
 }
