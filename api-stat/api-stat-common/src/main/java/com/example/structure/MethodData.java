@@ -26,7 +26,7 @@ public class MethodData {
     
     private MethodLevel methodLevel;
     
-    private BigDecimal runTime;
+    private BigDecimal executeTime;
     
     private String api;
 
@@ -35,11 +35,11 @@ public class MethodData {
         if (this == o) return true;
         if (!(o instanceof MethodData)) return false;
         MethodData that = (MethodData) o;
-        return getId().equals(that.getId()) && getClassName().equals(that.getClassName()) && getMethodName().equals(that.getMethodName()) && Objects.equals(getArgumentCount(), that.getArgumentCount()) && getMethodLevel() == that.getMethodLevel() && Objects.equals(getRunTime(), that.getRunTime()) && Objects.equals(getApi(), that.getApi());
+        return getId().equals(that.getId()) && getClassName().equals(that.getClassName()) && getMethodName().equals(that.getMethodName()) && Objects.equals(getArgumentCount(), that.getArgumentCount()) && getMethodLevel() == that.getMethodLevel() && Objects.equals(getExecuteTime(), that.getExecuteTime()) && Objects.equals(getApi(), that.getApi());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getClassName(), getMethodName(), getArgumentCount(), getMethodLevel(), getRunTime(), getApi());
+        return Objects.hash(getId(), getClassName(), getMethodName(), getArgumentCount(), getMethodLevel(), getExecuteTime(), getApi());
     }
 }

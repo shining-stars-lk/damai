@@ -8,7 +8,6 @@ import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
 import com.example.structure.MethodData;
 import com.example.structure.MethodDetailData;
-import com.example.structure.MethodHierarchy;
 import com.example.structure.MethodHierarchyTransfer;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -17,11 +16,8 @@ import org.springframework.core.env.Environment;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-
-import static com.example.constant.ApiStatConstant.METHOD_DATA_SPLIT;
 
 /**
  * @program: cook-frame
@@ -112,20 +108,20 @@ public class MethodHierarchyTransferHandler implements EnvironmentAware {
         if (oldMethodDetailData == null) {
             oldMethodDetailData = new MethodDetailData();
             BeanUtils.copyProperties(methodData,oldMethodDetailData);
-            oldMethodDetailData.setAvgExecuteTime(methodData.getRunTime());
-            oldMethodDetailData.setMaxExecuteTime(methodData.getRunTime());
-            oldMethodDetailData.setMinExecuteTime(methodData.getRunTime());
+            oldMethodDetailData.setAvgExecuteTime(methodData.getExecuteTime());
+            oldMethodDetailData.setMaxExecuteTime(methodData.getExecuteTime());
+            oldMethodDetailData.setMinExecuteTime(methodData.getExecuteTime());
             oldMethodDetailData.setExceptionCount(exceptionFlag ? 1L : 0L);
         }else {
-            BigDecimal newAvgExecuteTime = (methodData.getRunTime().add(oldMethodDetailData.getAvgExecuteTime())).divide(new BigDecimal("2"),2,RoundingMode.HALF_UP);
+            BigDecimal newAvgExecuteTime = (methodData.getExecuteTime().add(oldMethodDetailData.getAvgExecuteTime())).divide(new BigDecimal("2"),2,RoundingMode.HALF_UP);
             oldMethodDetailData.setAvgExecuteTime(newAvgExecuteTime);
             BigDecimal newMaxExecuteTime = oldMethodDetailData.getMaxExecuteTime();
-            if (methodData.getRunTime().compareTo(oldMethodDetailData.getMaxExecuteTime()) > 0) {
-                newMaxExecuteTime = methodData.getRunTime();
+            if (methodData.getExecuteTime().compareTo(oldMethodDetailData.getMaxExecuteTime()) > 0) {
+                newMaxExecuteTime = methodData.getExecuteTime();
             }
             BigDecimal newMinExecuteTime = oldMethodDetailData.getMinExecuteTime();
-            if (methodData.getRunTime().compareTo(oldMethodDetailData.getMinExecuteTime()) < 0) {
-                newMinExecuteTime = methodData.getRunTime();
+            if (methodData.getExecuteTime().compareTo(oldMethodDetailData.getMinExecuteTime()) < 0) {
+                newMinExecuteTime = methodData.getExecuteTime();
             }
             oldMethodDetailData.setMaxExecuteTime(newMaxExecuteTime);
             oldMethodDetailData.setMinExecuteTime(newMinExecuteTime);

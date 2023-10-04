@@ -44,9 +44,8 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
             exceptionFlag = true;
             throw t;
         } finally {
-            long runTime = System.currentTimeMillis() - start;
-            BigDecimal runTimeBigDecimal = new BigDecimal(String.valueOf(runTime));
-            MethodData currentMethodData = methodDataOperate.getCurrentMethodNode(methodInvocation, runTimeBigDecimal);
+            MethodData currentMethodData = methodDataOperate.getCurrentMethodNode(methodInvocation,
+                    new BigDecimal(String.valueOf(System.currentTimeMillis() - start)));
             methodDataStackHolder.putMethodData(currentMethodData);
             methodHierarchyTransfer = methodHierarchyTransferOperate.getMethodHierarchyTransfer(methodInvocation,parentMethodData,
                     currentMethodData,exceptionFlag);
