@@ -12,6 +12,8 @@ import com.example.handler.MethodHierarchyTransferHandler;
 import com.example.operate.MethodDataOperate;
 import com.example.operate.MethodHierarchyTransferOperate;
 import com.example.operate.MethodQueueOperate;
+import com.example.save.DataSave;
+import com.example.save.impl.RedisDataSave;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor;
@@ -61,10 +63,15 @@ public class ApiStatAutoConfig {
     public MethodQueueOperate methodQueueOperate(MethodHierarchyTransferHandler methodHierarchyTransferHandler){
         return new MethodQueueOperate(methodHierarchyTransferHandler);
     }
+
+    @Bean
+    public DataSave dataSave(RedisCache redisCache,ApiStatProperties apiStatProperties){
+        return new RedisDataSave(redisCache,apiStatProperties);
+    }
     
     @Bean
-    public MethodHierarchyTransferHandler methodHierarchyTransferHandler(RedisCache redisCache,ApiStatProperties apiStatProperties){
-        return new MethodHierarchyTransferHandler(redisCache,apiStatProperties);
+    public MethodHierarchyTransferHandler methodHierarchyTransferHandler(DataSave dataSave){
+        return new MethodHierarchyTransferHandler(dataSave);
     }
     
     @Bean

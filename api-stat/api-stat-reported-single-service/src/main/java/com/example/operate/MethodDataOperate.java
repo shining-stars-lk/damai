@@ -39,7 +39,7 @@ public class MethodDataOperate {
         return stack.peek();
     }
     
-    public MethodData getCurrentMethodNode(MethodInvocation methodInvocation, BigDecimal executeTime) {
+    public MethodData getCurrentMethodData(MethodInvocation methodInvocation, BigDecimal executeTime) {
         String className = methodInvocation.getMethod().getDeclaringClass().getName();
         String methodName = methodInvocation.getMethod().getName();
         MethodData methodData = new MethodData();

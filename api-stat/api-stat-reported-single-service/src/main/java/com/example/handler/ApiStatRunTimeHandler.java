@@ -12,7 +12,6 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * @program: cook-frame
@@ -38,15 +37,16 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
         MethodData parentMethodData = methodDataOperate.getParentMethodData();
         MethodHierarchyTransfer methodHierarchyTransfer = new MethodHierarchyTransfer();
         boolean exceptionFlag = false;
+        MethodData currentMethodData = null;
         try {
+            currentMethodData = methodDataOperate.getCurrentMethodData(methodInvocation,
+                    new BigDecimal(String.valueOf(System.currentTimeMillis() - start)));
+            methodDataStackHolder.putMethodData(currentMethodData);
             obj = methodInvocation.proceed();
         } catch (Throwable t) {
             exceptionFlag = true;
             throw t;
         } finally {
-            MethodData currentMethodData = methodDataOperate.getCurrentMethodNode(methodInvocation,
-                    new BigDecimal(String.valueOf(System.currentTimeMillis() - start)));
-            methodDataStackHolder.putMethodData(currentMethodData);
             methodHierarchyTransfer = methodHierarchyTransferOperate.getMethodHierarchyTransfer(methodInvocation,parentMethodData,
                     currentMethodData,exceptionFlag);
             methodQueueOperate.add(methodHierarchyTransfer);
