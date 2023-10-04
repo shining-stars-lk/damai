@@ -29,12 +29,13 @@ public class MethodDataOperate {
     public MethodData getParentMethodData() {
         Stack<MethodData> stack = methodDataStackHolder.getMethodData();
         if (stack == null) {
-            MethodData methodData = new MethodData();
-            methodData.setId("org.springframework.web.servlet.DispatcherServlet.doDispatch");
-            methodData.setClassName("DispatcherServlet");
-            methodData.setMethodName("doDispatch");
-            methodData.setMethodLevel(MethodLevel.Servlet);
-            return methodData;
+//            MethodData methodData = new MethodData();
+//            methodData.setId("org.springframework.web.servlet.DispatcherServlet.doDispatch");
+//            methodData.setClassName("DispatcherServlet");
+//            methodData.setMethodName("doDispatch");
+//            methodData.setMethodLevel(MethodLevel.Servlet);
+//            return methodData;
+            return null;
         }
         return stack.peek();
     }

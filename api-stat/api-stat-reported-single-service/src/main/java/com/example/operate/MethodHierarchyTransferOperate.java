@@ -18,7 +18,6 @@ public class MethodHierarchyTransferOperate {
     
     public MethodHierarchyTransfer getMethodHierarchyTransfer(MethodInvocation methodInvocation, MethodData parentMethodData,
                                                               MethodData currentMethodData, boolean exceptionFlag) {
-        //parentMethodData = checkControllerParent(parentMethodData, currentMethodData);
         MethodHierarchyTransfer methodHierarchyTransfer = new MethodHierarchyTransfer();
         methodHierarchyTransfer.setCurrentMethodData(currentMethodData);
         methodHierarchyTransfer.setParentMethodData(parentMethodData);
@@ -26,17 +25,5 @@ public class MethodHierarchyTransferOperate {
         methodHierarchyTransfer.setValues(methodInvocation.getArguments());
         methodHierarchyTransfer.setExceptionFlag(exceptionFlag);
         return methodHierarchyTransfer;
-    }
-    
-    private MethodData checkControllerParent(MethodData parent, MethodData current) {
-        if (current.getMethodLevel() == MethodLevel.Controller) {
-            parent = new MethodData();
-            parent.setId("org.springframework.web.servlet.DispatcherServlet.doDispatch");
-            parent.setClassName("DispatcherServlet");
-            parent.setMethodName("doDispatch");
-            parent.setMethodLevel(MethodLevel.Servlet);
-            return parent;
-        }
-        return parent;
     }
 }
