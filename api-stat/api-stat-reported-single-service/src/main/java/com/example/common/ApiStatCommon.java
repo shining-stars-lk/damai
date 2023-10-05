@@ -17,73 +17,75 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.constant.ApiStatConstant.API_SPLIT;
+
 public interface ApiStatCommon {
     public final static List<Class<?>> baseTypes = Arrays.asList(Integer.class, Double.class, Float.class, Long.class, String.class, Boolean.class, MultipartFile.class, List.class, Map.class);
     public final static List<Class<?>> excludedTypes = Arrays.asList(HttpServletRequest.class, HttpServletResponse.class,Model.class);
 
-    default String getRoute(MethodInvocation pjp) {
-        Class<?> targetClass = pjp.getThis().getClass();
-        String[] classRoute = getRouteValue(targetClass);
-        StringBuilder routes = new StringBuilder("");
-        if (classRoute != null && classRoute.length > 0) {
-            routes = new StringBuilder(classRoute[0]);
+    default String getApi(MethodInvocation methodInvocation) {
+        Class<?> targetClass = methodInvocation.getThis().getClass();
+        String[] controllerClassApi = getControllerClassApi(targetClass);
+        StringBuilder api = new StringBuilder("");
+        if (controllerClassApi != null && controllerClassApi.length > 0) {
+            api = new StringBuilder(controllerClassApi[0]);
         }
-        String[] methodRoute = getRouteValue(pjp.getMethod());
-        if (methodRoute == null || methodRoute.length == 0) {
+        String[] controllerMethodApi = getControllerMethodApi(methodInvocation.getMethod());
+        if (controllerMethodApi == null || controllerMethodApi.length == 0) {
             return null;
         }
-        if (methodRoute[0].startsWith("/")) {
-            routes.append(methodRoute[0]);
+        if (controllerMethodApi[0].startsWith("/")) {
+            api.append(controllerMethodApi[0]);
         } else {
-            routes.append("/" + methodRoute[0]);
+            api.append(API_SPLIT + controllerMethodApi[0]);
         }
-        return routes.toString();
+        return api.toString();
     }
 
-    default String[] getRouteValue(Class<?> targetClass) {
-        RequestMapping methodAnnotationRequest = targetClass.getAnnotation(RequestMapping.class);
-        if (methodAnnotationRequest != null) {
-            return methodAnnotationRequest.value();
+    default String[] getControllerClassApi(Class<?> controllerClass) {
+        RequestMapping requestMapping = controllerClass.getAnnotation(RequestMapping.class);
+        if (requestMapping != null) {
+            return requestMapping.value();
         }
-        PostMapping methodAnnotationPost = targetClass.getAnnotation(PostMapping.class);
-        if (methodAnnotationPost != null) {
-            return methodAnnotationPost.value();
+        PostMapping postMapping = controllerClass.getAnnotation(PostMapping.class);
+        if (postMapping != null) {
+            return postMapping.value();
         }
-        GetMapping methodAnnotationGet = targetClass.getAnnotation(GetMapping.class);
-        if (methodAnnotationGet != null) {
-            return methodAnnotationGet.value();
+        GetMapping getMapping = controllerClass.getAnnotation(GetMapping.class);
+        if (getMapping != null) {
+            return getMapping.value();
         }
-        PutMapping methodAnnotationPut = targetClass.getAnnotation(PutMapping.class);
-        if (methodAnnotationPut != null) {
-            return methodAnnotationPut.value();
+        PutMapping putMapping = controllerClass.getAnnotation(PutMapping.class);
+        if (putMapping != null) {
+            return putMapping.value();
         }
-        DeleteMapping methodAnnotationDelete = targetClass.getAnnotation(DeleteMapping.class);
-        if (methodAnnotationDelete != null) {
-            return methodAnnotationDelete.value();
+        DeleteMapping deleteMapping = controllerClass.getAnnotation(DeleteMapping.class);
+        if (deleteMapping != null) {
+            return deleteMapping.value();
         }
         return null;
     }
 
-    default String[] getRouteValue(Method method) {
-        RequestMapping methodAnnotationRequest = method.getAnnotation(RequestMapping.class);
-        if (methodAnnotationRequest != null) {
-            return methodAnnotationRequest.value();
+    default String[] getControllerMethodApi(Method method) {
+        RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
+        if (requestMapping != null) {
+            return requestMapping.value();
         }
-        PostMapping methodAnnotationPost = method.getAnnotation(PostMapping.class);
-        if (methodAnnotationPost != null) {
-            return methodAnnotationPost.value();
+        PostMapping postMapping = method.getAnnotation(PostMapping.class);
+        if (postMapping != null) {
+            return postMapping.value();
         }
-        GetMapping methodAnnotationGet = method.getAnnotation(GetMapping.class);
-        if (methodAnnotationGet != null) {
-            return methodAnnotationGet.value();
+        GetMapping getMapping = method.getAnnotation(GetMapping.class);
+        if (getMapping != null) {
+            return getMapping.value();
         }
-        PutMapping methodAnnotationPut = method.getAnnotation(PutMapping.class);
-        if (methodAnnotationPut != null) {
-            return methodAnnotationPut.value();
+        PutMapping putMapping = method.getAnnotation(PutMapping.class);
+        if (putMapping != null) {
+            return putMapping.value();
         }
-        DeleteMapping methodAnnotationDelete = method.getAnnotation(DeleteMapping.class);
-        if (methodAnnotationDelete != null) {
-            return methodAnnotationDelete.value();
+        DeleteMapping deleteMapping = method.getAnnotation(DeleteMapping.class);
+        if (deleteMapping != null) {
+            return deleteMapping.value();
         }
         return null;
     }

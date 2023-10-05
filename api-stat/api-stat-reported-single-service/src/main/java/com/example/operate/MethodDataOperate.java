@@ -50,7 +50,7 @@ public class MethodDataOperate {
         methodData.setExecuteTime(executeTime);
         methodData.setMethodLevel(apiStatCommon.getMethodLevel(methodInvocation));
         if (methodData.getMethodLevel()== MethodLevel.Controller) {
-            methodData.setApi(apiStatCommon.getRoute(methodInvocation));
+            methodData.setApi(apiStatCommon.getApi(methodInvocation));
         }
         return methodData;
     }
