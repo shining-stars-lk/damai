@@ -1,5 +1,7 @@
 package com.example.save.impl;
 
+
+import com.alibaba.fastjson.JSON;
 import com.example.config.ApiStatProperties;
 import com.example.core.RedisKeyEnum;
 import com.example.core.StringUtil;
@@ -10,19 +12,29 @@ import com.example.save.DataSave;
 import com.example.structure.MethodData;
 import com.example.structure.MethodDetailData;
 import com.example.structure.MethodHierarchyTransfer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.example.constant.ApiStatConstant.SPRING_APPLICATION_NAME;
 
+@Slf4j
 public class RedisDataSave implements DataSave, EnvironmentAware {
 
     private final RedisCache redisCache;
@@ -33,10 +45,24 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
 
     private PathMatcher matcher = new AntPathMatcher();
 
+    private DefaultRedisScript redisScript;
+
     public RedisDataSave(RedisCache redisCache,ApiStatProperties apiStatProperties){
         this.redisCache = redisCache;
         this.apiStatProperties = apiStatProperties;
     }
+
+    @PostConstruct
+    public void init(){
+        try {
+            redisScript = new DefaultRedisScript();
+            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/redis_data_save.lua")));
+            redisScript.setResultType(String.class);
+        } catch (Exception e) {
+            log.error("redisScript init lua error",e);
+        }
+    }
+
     @Override
     public void save(MethodHierarchyTransfer methodHierarchyTransfer) {
         MethodData currentMethodData = methodHierarchyTransfer.getCurrentMethodData();
@@ -53,34 +79,11 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
         if (methodData == null) {
             return null;
         }
-        String oldMethodDetailId = methodData.getId();
-        MethodDetailData oldMethodDetailData = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_DETAIL, oldMethodDetailId), MethodDetailData.class);
-        if (oldMethodDetailData == null) {
-            oldMethodDetailData = new MethodDetailData();
-            BeanUtils.copyProperties(methodData,oldMethodDetailData);
-            oldMethodDetailData.setAvgExecuteTime(methodData.getExecuteTime());
-            oldMethodDetailData.setMaxExecuteTime(methodData.getExecuteTime());
-            oldMethodDetailData.setMinExecuteTime(methodData.getExecuteTime());
-            oldMethodDetailData.setExceptionCount(exceptionFlag ? 1L : 0L);
-        }else {
-            BigDecimal newAvgExecuteTime = (methodData.getExecuteTime().add(oldMethodDetailData.getAvgExecuteTime())).divide(new BigDecimal("2"),2, RoundingMode.HALF_UP);
-            oldMethodDetailData.setAvgExecuteTime(newAvgExecuteTime);
-            BigDecimal newMaxExecuteTime = oldMethodDetailData.getMaxExecuteTime();
-            if (methodData.getExecuteTime().compareTo(oldMethodDetailData.getMaxExecuteTime()) > 0) {
-                newMaxExecuteTime = methodData.getExecuteTime();
-            }
-            BigDecimal newMinExecuteTime = oldMethodDetailData.getMinExecuteTime();
-            if (methodData.getExecuteTime().compareTo(oldMethodDetailData.getMinExecuteTime()) < 0) {
-                newMinExecuteTime = methodData.getExecuteTime();
-            }
-            oldMethodDetailData.setMaxExecuteTime(newMaxExecuteTime);
-            oldMethodDetailData.setMinExecuteTime(newMinExecuteTime);
-            if (exceptionFlag) {
-                oldMethodDetailData.setExceptionCount(oldMethodDetailData.getExceptionCount() + 1);
-            }
-        }
-        redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_DETAIL,oldMethodDetailId), oldMethodDetailData);
-        return oldMethodDetailData.getAvgExecuteTime();
+        String oldMethodDetailIdRelKey = RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_DETAIL, methodData.getId()).getRelKey();
+        List<String> keys = Stream.of(oldMethodDetailIdRelKey).collect(Collectors.toList());
+        String[] parameters = new String[]{JSON.toJSONString(methodData),exceptionFlag ? "1" : "0"};
+        String avgExecuteTime = (String)redisCache.getInstance().execute(redisScript, keys, parameters);
+        return new BigDecimal(avgExecuteTime);
     }
 
     public boolean checkNoReported(MethodData methodData,ApiStatProperties apiStatProperties,Environment environment){
@@ -109,7 +112,8 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
         }
         MethodDetailData methodDetailData = new MethodDetailData();
         BeanUtils.copyProperties(methodData,methodDetailData);
-        methodDetailData.setAvgExecuteTime(executeTime);
+        methodDetailData.setExecuteTime(null);
+        methodDetailData.setExceptionCount(0L);
         redisCache.addForZSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_SORTED_SET),methodDetailData,executeTime.doubleValue());
     }
 

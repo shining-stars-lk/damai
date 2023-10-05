@@ -40,14 +40,13 @@ public class MethodDataOperate {
         return stack.peek();
     }
     
-    public MethodData getCurrentMethodData(MethodInvocation methodInvocation, BigDecimal executeTime) {
+    public MethodData getCurrentMethodData(MethodInvocation methodInvocation) {
         String className = methodInvocation.getMethod().getDeclaringClass().getName();
         String methodName = methodInvocation.getMethod().getName();
         MethodData methodData = new MethodData();
         methodData.setId(className + METHOD_DATA_SPLIT + methodName);
         methodData.setClassName(className);
         methodData.setMethodName(methodName);
-        methodData.setExecuteTime(executeTime);
         methodData.setMethodLevel(apiStatCommon.getMethodLevel(methodInvocation));
         if (methodData.getMethodLevel()== MethodLevel.Controller) {
             methodData.setApi(apiStatCommon.getApi(methodInvocation));

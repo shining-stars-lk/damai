@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +40,13 @@ public class ApiStatSystemService {
         long start = pageInfo.getStart();
         long end = pageInfo.getEnd();
         Set<ZSetOperations.TypedTuple<MethodDetailData>> typedTuples = redisCache.reverseRangeWithScoreForZSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_SORTED_SET), start, end, MethodDetailData.class);
-        List<MethodDetailData> list = typedTuples.stream().map(ZSetOperations.TypedTuple::getValue).collect(Collectors.toList());
+        List<MethodDetailData> list = typedTuples.stream().map(typedTuple -> {
+            Double score = typedTuple.getScore();
+            MethodDetailData methodDetailData = typedTuple.getValue();
+            methodDetailData.setExecuteTime(new BigDecimal(String.valueOf(score)));
+            methodDetailData.setAvgExecuteTime(new BigDecimal(String.valueOf(score)));
+            return methodDetailData;
+        }).collect(Collectors.toList());
         PageVo<MethodDetailData> pageVo = new PageVo<>();
         pageVo.setPageTotal(pageTotal);
         pageVo.setPageNo(pageNo);
