@@ -50,6 +50,7 @@
 		<spring-boot.version>2.3.12.RELEASE</spring-boot.version>
 		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
 		<spring-cloud-alibaba.version>2.2.7.RELEASE</spring-cloud-alibaba.version>
+		<fastjson.version>1.2.83</fastjson.version>
 	</properties>
 	<dependencies>
 		<dependency>
