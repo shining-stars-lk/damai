@@ -1,12 +1,8 @@
 package com.example.operate;
 
-import com.example.enums.MethodLevel;
 import com.example.structure.MethodData;
 import com.example.structure.MethodHierarchyTransfer;
-import lombok.AllArgsConstructor;
 import org.aopalliance.intercept.MethodInvocation;
-
-import java.math.BigDecimal;
 
 /**
  * @program: cook-frame
