@@ -60,8 +60,8 @@ public class ApiStatAutoConfig {
     }
     
     @Bean
-    public MethodQueueOperate methodQueueOperate(MethodHierarchyTransferHandler methodHierarchyTransferHandler){
-        return new MethodQueueOperate(methodHierarchyTransferHandler);
+    public MethodQueueOperate methodQueueOperate(MethodHierarchyTransferHandler methodHierarchyTransferHandler,ApiStatProperties apiStatProperties){
+        return new MethodQueueOperate(methodHierarchyTransferHandler,apiStatProperties);
     }
 
     @Bean
