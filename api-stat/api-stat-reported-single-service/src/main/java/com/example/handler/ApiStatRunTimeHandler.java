@@ -38,8 +38,8 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
         MethodHierarchyTransfer methodHierarchyTransfer = new MethodHierarchyTransfer();
         boolean exceptionFlag = false;
         MethodData currentMethodData = null;
+        currentMethodData = methodDataOperate.getCurrentMethodData(methodInvocation);
         try {
-            currentMethodData = methodDataOperate.getCurrentMethodData(methodInvocation);
             methodDataStackHolder.putMethodData(currentMethodData);
             obj = methodInvocation.proceed();
         } catch (Throwable t) {
