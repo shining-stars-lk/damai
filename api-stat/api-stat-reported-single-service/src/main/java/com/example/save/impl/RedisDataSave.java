@@ -24,14 +24,13 @@ import org.springframework.util.PathMatcher;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.example.constant.ApiStatConstant.REDIS_DATA_SAVE_LUA_PATH;
 import static com.example.constant.ApiStatConstant.SPRING_APPLICATION_NAME;
 
 @Slf4j
@@ -43,7 +42,7 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
 
     private Environment environment;
 
-    private PathMatcher matcher = new AntPathMatcher();
+    private final PathMatcher matcher = new AntPathMatcher();
 
     private DefaultRedisScript redisScript;
 
@@ -56,7 +55,7 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
     public void init(){
         try {
             redisScript = new DefaultRedisScript();
-            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/redis_data_save.lua")));
+            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource(REDIS_DATA_SAVE_LUA_PATH)));
             redisScript.setResultType(String.class);
         } catch (Exception e) {
             log.error("redisScript init lua error",e);
