@@ -1,6 +1,7 @@
 package com.example.operate;
 
 
+import com.alibaba.fastjson.JSON;
 import com.example.handler.MethodHierarchyTransferHandler;
 import com.example.structure.MethodHierarchyTransfer;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,10 @@ public class MethodQueueOperate {
     }
 
     public void add(MethodHierarchyTransfer methodHierarchyTransfer) {
-        blockingQueue.offer(methodHierarchyTransfer);
+        boolean result = blockingQueue.offer(methodHierarchyTransfer);
+        if (!result) {
+            log.warn("blockingQueue offer fail methodHierarchyTransfer : {}", JSON.toJSONString(methodHierarchyTransfer));
+        }
     }
     
 
