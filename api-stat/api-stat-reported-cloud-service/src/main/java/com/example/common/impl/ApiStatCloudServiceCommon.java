@@ -17,23 +17,23 @@ public class ApiStatCloudServiceCommon implements ApiStatCommon {
     public MethodLevel getMethodLevel(MethodInvocation pjp) {
         Class<?> targetClass = pjp.getThis().getClass();
         if (targetClass.getAnnotation(Controller.class) != null || targetClass.getAnnotation(RestController.class) != null) {
-            return MethodLevel.Controller;
+            return MethodLevel.CONTROLLER;
         } else if (targetClass.getAnnotation(Service.class) != null) {
-            return MethodLevel.Service;
+            return MethodLevel.SERVICE;
         } else if (targetClass.getAnnotation(Repository.class) != null) {
-            return MethodLevel.Dao;
+            return MethodLevel.DAO;
         } else if (targetClass.getAnnotation(FeignClient.class) != null) {
-            return MethodLevel.Dao;
+            return MethodLevel.DAO;
         }
         String className = pjp.getMethod().getDeclaringClass().getName().toLowerCase();
         if (className.contains(CONTROLLER)) {
-            return MethodLevel.Controller;
+            return MethodLevel.CONTROLLER;
         } else if (className.contains(SERVICE)) {
-            return MethodLevel.Service;
+            return MethodLevel.SERVICE;
         } else if (className.contains(DAO) || className.contains(MAPPER) || className.contains(FEIGN)) {
-            return MethodLevel.Dao;
+            return MethodLevel.DAO;
         } else {
-            return MethodLevel.Others;
+            return MethodLevel.OTHER_TYPE;
         }
     }
 }

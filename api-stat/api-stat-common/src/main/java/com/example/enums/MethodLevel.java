@@ -2,9 +2,8 @@ package com.example.enums;
 
 
 public enum MethodLevel {
-    Controller,
-    Service,
-    Dao,
-    Servlet,
-    Others;
+    CONTROLLER, 
+    SERVICE, 
+    DAO, 
+    OTHER_TYPE;
 }

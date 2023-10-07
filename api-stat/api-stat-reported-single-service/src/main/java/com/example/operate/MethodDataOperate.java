@@ -7,7 +7,6 @@ import com.example.common.ApiStatCommon;
 import lombok.AllArgsConstructor;
 import org.aopalliance.intercept.MethodInvocation;
 
-import java.math.BigDecimal;
 import java.util.Stack;
 
 import static com.example.constant.ApiStatConstant.METHOD_DATA_SPLIT;
@@ -48,7 +47,7 @@ public class MethodDataOperate {
         methodData.setClassName(className);
         methodData.setMethodName(methodName);
         methodData.setMethodLevel(apiStatCommon.getMethodLevel(methodInvocation));
-        if (methodData.getMethodLevel()== MethodLevel.Controller) {
+        if (methodData.getMethodLevel()== MethodLevel.CONTROLLER) {
             methodData.setApi(apiStatCommon.getApi(methodInvocation));
         }
         return methodData;

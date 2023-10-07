@@ -67,7 +67,7 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
         MethodData currentMethodData = methodHierarchyTransfer.getCurrentMethodData();
         MethodData parentMethodData = methodHierarchyTransfer.getParentMethodData();
         BigDecimal executeTime = addMethodDetail(currentMethodData,methodHierarchyTransfer.isExceptionFlag());
-        if (currentMethodData.getMethodLevel() == MethodLevel.Controller) {
+        if (currentMethodData.getMethodLevel() == MethodLevel.CONTROLLER) {
             addControllerSortedSet(currentMethodData,apiStatProperties,environment,executeTime);
         }
 
@@ -120,9 +120,9 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
         if (parentMethodData == null || currentMethodData == null) {
             return;
         }
-        if (parentMethodData.getMethodLevel() == MethodLevel.Controller) {
+        if (parentMethodData.getMethodLevel() == MethodLevel.CONTROLLER) {
             redisCache.addForSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_CHILDREN_SET,parentMethodData.getId()),currentMethodData.getId());
-        } else if (parentMethodData.getMethodLevel() == MethodLevel.Service) {
+        } else if (parentMethodData.getMethodLevel() == MethodLevel.SERVICE) {
             redisCache.addForSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_SERVICE_CHILDREN_SET,parentMethodData.getId()),currentMethodData.getId());
         }
     }
