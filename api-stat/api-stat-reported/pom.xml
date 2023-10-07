@@ -5,20 +5,18 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>cook-frame</artifactId>
+        <artifactId>api-stat</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>api-stat</artifactId>
-    <name>api-stat</name>
-    <description>api-stat</description>
+    <artifactId>api-stat-reported</artifactId>
+    <name>api-stat-reported</name>
+    <description>api-stat-reported</description>
     <packaging>pom</packaging>
 
     <modules>
-        <module>api-stat-system</module>
-		<module>api-stat-common</module>
-        <module>api-stat-reported</module>
-        <module>api-stat-example</module>
+        <module>api-stat-reported-single-service</module>
+        <module>api-stat-reported-cloud-service</module>
     </modules>
 
 </project>
