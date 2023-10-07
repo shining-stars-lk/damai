@@ -65,8 +65,8 @@ public class ApiStatAutoConfig {
     }
 
     @Bean
-    public DataSave dataSave(RedisCache redisCache,ApiStatProperties apiStatProperties){
-        return new RedisDataSave(redisCache,apiStatProperties);
+    public DataSave dataSave(RedisCache redisCache,ApiStatProperties apiStatProperties,ApiStatCommon apiStatCommon){
+        return new RedisDataSave(redisCache,apiStatProperties,apiStatCommon);
     }
     
     @Bean

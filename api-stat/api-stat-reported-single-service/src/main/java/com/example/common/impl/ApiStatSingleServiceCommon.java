@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.example.constant.ApiStatConstant.*;
 
-public class ApiStatSingleServiceCommon implements ApiStatCommon {
+public class ApiStatSingleServiceCommon extends ApiStatCommon {
     @Override
     public MethodLevel getMethodLevel(MethodInvocation pjp) {
         Class<?> targetClass = pjp.getThis().getClass();

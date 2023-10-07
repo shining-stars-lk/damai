@@ -2,6 +2,7 @@ package com.example.save.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.example.common.ApiStatCommon;
 import com.example.config.ApiStatProperties;
 import com.example.core.RedisKeyEnum;
 import com.example.core.StringUtil;
@@ -14,8 +15,6 @@ import com.example.structure.MethodDetailData;
 import com.example.structure.MethodHierarchyTransfer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.scripting.support.ResourceScriptSource;
@@ -31,24 +30,24 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.example.constant.ApiStatConstant.REDIS_DATA_SAVE_LUA_PATH;
-import static com.example.constant.ApiStatConstant.SPRING_APPLICATION_NAME;
 
 @Slf4j
-public class RedisDataSave implements DataSave, EnvironmentAware {
+public class RedisDataSave implements DataSave {
 
     private final RedisCache redisCache;
 
     private final ApiStatProperties apiStatProperties;
-
-    private Environment environment;
+    
+    private final ApiStatCommon apiStatCommon;
 
     private final PathMatcher matcher = new AntPathMatcher();
 
     private DefaultRedisScript redisScript;
 
-    public RedisDataSave(RedisCache redisCache,ApiStatProperties apiStatProperties){
+    public RedisDataSave(RedisCache redisCache,ApiStatProperties apiStatProperties,ApiStatCommon apiStatCommon){
         this.redisCache = redisCache;
         this.apiStatProperties = apiStatProperties;
+        this.apiStatCommon = apiStatCommon;
     }
 
     @PostConstruct
@@ -68,7 +67,7 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
         MethodData parentMethodData = methodHierarchyTransfer.getParentMethodData();
         BigDecimal executeTime = addMethodDetail(currentMethodData,methodHierarchyTransfer.isExceptionFlag());
         if (currentMethodData.getMethodLevel() == MethodLevel.CONTROLLER) {
-            addControllerSortedSet(currentMethodData,apiStatProperties,environment,executeTime);
+            addControllerSortedSet(currentMethodData,apiStatProperties,executeTime);
         }
 
         addChildren(parentMethodData,currentMethodData);
@@ -85,12 +84,12 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
         return new BigDecimal(avgExecuteTime);
     }
 
-    public boolean checkNoReported(MethodData methodData,ApiStatProperties apiStatProperties,Environment environment){
-        String applicationName = environment.getProperty(SPRING_APPLICATION_NAME);
+    public boolean checkNoReported(MethodData methodData,ApiStatProperties apiStatProperties){
+        
         Map<String, String[]> noReported = apiStatProperties.getNoReported();
         String[] apis = null;
         if (!Objects.isNull(noReported)) {
-            apis = noReported.get(applicationName);
+            apis = noReported.get(apiStatCommon.getApplicationName());
         }
         if (!Objects.isNull(apis)) {
             for (String api : apis) {
@@ -102,11 +101,11 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
         return false;
     }
 
-    public void addControllerSortedSet(MethodData methodData,ApiStatProperties apiStatProperties,Environment environment,BigDecimal executeTime){
+    public void addControllerSortedSet(MethodData methodData,ApiStatProperties apiStatProperties,BigDecimal executeTime){
         if (methodData == null) {
             return;
         }
-        if (checkNoReported(methodData,apiStatProperties,environment)) {
+        if (checkNoReported(methodData,apiStatProperties)) {
             return;
         }
         MethodDetailData methodDetailData = new MethodDetailData();
@@ -125,10 +124,5 @@ public class RedisDataSave implements DataSave, EnvironmentAware {
         } else if (parentMethodData.getMethodLevel() == MethodLevel.SERVICE) {
             redisCache.addForSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_SERVICE_CHILDREN_SET,parentMethodData.getId()),currentMethodData.getId());
         }
-    }
-
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
     }
 }

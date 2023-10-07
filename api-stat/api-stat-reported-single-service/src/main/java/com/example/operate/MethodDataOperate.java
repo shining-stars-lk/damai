@@ -28,12 +28,6 @@ public class MethodDataOperate {
     public MethodData getParentMethodData() {
         Stack<MethodData> stack = methodDataStackHolder.getMethodData();
         if (stack == null) {
-//            MethodData methodData = new MethodData();
-//            methodData.setId("org.springframework.web.servlet.DispatcherServlet.doDispatch");
-//            methodData.setClassName("DispatcherServlet");
-//            methodData.setMethodName("doDispatch");
-//            methodData.setMethodLevel(MethodLevel.Servlet);
-//            return methodData;
             return null;
         }
         return stack.peek();
@@ -43,7 +37,7 @@ public class MethodDataOperate {
         String className = methodInvocation.getMethod().getDeclaringClass().getName();
         String methodName = methodInvocation.getMethod().getName();
         MethodData methodData = new MethodData();
-        methodData.setId(className + METHOD_DATA_SPLIT + methodName);
+        methodData.setId(apiStatCommon.getApplicationName() + METHOD_DATA_SPLIT + className + METHOD_DATA_SPLIT + methodName);
         methodData.setClassName(className);
         methodData.setMethodName(methodName);
         methodData.setMethodLevel(apiStatCommon.getMethodLevel(methodInvocation));

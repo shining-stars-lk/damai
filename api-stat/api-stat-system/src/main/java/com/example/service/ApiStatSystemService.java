@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.core.RedisKeyEnum;
+import com.example.dto.MethodChainDto;
 import com.example.dto.PageDto;
 import com.example.info.PageInfo;
 import com.example.redis.RedisCache;
@@ -24,10 +25,16 @@ public class ApiStatSystemService {
     @Autowired
     private RedisCache redisCache;
 
-    public Set<MethodDetailData> getControllerMethods() {
+    public List<MethodDetailData> getControllerMethods() {
         Set<ZSetOperations.TypedTuple<MethodDetailData>> typedTuples = redisCache.reverseRangeWithScoreForZSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_SORTED_SET), 0, -1, MethodDetailData.class);
-        Set<MethodDetailData> set = typedTuples.stream().map(ZSetOperations.TypedTuple::getValue).collect(Collectors.toSet());
-        return set;
+        List<MethodDetailData> list = typedTuples.stream().map(typedTuple -> {
+            Double score = typedTuple.getScore();
+            MethodDetailData methodDetailData = typedTuple.getValue();
+            methodDetailData.setExecuteTime(new BigDecimal(String.valueOf(score)));
+            methodDetailData.setAvgExecuteTime(new BigDecimal(String.valueOf(score)));
+            return methodDetailData;
+        }).collect(Collectors.toList());
+        return list;
     }
 
     public PageVo<MethodDetailData> getControllerMethodsPage(PageDto pageDto){
@@ -55,46 +62,24 @@ public class ApiStatSystemService {
         return pageVo;
     }
 
-    public MethodDetailData getMethodChainList(String controllerMethod) {
-//        MethodData controllerMethodData = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_METHOD_DATA, controllerMethod), MethodData.class);
-//        MethodHierarchy controllerMethodHierarchy = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_HIERARCHY, controllerMethod), MethodHierarchy.class);
-//        if (controllerMethodData == null || controllerMethodHierarchy == null) {
-//            return controllerMethodDetailData;
-//        }
-        MethodDetailData controllerMethodDetailData = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_DETAIL, controllerMethod), MethodDetailData.class);
+    public MethodDetailData getMethodChainList(MethodChainDto methodChainDto) {
+        String methodDetailDataId = methodChainDto.getMethodDetailDataId();
+        MethodDetailData controllerMethodDetailData = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_DETAIL, methodDetailDataId), MethodDetailData.class);
         if (controllerMethodDetailData == null) {
             return null;
         }
-        Set<String> serviceMethodNameSet = redisCache.membersForSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_CHILDREN_SET, controllerMethod), String.class);
+        Set<String> serviceMethodNameSet = redisCache.membersForSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_CONTROLLER_CHILDREN_SET, methodDetailDataId), String.class);
 
         List<MethodDetailData> serviceList = new ArrayList<>();
         for (String serviceMethodName : serviceMethodNameSet) {
-            //MethodData serviceMethodData = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_SERVICE_METHOD_DATA, serviceMethodName), MethodData.class);
-            //MethodHierarchy serviceMethodHierarchy = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_HIERARCHY, serviceMethodName), MethodHierarchy.class);
-//            if (serviceMethodData == null || serviceMethodHierarchy == null) {
-//                continue;
-//            }
             MethodDetailData serviceMethodDetailData = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_DETAIL, serviceMethodName), MethodDetailData.class);
             if (serviceMethodDetailData == null) {
                 continue;
             }
-            //            MethodDetailData serviceMethodDetailData = new MethodDetailData();
-//            BeanUtils.copyProperties(serviceMethodData,serviceMethodDetailData);
-//            BeanUtils.copyProperties(serviceMethodHierarchy,serviceMethodDetailData);
-
             Set<String> daoMethodNameSet = redisCache.membersForSet(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_SERVICE_CHILDREN_SET, serviceMethodName), String.class);
 
             List<MethodDetailData> daoList = new ArrayList<>();
             for (String daoMethodName : daoMethodNameSet) {
-//                MethodData daoMethodData = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_DAO_METHOD_DATA, daoMethodName), MethodData.class);
-//                MethodHierarchy daoMethodHierarchy = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_HIERARCHY, daoMethodName), MethodHierarchy.class);
-//
-//                if (daoMethodData == null || daoMethodHierarchy == null) {
-//                    continue;
-//                }
-//                MethodDetailData daoMethodDetailData = new MethodDetailData();
-//                BeanUtils.copyProperties(daoMethodData,daoMethodDetailData);
-//                BeanUtils.copyProperties(daoMethodHierarchy,daoMethodDetailData);
                 MethodDetailData daoMethodDetailData = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.API_STAT_METHOD_DETAIL, daoMethodName), MethodDetailData.class);
                 daoList.add(daoMethodDetailData);
             }
