@@ -8,7 +8,7 @@ package com.example.constant;
  **/
 public class ApiStatConstant {
     
-    public final static String METHOD_DATA_SPLIT = "_";
+    public final static String METHOD_DATA_SPLIT = ":";
 
     public final static String CONTROLLER = "controller";
 

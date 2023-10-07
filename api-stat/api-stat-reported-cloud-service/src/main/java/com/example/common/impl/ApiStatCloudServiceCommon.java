@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.example.constant.ApiStatConstant.*;
 import static com.example.constant.ApiStatConstant.MAPPER;
 
-public class ApiStatCloudServiceCommon implements ApiStatCommon {
+public class ApiStatCloudServiceCommon extends ApiStatCommon {
     @Override
     public MethodLevel getMethodLevel(MethodInvocation pjp) {
         Class<?> targetClass = pjp.getThis().getClass();
@@ -23,15 +23,17 @@ public class ApiStatCloudServiceCommon implements ApiStatCommon {
         } else if (targetClass.getAnnotation(Repository.class) != null) {
             return MethodLevel.DAO;
         } else if (targetClass.getAnnotation(FeignClient.class) != null) {
-            return MethodLevel.DAO;
+            return MethodLevel.FEIGN;
         }
         String className = pjp.getMethod().getDeclaringClass().getName().toLowerCase();
         if (className.contains(CONTROLLER)) {
             return MethodLevel.CONTROLLER;
         } else if (className.contains(SERVICE)) {
             return MethodLevel.SERVICE;
-        } else if (className.contains(DAO) || className.contains(MAPPER) || className.contains(FEIGN)) {
+        } else if (className.contains(DAO) || className.contains(MAPPER)) {
             return MethodLevel.DAO;
+        } else if (className.contains(FEIGN)) {
+            return MethodLevel.FEIGN;
         } else {
             return MethodLevel.OTHER_TYPE;
         }

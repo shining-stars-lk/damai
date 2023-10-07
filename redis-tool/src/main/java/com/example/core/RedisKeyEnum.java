@@ -30,21 +30,21 @@ public enum RedisKeyEnum {
     
     DEPTH_RULE_LIMIT("depth_rule_limit_%s_%s","深度调用限制时间的key","深度调用限制时间的value","k"),
     
-    API_STAT_CONTROLLER_METHOD_DATA("api_stat_controller_method_data_%s","controller的key","controller的value","lk"),
+    API_STAT_CONTROLLER_METHOD_DATA("api_stat_controller_method_data:%s","controller的key","controller的value","lk"),
     
-    API_STAT_SERVICE_METHOD_DATA("api_stat_service_method_data_%s","service的key","service的value","lk"),
+    API_STAT_SERVICE_METHOD_DATA("api_stat_service_method_data:%s","service的key","service的value","lk"),
     
-    API_STAT_DAO_METHOD_DATA("api_stat_dao_method_data_%s","dao的key","dao的value","lk"),
+    API_STAT_DAO_METHOD_DATA("api_stat_dao_method_data:%s","dao的key","dao的value","lk"),
     
-    API_STAT_METHOD_HIERARCHY("api_stat_method_Hierarchy_%s","method_Hierarchy的key","method_Hierarchy的value","lk"),
+    API_STAT_METHOD_HIERARCHY("api_stat_method_Hierarchy:%s","method_Hierarchy的key","method_Hierarchy的value","lk"),
 
-    API_STAT_METHOD_DETAIL("api_stat_method_detail_%s","api_stat_method_detail的key","api_stat_method_detail的value","lk"),
+    API_STAT_METHOD_DETAIL("api_stat_method_detail:%s","api_stat_method_detail的key","api_stat_method_detail的value","lk"),
 
     API_STAT_CONTROLLER_SORTED_SET("api_stat_controller_sorted_set","api_stat_controller_sorted_set的key","api_stat_controller_sorted_set的value","lk"),
 
-    API_STAT_CONTROLLER_CHILDREN_SET("api_stat_controller_children_set_%s","api_stat_controller_children_set的key","api_stat_controller_children_set的value","lk"),
+    API_STAT_CONTROLLER_CHILDREN_SET("api_stat_controller_children_set:%s","api_stat_controller_children_set的key","api_stat_controller_children_set的value","lk"),
     
-    API_STAT_SERVICE_CHILDREN_SET("api_stat_service_children_set_%s","api_stat_service_children_set的key","api_stat_service_children_set的value","lk"),
+    API_STAT_SERVICE_CHILDREN_SET("api_stat_service_children_set:%s","api_stat_service_children_set的key","api_stat_service_children_set的value","lk"),
     
     ;
 
