@@ -20,6 +20,8 @@ public class ApiStatProperties {
     private boolean enable;
     
     private String pointcut;
+    
+    private Integer queueSize = 5000;
 
     private Map<String,String[]> noReported;
 }
