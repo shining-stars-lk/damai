@@ -30,6 +30,7 @@ public class NacosAutoConfigurationBean {
     public static String nacosDiscoveryClientConfigServiceBootstrapConfiguration = "com.alibaba.cloud.nacos.discovery.configclient.NacosDiscoveryClientConfigServiceBootstrapConfiguration";
     
     public static String nacosServiceConfig = "com.nacosrefresh.conf.NacosServiceConfig";
+    
     public static Map<String,String> map = new HashMap<>(10);
     
     static {
