@@ -62,12 +62,3 @@ management:
       probes:
         # 将只在k8s环境生效的配置改为在任何情况下也可以启动(如/actuator/health/liveness，/actuator/health/readiness)
         enabled: true
-
-ko-time:
-  pointcut: execution(* com.example..*.*(..))
-  exceptionEnable: true
-#  saver: redis  
-  
-api-stat:
-  pointcut: execution(* com.example..*.*(..))
-  enable: true
