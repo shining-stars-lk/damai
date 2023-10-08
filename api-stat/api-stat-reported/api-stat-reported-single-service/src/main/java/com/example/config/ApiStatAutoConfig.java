@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Bean;
 @Slf4j
 @Data
 @EnableConfigurationProperties(ApiStatProperties.class)
-@ConditionalOnProperty(value = "api-stat.enable")
+@ConditionalOnProperty(value = "api-stat.enable",havingValue = "true")
 public class ApiStatAutoConfig {
 
     @Bean

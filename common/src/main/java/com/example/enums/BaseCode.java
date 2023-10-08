@@ -52,7 +52,9 @@ public enum BaseCode {
     
     PRODUCT_STOCK_NOT_ENOUGH(3003,"库存不足"),
     
-    JOB_INFO_NOT_EXIST(3004,"jobInfo不存在");
+    JOB_INFO_NOT_EXIST(3004,"jobInfo不存在"),
+    
+    MESSAGE_PLATFORM_NOT_EXIST(3005,"消息平台不存在");
     
     private Integer code;
     
