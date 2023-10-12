@@ -7,6 +7,7 @@ import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
 import com.example.structure.MethodDetailData;
 import com.example.structure.MethodNoticeData;
+import com.tool.servicelock.annotion.ServiceLock;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
@@ -15,6 +16,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.example.constant.ApiStatConstant.API_STAT_LOCK;
 
 /**
  * @program: cook-frame
@@ -30,20 +33,26 @@ public class ApiStatNotice {
     
     private final RedisCache redisCache;
     
-    private final List<Platform> platformList; 
+    private final List<Platform> platformList;
     
-    public void notice(){
-        if (CollectionUtil.isEmpty(platformList)) {
-            log.warn("platform empty");
-            return;
-        }
-        List<MethodNoticeData> methodDetailDataList = getMethodDetailDataListStr();
-        if (CollectionUtil.isEmpty(methodDetailDataList)) {
-            log.warn("method detail data empty");
-            return;
-        }
-        for (final Platform platform : platformList) {
-            platform.sendMessage(methodDetailDataList);
+    @ServiceLock(name = API_STAT_LOCK,keys = {"#platformNotice"},waitTime = 0L)
+    public void notice(String platformNotice){
+        log.info("schedule task {}",platformNotice);
+        try {
+            if (CollectionUtil.isEmpty(platformList)) {
+                log.warn("platform empty");
+                return;
+            }
+            List<MethodNoticeData> methodDetailDataList = getMethodDetailDataListStr();
+            if (CollectionUtil.isEmpty(methodDetailDataList)) {
+                log.warn("method detail data empty");
+                return;
+            }
+            for (final Platform platform : platformList) {
+                platform.sendMessage(methodDetailDataList);
+            }
+        }catch (Exception e) {
+            log.error("schedule task {} error",platformNotice,e);            
         }
     }
     public List<MethodNoticeData> getMethodDetailDataListStr(){

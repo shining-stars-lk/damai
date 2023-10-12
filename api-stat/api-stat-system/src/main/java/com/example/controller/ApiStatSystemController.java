@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.example.constant.ApiStatConstant.PLATFORM_NOTICE;
+
 /**
  * @program: cook-frame
  * @description:
@@ -49,7 +51,7 @@ public class ApiStatSystemController {
     
     @RequestMapping(value = "/notice")
     public ApiResponse notice(){
-        apiStatNotice.notice();
+        apiStatNotice.notice(PLATFORM_NOTICE);
         return ApiResponse.ok();
     }
 

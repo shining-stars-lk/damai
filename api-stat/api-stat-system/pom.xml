@@ -68,6 +68,11 @@
             <artifactId>api-stat-common</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>tool</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 
     
