@@ -4,8 +4,9 @@ import com.example.core.StringUtil;
 import com.tool.servicelock.ServiceLockInfoProvider;
 import com.tool.servicelock.ServiceLocker;
 import com.tool.servicelock.annotion.ServiceLock;
-import com.tool.servicelock.redisson.LockType;
-import com.tool.servicelock.redisson.factory.ServiceLockFactory;
+import com.tool.redisson.LockType;
+import com.tool.redisson.factory.ServiceLockFactory;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -27,17 +28,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Aspect
 @Order(-10)
+@AllArgsConstructor
 public class ServiceLockAspect {
     
     private final ServiceLockFactory serviceLockFactory;
     
     private final ServiceLockInfoProvider serviceLockInfoProvider;
     
-    public ServiceLockAspect(ServiceLockFactory serviceLockFactory, ServiceLockInfoProvider serviceLockInfoProvider){
-        this.serviceLockFactory = serviceLockFactory;
-        this.serviceLockInfoProvider = serviceLockInfoProvider;
-    }
-
 
     @Around("@annotation(servicelock)")
     public Object around(ProceedingJoinPoint joinPoint, ServiceLock servicelock) throws Throwable {

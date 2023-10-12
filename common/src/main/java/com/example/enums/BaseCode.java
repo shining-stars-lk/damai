@@ -54,9 +54,14 @@ public enum BaseCode {
     
     JOB_INFO_NOT_EXIST(3004,"jobInfo不存在"),
     
-    MESSAGE_PLATFORM_NOT_EXIST(3005,"消息平台不存在");
+    MESSAGE_PLATFORM_NOT_EXIST(3005,"消息平台不存在"),
     
-    private Integer code;
+    GENERATE_STRATEGY_NOT_EXIST(3006,"执行的生成策略不存在"),
+    
+    REJECT_STRATEGY_NOT_EXIST(3007,"执行的拒绝策略不存在")
+    ;
+    
+    private final Integer code;
     
     private String msg = "";
     

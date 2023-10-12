@@ -1,4 +1,4 @@
-package com.tool.servicelock.util;
+package com.tool.util;
 
 /**
  * @program: redis-tool

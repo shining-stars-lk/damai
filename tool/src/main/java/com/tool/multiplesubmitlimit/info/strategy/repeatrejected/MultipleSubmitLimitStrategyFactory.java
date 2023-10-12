@@ -1,5 +1,8 @@
 package com.tool.multiplesubmitlimit.info.strategy.repeatrejected;
 
+import com.example.enums.BaseCode;
+import com.example.exception.ToolkitException;
+
 import java.util.Optional;
 
 /**
@@ -12,6 +15,6 @@ public class MultipleSubmitLimitStrategyFactory {
 
     public MultipleSubmitLimitHandler getMultipleSubmitLimitStrategy(String key){
         return Optional.ofNullable(MultipleSubmitLimitStrategyContext.get(key))
-                .orElseThrow(() -> new RuntimeException("执行的拒绝策略不存在"));
+                .orElseThrow(() -> new ToolkitException(BaseCode.REJECT_STRATEGY_NOT_EXIST));
     }
 }

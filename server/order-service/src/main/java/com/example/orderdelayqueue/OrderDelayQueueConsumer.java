@@ -2,7 +2,7 @@ package com.example.orderdelayqueue;
 
 import com.example.mapper.OrderMapper;
 import com.tool.delayqueue.Consumer;
-import com.tool.servicelock.redisson.RedissonProperties;
+import com.tool.redisson.RedissonProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

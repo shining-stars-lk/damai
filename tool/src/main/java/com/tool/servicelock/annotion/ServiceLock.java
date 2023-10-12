@@ -1,7 +1,7 @@
 package com.tool.servicelock.annotion;
 
 import com.tool.servicelock.info.LockTimeOutStrategy;
-import com.tool.servicelock.redisson.LockType;
+import com.tool.redisson.LockType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

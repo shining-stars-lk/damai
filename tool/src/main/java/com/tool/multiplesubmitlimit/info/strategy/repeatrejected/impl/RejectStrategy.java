@@ -24,8 +24,7 @@ public class RejectStrategy implements MultipleSubmitLimitHandler {
 
     @Override
     public Object execute(String resultKeyName, long timeOut, TimeUnit timeUnit, ProceedingJoinPoint joinPoint) throws Throwable {
-        Object o = joinPoint.proceed();
-        return o;
+        return joinPoint.proceed();
     }
 
     @Override

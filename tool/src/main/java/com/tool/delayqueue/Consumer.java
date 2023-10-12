@@ -15,7 +15,7 @@ import org.redisson.api.RedissonClient;
 @Slf4j
 public class Consumer {
     
-    private RedissonClient redissonClient;
+    private final RedissonClient redissonClient;
     
     public void consumeMessage(String topic, ExecuteConsumer executeConsumer){
         RBlockingDeque<String> blockingDeque = redissonClient.getBlockingDeque(topic);

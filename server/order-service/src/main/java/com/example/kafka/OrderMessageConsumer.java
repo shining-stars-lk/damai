@@ -7,7 +7,7 @@ import com.example.entity.ProductOrder;
 import com.example.entity.PsOrder;
 import com.example.service.OrderService;
 import com.tool.delayqueue.Producer;
-import com.tool.servicelock.redisson.RedissonProperties;
+import com.tool.redisson.RedissonProperties;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
