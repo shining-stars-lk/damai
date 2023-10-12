@@ -1,6 +1,6 @@
 package com.tool.delayqueue;
 
-import com.tool.servicelock.redisson.config.RedissonAutoConfiguration;
+import com.tool.redisson.config.RedissonAutoConfiguration;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;

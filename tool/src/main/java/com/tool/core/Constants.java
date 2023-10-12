@@ -15,4 +15,5 @@ public class Constants implements Serializable {
     //防重复提交的用户标识
     public static final String REPEAT_LIMIT_USERID = "repeatLimitUserId";
 
+    public static final String SEPARATOR = ":";
 }

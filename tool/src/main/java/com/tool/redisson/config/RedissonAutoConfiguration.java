@@ -1,8 +1,8 @@
-package com.tool.servicelock.redisson.config;
+package com.tool.redisson.config;
 
 import com.example.core.StringUtil;
 import com.tool.core.DistributedConf;
-import com.tool.servicelock.redisson.RedissonProperties;
+import com.tool.redisson.RedissonProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

@@ -1,6 +1,7 @@
 package com.tool.operate.impl;
 
 import com.tool.operate.Operate;
+import lombok.AllArgsConstructor;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 
@@ -12,13 +13,10 @@ import java.util.concurrent.TimeUnit;
  * @author: 星哥
  * @create: 2023-05-28
  **/
+@AllArgsConstructor
 public class RedissonOperate implements Operate {
     
-    private RedissonClient redissonClient;
-    
-    public RedissonOperate(RedissonClient redissonClient){
-        this.redissonClient = redissonClient;
-    }
+    private final RedissonClient redissonClient;
 
     @Override
     public void set(String name,Object o) {

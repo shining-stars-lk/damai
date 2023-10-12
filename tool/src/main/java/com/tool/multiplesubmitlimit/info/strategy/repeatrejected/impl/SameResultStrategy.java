@@ -19,7 +19,7 @@ public class SameResultStrategy implements MultipleSubmitLimitHandler {
 
     private final String NO_RETURN_VALUE = "void";
     
-    private Operate operate;
+    private final Operate operate;
     
     public SameResultStrategy(Operate operate){
         this.operate = operate;
@@ -35,7 +35,7 @@ public class SameResultStrategy implements MultipleSubmitLimitHandler {
     public Object execute(String resultKeyName, long timeOut, TimeUnit timeUnit, ProceedingJoinPoint joinPoint) throws Throwable {
         Object o = operate.get(resultKeyName);
         if (o != null) {
-            if (o instanceof String && NO_RETURN_VALUE.equals(o)) {
+            if (NO_RETURN_VALUE.equals(o)) {
                 o = null;
             }
             return o;
@@ -57,7 +57,7 @@ public class SameResultStrategy implements MultipleSubmitLimitHandler {
     @Override
     public Object repeatRejected(String resultKeyName) {
         Object o = operate.get(resultKeyName);
-        if (o instanceof String && NO_RETURN_VALUE.equals(o)) {
+        if (NO_RETURN_VALUE.equals(o)) {
             o = null;
         }
         return o;

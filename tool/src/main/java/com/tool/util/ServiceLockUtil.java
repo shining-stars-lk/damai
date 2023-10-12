@@ -1,10 +1,11 @@
-package com.tool.servicelock.util;
+package com.tool.util;
 
+import com.tool.redisson.LockType;
 import com.tool.servicelock.ServiceLockInfoProvider;
 import com.tool.servicelock.ServiceLocker;
 import com.tool.servicelock.info.LockTimeOutStrategy;
-import com.tool.servicelock.redisson.LockType;
-import com.tool.servicelock.redisson.factory.ServiceLockFactory;
+import com.tool.redisson.factory.ServiceLockFactory;
+import lombok.AllArgsConstructor;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,16 +15,13 @@ import java.util.concurrent.TimeUnit;
  * @author: 星哥
  * @create: 2023-05-28
  **/
+@AllArgsConstructor
 public class ServiceLockUtil {
     
-    private ServiceLockFactory serviceLockFactory;
+    private final ServiceLockFactory serviceLockFactory;
 
-    private ServiceLockInfoProvider distributedLockInfoProvider;
+    private final ServiceLockInfoProvider distributedLockInfoProvider;
     
-    public ServiceLockUtil(ServiceLockFactory serviceLockFactory, ServiceLockInfoProvider distributedLockInfoProvider){
-        this.serviceLockFactory = serviceLockFactory;
-        this.distributedLockInfoProvider = distributedLockInfoProvider;
-    }
 
     /**
      * 没有返回值的加锁执行

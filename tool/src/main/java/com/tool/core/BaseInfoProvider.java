@@ -20,6 +20,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.tool.core.Constants.SEPARATOR;
+
 /**
  * @program: redis-tool
  * @description: 基础解析类
@@ -36,6 +38,7 @@ public class BaseInfoProvider {
     public HttpServletRequest getRequest(){
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder
                 .getRequestAttributes();
+        assert servletRequestAttributes != null;
         return servletRequestAttributes.getRequest();
     }
 
@@ -59,7 +62,7 @@ public class BaseInfoProvider {
     public String getDefinitionKey(JoinPoint joinPoint, String[] keys){
         Method method = getMethod(joinPoint);
         List<String> definitionKeys = getSpelDefinitionKey(keys, method, joinPoint.getArgs());
-        return StringUtils.collectionToDelimitedString(definitionKeys,"",":","");
+        return StringUtils.collectionToDelimitedString(definitionKeys,"",SEPARATOR,"");
     }
 
     private List<String> getSpelDefinitionKey(String[] definitionKeys, Method method, Object[] parameterValues) {

@@ -6,8 +6,9 @@ import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitRejectedStrategy;
 import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitHandler;
 import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitStrategyFactory;
 import com.tool.servicelock.ServiceLocker;
-import com.tool.servicelock.redisson.LockType;
-import com.tool.servicelock.redisson.factory.ServiceLockFactory;
+import com.tool.redisson.LockType;
+import com.tool.redisson.factory.ServiceLockFactory;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -22,36 +23,24 @@ import java.util.concurrent.TimeUnit;
  * @author: 星哥
  * @create: 2023-05-28
  **/
+@Slf4j
 @Aspect
 @Order(-9)
-@Slf4j
+@AllArgsConstructor
 public class MultipleSubmitLimitAspect {
-
-    private final long MAX_TIME_OUT = 15;
-
-    private final long WAIT_TIME = 0;
-
     
     private final MultipleSubmitLimitInfoProvider repeatLimitInfoProvider;
-
     
     private final ServiceLockFactory serviceLockFactory;
-
     
     private final MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory;
     
-    public MultipleSubmitLimitAspect(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider, ServiceLockFactory serviceLockFactory,
-                                     MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory){
-        this.repeatLimitInfoProvider = repeatLimitInfoProvider;
-        this.serviceLockFactory = serviceLockFactory;
-        this.repeatLimitStrategyFactory = repeatLimitStrategyFactory;
-    }
-
+    
     @Around("@annotation(repeatLimit)")
     public Object around(ProceedingJoinPoint joinPoint, MultipleSubmitLimit repeatLimit) throws Throwable {
-        Object o = null;
-        String lockName = "";
-        String resultKeyName = "";
+        Object o;
+        String lockName;
+        String resultKeyName;
         String[] keys = repeatLimit.keys();
         String name = repeatLimit.name();
         long timeout = checkTimeOut(repeatLimit.timeout());
@@ -68,7 +57,8 @@ public class MultipleSubmitLimitAspect {
         MultipleSubmitLimitHandler repeatLimitHandler = repeatLimitStrategyFactory.getMultipleSubmitLimitStrategy(repeatRejectedStrategy.getMsg());
 
         ServiceLocker lock = serviceLockFactory.createLock(LockType.Reentrant);
-        boolean result = false;
+        boolean result;
+        long WAIT_TIME = 0;
         if (timeout == 0) {
             result = lock.tryLock(lockName, TimeUnit.SECONDS, WAIT_TIME);
         }else {
@@ -90,6 +80,7 @@ public class MultipleSubmitLimitAspect {
     }
 
     public long checkTimeOut(long timeout){
+        long MAX_TIME_OUT = 15;
         if (timeout > MAX_TIME_OUT) {
             timeout = MAX_TIME_OUT;
         }
