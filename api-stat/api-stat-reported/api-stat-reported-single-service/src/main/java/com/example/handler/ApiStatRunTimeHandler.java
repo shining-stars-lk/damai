@@ -32,12 +32,12 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
     
     @Override
     public Object invoke(final MethodInvocation methodInvocation) throws Throwable {
-        Object obj = null;
+        Object obj;
         long start = System.currentTimeMillis();
         MethodData parentMethodData = methodDataOperate.getParentMethodData();
-        MethodHierarchyTransfer methodHierarchyTransfer = new MethodHierarchyTransfer();
+        MethodHierarchyTransfer methodHierarchyTransfer;
         boolean exceptionFlag = false;
-        MethodData currentMethodData = null;
+        MethodData currentMethodData;
         currentMethodData = methodDataOperate.getCurrentMethodData(methodInvocation);
         try {
             methodDataStackHolder.putMethodData(currentMethodData);
@@ -47,7 +47,7 @@ public class ApiStatRunTimeHandler implements MethodInterceptor {
             throw t;
         } finally {
             long end = System.currentTimeMillis();
-            currentMethodData.setExecuteTime(new BigDecimal(String.valueOf(end - start)));
+            currentMethodData.setExecuteTime(new BigDecimal(end - start));
             methodHierarchyTransfer = methodHierarchyTransferOperate.getMethodHierarchyTransfer(methodInvocation,parentMethodData,
                     currentMethodData,exceptionFlag);
             methodQueueOperate.add(methodHierarchyTransfer);
