@@ -4,6 +4,7 @@ import com.example.enums.MethodLevel;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -46,5 +47,21 @@ public class MethodDetailData {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getClassName(), getMethodName(), getArgumentCount(), getMethodLevel(), getExecuteTime(), getApi(), getAvgExecuteTime(), getMaxExecuteTime(), getMinExecuteTime(), getExceptionCount(), getChildrenMethodList());
+    }
+    
+    public BigDecimal getExecuteTime() {
+        return executeTime != null ? executeTime.setScale(2, RoundingMode.HALF_UP) : null;
+    }
+    
+    public BigDecimal getAvgExecuteTime() {
+        return avgExecuteTime != null ? avgExecuteTime.setScale(2, RoundingMode.HALF_UP) : null;
+    }
+    
+    public BigDecimal getMaxExecuteTime() {
+        return maxExecuteTime != null ? maxExecuteTime.setScale(2, RoundingMode.HALF_UP) : null;
+    }
+    
+    public BigDecimal getMinExecuteTime() {
+        return minExecuteTime != null ? minExecuteTime.setScale(2, RoundingMode.HALF_UP) : null;
     }
 }

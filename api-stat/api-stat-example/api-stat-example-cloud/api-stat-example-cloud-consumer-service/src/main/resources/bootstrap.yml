@@ -7,7 +7,20 @@ spring:
     name: consumer-service
   main:
     allow-bean-definition-overriding: true
+  redis:
+    database: 0
+    host: www.cookframe.com
+    port: 6379
+    password: ENC(+XH73TopLBEg6H9u0f5FE9csF+oN15Gz)
+    timeout: 3000  
   cloud:
     nacos:
       discovery:
-        server-addr: www.cookframe.com:8848
+        server-addr: www.cookframe.com:8848  
+api-stat:
+  pointcut: execution(* com.example..*.*(..))
+  enable: true 
+jasypt:
+  encryptor:
+    password: bgtjkjl!%^sdc
+    algorithm: PBEWithMD5AndDES    
