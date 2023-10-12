@@ -1,0 +1,13 @@
+#服务端口
+server:
+  port: 5083
+# 应用名称
+spring:
+  application:
+    name: consumer-service
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    nacos:
+      discovery:
+        server-addr: www.cookframe.com:8848
