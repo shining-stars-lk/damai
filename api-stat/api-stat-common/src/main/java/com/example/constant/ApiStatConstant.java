@@ -28,5 +28,5 @@ public class ApiStatConstant {
     
     public final static String API_STAT_LOCK = "api_stat_lock";
     
-    public final static String PLATFORM_NOTICE= "platformNotice";
+    public final static String PLATFORM_NOTICE= "platform_notice";
 }

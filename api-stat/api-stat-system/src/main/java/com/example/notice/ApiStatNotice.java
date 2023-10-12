@@ -15,6 +15,7 @@ import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.example.constant.ApiStatConstant.API_STAT_LOCK;
@@ -39,6 +40,11 @@ public class ApiStatNotice {
     public void notice(String platformNotice){
         log.info("schedule task {}",platformNotice);
         try {
+            Boolean exist = redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.PLATFORM_NOTICE_FLAG));
+            if (exist) {
+                return;
+            }
+            redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.PLATFORM_NOTICE_FLAG),platformNotice,23L, TimeUnit.HOURS);
             if (CollectionUtil.isEmpty(platformList)) {
                 log.warn("platform empty");
                 return;
