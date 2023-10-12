@@ -19,7 +19,7 @@ public class NoticeTask {
     @Autowired
     private ApiStatNotice apiStatNotice;
     
-    @Scheduled(cron ="*/6 * * * * ?")
+    @Scheduled(cron ="0 0 9 * * ? ")
     public void scheduleNotice() {
         apiStatNotice.notice(PLATFORM_NOTICE);
     }
