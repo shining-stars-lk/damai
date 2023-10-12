@@ -24,6 +24,8 @@ public class ApiStatCloudServiceCommon extends ApiStatCommon {
             return MethodLevel.DAO;
         } else if (targetClass.getAnnotation(FeignClient.class) != null) {
             return MethodLevel.FEIGN;
+        } else if (targetClass.getName().contains(FEIGN)) {
+            return MethodLevel.FEIGN;
         }
         String className = pjp.getMethod().getDeclaringClass().getName().toLowerCase();
         if (className.contains(CONTROLLER)) {

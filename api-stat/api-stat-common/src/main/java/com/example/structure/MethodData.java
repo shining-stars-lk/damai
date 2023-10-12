@@ -5,6 +5,7 @@ import com.example.enums.MethodLevel;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 /**
@@ -41,5 +42,9 @@ public class MethodData {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getClassName(), getMethodName(), getArgumentCount(), getMethodLevel(), getExecuteTime(), getApi());
+    }
+    
+    public BigDecimal getExecuteTime() {
+        return executeTime != null ? executeTime.setScale(2, RoundingMode.HALF_UP) : null;
     }
 }
