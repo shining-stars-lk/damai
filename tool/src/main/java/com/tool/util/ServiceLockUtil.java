@@ -31,7 +31,7 @@ public class ServiceLockUtil {
      * */
     public void execute(TaskRun taskRun,String name,String [] keys){
         String lockName = distributedLockInfoProvider.simpleGetLockName(name,keys);
-        ServiceLocker lock = serviceLockFactory.createLock(LockType.Reentrant);
+        ServiceLocker lock = serviceLockFactory.getLock(LockType.Reentrant);
         boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, 30);
         if (result) {
             try {
@@ -53,7 +53,7 @@ public class ServiceLockUtil {
      * */
     public <T> T submit(TaskCall<T> taskCall,String name,String [] keys){
         String lockName = distributedLockInfoProvider.simpleGetLockName(name,keys);
-        ServiceLocker lock = serviceLockFactory.createLock(LockType.Reentrant);
+        ServiceLocker lock = serviceLockFactory.getLock(LockType.Reentrant);
         boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, 30);
         if (result) {
             try {

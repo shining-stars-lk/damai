@@ -22,7 +22,7 @@ public class ServiceLockFactory {
     private final RedissonClient redissonClient;
     
 
-    public ServiceLocker createLock(LockType lockType){
+    public ServiceLocker getLock(LockType lockType){
         if (Objects.requireNonNull(lockType) == LockType.Fair) {
             return new RedissonFairLocker(redissonClient);
         }

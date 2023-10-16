@@ -56,7 +56,7 @@ public class MultipleSubmitLimitAspect {
         log.info("==repeat limit lockName:{} resultKeyName:{}==",lockName,resultKeyName);
         MultipleSubmitLimitHandler repeatLimitHandler = repeatLimitStrategyFactory.getMultipleSubmitLimitStrategy(repeatRejectedStrategy.getMsg());
 
-        ServiceLocker lock = serviceLockFactory.createLock(LockType.Reentrant);
+        ServiceLocker lock = serviceLockFactory.getLock(LockType.Reentrant);
         boolean result;
         long WAIT_TIME = 0;
         if (timeout == 0) {
