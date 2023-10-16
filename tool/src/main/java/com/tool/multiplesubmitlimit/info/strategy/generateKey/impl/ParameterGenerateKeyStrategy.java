@@ -3,7 +3,7 @@ package com.tool.multiplesubmitlimit.info.strategy.generateKey.impl;
 import com.tool.core.Constants;
 import com.example.core.StringUtil;
 import com.tool.multiplesubmitlimit.info.GenerateKeyStrategy;
-import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfoProvider;
+import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfo;
 import com.tool.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyHandler;
 import com.tool.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyStrategyContext;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ import static com.tool.core.Constants.SEPARATOR;
 @AllArgsConstructor
 public class ParameterGenerateKeyStrategy implements GenerateKeyHandler {
     
-    private final MultipleSubmitLimitInfoProvider multipleSubmitLimitInfoProvider;
+    private final MultipleSubmitLimitInfo multipleSubmitLimitInfoProvider;
 
     @PostConstruct
     public void init(){

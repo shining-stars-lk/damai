@@ -1,7 +1,7 @@
 package com.tool.util;
 
 import com.tool.redisson.LockType;
-import com.tool.servicelock.ServiceLockInfoProvider;
+import com.tool.servicelock.ServiceLockInfo;
 import com.tool.servicelock.ServiceLocker;
 import com.tool.servicelock.info.LockTimeOutStrategy;
 import com.tool.redisson.factory.ServiceLockFactory;
@@ -20,7 +20,7 @@ public class ServiceLockUtil {
     
     private final ServiceLockFactory serviceLockFactory;
 
-    private final ServiceLockInfoProvider distributedLockInfoProvider;
+    private final ServiceLockInfo distributedLockInfoProvider;
     
 
     /**

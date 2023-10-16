@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
  * @author: 星哥
  * @create: 2023-05-28
  **/
-@ConfigurationProperties(prefix = RedissonProperties.PREFIX)
 @Data
+@ConfigurationProperties(prefix = RedissonProperties.PREFIX)
 public class RedissonProperties {
 
     public static final String PREFIX = "redisson";

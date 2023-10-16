@@ -11,7 +11,6 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -29,7 +28,7 @@ import static com.tool.core.Constants.SEPARATOR;
  * @create: 2023-05-28
  **/
 @Slf4j
-public class BaseInfoProvider {
+public class BaseInfo {
 
     private final ParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
 
@@ -59,13 +58,13 @@ public class BaseInfoProvider {
     /**
      * 获取自定义键
      * */
-    public String getDefinitionKey(JoinPoint joinPoint, String[] keys){
+    public String getRelKey(JoinPoint joinPoint, String[] keys){
         Method method = getMethod(joinPoint);
-        List<String> definitionKeys = getSpelDefinitionKey(keys, method, joinPoint.getArgs());
-        return StringUtils.collectionToDelimitedString(definitionKeys,"",SEPARATOR,"");
+        List<String> definitionKeys = getSpelRelKey(keys, method, joinPoint.getArgs());
+        return SEPARATOR + String.join(SEPARATOR, definitionKeys);
     }
 
-    private List<String> getSpelDefinitionKey(String[] definitionKeys, Method method, Object[] parameterValues) {
+    private List<String> getSpelRelKey(String[] definitionKeys, Method method, Object[] parameterValues) {
         List<String> definitionKeyList = new ArrayList<>();
         for (String definitionKey : definitionKeys) {
             if (!ObjectUtils.isEmpty(definitionKey)) {
