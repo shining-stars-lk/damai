@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 public class MultipleSubmitLimitStrategyContext {
 
-    private static ConcurrentHashMap<String, MultipleSubmitLimitHandler> map = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, MultipleSubmitLimitHandler> map = new ConcurrentHashMap<>();
 
     public static void put(String key, MultipleSubmitLimitHandler value){
         map.put(key,value);

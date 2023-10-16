@@ -20,7 +20,7 @@ public class ServiceLockUtil {
     
     private final ServiceLockFactory serviceLockFactory;
 
-    private final ServiceLockInfo distributedLockInfoProvider;
+    private final ServiceLockInfo serviceLockInfo;
     
 
     /**
@@ -30,7 +30,7 @@ public class ServiceLockUtil {
      * @param keys 锁的标识
      * */
     public void execute(TaskRun taskRun,String name,String [] keys){
-        String lockName = distributedLockInfoProvider.simpleGetLockName(name,keys);
+        String lockName = serviceLockInfo.simpleGetLockName(name,keys);
         ServiceLocker lock = serviceLockFactory.getLock(LockType.Reentrant);
         boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, 30);
         if (result) {
@@ -52,7 +52,7 @@ public class ServiceLockUtil {
      * @return 要执行的任务的返回值
      * */
     public <T> T submit(TaskCall<T> taskCall,String name,String [] keys){
-        String lockName = distributedLockInfoProvider.simpleGetLockName(name,keys);
+        String lockName = serviceLockInfo.simpleGetLockName(name,keys);
         ServiceLocker lock = serviceLockFactory.getLock(LockType.Reentrant);
         boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, 30);
         if (result) {

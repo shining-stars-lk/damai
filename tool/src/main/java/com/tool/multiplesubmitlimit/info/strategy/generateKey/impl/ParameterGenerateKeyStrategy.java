@@ -25,7 +25,7 @@ import static com.tool.core.Constants.SEPARATOR;
 @AllArgsConstructor
 public class ParameterGenerateKeyStrategy implements GenerateKeyHandler {
     
-    private final MultipleSubmitLimitInfo multipleSubmitLimitInfoProvider;
+    private final MultipleSubmitLimitInfo multipleSubmitLimitInfo;
 
     @PostConstruct
     public void init(){
@@ -34,11 +34,11 @@ public class ParameterGenerateKeyStrategy implements GenerateKeyHandler {
     
     @Override
     public String generateKey(JoinPoint joinPoint) {
-        HttpServletRequest request = multipleSubmitLimitInfoProvider.getRequest();
+        HttpServletRequest request = multipleSubmitLimitInfo.getRequest();
         String userId = request.getHeader(Constants.REPEAT_LIMIT_USERID);
 
         Object target = joinPoint.getTarget();
-        Method method = multipleSubmitLimitInfoProvider.getMethod(joinPoint);
+        Method method = multipleSubmitLimitInfo.getMethod(joinPoint);
 
         String key = target.getClass().getName().concat(SEPARATOR).concat(method.getName());
         Object[] params = joinPoint.getArgs();
