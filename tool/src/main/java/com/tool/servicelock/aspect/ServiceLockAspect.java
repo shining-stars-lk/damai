@@ -1,7 +1,7 @@
 package com.tool.servicelock.aspect;
 
 import com.example.core.StringUtil;
-import com.tool.servicelock.ServiceLockInfoProvider;
+import com.tool.servicelock.ServiceLockInfo;
 import com.tool.servicelock.ServiceLocker;
 import com.tool.servicelock.annotion.ServiceLock;
 import com.tool.redisson.LockType;
@@ -33,12 +33,12 @@ public class ServiceLockAspect {
     
     private final ServiceLockFactory serviceLockFactory;
     
-    private final ServiceLockInfoProvider serviceLockInfoProvider;
+    private final ServiceLockInfo serviceLockInfo;
     
 
     @Around("@annotation(servicelock)")
     public Object around(ProceedingJoinPoint joinPoint, ServiceLock servicelock) throws Throwable {
-        String lockName = serviceLockInfoProvider.getLockName(joinPoint, servicelock.name(),servicelock.keys());
+        String lockName = serviceLockInfo.getLockName(joinPoint, servicelock.name(),servicelock.keys());
         LockType lockType = servicelock.lockType();
         long waitTime = servicelock.waitTime();
         TimeUnit timeUnit = servicelock.timeUnit();

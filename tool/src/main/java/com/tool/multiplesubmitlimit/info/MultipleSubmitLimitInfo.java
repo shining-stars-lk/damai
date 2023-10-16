@@ -2,7 +2,7 @@ package com.tool.multiplesubmitlimit.info;
 
 import com.example.enums.BaseCode;
 import com.example.exception.ToolkitException;
-import com.tool.core.BaseInfoProvider;
+import com.tool.core.BaseInfo;
 import com.tool.multiplesubmitlimit.annotion.MultipleSubmitLimit;
 import com.tool.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyHandler;
 import com.tool.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyStrategyContext;
@@ -18,18 +18,18 @@ import static com.tool.core.Constants.SEPARATOR;
  * @author: 星哥
  * @create: 2023-05-28
  **/
-public class MultipleSubmitLimitInfoProvider extends BaseInfoProvider {
+public class MultipleSubmitLimitInfo extends BaseInfo {
 
     public static final String NAME_PREFIX = "REPEAT_LIMIT";
 
     public static final String RESULT_PREFIX = "REPEAT_RESULT";
 
     public String getLockName(JoinPoint joinPoint,String name,String[] keys){
-        return NAME_PREFIX + SEPARATOR + name + getDefinitionKey(joinPoint, keys);
+        return NAME_PREFIX + SEPARATOR + name + getRelKey(joinPoint, keys);
     }
 
     public String getResultKeyName(JoinPoint joinPoint,String name,String[] keys){
-        return RESULT_PREFIX + SEPARATOR + name + getDefinitionKey(joinPoint, keys);
+        return RESULT_PREFIX + SEPARATOR + name + getRelKey(joinPoint, keys);
     }
 
     public GenerateKeyHandler getGenerateKeyStrategy(String generatorKey){
@@ -43,13 +43,13 @@ public class MultipleSubmitLimitInfoProvider extends BaseInfoProvider {
     public String getLockNameByGenerateKeyStrategy(MultipleSubmitLimit repeatLimit, JoinPoint joinPoint){
         GenerateKeyHandler generateKeyStrategy = getGenerateKeyStrategy(repeatLimit.generatorKey().getMsg());
         String key = generateKeyStrategy.generateKey(joinPoint);
-        return MultipleSubmitLimitInfoProvider.NAME_PREFIX.concat(SEPARATOR).concat(key);
+        return MultipleSubmitLimitInfo.NAME_PREFIX.concat(SEPARATOR).concat(key);
     }
 
 
     public String getResultKeyNameByGenerateKeyStrategy(MultipleSubmitLimit repeatLimit, JoinPoint joinPoint){
         GenerateKeyHandler generateKeyStrategy = getGenerateKeyStrategy(repeatLimit.generatorKey().getMsg());
         String key = generateKeyStrategy.generateKey(joinPoint);
-        return MultipleSubmitLimitInfoProvider.RESULT_PREFIX.concat(SEPARATOR).concat(key);
+        return MultipleSubmitLimitInfo.RESULT_PREFIX.concat(SEPARATOR).concat(key);
     }
 }

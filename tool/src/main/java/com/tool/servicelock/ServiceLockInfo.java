@@ -1,7 +1,7 @@
 package com.tool.servicelock;
 
 import com.example.core.StringUtil;
-import com.tool.core.BaseInfoProvider;
+import com.tool.core.BaseInfo;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.util.StringUtils;
 
@@ -16,14 +16,14 @@ import static com.tool.core.Constants.SEPARATOR;
  * @author: 星哥
  * @create: 2023-05-28
  **/
-public class ServiceLockInfoProvider extends BaseInfoProvider {
+public class ServiceLockInfo extends BaseInfo {
 
     private static final String LOCK_NAME_PREFIX = "LOCK";
 
     private static final String LOCK_DISTRIBUTE_ID_NAME_PREFIX = "LOCK_DISTRIBUTE_ID";
 
     public String getLockName(JoinPoint joinPoint,String name,String[] keys){
-        return LOCK_NAME_PREFIX + SEPARATOR + name + getDefinitionKey(joinPoint, keys);
+        return LOCK_NAME_PREFIX + SEPARATOR + name + getRelKey(joinPoint, keys);
     }
 
     public String simpleGetLockName(String name,String[] keys){

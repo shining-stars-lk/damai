@@ -1,7 +1,7 @@
 package com.tool.multiplesubmitlimit.aspect;
 
 import com.tool.multiplesubmitlimit.annotion.MultipleSubmitLimit;
-import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfoProvider;
+import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfo;
 import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitRejectedStrategy;
 import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitHandler;
 import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitStrategyFactory;
@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor
 public class MultipleSubmitLimitAspect {
     
-    private final MultipleSubmitLimitInfoProvider repeatLimitInfoProvider;
+    private final MultipleSubmitLimitInfo repeatLimitInfoProvider;
     
     private final ServiceLockFactory serviceLockFactory;
     

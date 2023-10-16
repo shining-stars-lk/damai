@@ -1,7 +1,7 @@
 package com.tool.core;
 
 import com.tool.multiplesubmitlimit.aspect.MultipleSubmitLimitAspect;
-import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfoProvider;
+import com.tool.multiplesubmitlimit.info.MultipleSubmitLimitInfo;
 import com.tool.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyHandler;
 import com.tool.multiplesubmitlimit.info.strategy.generateKey.impl.ParameterGenerateKeyStrategy;
 import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitHandler;
@@ -10,7 +10,7 @@ import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.impl.RejectStra
 import com.tool.multiplesubmitlimit.info.strategy.repeatrejected.impl.SameResultStrategy;
 import com.tool.operate.Operate;
 import com.tool.operate.impl.RedissonOperate;
-import com.tool.servicelock.ServiceLockInfoProvider;
+import com.tool.servicelock.ServiceLockInfo;
 import com.tool.servicelock.aspect.ServiceLockAspect;
 import com.tool.redisson.config.RedissonAutoConfiguration;
 import com.tool.redisson.factory.ServiceLockFactory;
@@ -34,18 +34,18 @@ public class DistributedConf {
     }
     
     @Bean
-    public ServiceLockInfoProvider serviceLockInfoProvider(){
-        return new ServiceLockInfoProvider();
+    public ServiceLockInfo serviceLockInfo(){
+        return new ServiceLockInfo();
     }
     
     @Bean
-    public ServiceLockAspect serviceLockAspect(ServiceLockFactory serviceLockFactory, ServiceLockInfoProvider serviceLockInfoProvider){
-        return new ServiceLockAspect(serviceLockFactory,serviceLockInfoProvider);
+    public ServiceLockAspect serviceLockAspect(ServiceLockFactory serviceLockFactory, ServiceLockInfo serviceLockInfo){
+        return new ServiceLockAspect(serviceLockFactory,serviceLockInfo);
     }
     
     @Bean
-    public MultipleSubmitLimitInfoProvider multipleSubmitLimitInfoProvider(){
-        return new MultipleSubmitLimitInfoProvider();
+    public MultipleSubmitLimitInfo multipleSubmitLimitInfoProvider(){
+        return new MultipleSubmitLimitInfo();
     }
     
     @Bean
@@ -54,13 +54,13 @@ public class DistributedConf {
     }
     
     @Bean
-    public MultipleSubmitLimitAspect multipleSubmitLimitAspect(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider, ServiceLockFactory serviceLockFactory,
-                                                       MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory){
+    public MultipleSubmitLimitAspect multipleSubmitLimitAspect(MultipleSubmitLimitInfo repeatLimitInfoProvider, ServiceLockFactory serviceLockFactory,
+                                                               MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory){
         return new MultipleSubmitLimitAspect(repeatLimitInfoProvider, serviceLockFactory,repeatLimitStrategyFactory);
     }
     
     @Bean
-    public GenerateKeyHandler parameterGenerateKeyStrategy(MultipleSubmitLimitInfoProvider repeatLimitInfoProvider){
+    public GenerateKeyHandler parameterGenerateKeyStrategy(MultipleSubmitLimitInfo repeatLimitInfoProvider){
         return new ParameterGenerateKeyStrategy(repeatLimitInfoProvider);
     }
     
@@ -75,7 +75,7 @@ public class DistributedConf {
     }
     
     @Bean
-    public ServiceLockUtil serviceLockUtil(ServiceLockFactory serviceLockFactory, ServiceLockInfoProvider distributedLockInfoProvider){
+    public ServiceLockUtil serviceLockUtil(ServiceLockFactory serviceLockFactory, ServiceLockInfo distributedLockInfoProvider){
         return new ServiceLockUtil(serviceLockFactory,distributedLockInfoProvider);
     }
     
