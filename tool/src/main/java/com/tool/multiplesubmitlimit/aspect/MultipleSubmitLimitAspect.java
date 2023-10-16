@@ -29,16 +29,16 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor
 public class MultipleSubmitLimitAspect {
     
-    private final MultipleSubmitLimitInfo repeatLimitInfoProvider;
+    private final MultipleSubmitLimitInfo multipleSubmitLimitInfo;
     
     private final ServiceLockFactory serviceLockFactory;
     
-    private final MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory;
+    private final MultipleSubmitLimitStrategyFactory multipleSubmitLimitStrategyFactory;
     
     
     @Around("@annotation(repeatLimit)")
     public Object around(ProceedingJoinPoint joinPoint, MultipleSubmitLimit repeatLimit) throws Throwable {
-        Object o;
+        Object obj;
         String lockName;
         String resultKeyName;
         String[] keys = repeatLimit.keys();
@@ -46,15 +46,15 @@ public class MultipleSubmitLimitAspect {
         long timeout = checkTimeOut(repeatLimit.timeout());
         MultipleSubmitLimitRejectedStrategy repeatRejectedStrategy = repeatLimit.repeatRejected();
         if (keys != null && keys.length > 0) {
-            lockName = repeatLimitInfoProvider.getLockName(joinPoint,name, keys);
-            resultKeyName = repeatLimitInfoProvider.getResultKeyName(joinPoint,name, keys);
+            lockName = multipleSubmitLimitInfo.getLockName(joinPoint,name, keys);
+            resultKeyName = multipleSubmitLimitInfo.getResultKeyName(joinPoint,name, keys);
         }else{
-            lockName = repeatLimitInfoProvider.getLockNameByGenerateKeyStrategy(repeatLimit, joinPoint);
-            resultKeyName = repeatLimitInfoProvider.getResultKeyNameByGenerateKeyStrategy(repeatLimit, joinPoint);
+            lockName = multipleSubmitLimitInfo.getLockNameByGenerateKeyStrategy(repeatLimit, joinPoint);
+            resultKeyName = multipleSubmitLimitInfo.getResultKeyNameByGenerateKeyStrategy(repeatLimit, joinPoint);
         }
 
         log.info("==repeat limit lockName:{} resultKeyName:{}==",lockName,resultKeyName);
-        MultipleSubmitLimitHandler repeatLimitHandler = repeatLimitStrategyFactory.getMultipleSubmitLimitStrategy(repeatRejectedStrategy.getMsg());
+        MultipleSubmitLimitHandler repeatLimitHandler = multipleSubmitLimitStrategyFactory.getMultipleSubmitLimitStrategy(repeatRejectedStrategy.getMsg());
 
         ServiceLocker lock = serviceLockFactory.getLock(LockType.Reentrant);
         boolean result;
@@ -67,15 +67,15 @@ public class MultipleSubmitLimitAspect {
         //加锁成功执行
         if (result) {
             try{
-                o = repeatLimitHandler.execute(resultKeyName, timeout,TimeUnit.SECONDS,joinPoint);
-                return o;
+                obj = repeatLimitHandler.execute(resultKeyName, timeout,TimeUnit.SECONDS,joinPoint);
+                return obj;
             }finally {
                 lock.unlock(lockName);
             }
         //加锁没有成功
         }else{
-            o = repeatLimitHandler.repeatRejected(resultKeyName);
-            return o;
+            obj = repeatLimitHandler.repeatRejected(resultKeyName);
+            return obj;
         }
     }
 

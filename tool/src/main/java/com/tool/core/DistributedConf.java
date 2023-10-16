@@ -44,7 +44,7 @@ public class DistributedConf {
     }
     
     @Bean
-    public MultipleSubmitLimitInfo multipleSubmitLimitInfoProvider(){
+    public MultipleSubmitLimitInfo multipleSubmitLimitInfo(){
         return new MultipleSubmitLimitInfo();
     }
     
@@ -54,14 +54,14 @@ public class DistributedConf {
     }
     
     @Bean
-    public MultipleSubmitLimitAspect multipleSubmitLimitAspect(MultipleSubmitLimitInfo repeatLimitInfoProvider, ServiceLockFactory serviceLockFactory,
-                                                               MultipleSubmitLimitStrategyFactory repeatLimitStrategyFactory){
-        return new MultipleSubmitLimitAspect(repeatLimitInfoProvider, serviceLockFactory,repeatLimitStrategyFactory);
+    public MultipleSubmitLimitAspect multipleSubmitLimitAspect(MultipleSubmitLimitInfo multipleSubmitLimitInfo, ServiceLockFactory serviceLockFactory,
+                                                               MultipleSubmitLimitStrategyFactory multipleSubmitLimitStrategyFactory){
+        return new MultipleSubmitLimitAspect(multipleSubmitLimitInfo, serviceLockFactory,multipleSubmitLimitStrategyFactory);
     }
     
     @Bean
-    public GenerateKeyHandler parameterGenerateKeyStrategy(MultipleSubmitLimitInfo repeatLimitInfoProvider){
-        return new ParameterGenerateKeyStrategy(repeatLimitInfoProvider);
+    public GenerateKeyHandler parameterGenerateKeyStrategy(MultipleSubmitLimitInfo multipleSubmitLimitInfo){
+        return new ParameterGenerateKeyStrategy(multipleSubmitLimitInfo);
     }
     
     @Bean
@@ -75,8 +75,8 @@ public class DistributedConf {
     }
     
     @Bean
-    public ServiceLockUtil serviceLockUtil(ServiceLockFactory serviceLockFactory, ServiceLockInfo distributedLockInfoProvider){
-        return new ServiceLockUtil(serviceLockFactory,distributedLockInfoProvider);
+    public ServiceLockUtil serviceLockUtil(ServiceLockFactory serviceLockFactory, ServiceLockInfo serviceLockInfo){
+        return new ServiceLockUtil(serviceLockFactory,serviceLockInfo);
     }
     
     @Bean
