@@ -43,7 +43,7 @@ public class ServiceLockAspect {
         long waitTime = servicelock.waitTime();
         TimeUnit timeUnit = servicelock.timeUnit();
 
-        ServiceLocker lock = serviceLockFactory.createLock(lockType);
+        ServiceLocker lock = serviceLockFactory.getLock(lockType);
         boolean result = lock.tryLock(lockName, timeUnit, waitTime);
 
         if (result) {

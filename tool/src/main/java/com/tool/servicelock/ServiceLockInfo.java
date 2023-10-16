@@ -3,7 +3,6 @@ package com.tool.servicelock;
 import com.example.core.StringUtil;
 import com.tool.core.BaseInfo;
 import org.aspectj.lang.JoinPoint;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,6 @@ public class ServiceLockInfo extends BaseInfo {
                 definitionKeyList.add(key);
             }
         }
-        String definitionKeys = StringUtils.collectionToDelimitedString(definitionKeyList, "", SEPARATOR, "");
-        return LOCK_DISTRIBUTE_ID_NAME_PREFIX + SEPARATOR + name + definitionKeys;
+        return LOCK_DISTRIBUTE_ID_NAME_PREFIX + SEPARATOR + name + SEPARATOR + String.join(SEPARATOR, definitionKeyList);
     }
 }
