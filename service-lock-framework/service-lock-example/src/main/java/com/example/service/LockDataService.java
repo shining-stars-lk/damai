@@ -53,8 +53,9 @@ public class LockDataService {
                 .eq(LockData::getId, lockDataDto.getId());
         lockDataMapper.selectOne(wrapper);
         Optional.ofNullable(lockDataMapper.selectOne(wrapper)).ifPresent(lockData -> {
-            log.info("当前id为{}的库存为:{}",lockData.getId(),lockData.getStock());
-            lockData.setStock(lockData.getStock() + lockDataDto.getStock());
+            Integer newStock = lockData.getStock() + lockDataDto.getStock();
+            log.info("id为{}的当前库存为:{},添加后的库存为:{}",lockData.getId(),lockData.getStock(),newStock);
+            lockData.setStock(newStock);
             lockDataMapper.updateById(lockData);
         });
     }
