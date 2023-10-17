@@ -1,5 +1,6 @@
-package com.example.core;
+package com.example.redisson.config;
 
+import com.example.core.StringUtil;
 import com.example.multiplesubmitlimit.aspect.MultipleSubmitLimitAspect;
 import com.example.multiplesubmitlimit.info.MultipleSubmitLimitInfo;
 import com.example.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyHandler;
@@ -10,13 +11,17 @@ import com.example.multiplesubmitlimit.info.strategy.repeatrejected.impl.RejectS
 import com.example.multiplesubmitlimit.info.strategy.repeatrejected.impl.SameResultStrategy;
 import com.example.operate.Operate;
 import com.example.operate.impl.RedissonOperate;
+import com.example.redisson.RedissonProperties;
+import com.example.redisson.factory.ServiceLockFactory;
 import com.example.servicelock.ServiceLockInfo;
 import com.example.servicelock.aspect.ServiceLockAspect;
-import com.example.redisson.config.RedissonAutoConfiguration;
-import com.example.redisson.factory.ServiceLockFactory;
 import com.example.util.ServiceLockUtil;
+import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.redisson.config.Config;
+import org.redisson.config.SingleServerConfig;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -25,11 +30,36 @@ import org.springframework.context.annotation.Bean;
  * @author: 星哥
  * @create: 2023-02-23
  **/
-@AutoConfigureAfter(RedissonAutoConfiguration.class)
-public class DistributedConf {
+@ConditionalOnProperty("redisson.address")
+@EnableConfigurationProperties(RedissonProperties.class)
+public class DistributedAutoConfiguration {
+    
+    private static final String ADDRESS_PREFIX = "redis";
+    
+    /**
+     * 单机模式自动装配
+     * @return RedissonClient
+     */
+    @Bean
+    public RedissonClient redissonSingle(RedissonProperties redissonProperties) {
+        Config config = new Config();
+        SingleServerConfig serverConfig = config.useSingleServer()
+                .setAddress(ADDRESS_PREFIX+"://"+redissonProperties.getAddress()+":"+redissonProperties.getPort())
+                .setDatabase(redissonProperties.getDatabase())
+                .setTimeout(redissonProperties.getTimeout())
+                .setConnectionPoolSize(redissonProperties.getConnectionPoolSize())
+                .setConnectionMinimumIdleSize(redissonProperties.getConnectionMinimumIdleSize())
+                .setIdleConnectionTimeout(30000)
+                .setPingConnectionInterval(30000);
+        
+        if(StringUtil.isNotEmpty(redissonProperties.getPassword())) {
+            serverConfig.setPassword(redissonProperties.getPassword());
+        }
+        return Redisson.create(config);
+    }
     
     @Bean
-    public ServiceLockFactory redissonLockFactory(RedissonClient redissonClient){
+    public ServiceLockFactory serviceLockFactory(RedissonClient redissonClient){
         return new ServiceLockFactory(redissonClient);
     }
     
