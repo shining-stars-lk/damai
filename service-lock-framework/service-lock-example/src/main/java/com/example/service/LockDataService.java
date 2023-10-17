@@ -51,7 +51,6 @@ public class LockDataService {
     public void addServiceLockStock(LockDataDto lockDataDto){
         LambdaQueryWrapper<LockData> wrapper = Wrappers.lambdaQuery(LockData.class)
                 .eq(LockData::getId, lockDataDto.getId());
-        lockDataMapper.selectOne(wrapper);
         Optional.ofNullable(lockDataMapper.selectOne(wrapper)).ifPresent(lockData -> {
             Integer newStock = lockData.getStock() + lockDataDto.getStock();
             log.info("id为{}的当前库存为:{},添加后的库存为:{}",lockData.getId(),lockData.getStock(),newStock);
