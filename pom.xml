@@ -47,10 +47,15 @@
 	<properties>
 		<revision>0.0.1-SNAPSHOT</revision>
 		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring-boot.version>2.3.12.RELEASE</spring-boot.version>
 		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
 		<spring-cloud-alibaba.version>2.2.7.RELEASE</spring-cloud-alibaba.version>
 		<fastjson.version>1.2.83</fastjson.version>
+		<oshi-core.version>6.2.2</oshi-core.version>
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+		<jdk.version>1.8</jdk.version>
 	</properties>
 	<dependencies>
 		<dependency>
