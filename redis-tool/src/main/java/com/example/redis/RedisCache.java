@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: redis-tool
+ * @program: redis-example
  * @description: 分布式缓存统一接口
  * @author: 星哥
  * @create: 2023-05-28

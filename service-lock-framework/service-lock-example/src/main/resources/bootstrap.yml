@@ -1,0 +1,17 @@
+#服务端口
+server:
+  port: 4083
+# 应用名称
+spring:
+  application:
+    name: service-lock-example-service
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    nacos:
+      config:
+        server-addr: www.cookframe.com:8848
+        file-extension: yaml
+        shared-configs:
+          - data-id: common.yaml
+            refresh: true

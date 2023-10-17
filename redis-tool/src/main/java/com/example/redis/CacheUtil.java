@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * @program: redis-tool
+ * @program: redis-example
  * @description: 缓存工具类
  * @author: 星哥
  * @create: 2023-05-28
