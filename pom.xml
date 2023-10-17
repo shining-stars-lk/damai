@@ -35,7 +35,7 @@
 		<module>id-generator</module>
 		<module>spring-cloud-extra</module>
 		<module>threadpool</module>
-		<module>tool</module>
+		<module>service-lock-framework</module>
 		<module>arithmetic</module>
 		<module>server</module>
 		<module>server-client</module>

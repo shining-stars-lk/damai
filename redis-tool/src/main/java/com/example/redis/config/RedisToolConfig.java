@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
- * @program: redis-tool
+ * @program: redis-example
  * @description: redis配置
  * @author: 星哥
  * @create: 2023-05-28

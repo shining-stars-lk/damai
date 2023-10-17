@@ -2,7 +2,7 @@ package com.example.core;
 
 
 /**
- * @program: redis-tool
+ * @program: redis-example
  * @description: redis的key，value管理枚举
  * @author: 星哥
  * @create: 2023-05-28

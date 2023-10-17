@@ -70,7 +70,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>tool</artifactId>
+            <artifactId>service-lock-tool</artifactId>
             <version>${revision}</version>
         </dependency>
     </dependencies>

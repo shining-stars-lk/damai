@@ -5,9 +5,9 @@ import com.example.core.RedisKeyEnum;
 import com.example.notice.config.ApiStatNoticeProperties;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
+import com.example.servicelock.annotion.ServiceLock;
 import com.example.structure.MethodDetailData;
 import com.example.structure.MethodNoticeData;
-import com.tool.servicelock.annotion.ServiceLock;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.example.constant.ApiStatConstant.API_STAT_LOCK;
+import static com.example.core.DistributedLockConstants.API_STAT_LOCK;
 
 /**
  * @program: cook-frame
