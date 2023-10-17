@@ -57,7 +57,7 @@ public class JacksonCustom implements Jackson2ObjectMapperBuilderCustomizer, Ord
         // 设置时区
         builder.timeZone(TimeZone.getDefault());
         
-        builder.featuresToEnable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        builder.featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         builder.featuresToEnable(Feature.ALLOW_UNQUOTED_CONTROL_CHARS);
 
         //数字也加引号

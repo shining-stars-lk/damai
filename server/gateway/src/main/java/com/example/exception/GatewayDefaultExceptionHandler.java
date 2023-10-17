@@ -2,6 +2,7 @@ package com.example.exception;
 
 import com.example.common.ApiResponse;
 import com.example.conf.RequestTemporaryWrapper;
+import com.example.enums.BaseCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
@@ -9,7 +10,7 @@ import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -19,8 +20,7 @@ import reactor.core.publisher.Mono;
  * @author: 星哥
  * @create: 2023-04-27
  **/
-@Component
-public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
+public class GatewayDefaultExceptionHandler implements ErrorWebExceptionHandler {
 
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
@@ -35,7 +35,14 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         //3.设置响应状态吗
         boolean exceptionFlag = false;
         RequestTemporaryWrapper requestTemporaryWrapper = new RequestTemporaryWrapper();
-        if (ex instanceof ToolkitException) {
+        if (ex instanceof ResponseStatusException) {
+            ResponseStatusException responseStatusException = (ResponseStatusException)ex;
+            if (responseStatusException.getStatus() == HttpStatus.NOT_FOUND) {
+                String path = exchange.getRequest().getPath().value();
+                String methodValue = exchange.getRequest().getMethodValue();
+                ApiResponse.error(BaseCode.NOT_FOUND.getCode(),String.format(BaseCode.NOT_FOUND.getMsg(),methodValue,path));
+            }
+        }else if (ex instanceof ToolkitException) {
             ToolkitException toolkitException = (ToolkitException)ex;
             ApiResponse apiResponse = ApiResponse.error(toolkitException.getCode(),toolkitException.getMessage());
             requestTemporaryWrapper.setApiResponse(apiResponse);
