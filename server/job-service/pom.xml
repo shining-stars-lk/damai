@@ -59,7 +59,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>id-generator</artifactId>
+            <artifactId>id-generator-tool</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>

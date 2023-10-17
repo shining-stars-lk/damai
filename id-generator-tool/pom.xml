@@ -10,7 +10,7 @@
     </parent>
 
 
-    <artifactId>id-generator</artifactId>
+    <artifactId>id-generator-tool</artifactId>
 
     <name>id-generator</name>
     <description>分布式id生成器</description>
