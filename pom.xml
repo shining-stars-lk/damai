@@ -31,8 +31,8 @@
 	<modules>
 		<module>common</module>
 		<module>redis-tool</module>
-		<module>distribute-es</module>
-		<module>id-generator</module>
+		<module>distribute-es-tool</module>
+		<module>id-generator-tool</module>
 		<module>spring-cloud-extra</module>
 		<module>threadpool</module>
 		<module>service-lock-framework</module>

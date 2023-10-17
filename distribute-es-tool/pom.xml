@@ -10,9 +10,9 @@
     </parent>
 
 
-    <artifactId>distribute-es</artifactId>
+    <artifactId>distribute-es-tool</artifactId>
 
-    <name>distribute-es</name>
+    <name>distribute-es-tool</name>
     <description>es封装工具</description>
 
     <properties>
