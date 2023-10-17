@@ -11,6 +11,8 @@ public enum BaseCode {
     SUCCESS(0, "OK"),
     SYSTEM_ERROR(-1,"系统异常"),
     
+    NOT_FOUND(404,"not found api %s %s"),
+    
     GENERATE_RSA_SIGN_ERROR(999,"生成res签名验证失败"),
     RSA_SIGN_ERROR(1000,"res签名验证失败"),
     
