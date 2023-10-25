@@ -19,13 +19,13 @@ public class RegisterCenterAutoConfigurationImportFilter implements AutoConfigur
     
     private Environment environment;
     
-    public String NACOS = "nacos";
+    private static final String NACOS = "nacos";
     
-    public String EUREKA = "eureka";
+    private static final String EUREKA = "eureka";
     
-    public Map<String,String> eurekaAutoConfigurationBeanNameMap = EurekaAutoConfigurationBean.autoConfigurationBeanNameMap();
+    private static final Map<String,String> eurekaAutoConfigurationBeanNameMap = EurekaAutoConfigurationBean.autoConfigurationBeanNameMap();
     
-    public Map<String,String> nacosAutoConfigurationBeanNameMap = NacosAutoConfigurationBean.autoConfigurationBeanNameMap(); 
+    private static final Map<String,String> nacosAutoConfigurationBeanNameMap = NacosAutoConfigurationBean.autoConfigurationBeanNameMap(); 
     
     
     @Override

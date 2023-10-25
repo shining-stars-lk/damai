@@ -11,27 +11,27 @@ import java.util.Map;
  **/
 public class NacosAutoConfigurationBean {
     
-    public static String nacosDiscoveryAutoConfiguration = "com.alibaba.cloud.nacos.discovery.NacosDiscoveryAutoConfiguration";
+    private static final String nacosDiscoveryAutoConfiguration = "com.alibaba.cloud.nacos.discovery.NacosDiscoveryAutoConfiguration";
     
-    public static String ribbonNacosAutoConfiguration = "com.alibaba.cloud.nacos.ribbon.RibbonNacosAutoConfiguration";
+    private static final String ribbonNacosAutoConfiguration = "com.alibaba.cloud.nacos.ribbon.RibbonNacosAutoConfiguration";
     
-    public static String nacosDiscoveryEndpointAutoConfiguration = "com.alibaba.cloud.nacos.endpoint.NacosDiscoveryEndpointAutoConfiguration";
+    private static final String nacosDiscoveryEndpointAutoConfiguration = "com.alibaba.cloud.nacos.endpoint.NacosDiscoveryEndpointAutoConfiguration";
     
-    public static String nacosServiceRegistryAutoConfiguration = "com.alibaba.cloud.nacos.registry.NacosServiceRegistryAutoConfiguration";
+    private static final String nacosServiceRegistryAutoConfiguration = "com.alibaba.cloud.nacos.registry.NacosServiceRegistryAutoConfiguration";
     
-    public static String nacosDiscoveryClientConfiguration = "com.alibaba.cloud.nacos.discovery.NacosDiscoveryClientConfiguration";
+    private static final String nacosDiscoveryClientConfiguration = "com.alibaba.cloud.nacos.discovery.NacosDiscoveryClientConfiguration";
     
-    public static String nacosReactiveDiscoveryClientConfiguration = "com.alibaba.cloud.nacos.discovery.reactive.NacosReactiveDiscoveryClientConfiguration";
+    private static final String nacosReactiveDiscoveryClientConfiguration = "com.alibaba.cloud.nacos.discovery.reactive.NacosReactiveDiscoveryClientConfiguration";
     
-    public static String nacosConfigServerAutoConfiguration = "com.alibaba.cloud.nacos.discovery.configclient.NacosConfigServerAutoConfiguration";
+    private static final String nacosConfigServerAutoConfiguration = "com.alibaba.cloud.nacos.discovery.configclient.NacosConfigServerAutoConfiguration";
     
-    public static String nacosServiceAutoConfiguration = "com.alibaba.cloud.nacos.NacosServiceAutoConfiguration";
+    private static final String nacosServiceAutoConfiguration = "com.alibaba.cloud.nacos.NacosServiceAutoConfiguration";
     
-    public static String nacosDiscoveryClientConfigServiceBootstrapConfiguration = "com.alibaba.cloud.nacos.discovery.configclient.NacosDiscoveryClientConfigServiceBootstrapConfiguration";
+    private static final String nacosDiscoveryClientConfigServiceBootstrapConfiguration = "com.alibaba.cloud.nacos.discovery.configclient.NacosDiscoveryClientConfigServiceBootstrapConfiguration";
     
-    public static String nacosServiceConfig = "com.nacosrefresh.conf.NacosServiceConfig";
+    private static final String nacosServiceConfig = "com.nacosrefresh.conf.NacosServiceConfig";
     
-    public static Map<String,String> map = new HashMap<>(10);
+    private static final Map<String,String> map = new HashMap<>(10);
     
     static {
         map.put(nacosDiscoveryAutoConfiguration,nacosDiscoveryAutoConfiguration);
