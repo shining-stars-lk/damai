@@ -25,7 +25,7 @@ cookasyncagent/
 *.ipr
 *.log
 *.hprof
-
+.flattened-pom.xml
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

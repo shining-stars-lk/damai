@@ -85,7 +85,7 @@ public class OrderService {
         getOrderVo.setName("苹果订单");
         
         GetDto getDto = new GetDto();
-        getDto.setId(getOrderDto.getId() + "11");
+        getDto.setId(getOrderDto.getId());
         if (getOrderDto.getSleepTime() != null) {
             getDto.setSleepTime(getOrderDto.getSleepTime());
         }
@@ -105,7 +105,7 @@ public class OrderService {
         getOrderVo.setName("橘子订单");
     
         GetDto getDto = new GetDto();
-        getDto.setId(getOrderDto.getId() + "22");
+        getDto.setId(getOrderDto.getId());
         if (getOrderDto.getSleepTime() != null) {
             getDto.setSleepTime(getOrderDto.getSleepTime());
         }
@@ -133,7 +133,7 @@ public class OrderService {
         }
         if (orderMessageSend != null) {
             PsOrder order = new PsOrder();
-            order.setId(String.valueOf(uidGenerator.getUID()));
+            order.setId(uidGenerator.getUID());
             order.setPayAmount(dto.getPayAmount());
             order.setPayChannelType(dto.getPayChannelType());
             order.setCreateTime(new Date());
@@ -142,7 +142,7 @@ public class OrderService {
             List<ProductOrder> productOrderList = new ArrayList<>();
             for (final ProductDto productDto : dto.getProductDtoList()) {
                 ProductOrder productOrder = new ProductOrder();
-                productOrder.setId(String.valueOf(uidGenerator.getUID()));
+                productOrder.setId(uidGenerator.getUID());
                 productOrder.setProductId(productDto.getProductId());
                 productOrder.setProductName(productDto.getProductName());
                 productOrder.setProductPrice(productDto.getProductPrice());

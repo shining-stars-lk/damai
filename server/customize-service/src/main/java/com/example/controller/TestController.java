@@ -24,7 +24,7 @@ public class TestController {
     
     @ApiOperation(value = "测试")
     @RequestMapping(value = "/test", method = RequestMethod.POST)
-    public ApiResponse<String> test(@Valid @RequestBody TestDto testDto) {
+    public ApiResponse<Long> test(@Valid @RequestBody TestDto testDto) {
         if (testDto.getSleepTime() != null) {
             try {
                 Thread.sleep(testDto.getSleepTime());
@@ -37,7 +37,7 @@ public class TestController {
     
     @ApiOperation(value = "测试V2")
     @RequestMapping(value = "/testV2", method = RequestMethod.POST)
-    public ApiResponse<String> testV2(@Valid @RequestBody TestDto testDto) {
+    public ApiResponse<Long> testV2(@Valid @RequestBody TestDto testDto) {
         if (testDto.getSleepTime() != null) {
             try {
                 Thread.sleep(testDto.getSleepTime());

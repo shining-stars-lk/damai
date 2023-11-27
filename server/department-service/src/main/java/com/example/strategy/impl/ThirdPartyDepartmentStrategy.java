@@ -31,7 +31,7 @@ public class ThirdPartyDepartmentStrategy implements DepartmentStrategy {
         //模拟调用三方资源，例如http、websocket、netty等调用方式
         List<GetDeptVo> getDeptVos = new ArrayList<>();
         GetDeptVo getDeptVo = new GetDeptVo();
-        getDeptVo.setId("1");
+        getDeptVo.setId(1L);
         getDeptVo.setName("信息科");
         getDeptVo.setTypeCode(code);
         getDeptVo.setStatus(1);

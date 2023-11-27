@@ -18,7 +18,7 @@ import java.util.Date;
 public class GetDeptVo {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
-    private String id;
+    private Long id;
     
     @ApiModelProperty(name ="name", dataType ="String", value ="名字")
     private String name;

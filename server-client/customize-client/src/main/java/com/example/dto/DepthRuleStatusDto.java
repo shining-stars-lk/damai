@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 public class DepthRuleStatusDto {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="深度规则id", required =true)
-    private String id;
+    private Long id;
     
     @ApiModelProperty(name ="status", dataType ="Integer", value ="状态 1生效 0禁用", required =true)
     @NotNull

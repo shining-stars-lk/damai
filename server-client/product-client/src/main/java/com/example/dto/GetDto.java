@@ -13,7 +13,7 @@ import lombok.Data;
 @ApiModel(value="GetDto", description ="订单")
 public class GetDto {
     
-    private String id;
+    private Long id;
     private String name;
     private Long sleepTime;
 }

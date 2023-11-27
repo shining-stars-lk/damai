@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @program: cook-frame
@@ -17,6 +17,6 @@ import javax.validation.constraints.NotBlank;
 public class RunJobDto {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="页码", required =true)
-    @NotBlank
-    private String id;
+    @NotNull
+    private Long id;
 }

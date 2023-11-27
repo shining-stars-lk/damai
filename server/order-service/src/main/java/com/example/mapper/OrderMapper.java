@@ -12,5 +12,5 @@ import org.apache.ibatis.annotations.Param;
  **/
 public interface OrderMapper extends BaseMapper<PsOrder> {
     
-    int timeOutCancelOrder(@Param("id")String id);
+    int timeOutCancelOrder(@Param("id")Long id);
 }

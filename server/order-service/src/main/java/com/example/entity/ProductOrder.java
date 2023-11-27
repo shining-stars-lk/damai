@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 @Data
 public class ProductOrder {
 
-    private String id;
+    private Long id;
     
-    private String productId;
+    private Long productId;
     
     private String productName;
     
@@ -25,7 +25,7 @@ public class ProductOrder {
     
     private BigDecimal productTotalPrice;
     
-    private String orderId;
+    private Long orderId;
     
     private Integer status;
 }

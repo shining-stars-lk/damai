@@ -17,13 +17,13 @@ import java.math.BigDecimal;
 public class GetOrderVo {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="订单id", required =true)
-    private String id;
+    private Long id;
     
     @ApiModelProperty(name ="name", dataType ="String", value ="订单名字", required =true)
     private String name;
     
     @ApiModelProperty(name ="productId", dataType ="String", value ="产品id", required =true)
-    private String productId;
+    private Long productId;
     
     @ApiModelProperty(name ="productName", dataType ="String", value ="产品名字", required =true)
     private String productName;

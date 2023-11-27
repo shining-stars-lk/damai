@@ -18,7 +18,7 @@ public class PayOrderDto {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
     @NotNull
-    private String id;
+    private Long id;
     
     @ApiModelProperty(name ="payChannelType", dataType ="Integer", value ="支付方式1.支付宝 2.微信", required =true)
     @NotNull

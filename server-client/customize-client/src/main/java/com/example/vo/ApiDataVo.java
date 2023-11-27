@@ -19,7 +19,7 @@ import java.util.Date;
 public class ApiDataVo {
     
     @ApiModelProperty(name ="apiAddress", dataType ="String", value ="api的ip地址")
-    private String id;
+    private Long id;
     
     private String headVersion;
     

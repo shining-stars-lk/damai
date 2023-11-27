@@ -15,7 +15,7 @@ import lombok.Data;
 public class GetVo {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="产品id", required =true)
-    private String id;
+    private Long id;
     
     @ApiModelProperty(name ="name", dataType ="String", value ="产品名字", required =true)
     private String name;

@@ -14,9 +14,9 @@ import java.util.Date;
 @Data
 public class PsOrder {
 
-    private String id;
+    private Long id;
     
-    private String payOrderId;
+    private Long payOrderId;
     
     private BigDecimal payAmount;
     
@@ -28,5 +28,5 @@ public class PsOrder {
     
     private Date createTime;
     
-    private String userId;
+    private Long userId;
 }

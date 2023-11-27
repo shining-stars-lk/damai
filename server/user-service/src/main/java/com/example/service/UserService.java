@@ -64,7 +64,7 @@ public class UserService {
         if (user == null) {
             user = new User();
             BeanUtils.copyProperties(userDto,user);
-            user.setId(String.valueOf(uidGenerator.getUID()));
+            user.setId(uidGenerator.getUID());
             user.setCreateTime(new Date());
             userMapper.insert(user);
         }else {
@@ -75,8 +75,8 @@ public class UserService {
         return createToken(user.getId());
     }
     
-    public String createToken(String userId){
-        Map<String,String> map = new HashMap<>(4);
+    public String createToken(Long userId){
+        Map<String,Object> map = new HashMap<>(4);
         map.put("userId",userId);
         return TokenUtil.createToken(String.valueOf(uidGenerator.getUID()), JSON.toJSONString(map),tokenExpireTime,TOKEN_SECRET);
     }

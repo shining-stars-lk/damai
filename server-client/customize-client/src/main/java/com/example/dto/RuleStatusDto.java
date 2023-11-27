@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -18,8 +17,8 @@ import javax.validation.constraints.NotNull;
 public class RuleStatusDto {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="普通规则id", required =true)
-    @NotBlank
-    private String id;
+    @NotNull
+    private Long id;
     
     @ApiModelProperty(name ="status", dataType ="Integer", value ="状态 1生效 0禁用", required =true)
     @NotNull

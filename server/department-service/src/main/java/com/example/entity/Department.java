@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 public class Department {
     
-    private String id;
+    private Long id;
     
     private String name;
     

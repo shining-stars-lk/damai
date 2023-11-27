@@ -13,8 +13,8 @@ import javax.validation.constraints.NotNull;
 public class JobCallBackDto {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
-    @NotBlank
-    private String id;
+    @NotNull
+    private Long id;
     
     @ApiModelProperty(name ="jobId", dataType ="String", value ="任务id", required =true)
     @NotBlank

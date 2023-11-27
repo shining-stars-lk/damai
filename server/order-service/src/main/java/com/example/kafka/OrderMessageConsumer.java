@@ -42,7 +42,7 @@ public class OrderMessageConsumer {
             List<ProductOrder> productOrderList = productOrderJSONArray.toJavaList(ProductOrder.class);
             orderService.saveOrderAndProductOrder(psOrder,productOrderList);
             //延迟队列发送消息
-            producer.produceMessage(redissonProperties.getProduceTopic(),psOrder.getId(),redissonProperties.getDelayTime(),redissonProperties.getDelayTimeUnit());
+            producer.produceMessage(redissonProperties.getProduceTopic(),String.valueOf(psOrder.getId()),redissonProperties.getDelayTime(),redissonProperties.getDelayTimeUnit());
         }catch (Exception e) {
             log.error("consumerOrderMessage error",e);
         }

@@ -13,9 +13,9 @@ import java.util.Date;
 @Data
 public class JobRunRecord {
 
-    private String id;
+    private Long id;
     
-    private String jobId;
+    private Long jobId;
     
     private String runInfo;
     

@@ -31,5 +31,5 @@ public class InsertOrderDto {
     private Integer payChannelType;
     
     @ApiModelProperty(name ="userId", dataType ="String", value ="userId", required =true)
-    private String userId;
+    private Long userId;
 }
