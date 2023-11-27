@@ -48,7 +48,7 @@ public class ChannelDataService {
     public void add(ChannelDataAddDto channelDataAddDto) {
         ChannelData channelData = new ChannelData();
         BeanUtils.copyProperties(channelDataAddDto,channelData);
-        channelData.setId(String.valueOf(uidGenerator.getUID()));
+        channelData.setId(uidGenerator.getUID());
         channelData.setCreateTime(DateUtils.now());
         channelDataMapper.insert(channelData);
     }

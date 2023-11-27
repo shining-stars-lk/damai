@@ -57,11 +57,11 @@ public class RuleService {
         saveAllRuleCache();
     }
     @Transactional
-    public String add(RuleDto ruleDto) {
+    public Long add(RuleDto ruleDto) {
         delAll();
         Rule rule = new Rule();
         BeanUtils.copyProperties(ruleDto,rule);
-        rule.setId(String.valueOf(uidGenerator.getUID()));
+        rule.setId(uidGenerator.getUID());
         rule.setCreateTime(DateUtil.date());
         ruleMapper.insert(rule);
         return rule.getId();

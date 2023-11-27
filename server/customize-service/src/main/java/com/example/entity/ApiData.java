@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 public class ApiData {
     
-    private String id;
+    private Long id;
     
     private String headVersion;
     

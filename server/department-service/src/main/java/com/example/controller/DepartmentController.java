@@ -5,6 +5,7 @@ import com.example.dto.GetDepartmentDto;
 import com.example.dto.GetDeptDto;
 import com.example.service.DepartmentService;
 import com.example.vo.GetDepartmentVo;
+import com.example.vo.GetDeptVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @program: cook-frame
@@ -43,13 +45,13 @@ public class DepartmentController {
     
     @ApiOperation(value = "返回链路id")
     @PostMapping(value = "/printTraceId")
-    public ApiResponse printTraceId(){
+    public ApiResponse<String> printTraceId(){
         return ApiResponse.ok(departmentService.printTraceId());
     }
     
     @ApiOperation(value = "通过code查询部门列表")
     @PostMapping(value = "/getDeptListByCode")
-    public ApiResponse getDeptListByCode(@Valid @RequestBody GetDeptDto dto){
+    public ApiResponse<List<GetDeptVo>> getDeptListByCode(@Valid @RequestBody GetDeptDto dto){
         return ApiResponse.ok(departmentService.getDeptListByCode(dto));
     } 
 }

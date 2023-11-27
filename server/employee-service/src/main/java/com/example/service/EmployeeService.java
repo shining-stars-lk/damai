@@ -36,7 +36,7 @@ public class EmployeeService {
         getEmployeeVo.setName("苹果员工-1");
         
         GetDepartmentDto getDepartmentDto = new GetDepartmentDto();
-        getDepartmentDto.setId(getEmployeeVo.getId() + "11");
+        getDepartmentDto.setId(getEmployeeVo.getId());
         if (getEmployeeDto.getSleepTime() != null) {
             getDepartmentDto.setSleepTime(getEmployeeDto.getSleepTime());
         }

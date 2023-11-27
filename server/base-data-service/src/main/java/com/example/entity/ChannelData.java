@@ -6,7 +6,7 @@ import java.util.Date;
 @Data
 public class ChannelData {
     
-    private String id;
+    private Long id;
 
     private String name;
 

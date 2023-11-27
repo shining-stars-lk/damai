@@ -54,9 +54,9 @@ public class ServiceJobRun {
     @Resource
     private UidGenerator uidGenerator;
     
-    public Object runJob(String jobInfoId){
+    public Object runJob(Long jobInfoId){
         JobInfo jobInfo = Optional.ofNullable(jobInfoService.getById(jobInfoId)).orElseThrow(() -> new ToolkitException(BaseCode.JOB_INFO_NOT_EXIST));
-        String id = jobInfo.getId();
+        Long id = jobInfo.getId();
         String url = jobInfo.getUrl();
         String headers = jobInfo.getHeaders();
         Integer method = jobInfo.getMethod();
@@ -72,7 +72,7 @@ public class ServiceJobRun {
         jsonObjectHeaders.put(TRACE_ID,traceId);
         
         JobRunRecord jobRunRecord = new JobRunRecord();
-        jobRunRecord.setId(String.valueOf(uidGenerator.getUID()));
+        jobRunRecord.setId(uidGenerator.getUID());
         jobRunRecord.setJobId(id);
         jobRunRecord.setCreateTime(new Date());
         jobRunRecord.setTraceId(traceId);

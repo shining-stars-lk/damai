@@ -19,7 +19,7 @@ import java.util.Date;
 public class RuleVo {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="普通规则id", required =true)
-    private String id;
+    private Long id;
     
     @ApiModelProperty(name ="statTime", dataType ="Integer", value ="统计时间", required =true)
     private Integer statTime;

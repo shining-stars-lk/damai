@@ -77,7 +77,7 @@ public class ProductService {
     public Boolean insert(final ProductDto productDto) {
         Product product = new Product();
         BeanUtils.copyProperties(productDto,product);
-        product.setId(String.valueOf(uidGenerator.getUID()));
+        product.setId(uidGenerator.getUID());
         product.setCreateTime(new Date());
         
         if (productDto.getSaveRedis() != null && productDto.getSaveRedis() == 1) {

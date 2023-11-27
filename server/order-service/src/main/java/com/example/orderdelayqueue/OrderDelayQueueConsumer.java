@@ -36,7 +36,7 @@ public class OrderDelayQueueConsumer {
         consumer.consumeMessage(redissonProperties.getConsumeTopic(),message -> {
             log.info("OrderDelayQueueConsumer topic:{} message:{}",redissonProperties.getConsumeTopic(),message);
             String id = message;
-            orderMapper.timeOutCancelOrder(id);
+            orderMapper.timeOutCancelOrder(Long.parseLong(id));
         });
     }
 }

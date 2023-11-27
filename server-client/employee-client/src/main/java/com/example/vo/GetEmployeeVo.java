@@ -15,13 +15,13 @@ import lombok.Data;
 public class GetEmployeeVo {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
-    private String id;
+    private Long id;
     
     @ApiModelProperty(name ="name", dataType ="String", value ="名字", required =true)
     private String name;
     
     @ApiModelProperty(name ="departmentId", dataType ="String", value ="部门id", required =true)
-    private String departmentId;
+    private Long departmentId;
     
     @ApiModelProperty(name ="departmentName", dataType ="String", value ="部门名字", required =true)
     private String departmentName;

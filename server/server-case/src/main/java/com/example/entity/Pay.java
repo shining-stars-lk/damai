@@ -9,7 +9,7 @@ import java.util.Date;
 public class Pay {
     private Long id;
 
-    private String userId;
+    private Long userId;
 
     private Integer type;
 
@@ -21,7 +21,7 @@ public class Pay {
 
     private Date payTime;
 
-    private String departmentId;
+    private Long departmentId;
 
     private Date createTime;
 

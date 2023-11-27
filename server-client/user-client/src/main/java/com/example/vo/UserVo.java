@@ -16,7 +16,7 @@ import java.util.Date;
 public class UserVo {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="用户id", required =true)
-    private String id;
+    private Long id;
     
     @ApiModelProperty(name ="name", dataType ="String", value ="用户名字", required =true)
     private String name;

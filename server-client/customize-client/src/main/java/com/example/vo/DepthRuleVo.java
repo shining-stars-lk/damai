@@ -19,7 +19,7 @@ import java.util.Date;
 public class DepthRuleVo {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="深度规则id", required =true)
-    private String id;
+    private Long id;
     
     @ApiModelProperty(name ="startTimeWindow", dataType ="String", value ="开始时间窗口", required =true)
     private String startTimeWindow;

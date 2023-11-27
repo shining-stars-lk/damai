@@ -31,7 +31,7 @@ public class JobRunCallBack {
         String jobRunRecordId = BaseParameterHolder.getParameter(JOB_RUN_RECORD_ID);
         if (StringUtil.isNotEmpty(jobInfoId) && StringUtil.isNotEmpty(jobRunRecordId)) {
             JobCallBackDto jobCallBackDto = new JobCallBackDto();
-            jobCallBackDto.setId(jobRunRecordId);
+            jobCallBackDto.setId(Long.parseLong(jobRunRecordId));
             jobCallBackDto.setJobId(jobInfoId);
             jobCallBackDto.setRunInfo(runInfo);
             jobCallBackDto.setRunStatus(runStatus);
