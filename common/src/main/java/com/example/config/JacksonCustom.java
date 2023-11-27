@@ -1,4 +1,4 @@
-package com.example.conf;
+package com.example.config;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

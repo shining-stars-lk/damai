@@ -5,6 +5,7 @@ import com.example.dto.GetDepartmentDto;
 import com.example.dto.GetDeptDto;
 import com.example.strategy.DepartmentStrategy;
 import com.example.strategy.factory.DepartmentFactory;
+import com.example.util.DateUtils;
 import com.example.vo.GetDepartmentVo;
 import com.example.vo.GetDeptVo;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ public class DepartmentService {
         GetDepartmentVo getVo = new GetDepartmentVo();
         getVo.setId(dto.getId());
         getVo.setName("苹果公司");
+        getVo.setNowTime(DateUtils.now());
         log.info("get执行 GetVo : {}", JSON.toJSONString(getVo));
         return getVo;
     }

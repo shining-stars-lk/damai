@@ -1,2 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.example.config.JsonMapperAutoConfig
 org.springframework.boot.SpringApplicationRunListener=\
   com.example.runlistener.CustomEventPublishingRunListener
