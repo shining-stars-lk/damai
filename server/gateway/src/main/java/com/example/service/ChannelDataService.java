@@ -4,7 +4,7 @@ import com.example.client.BaseDataClient;
 import com.example.common.ApiResponse;
 import com.example.dto.GetChannelDataByCodeDto;
 import com.example.enums.BaseCode;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import com.example.vo.GetChannelDataVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +28,6 @@ public class ChannelDataService {
         if (getChannelDataApiResponse.getCode() == BaseCode.SUCCESS.getCode()) {
             return getChannelDataApiResponse.getData();
         }
-        throw new ToolkitException("没有找到ChannelData");
+        throw new CookFrameException("没有找到ChannelData");
     }
 }

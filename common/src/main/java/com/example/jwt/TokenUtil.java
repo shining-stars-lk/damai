@@ -1,7 +1,7 @@
 package com.example.jwt;
 
 import com.example.enums.BaseCode;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -76,7 +76,7 @@ public class TokenUtil {
                     .getSubject();
         }catch (ExpiredJwtException jwtException) {
             log.error("parseToken error",jwtException);
-            throw new ToolkitException(BaseCode.TOKEN_EXPIRE);
+            throw new CookFrameException(BaseCode.TOKEN_EXPIRE);
         }
         
     }

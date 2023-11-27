@@ -2,7 +2,7 @@
 //
 //import com.alibaba.fastjson.JSON;
 //import com.example.enums.BaseCode;
-//import com.example.exception.ToolkitException;
+//import com.example.exception.CookFrameException;
 //import lombok.extern.slf4j.Slf4j;
 //
 //import java.io.UnsupportedEncodingException;
@@ -174,7 +174,7 @@
 //			return RSA.rsa256Check(content, sign, publicKey, charset);
 //		}catch (Exception e) {
 //			log.error("rsa256Check error",e);
-//			throw new ToolkitException(BaseCode.RSA_SIGN_ERROR);
+//			throw new CookFrameException(BaseCode.RSA_SIGN_ERROR);
 //		}
 //			
 //	}

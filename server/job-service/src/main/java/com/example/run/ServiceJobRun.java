@@ -7,7 +7,7 @@ import com.example.entity.JobInfo;
 import com.example.entity.JobRunRecord;
 import com.example.enums.BaseCode;
 import com.example.enums.JobInfoMethodCode;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import com.example.service.JobInfoService;
 import com.example.service.JobRunRecordService;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ public class ServiceJobRun {
     private UidGenerator uidGenerator;
     
     public Object runJob(Long jobInfoId){
-        JobInfo jobInfo = Optional.ofNullable(jobInfoService.getById(jobInfoId)).orElseThrow(() -> new ToolkitException(BaseCode.JOB_INFO_NOT_EXIST));
+        JobInfo jobInfo = Optional.ofNullable(jobInfoService.getById(jobInfoId)).orElseThrow(() -> new CookFrameException(BaseCode.JOB_INFO_NOT_EXIST));
         Long id = jobInfo.getId();
         String url = jobInfo.getUrl();
         String headers = jobInfo.getHeaders();

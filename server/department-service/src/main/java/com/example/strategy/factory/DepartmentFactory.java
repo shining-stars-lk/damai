@@ -1,7 +1,7 @@
 package com.example.strategy.factory;
 
 import com.example.enums.BaseCode;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import com.example.strategy.DepartmentStrategy;
 
 import java.util.HashMap;
@@ -25,6 +25,6 @@ public class DepartmentFactory {
     }
     
     public static DepartmentStrategy getDepartmentStrategy(String code){
-        return Optional.ofNullable(departmentStrategyMap.get(code)).orElseThrow(() -> new ToolkitException(BaseCode.DEPARTMENT_STRATEGY));
+        return Optional.ofNullable(departmentStrategyMap.get(code)).orElseThrow(() -> new CookFrameException(BaseCode.DEPARTMENT_STRATEGY));
     }
 }

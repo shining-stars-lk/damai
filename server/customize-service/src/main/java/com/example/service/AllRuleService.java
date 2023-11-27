@@ -7,7 +7,7 @@ import com.example.dto.AllRuleDto;
 import com.example.dto.DepthRuleDto;
 import com.example.enums.BaseCode;
 import com.example.enums.RuleStatus;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import com.example.vo.AllDepthRuleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,7 +70,7 @@ public class AllRuleService {
             boolean checkStartLimitTimeResult = checkStartTimeWindowTimestamp >= startTimeWindowTimestamp && checkStartTimeWindowTimestamp <= endTimeWindowTimestamp;
             boolean checkEndLimitTimeResult = checkEndTimeWindowTimestamp >= startTimeWindowTimestamp && checkEndTimeWindowTimestamp <= endTimeWindowTimestamp;
             if (checkStartLimitTimeResult || checkEndLimitTimeResult) {
-                throw new ToolkitException(BaseCode.API_RULE_TIME_WINDOW_INTERSECT);
+                throw new CookFrameException(BaseCode.API_RULE_TIME_WINDOW_INTERSECT);
             }
         }
     }

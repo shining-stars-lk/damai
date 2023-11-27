@@ -20,10 +20,10 @@ public class DefaultExceptionHandler {
     /*
     * 业务异常
     * */
-    @ExceptionHandler(value = ToolkitException.class)
-    public ApiResponse toolkitExceptionHandler(HttpServletRequest request, ToolkitException toolkitException) {
-        log.error("业务异常 method : {} url : {} query : {} ", request.getMethod(), getRequestUrl(request), getRequestQuery(request), toolkitException);
-        return ApiResponse.error(toolkitException.getCode(),toolkitException.getMessage());
+    @ExceptionHandler(value = CookFrameException.class)
+    public ApiResponse toolkitExceptionHandler(HttpServletRequest request, CookFrameException cookFrameException) {
+        log.error("业务异常 method : {} url : {} query : {} ", request.getMethod(), getRequestUrl(request), getRequestQuery(request), cookFrameException);
+        return ApiResponse.error(cookFrameException.getCode(), cookFrameException.getMessage());
     }
     /**
      * 参数验证异常

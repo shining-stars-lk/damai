@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.core.RedisKeyEnum;
 import com.example.core.StringUtil;
 import com.example.enums.BaseCode;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import com.example.jwt.TokenUtil;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
@@ -43,6 +43,6 @@ public class TokenService {
         if (StringUtil.isNotEmpty(userId)) {
             userVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID, userId), UserVo.class);
         }
-        return Optional.ofNullable(userVo).orElseThrow(() -> new ToolkitException(BaseCode.USER_EMPTY));
+        return Optional.ofNullable(userVo).orElseThrow(() -> new CookFrameException(BaseCode.USER_EMPTY));
     }
 }

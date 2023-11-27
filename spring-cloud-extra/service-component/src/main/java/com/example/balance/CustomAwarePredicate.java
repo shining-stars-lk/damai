@@ -3,7 +3,7 @@ package com.example.balance;
 import cn.hutool.core.collection.CollUtil;
 import com.alibaba.cloud.nacos.ribbon.NacosServer;
 import com.example.enums.BaseCode;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import com.example.threadlocal.BaseParameterHolder;
 import com.google.common.collect.Maps;
 import com.netflix.loadbalancer.AbstractServerPredicate;
@@ -84,15 +84,15 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 			
 			if(result == false && markFromRequest.equalsIgnoreCase(MARK_FLAG_TRUE)) {
 				if(customEnabledRule == null) {
-					throw new ToolkitException(BaseCode.CUSTOM_ENABLED_RULE_EMPTY);
+					throw new CookFrameException(BaseCode.CUSTOM_ENABLED_RULE_EMPTY);
 				}
 				ILoadBalancer iLoadBalancer = customEnabledRule.getLoadBalancer();
 				if(iLoadBalancer == null) {
-					throw new ToolkitException(BaseCode.I_LOAD_BALANCER_RULE_EMPTY);
+					throw new CookFrameException(BaseCode.I_LOAD_BALANCER_RULE_EMPTY);
 				}
 				List<Server> serverList = iLoadBalancer.getReachableServers();
 				if(CollUtil.isEmpty(serverList)) {
-					throw new ToolkitException(BaseCode.SERVER_LIST_EMPTY);
+					throw new CookFrameException(BaseCode.SERVER_LIST_EMPTY);
 				}
 				Map<String,String> map = Maps.newHashMap();
 				for (Server serverBalance : serverList) {

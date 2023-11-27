@@ -3,7 +3,7 @@ package com.example.util;
 import cn.hutool.crypto.asymmetric.SignAlgorithm;
 import com.alibaba.fastjson.JSON;
 import com.example.enums.BaseCode;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.UnsupportedEncodingException;
@@ -62,7 +62,7 @@ public class RsaSignTool {
             return Base64.getEncoder().encodeToString(sign);
         } catch (Exception e) {
             log.error("sign256 error",e);
-            throw new ToolkitException(BaseCode.GENERATE_RSA_SIGN_ERROR);
+            throw new CookFrameException(BaseCode.GENERATE_RSA_SIGN_ERROR);
         }
     }
     
@@ -101,7 +101,7 @@ public class RsaSignTool {
             return verifyRsaSign256(content.getBytes(CHARSET), sign, publicKey);
         }catch (Exception e) {
             log.error("verifyRsaSign256 error",e);
-            throw new ToolkitException(BaseCode.RSA_SIGN_ERROR);
+            throw new CookFrameException(BaseCode.RSA_SIGN_ERROR);
         }
     }
     
