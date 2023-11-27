@@ -22,17 +22,21 @@ public class ServiceLockUtil {
 
     private final ServiceLockInfo serviceLockInfo;
     
+    public void execute(TaskRun taskRun,String name,String [] keys) {
+        execute(taskRun,name,keys,10);
+    } 
 
     /**
      * 没有返回值的加锁执行
      * @param taskRun 要执行的任务
      * @param name 锁的业务名
      * @param keys 锁的标识
+     * @param waitTime 等待时间
      * */
-    public void execute(TaskRun taskRun,String name,String [] keys){
+    public void execute(TaskRun taskRun,String name,String [] keys,long waitTime){
         String lockName = serviceLockInfo.simpleGetLockName(name,keys);
         ServiceLocker lock = serviceLockFactory.getLock(LockType.Reentrant);
-        boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, 30);
+        boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, waitTime);
         if (result) {
             try {
                 taskRun.run();
