@@ -1,4 +1,4 @@
-package com.example.conf;
+package com.example.config;
 
 import cn.hutool.core.date.DateTime;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -18,10 +18,9 @@ public class JsonCustomSerializer extends BeanSerializerModifier {
 	@Override
 	public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
 			List<BeanPropertyWriter> beanProperties) {
-		for (int i = 0; i < beanProperties.size(); i++) {
-			BeanPropertyWriter writer = beanProperties.get(i);
+		for (BeanPropertyWriter writer : beanProperties) {
 			com.fasterxml.jackson.databind.JsonSerializer<Object> js = judgeType(writer);
-			if(js != null) {
+			if (js != null) {
 				writer.assignNullSerializer(js);
 			}
 		}

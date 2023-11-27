@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @program: cook-frame
@@ -16,8 +16,8 @@ import javax.validation.constraints.NotBlank;
 @ApiModel(value="GetDepartmentDto", description ="部门")
 public class GetDepartmentDto {
     @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
-    @NotBlank
-    private String id;
+    @NotNull
+    private Long id;
     
     @ApiModelProperty(name ="name", dataType ="String", value ="名字")
     private String name;

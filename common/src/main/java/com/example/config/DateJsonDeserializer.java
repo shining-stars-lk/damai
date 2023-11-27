@@ -1,4 +1,4 @@
-package com.example.conf;
+package com.example.config;
 
 import com.example.util.DateUtils;
 import com.fasterxml.jackson.core.JsonParser;

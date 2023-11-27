@@ -953,4 +953,35 @@ public class DateUtils {
         }
  
     }
+    
+    /**
+     * 将符合相应格式的字符串转化为日期 <格式自定义>
+     *
+     * @param dateStr 日期字符串
+     * @param pattern 日期格式
+     * @return Date 返回类型 日期字串为空或者不符合日期格式时返回null
+     */
+    public static Date getDate(String dateStr, String pattern) {
+        return getDate(dateStr, pattern, null);
+    }
+    
+    /**
+     * 将符合相应格式的字符串转化为日期 <格式自定义>
+     *
+     * @param dateStr     日期字符串
+     * @param pattern     日期格式
+     * @param defaultDate 默认日期
+     * @return Date 返回类型 日期字串为空或者不符合日期格式时返回null
+     */
+    public static Date getDate(String dateStr, String pattern, Date defaultDate) {
+        if (dateStr != null && pattern != null) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+                return sdf.parse(dateStr);
+            } catch (ParseException e) {
+                throw new IllegalArgumentException("字符串转化为日期失败！", e);
+            }
+        }
+        return defaultDate;
+    }
 }

@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @program: cook-frame
  * @description:
@@ -15,8 +17,10 @@ import lombok.Data;
 public class GetDepartmentVo {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
-    private String id;
+    private Long id;
     
     @ApiModelProperty(name ="name", dataType ="String", value ="名字")
     private String name;
+    
+    private Date nowTime;
 }
