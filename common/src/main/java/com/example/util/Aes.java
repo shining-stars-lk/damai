@@ -2,7 +2,7 @@ package com.example.util;
 
 import com.example.core.StringUtil;
 import com.example.enums.BaseCode;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
@@ -41,7 +41,7 @@ public class Aes {
 			String strs = Base64.encode(bt);
 			return strs;
 		}catch (Exception e) {
-			throw new ToolkitException(BaseCode.AES_ERROR);
+			throw new CookFrameException(BaseCode.AES_ERROR);
 		}
 		
 	}
@@ -62,7 +62,7 @@ public class Aes {
 				byte[] bt = decrypt(key.getBytes(ENCODE_UTF_8), initVector.getBytes(ENCODE_UTF_8), buf);
 				return new String(bt, ENCODE_UTF_8);
 			}catch (Exception e) {
-				throw new ToolkitException(BaseCode.AES_ERROR);
+				throw new CookFrameException(BaseCode.AES_ERROR);
 			}
 			
 		}

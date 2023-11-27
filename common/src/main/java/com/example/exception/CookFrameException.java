@@ -11,48 +11,48 @@ import lombok.Data;
  * @create: 2023-06-03
  **/
 @Data
-public class ToolkitException extends BaseException {
+public class CookFrameException extends BaseException {
 
 	private Integer code;
 	
 	private String message;
 
-	public ToolkitException() {
+	public CookFrameException() {
 		super();
 	}
 
-	public ToolkitException(String message) {
+	public CookFrameException(String message) {
 		super(message);
 	}
 
-	public ToolkitException(Integer code, String message) {
+	public CookFrameException(Integer code, String message) {
 		super(message);
 		this.code = code;
 		this.message = message;
 	}
 	
-	public ToolkitException(BaseCode baseCode) {
+	public CookFrameException(BaseCode baseCode) {
 		super(baseCode.getMsg());
 		this.code = baseCode.getCode();
 		this.message = baseCode.getMsg();
 	}
 	
-	public ToolkitException(ApiResponse apiResponse) {
+	public CookFrameException(ApiResponse apiResponse) {
 		super(apiResponse.getMessage());
 		this.code = apiResponse.getCode();
 		this.message = apiResponse.getMessage();
 	}
 
-	public ToolkitException(Throwable cause) {
+	public CookFrameException(Throwable cause) {
 		super(cause);
 	}
 
-	public ToolkitException(String message, Throwable cause) {
+	public CookFrameException(String message, Throwable cause) {
 		super(message, cause);
 		this.message = message;
 	}
 
-	public ToolkitException(Integer code, String message, Throwable cause) {
+	public CookFrameException(Integer code, String message, Throwable cause) {
 		super(message, cause);
 		this.code = code;
 		this.message = message;

@@ -10,7 +10,7 @@ import com.example.core.StringUtil;
 import com.example.enums.BaseCode;
 import com.example.exception.ArgumentError;
 import com.example.exception.ArgumentException;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import com.example.property.GatewayProperty;
 import com.example.service.ApiRestrictService;
 import com.example.service.ChannelDataService;
@@ -195,7 +195,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             SecureUtil.sign(SignAlgorithm.SHA256withRSA);
             boolean checkFlag = RsaSignTool.verifyRsaSign256(bodyContent, channelDataVo.getSignPublicKey());
             if (!checkFlag) {
-                throw new ToolkitException(BaseCode.CHANNEL_DATA);
+                throw new CookFrameException(BaseCode.CHANNEL_DATA);
             }
 
             boolean skipCheckTokenResult = skipCheckToken(url);

@@ -1,7 +1,7 @@
 package com.example.notice.config;
 
 import com.example.enums.PlatformType;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import com.example.notice.Platform;
 import com.example.notice.impl.DingDingPlatform;
 import com.example.notice.impl.EmailPlatform;
@@ -49,7 +49,7 @@ public class PlatformRegistry {
             case Email:
                 return new EmailPlatform(apiStatNoticeProperties);
             default:
-                throw new ToolkitException(MESSAGE_PLATFORM_NOT_EXIST);    
+                throw new CookFrameException(MESSAGE_PLATFORM_NOT_EXIST);    
         }
     }
 }

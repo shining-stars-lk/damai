@@ -11,7 +11,7 @@ import com.example.dto.DepthRuleUpdateDto;
 import com.example.entity.DepthRule;
 import com.example.enums.BaseCode;
 import com.example.enums.RuleStatus;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import com.example.mapper.DepthRuleMapper;
 import com.example.redis.RedisCache;
 import com.example.util.DateUtils;
@@ -66,7 +66,7 @@ public class DepthRuleService {
             boolean checkStartLimitTimeResult = checkStartTimeWindowTimestamp >= startTimeWindowTimestamp && checkStartTimeWindowTimestamp <= endTimeWindowTimestamp;
             boolean checkEndLimitTimeResult = checkEndTimeWindowTimestamp >= startTimeWindowTimestamp && checkEndTimeWindowTimestamp <= endTimeWindowTimestamp;
             if (checkStartLimitTimeResult || checkEndLimitTimeResult) {
-                throw new ToolkitException(BaseCode.API_RULE_TIME_WINDOW_INTERSECT);
+                throw new CookFrameException(BaseCode.API_RULE_TIME_WINDOW_INTERSECT);
             }
         }
     }

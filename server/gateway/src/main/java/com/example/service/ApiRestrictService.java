@@ -8,7 +8,7 @@ import com.example.core.StringUtil;
 import com.example.dto.ApiDataDto;
 import com.example.enums.BaseCode;
 import com.example.enums.RuleTimeUnit;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import com.example.kafka.ApiDataMessageSend;
 import com.example.property.GatewayProperty;
 import com.example.redis.RedisCache;
@@ -195,7 +195,7 @@ public class ApiRestrictService {
                 if (StringUtil.isNotEmpty(message)) {
                     defaultMessage = message;
                 }
-                throw new ToolkitException(BaseCode.API_RULE_TRIGGER.getCode(),defaultMessage);
+                throw new CookFrameException(BaseCode.API_RULE_TRIGGER.getCode(),defaultMessage);
             }
         }
     }

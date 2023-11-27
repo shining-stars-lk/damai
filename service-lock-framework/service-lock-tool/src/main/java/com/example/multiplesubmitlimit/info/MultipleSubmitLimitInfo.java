@@ -1,7 +1,7 @@
 package com.example.multiplesubmitlimit.info;
 
 import com.example.enums.BaseCode;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import com.example.core.BaseInfo;
 import com.example.multiplesubmitlimit.annotion.MultipleSubmitLimit;
 import com.example.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyHandler;
@@ -34,7 +34,7 @@ public class MultipleSubmitLimitInfo extends BaseInfo {
 
     public GenerateKeyHandler getGenerateKeyStrategy(String generatorKey){
         return Optional.ofNullable(GenerateKeyStrategyContext.get(generatorKey))
-                .orElseThrow(() -> new ToolkitException(BaseCode.GENERATE_STRATEGY_NOT_EXIST));
+                .orElseThrow(() -> new CookFrameException(BaseCode.GENERATE_STRATEGY_NOT_EXIST));
     }
 
     /**

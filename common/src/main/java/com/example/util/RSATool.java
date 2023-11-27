@@ -4,7 +4,7 @@ package com.example.util;
 import cn.hutool.crypto.KeyUtil;
 import com.alibaba.fastjson.JSON;
 import com.example.enums.BaseCode;
-import com.example.exception.ToolkitException;
+import com.example.exception.CookFrameException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 
@@ -153,7 +153,7 @@ public class RSATool {
 			return decryptstr;
 		}catch (Exception e) {
 			log.error("decrypt error",e);
-			throw new ToolkitException(BaseCode.RSA_DECRYPT_ERROR);
+			throw new CookFrameException(BaseCode.RSA_DECRYPT_ERROR);
 		}
 	}
 	
@@ -170,7 +170,7 @@ public class RSATool {
 			return encrypt(data,publicKeyTmp);
 		}catch (Exception e) {
 			log.error("encrypt error",e);
-			throw new ToolkitException(BaseCode.RSA_ENCRYPT_ERROR);
+			throw new CookFrameException(BaseCode.RSA_ENCRYPT_ERROR);
 		}
 			
 	}

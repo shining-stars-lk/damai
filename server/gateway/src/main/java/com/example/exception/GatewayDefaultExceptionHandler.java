@@ -42,9 +42,9 @@ public class GatewayDefaultExceptionHandler implements ErrorWebExceptionHandler 
                 String methodValue = exchange.getRequest().getMethodValue();
                 ApiResponse.error(BaseCode.NOT_FOUND.getCode(),String.format(BaseCode.NOT_FOUND.getMsg(),methodValue,path));
             }
-        }else if (ex instanceof ToolkitException) {
-            ToolkitException toolkitException = (ToolkitException)ex;
-            ApiResponse apiResponse = ApiResponse.error(toolkitException.getCode(),toolkitException.getMessage());
+        }else if (ex instanceof CookFrameException) {
+            CookFrameException cookFrameException = (CookFrameException)ex;
+            ApiResponse apiResponse = ApiResponse.error(cookFrameException.getCode(), cookFrameException.getMessage());
             requestTemporaryWrapper.setApiResponse(apiResponse);
             exceptionFlag = true;
         }else if (ex instanceof ArgumentException) {
