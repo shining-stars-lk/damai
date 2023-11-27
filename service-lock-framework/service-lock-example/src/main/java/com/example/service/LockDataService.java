@@ -48,7 +48,11 @@ public class LockDataService {
     
     @ServiceLock(name = LOCK_DATA,keys = {"#lockDataDto.id"},waitTime = 5L)
     @Transactional
-    public void addServiceLockStock(LockDataDto lockDataDto){
+    public void addStockServiceLock(LockDataDto lockDataDto){
+        addStock(lockDataDto);
+    }
+    
+    public void addStock(LockDataDto lockDataDto){
         LambdaQueryWrapper<LockData> wrapper = Wrappers.lambdaQuery(LockData.class)
                 .eq(LockData::getId, lockDataDto.getId());
         Optional.ofNullable(lockDataMapper.selectOne(wrapper)).ifPresent(lockData -> {
