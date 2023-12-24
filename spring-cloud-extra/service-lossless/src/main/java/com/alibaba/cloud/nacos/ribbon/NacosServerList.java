@@ -55,7 +55,6 @@ public class NacosServerList extends AbstractServerList<NacosServer> {
         try {
             String group = discoveryProperties.getGroup();
             List<Instance> instances = discoveryProperties.namingServiceInstance()
-                    //ribbon在进行负载均衡时，不订阅nacos其他服务
                     .selectInstances(serviceId, group, true,false);
             return instancesToServerList(instances);
         }
