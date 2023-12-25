@@ -2,6 +2,7 @@ package com.example.service;
 
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baidu.fsg.uid.UidGenerator;
 import com.example.core.RedisKeyEnum;
 import com.example.core.StringUtil;
@@ -32,9 +33,11 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @program: cook-frame
@@ -100,7 +103,7 @@ public class ApiRestrictService {
             if (StringUtil.isNotEmpty(id)) {
                 stringBuilder.append("_").append(id);
             }
-            String commonkey = stringBuilder.append("_").append(url).toString();
+            String commonKey = stringBuilder.append("_").append(url).toString();
             try {
                 List<DepthRuleVo> depthRuleVoList = new ArrayList<>();
           
@@ -120,52 +123,52 @@ public class ApiRestrictService {
                     apiRuleType = 2;
                 }
                 if (apiRuleType == 1 || apiRuleType == 2) {
-                    List<String> parameters = new ArrayList<>();
-                    parameters.add(String.valueOf(apiRuleType));
-                    StringBuffer stringBuffer = new StringBuffer("rule_api_limit");
-                    String rulekey = stringBuffer.append("_").append(commonkey).toString();
-                 
-                    parameters.add(rulekey);
+                    JSONObject parameter = new JSONObject();
+                    
+                    parameter.put("apiRuleType",apiRuleType);
+                    
+                    String ruleKey = "rule_api_limit" + "_" + commonKey;
+                    parameter.put("ruleKey",ruleKey);
               
-                    parameters.add(String.valueOf(ruleVo.getStatTimeType() == RuleTimeUnit.SECOND.getCode() ? ruleVo.getStatTime() : ruleVo.getStatTime() * 60));
-                  
-                    parameters.add(String.valueOf(ruleVo.getThreshold()));
+                    parameter.put("statTime",String.valueOf(Objects.equals(ruleVo.getStatTimeType(), RuleTimeUnit.SECOND.getCode()) ? ruleVo.getStatTime() : ruleVo.getStatTime() * 60));
+                    
+                    parameter.put("threshold",ruleVo.getThreshold());
                
-                    parameters.add(String.valueOf(ruleVo.getEffectiveTimeType() == RuleTimeUnit.SECOND.getCode() ? ruleVo.getEffectiveTime() : ruleVo.getEffectiveTime() * 60));
-            
-                    parameters.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE_LIMIT,commonkey).getRelKey());
-                 
-                    parameters.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.Z_SET_RULE_STAT,commonkey).getRelKey());
+                    parameter.put("effectiveTime",String.valueOf(Objects.equals(ruleVo.getEffectiveTimeType(), RuleTimeUnit.SECOND.getCode()) ? ruleVo.getEffectiveTime() : ruleVo.getEffectiveTime() * 60));
                     
-                    String[] timeParameters = {String.valueOf(System.currentTimeMillis())};
+                    parameter.put("ruleLimitKey",RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE_LIMIT,commonKey).getRelKey());
+                    
+                    parameter.put("zSetRuleStatKey",RedisKeyWrap.createRedisKey(RedisKeyEnum.Z_SET_RULE_STAT,commonKey).getRelKey());
+                    
                     if (apiRuleType == 2) {
-                    
                         depthRuleVoList = sortStartTimeWindow(depthRuleVoList);
-                        int timeIndex = 1;
-                
-                        parameters.add(String.valueOf(depthRuleVoList.size()));
-                 
-                        String[] relTimeParameters = new String[2 * depthRuleVoList.size() + 1];
-                   
-                        relTimeParameters[0] = String.valueOf(System.currentTimeMillis());
+                        
+                        parameter.put("depthRuleSize",String.valueOf(depthRuleVoList.size()));
+                        
+                        parameter.put("currentTime",System.currentTimeMillis());
+                        
+                        List<JSONObject> depthRules = new ArrayList<>();
                         for (int i = 0; i < depthRuleVoList.size(); i++) {
+                            JSONObject depthRule = new JSONObject();
                             DepthRuleVo depthRuleVo = depthRuleVoList.get(i);
-                      
-                            parameters.add(String.valueOf(depthRuleVo.getStatTimeType() == RuleTimeUnit.SECOND.getCode() ? depthRuleVo.getStatTime() : depthRuleVo.getStatTime() * 60));
-                      
-                            parameters.add(String.valueOf(depthRuleVo.getThreshold()));
-                  
-                            parameters.add(String.valueOf(depthRuleVo.getEffectiveTimeType() == RuleTimeUnit.SECOND.getCode() ? depthRuleVo.getEffectiveTime() : depthRuleVo.getEffectiveTime() * 60));
-                      
-                            parameters.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE_LIMIT,i,commonkey).getRelKey());
-                         
-                            relTimeParameters[timeIndex] = String.valueOf(depthRuleVo.getStartTimeWindowTimestamp());
-                            relTimeParameters[timeIndex+1] = String.valueOf(depthRuleVo.getEndTimeWindowTimestamp());
-                            timeIndex = timeIndex + 2;
+                            
+                            depthRule.put("statTime",Objects.equals(depthRuleVo.getStatTimeType(), RuleTimeUnit.SECOND.getCode()) ? depthRuleVo.getStatTime() : depthRuleVo.getStatTime() * 60);
+                            
+                            depthRule.put("threshold",depthRuleVo.getThreshold());
+                            
+                            depthRule.put("effectiveTime",String.valueOf(Objects.equals(depthRuleVo.getEffectiveTimeType(), RuleTimeUnit.SECOND.getCode()) ? depthRuleVo.getEffectiveTime() : depthRuleVo.getEffectiveTime() * 60));
+                            
+                            depthRule.put("depthRuleLimit",RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE_LIMIT,i,commonKey).getRelKey());
+
+                            depthRule.put("startTimeWindowTimestamp",depthRuleVo.getStartTimeWindowTimestamp());
+                            depthRule.put("endTimeWindowTimestamp",depthRuleVo.getEndTimeWindowTimestamp());
+                            
+                            depthRules.add(depthRule);
                         }
-                        timeParameters = relTimeParameters;
+                        
+                        parameter.put("depthRules",depthRules);
                     }
-                    List<Long> executeResult = (ArrayList)redisCache.getInstance().execute(redisScript, parameters, timeParameters);
+                    List<Long> executeResult = (ArrayList)redisCache.getInstance().execute(redisScript, Stream.of(parameter).map(p -> JSON.toJSONString(p)).collect(Collectors.toList()), new String[]{});
                 
                     triggerResult = Optional.ofNullable(executeResult.get(0)).orElse(0L);
              
@@ -182,7 +185,7 @@ public class ApiRestrictService {
                                 .filter(StringUtil::isNotEmpty)
                                 .orElse(message);
                     }
-                    log.info("api rule [key : {}], [triggerResult : {}], [triggerCallStat : {}], [apiCount : {}], [threshold : {}]",commonkey,triggerResult,triggerCallStat,apiCount,threshold);
+                    log.info("api rule [key : {}], [triggerResult : {}], [triggerCallStat : {}], [apiCount : {}], [threshold : {}]",commonKey,triggerResult,triggerCallStat,apiCount,threshold);
                 }
             }catch (Exception e) {
                 log.error("redis Lua eror", e);
@@ -223,7 +226,7 @@ public class ApiRestrictService {
         String ip = headers.getFirst("x-forwarded-for");
         if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
             // 多次反向代理后会有多个ip值，第一个ip才是真实ip
-            if (ip.indexOf(",") != -1) {
+            if (ip.contains(",")) {
                 ip = ip.split(",")[0];
             }
         }

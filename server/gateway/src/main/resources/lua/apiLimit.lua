@@ -2,15 +2,16 @@ local trigger_result = 0
 local trigger_call_Stat = 0
 local api_count = 0
 local threshold = 0
-local api_rule_type = tonumber(KEYS[1])
-local rule_key = KEYS[2]
-local rule_stat_time = KEYS[3]
-local rule_threshold = tonumber(KEYS[4])
-local rule_effective_time = KEYS[5]
-local rule_limit_key = KEYS[6]
-local z_set_key = KEYS[7]
+local apiRule = cjson.decode(KEYS[1])
+local api_rule_type = apiRule.apiRuleType
+local rule_key = apiRule.ruleKey
+local rule_stat_time = apiRule.statTime
+local rule_threshold = apiRule.threshold
+local rule_effective_time = apiRule.effectiveTime
+local rule_limit_key = apiRule.ruleLimitKey
+local z_set_key = apiRule.zSetRuleStatKey
 
-local z_set_score = ARGV[1]
+local current_Time = apiRule.currentTime
 local message_index = -1
 
 local count = tonumber(redis.call('incrby', rule_key, 1))
@@ -22,8 +23,8 @@ if ((count - rule_threshold) >= 0) then
         redis.call('set', rule_limit_key, rule_limit_key)
         redis.call('expire', rule_limit_key, rule_effective_time)
         trigger_call_Stat = 1
-        local z_set_member = z_set_score .. "_" .. tostring(count)
-        redis.call('zadd',z_set_key,z_set_score,z_set_member)
+        local z_set_member = current_Time .. "_" .. tostring(count)
+        redis.call('zadd',z_set_key,current_Time,z_set_member)
     end
     trigger_result = 1
 end
@@ -35,17 +36,14 @@ api_count = count
 threshold = rule_threshold
 
 if (api_rule_type == 2) then
-    local depth_rule_size = tonumber(KEYS[8])
-    local parameter_index = 9
-    local time_parameter_index = 2
-    for index = 1, depth_rule_size do
-        local current_Time = tonumber(ARGV[1])
-        local start_time_window = tonumber(ARGV[time_parameter_index])
-        local end_time_window = tonumber(ARGV[time_parameter_index+1])
-        local depth_rule_stat_time = tonumber(KEYS[parameter_index])
-        local depth_rule_threshold = tonumber(KEYS[parameter_index+1])
-        local depth_rule_effective_time = KEYS[parameter_index+2]
-        local depth_rule_limit_key = KEYS[parameter_index+3]
+    local depthRules = apiRule.depthRules
+    for index,depth_rule in ipairs(depthRules)  do
+        local start_time_window = depth_rule.startTimeWindowTimestamp
+        local end_time_window = depth_rule.endTimeWindowTimestamp
+        local depth_rule_stat_time = depth_rule.statTime
+        local depth_rule_threshold = depth_rule.threshold
+        local depth_rule_effective_time = depth_rule.effectiveTime
+        local depth_rule_limit_key = depth_rule.depthRuleLimit
 
         threshold = depth_rule_threshold
 
@@ -67,18 +65,16 @@ if (api_rule_type == 2) then
                     redis.call('expire', depth_rule_limit_key, depth_rule_effective_time)
                     trigger_result = 1
                     trigger_call_Stat = 2
-                    message_index = index - 1
+                    message_index = index
                     return {trigger_result,trigger_call_Stat,api_count,threshold,message_index}
                 end
             end
             if (redis.call('exists', depth_rule_limit_key) == 1) then
                 trigger_result = 1
-                message_index = index - 1
+                message_index = index
                 return {trigger_result,trigger_call_Stat,api_count,threshold,message_index}
             end
         end
-        parameter_index = parameter_index + 4
-        time_parameter_index = time_parameter_index + 2
     end
 end
 return {trigger_result,trigger_call_Stat,api_count,threshold,message_index}
