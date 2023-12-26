@@ -253,7 +253,7 @@ public class ApiRestrictService {
     
     public void saveApiData(ServerHttpRequest request, String apiUrl, Integer type){
         ApiDataDto apiDataDto = new ApiDataDto();
-        apiDataDto.setId(String.valueOf(uidGenerator.getUID()));
+        apiDataDto.setId(uidGenerator.getUID());
         apiDataDto.setApiAddress(getIpAddress(request));
         apiDataDto.setApiUrl(apiUrl);
         apiDataDto.setCreateTime(DateUtils.now());
