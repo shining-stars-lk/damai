@@ -269,7 +269,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     }
 
     public boolean skipCheckToken(String url){
-        if (gatewayProperty.getSkipCheckTokenPaths() != null && gatewayProperty.getSkipCheckTokenPaths().length > 0) {
+        if (gatewayProperty.getSkipCheckTokenPaths() != null) {
             for (String skipCheckTokenPath : gatewayProperty.getSkipCheckTokenPaths()) {
                 PathMatcher matcher = new AntPathMatcher();
                 if(matcher.match(skipCheckTokenPath, url)){
