@@ -22,4 +22,6 @@ public class GatewayConstant {
     
     public static final String NO_VERIFY = "no_verify";
     
+    public static final String VERIFY_VALUE = "true";
+    
 }

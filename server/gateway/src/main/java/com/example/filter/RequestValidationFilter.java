@@ -31,6 +31,7 @@ import org.springframework.cloud.gateway.support.BodyInserterContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
@@ -59,6 +60,7 @@ import static com.example.constant.GatewayConstant.ENCRYPT;
 import static com.example.constant.GatewayConstant.NO_VERIFY;
 import static com.example.constant.GatewayConstant.REQUEST_BODY;
 import static com.example.constant.GatewayConstant.TOKEN;
+import static com.example.constant.GatewayConstant.VERIFY_VALUE;
 
 /**
  * @program: gateway
@@ -112,15 +114,19 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         }
         BaseParameterHolder.setParameter(TRACE_ID,traceId);
         BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
-//        if (HttpMethod.POST.equals(request.getMethod()) || HttpMethod.PUT.equals(request.getMethod())) {
-//            MediaType contentType = request.getHeaders().getContentType();
-//            if (MediaType.APPLICATION_JSON.equals(contentType)){
-//                //application json请求
-//                return readBody(exchange,chain,headMap);
-//            }
-//        }
-//        return chain.filter(exchange);
-        return readBody(exchange,chain,headMap);
+        MediaType contentType = request.getHeaders().getContentType();
+        //application json请求
+        if (contentType != null && contentType.toString().toLowerCase().contains(MediaType.APPLICATION_JSON_VALUE.toLowerCase())) {
+            return readBody(exchange,chain,headMap);
+        }else {
+            Map<String, String> map = doExecute("", exchange);
+            map.remove(REQUEST_BODY);
+            map.putAll(headMap);
+            request.mutate().headers(httpHeaders -> {
+                map.forEach(httpHeaders::add);
+            });
+            return chain.filter(exchange);
+        }
     }
 
     private Mono<Void> readBody(ServerWebExchange exchange, GatewayFilterChain chain, Map<String,String> headMap){
@@ -169,7 +175,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         String userId = null;
         String url = request.getPath().value();
         String noVerify = request.getHeaders().getFirst(NO_VERIFY);
-        if (!(StringUtil.isNotEmpty(noVerify) && "true".equals(noVerify))) {
+        if (!(StringUtil.isNotEmpty(noVerify) && VERIFY_VALUE.equals(noVerify))) {
 
             String encrypt = request.getHeaders().getFirst(ENCRYPT);
             //应用渠道
