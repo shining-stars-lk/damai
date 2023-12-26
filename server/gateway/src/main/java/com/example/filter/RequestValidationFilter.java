@@ -169,7 +169,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         String userId = null;
         String url = request.getPath().value();
         String noVerify = request.getHeaders().getFirst(NO_VERIFY);
-        if (!(StringUtil.isNotEmpty(noVerify) && VERIFY_VALUE.equals(noVerify))) {
+        if (checkParameter(originalBody,noVerify)) {
 
             String encrypt = request.getHeaders().getFirst(ENCRYPT);
             //应用渠道
@@ -272,5 +272,9 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             }
         }
         return false;
+    }
+    
+    public boolean checkParameter(String originalBody,String noVerify){
+        return (!(VERIFY_VALUE.equals(noVerify))) && StringUtil.isNotEmpty(originalBody);
     }
 }

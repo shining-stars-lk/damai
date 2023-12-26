@@ -47,6 +47,8 @@ public enum RedisKeyEnum {
     API_STAT_SERVICE_CHILDREN_SET("api_stat_service_children_set:%s","api_stat_service_children_set的key","api_stat_service_children_set的value","k"),
     
     PLATFORM_NOTICE_FLAG("platform_notice_flag","platform_notice_flag的key","platform_notice_flag的value","k"),
+    
+    CHANNEL_DATA("channel_data:%s","channel_data的key","channel_data的value","k"),
     ;
 
     /**
