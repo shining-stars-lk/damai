@@ -23,7 +23,6 @@ import com.example.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.filter.factory.rewrite.CachedBodyOutputMessage;
@@ -87,14 +86,9 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
 
     @Autowired
     private GatewayProperty gatewayProperty;
-
     @Resource
     private UidGenerator uidGenerator;
-
-    @Value("${aes.vector:default}")
-    private String aesVector;
-
-
+    
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
