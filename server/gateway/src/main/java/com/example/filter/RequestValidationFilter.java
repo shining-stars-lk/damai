@@ -1,8 +1,6 @@
 package com.example.filter;
 
 
-import cn.hutool.crypto.SecureUtil;
-import cn.hutool.crypto.asymmetric.SignAlgorithm;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.example.conf.RequestTemporaryWrapper;
@@ -192,7 +190,6 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 String decrypt = RSATool.decrypt(bodyContent.get(BUSINESS_BODY),channelDataVo.getDataSecretKey());
                 bodyContent.put(BUSINESS_BODY,decrypt);
             }
-            SecureUtil.sign(SignAlgorithm.SHA256withRSA);
             boolean checkFlag = RsaSignTool.verifyRsaSign256(bodyContent, channelDataVo.getSignPublicKey());
             if (!checkFlag) {
                 throw new CookFrameException(BaseCode.CHANNEL_DATA);
