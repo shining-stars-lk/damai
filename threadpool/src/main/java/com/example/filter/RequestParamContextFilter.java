@@ -23,18 +23,14 @@ import static com.example.constant.Constant.TRACE_ID;
 public class RequestParamContextFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request != null) {
-            String traceId = request.getHeader(TRACE_ID);
-            if (StringUtil.isNotEmpty(traceId)){
-                MDC.put(TRACE_ID,traceId);
-            }
-            try {
-                filterChain.doFilter(request, response);
-            }finally {
-                MDC.remove(TRACE_ID);
-            }
-        }else{
+        String traceId = request.getHeader(TRACE_ID);
+        if (StringUtil.isNotEmpty(traceId)){
+            MDC.put(TRACE_ID,traceId);
+        }
+        try {
             filterChain.doFilter(request, response);
+        }finally {
+            MDC.remove(TRACE_ID);
         }
     }
 }
