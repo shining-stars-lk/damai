@@ -8,6 +8,7 @@ import com.example.core.StringUtil;
 import com.example.enums.BaseCode;
 import com.example.exception.ArgumentError;
 import com.example.exception.ArgumentException;
+import com.example.exception.CheckCodeHandler;
 import com.example.exception.CookFrameException;
 import com.example.property.GatewayProperty;
 import com.example.service.ApiRestrictService;
@@ -86,6 +87,9 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     private GatewayProperty gatewayProperty;
     @Resource
     private UidGenerator uidGenerator;
+    
+    @Autowired
+    private CheckCodeHandler checkCodeHandler;
     
 
     @Override
@@ -174,15 +178,8 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             code = bodyContent.get(CODE);
             //token
             token = request.getHeaders().getFirst(TOKEN);
-
-            if (StringUtil.isEmpty(code)) {
-                ArgumentError argumentError = new ArgumentError();
-                argumentError.setArgumentName(CODE);
-                argumentError.setMessage("code参数为空");
-                List<ArgumentError> argumentErrorList = new ArrayList<>();
-                argumentErrorList.add(argumentError);
-                throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
-            }
+            
+            checkCodeHandler.checkCode(code);
             
             GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
             

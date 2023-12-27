@@ -3,9 +3,7 @@ package com.example.filter;
 import com.alibaba.fastjson.JSON;
 import com.example.common.ApiResponse;
 import com.example.core.StringUtil;
-import com.example.enums.BaseCode;
-import com.example.exception.ArgumentError;
-import com.example.exception.ArgumentException;
+import com.example.exception.CheckCodeHandler;
 import com.example.service.ChannelDataService;
 import com.example.util.RSATool;
 import com.example.vo.GetChannelDataVo;
@@ -31,13 +29,12 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiFunction;
 
 import static com.example.constant.GatewayConstant.CODE;
-import static com.example.constant.GatewayConstant.NO_VERIFY;
 import static com.example.constant.GatewayConstant.ENCRYPT;
+import static com.example.constant.GatewayConstant.NO_VERIFY;
+import static com.example.constant.GatewayConstant.VERIFY_VALUE;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR;
 
 /**
@@ -55,6 +52,10 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
 
     @Autowired
     private ChannelDataService channelDataService;
+    
+    @Autowired
+    private CheckCodeHandler checkCodeHandler;
+    
 
 
     @Override
@@ -125,28 +126,19 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
         String modifyResponseBody = responseBody;
         ServerHttpRequest request = serverWebExchange.getRequest();
         String noVerify = request.getHeaders().getFirst(NO_VERIFY);
-        if (!(StringUtil.isNotEmpty(noVerify) && "true".equals(noVerify))) {
-            String encrypt = request.getHeaders().getFirst(ENCRYPT);
-            if (StringUtil.isNotEmpty(responseBody)) {
-                ApiResponse<Object> apiResponse = JSON.parseObject(responseBody, ApiResponse.class);
-                Object data = apiResponse.getData();
-                if (data != null) {
-                    String code = request.getHeaders().getFirst(CODE);
-                    if (StringUtil.isEmpty(code)) {
-                        ArgumentError argumentError = new ArgumentError();
-                        argumentError.setArgumentName(CODE);
-                        argumentError.setMessage("code参数为空");
-                        List<ArgumentError> argumentErrorList = new ArrayList<>();
-                        argumentErrorList.add(argumentError);
-                        throw new ArgumentException(BaseCode.ARGUMENT_EMPTY.getCode(),argumentErrorList);
-                    }
-                    GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
-                    if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
-                        String rsaEncrypt = RSATool.encrypt(JSON.toJSONString(data),channelDataVo.getDataPublicKey());
-                        apiResponse.setData(rsaEncrypt);
-                        modifyResponseBody = JSON.toJSONString(apiResponse);
-                    }
-                }
+        String encrypt = request.getHeaders().getFirst(ENCRYPT);
+        if ((!VERIFY_VALUE.equals(noVerify)) && "v2".equals(encrypt) && StringUtil.isNotEmpty(responseBody)) {
+            ApiResponse<Object> apiResponse = JSON.parseObject(responseBody, ApiResponse.class);
+            Object data = apiResponse.getData();
+            if (data != null) {
+                String code = request.getHeaders().getFirst(CODE);
+                
+                checkCodeHandler.checkCode(code);
+                
+                GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
+                String rsaEncrypt = RSATool.encrypt(JSON.toJSONString(data),channelDataVo.getDataPublicKey());
+                apiResponse.setData(rsaEncrypt);
+                modifyResponseBody = JSON.toJSONString(apiResponse);
             }
         }
         return modifyResponseBody;
