@@ -81,6 +81,7 @@ public class UserService {
         return TokenUtil.createToken(String.valueOf(uidGenerator.getUID()), JSON.toJSONString(map),tokenExpireTime,TOKEN_SECRET);
     }
     
+    @Transactional
     public void logOut(final logOutDto logOutDto) {
         User user = new User();
         user.setMobile(logOutDto.getMobile());
@@ -101,7 +102,7 @@ public class UserService {
             redisCache.expire(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),tokenExpireTime + 1000,TimeUnit.MILLISECONDS);
         }
     }
-    
+    @Transactional
     public void delcacheUser(String mobile){
         LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
                 .eq(User::getMobile, mobile);
