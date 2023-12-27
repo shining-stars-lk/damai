@@ -34,13 +34,12 @@
 		<module>distribute-es-tool</module>
 		<module>id-generator-tool</module>
 		<module>spring-cloud-extra</module>
-		<module>threadpool</module>
+		<module>thread-pool</module>
 		<module>service-lock-framework</module>
 		<module>arithmetic</module>
 		<module>server</module>
 		<module>server-client</module>
 		<module>course-case</module>
-		<module>threadlocal-tool</module>
 		<module>api-stat</module>
 	</modules>
 

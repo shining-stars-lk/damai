@@ -61,7 +61,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>threadpool</artifactId>
+            <artifactId>thread-pool</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
