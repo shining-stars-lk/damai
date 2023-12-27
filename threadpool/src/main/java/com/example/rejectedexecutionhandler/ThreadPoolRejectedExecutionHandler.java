@@ -10,10 +10,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @create: 2021-12-06
  **/
 public class ThreadPoolRejectedExecutionHandler {
-
-    private static String threadPoolApplicationName = "business";
-
-   
+    
+    
     public static class BusinessAbortPolicy implements RejectedExecutionHandler {
 
         public BusinessAbortPolicy() {
@@ -21,7 +19,8 @@ public class ThreadPoolRejectedExecutionHandler {
 
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            throw new RejectedExecutionException("ThreadPoolApplicationName " + threadPoolApplicationName + " Task " + r.toString() +
+
+            throw new RejectedExecutionException("threadPoolApplicationName business task " + r.toString() +
                     " rejected from " +
                     executor.toString());
         }
