@@ -18,7 +18,7 @@ public class TestDto {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
     @NotNull
-    private Long id;
+    private Integer id;
     
     @ApiModelProperty(name ="sleepTime", dataType ="Integer", value ="执行时间")
     private Integer sleepTime;
