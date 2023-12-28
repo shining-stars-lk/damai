@@ -64,15 +64,15 @@ public class JacksonCustom implements Jackson2ObjectMapperBuilderCustomizer, Ord
         });
         //将Date类型时间格式转换反序列化
         simpleModules[2] = new SimpleModule().addDeserializer(Date.class, new DateJsonDeserializer());
-        
+        //将LocalDateTime进行格式化和序列化
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat);
         simpleModules[3] = new SimpleModule().addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
         simpleModules[4] = new SimpleModule().addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
-        
+        //将LocalDate进行格式化和序列化
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
         simpleModules[5] = new SimpleModule().addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
         simpleModules[6] = new SimpleModule().addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
-        
+        //将LocalTime进行格式化和序列化
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
         simpleModules[7] = new SimpleModule().addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));
         simpleModules[8] = new SimpleModule().addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
