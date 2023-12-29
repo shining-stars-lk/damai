@@ -39,7 +39,6 @@
 		<module>arithmetic</module>
 		<module>server</module>
 		<module>server-client</module>
-		<module>course-case</module>
 		<module>api-stat</module>
 	</modules>
 
