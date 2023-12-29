@@ -14,7 +14,7 @@ public class Case1 {
     public static void main(String[] args) {
         FutureTask task = new FutureTask(() -> {
             System.out.println("执行call方法开始");
-            Thread.sleep(3000);
+            Thread.sleep(5000);
             System.out.println("执行call方法结束");
             return 1;
         });
