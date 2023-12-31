@@ -98,22 +98,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- nacos start -->
         <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
-        <!-- spring-cloud-starter-alibaba-nacos-discovery源码中nacos-common optional为true,所以这里要将common引入 -->
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-common</artifactId>
-            <version>2.0.3</version>
+            <groupId>com.example</groupId>
+            <artifactId>service-lossless</artifactId>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
-        <!-- nacos end -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
@@ -138,28 +131,27 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>2.9.2</version>
+            <version>${springfox-swagger2.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-spring-boot-starter</artifactId>
-            <!--            <scope>compile</scope>-->
-            <version>2.0.9</version>
+            <version>${knife4j.version}</version>
         </dependency>
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>1.5.22</version>
+            <version>${swagger.version}</version>
         </dependency>
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-models</artifactId>
-            <version>1.5.22</version>
+            <version>${swagger.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
-            <version>3.0.5</version>
+            <version>${jasypt.version}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
@@ -174,16 +166,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

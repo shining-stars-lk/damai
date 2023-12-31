@@ -14,12 +14,7 @@
 
     <name>service-lock-example</name>
     <description>分布式锁示例</description>
-
-    <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
+    
 
     <dependencies>
         <dependency>
@@ -41,12 +36,12 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid</artifactId>
-            <version>1.1.10</version>
+            <version>${druid.version}</version>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.1</version>
+            <version>${mybatis-plus.version}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
@@ -61,24 +56,8 @@
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
-            <version>3.0.5</version>
+            <version>${jasypt.version}</version>
         </dependency>
     </dependencies>
-
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
