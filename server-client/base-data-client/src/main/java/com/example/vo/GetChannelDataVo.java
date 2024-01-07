@@ -6,8 +6,8 @@ import lombok.Data;
 
 import java.util.Date;
 
-@ApiModel(value="GetChannelDataVo", description ="渠道数据")
 @Data
+@ApiModel(value="GetChannelDataVo", description ="渠道数据")
 public class GetChannelDataVo {
     
     @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)

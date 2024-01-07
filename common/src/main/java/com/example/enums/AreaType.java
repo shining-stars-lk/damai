@@ -6,17 +6,18 @@ package com.example.enums;
  * @author: 星哥
  * @create: 2023-06-03
  **/
-
-public enum Status {
-    RUN(1,"正常"),
-    STOP(0,"禁用")
+public enum AreaType {
+    province(1,"省"),
+    municipalities(2,"市"),
+    
+    prefecture(3,"区或县"),
     ;
 
     private Integer code;
 
     private String msg;
 
-    Status(Integer code, String msg) {
+    AreaType(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }
@@ -24,13 +25,21 @@ public enum Status {
     public Integer getCode() {
         return code;
     }
-    
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
     public String getMsg() {
         return this.msg == null ? "" : this.msg;
     }
-    
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
     public static String getMsg(Integer code) {
-        for (Status re : Status.values()) {
+        for (AreaType re : AreaType.values()) {
             if (re.code.intValue() == code.intValue()) {
                 return re.msg;
             }
@@ -38,8 +47,8 @@ public enum Status {
         return "";
     }
 
-    public static Status getRc(Integer code) {
-        for (Status re : Status.values()) {
+    public static AreaType getRc(Integer code) {
+        for (AreaType re : AreaType.values()) {
             if (re.code.intValue() == code.intValue()) {
                 return re;
             }

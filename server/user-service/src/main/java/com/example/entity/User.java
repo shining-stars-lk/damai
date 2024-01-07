@@ -53,7 +53,7 @@ public class User extends BaseData implements Serializable {
     /**
      * 是否邮箱认证 1:已验证 0:未验证
      */
-    private Boolean mailStatus;
+    private Integer mailStatus;
 
     /**
      * 邮箱地址
@@ -63,7 +63,7 @@ public class User extends BaseData implements Serializable {
     /**
      * 是否实名认证 1:已验证 0:未验证
      */
-    private Boolean relAuthenticationStatus;
+    private Integer relAuthenticationStatus;
 
     /**
      * 身份证号码
@@ -73,7 +73,7 @@ public class User extends BaseData implements Serializable {
     /**
      * 登录状态 1登录 0退出
      */
-    private Boolean loginStatus;
+    private Integer loginStatus;
     
     
 }
