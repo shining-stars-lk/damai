@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.client.BaseDataClient;
 import com.example.core.RedisKeyEnum;
+import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
 import com.example.dto.logOutDto;
 import com.example.entity.User;
@@ -23,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +44,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     @Autowired
     private UserMapper userMapper;
     
-    @Resource
+    @Autowired
     private UidGenerator uidGenerator;
     
     @Autowired
@@ -110,5 +110,12 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         if (user != null) {
             redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()));
         }
+    }
+    
+    public void register(final RegisterUserDto registerUserDto) {
+        User user = new User();
+        BeanUtils.copyProperties(registerUserDto,user);
+        user.setId(uidGenerator.getUID());
+        userMapper.insert(user);
     }
 }

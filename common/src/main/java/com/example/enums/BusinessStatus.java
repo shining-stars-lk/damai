@@ -7,16 +7,16 @@ package com.example.enums;
  * @create: 2023-06-03
  **/
 
-public enum Status {
-    RUN(1,"正常"),
-    STOP(0,"禁用")
+public enum BusinessStatus {
+    YES(1,"是"),
+    NO(0,"否")
     ;
 
     private Integer code;
 
     private String msg;
 
-    Status(Integer code, String msg) {
+    BusinessStatus(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }
@@ -30,7 +30,7 @@ public enum Status {
     }
     
     public static String getMsg(Integer code) {
-        for (Status re : Status.values()) {
+        for (BusinessStatus re : BusinessStatus.values()) {
             if (re.code.intValue() == code.intValue()) {
                 return re.msg;
             }
@@ -38,8 +38,8 @@ public enum Status {
         return "";
     }
 
-    public static Status getRc(Integer code) {
-        for (Status re : Status.values()) {
+    public static BusinessStatus getRc(Integer code) {
+        for (BusinessStatus re : BusinessStatus.values()) {
             if (re.code.intValue() == code.intValue()) {
                 return re;
             }

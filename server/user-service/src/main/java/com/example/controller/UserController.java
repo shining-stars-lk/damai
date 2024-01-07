@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.common.ApiResponse;
+import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
 import com.example.dto.logOutDto;
 import com.example.service.UserService;
@@ -36,8 +37,15 @@ public class UserController {
     
     @ApiOperation(value = "退出登录")
     @PostMapping(value = "/logOut")
-    public ApiResponse logOut(@Valid @RequestBody logOutDto logOutDto) {
+    public ApiResponse<Void> logOut(@Valid @RequestBody logOutDto logOutDto) {
         userService.logOut(logOutDto);
+        return ApiResponse.ok();
+    }
+    
+    @ApiOperation(value = "注册")
+    @PostMapping(value = "/register")
+    public ApiResponse register(@Valid @RequestBody RegisterUserDto registerUserDto){
+        userService.register(registerUserDto);
         return ApiResponse.ok();
     }
 }
