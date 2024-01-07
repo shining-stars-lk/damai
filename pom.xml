@@ -68,7 +68,9 @@
 		<pagehelper.version>5.2.0</pagehelper.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
 		<spring-boot-admin-starter-server.version>2.3.0</spring-boot-admin-starter-server.version>
-		<mybatis-plus.version>3.5.1</mybatis-plus.version>
+		<mybatis-plus.version>3.5.3.2</mybatis-plus.version>
+		<mybatis-plus-generator.version>3.5.3.2</mybatis-plus-generator.version>
+		<freemarker.version>2.3.29</freemarker.version>
 		<druid.version>1.1.10</druid.version>
 		<spring-boot-admin-starter-client.version>2.3.1</spring-boot-admin-starter-client.version>
 		<springfox-swagger2.version>2.9.2</springfox-swagger2.version>
