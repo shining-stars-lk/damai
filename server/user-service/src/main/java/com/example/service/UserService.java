@@ -5,12 +5,12 @@ import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.client.BaseDataClient;
 import com.example.core.RedisKeyEnum;
 import com.example.dto.UserDto;
 import com.example.dto.logOutDto;
 import com.example.entity.User;
-import com.example.enums.UserLogStatus;
 import com.example.jwt.TokenUtil;
 import com.example.mapper.UserMapper;
 import com.example.redis.RedisCache;
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  **/
 @Slf4j
 @Service
-public class UserService {
+public class UserService extends ServiceImpl<UserMapper, User> {
     
     private static final String TOKEN_SECRET = "CSYZWECHAT";
     
@@ -85,12 +85,12 @@ public class UserService {
     public void logOut(final logOutDto logOutDto) {
         User user = new User();
         user.setMobile(logOutDto.getMobile());
-        user.setLogStatus(UserLogStatus.OUT.getCode());
+        user.setLoginStatus(false);
         user.setEditTime(DateUtils.now());
         LambdaUpdateWrapper<User> updateWrapper = Wrappers.lambdaUpdate(User.class)
                 .eq(User::getMobile,logOutDto.getMobile());
         userMapper.update(user,updateWrapper);
-        delcacheUser(user.getMobile());
+        delCacheUser(user.getMobile());
     }
     
     public void cacheUser(String mobile){
@@ -103,7 +103,7 @@ public class UserService {
         }
     }
     @Transactional
-    public void delcacheUser(String mobile){
+    public void delCacheUser(String mobile){
         LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
                 .eq(User::getMobile, mobile);
         User user = userMapper.selectOne(queryWrapper);
