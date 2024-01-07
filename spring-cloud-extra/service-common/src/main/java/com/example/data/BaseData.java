@@ -25,5 +25,5 @@ public class BaseData {
     /**
      * 1:正常 0:删除
      */
-    private Boolean status;
+    private Integer status;
 }
