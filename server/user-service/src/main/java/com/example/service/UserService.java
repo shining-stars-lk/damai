@@ -12,6 +12,7 @@ import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
 import com.example.dto.logOutDto;
 import com.example.entity.User;
+import com.example.enums.BusinessStatus;
 import com.example.jwt.TokenUtil;
 import com.example.mapper.UserMapper;
 import com.example.redis.RedisCache;
@@ -85,7 +86,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     public void logOut(final logOutDto logOutDto) {
         User user = new User();
         user.setMobile(logOutDto.getMobile());
-        user.setLoginStatus(false);
+        user.setLoginStatus(BusinessStatus.NO.getCode());
         user.setEditTime(DateUtils.now());
         LambdaUpdateWrapper<User> updateWrapper = Wrappers.lambdaUpdate(User.class)
                 .eq(User::getMobile,logOutDto.getMobile());
