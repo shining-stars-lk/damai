@@ -1,7 +1,8 @@
 package com.example.client;
 
 import com.example.common.ApiResponse;
-import com.example.dto.AreaDto;
+import com.example.dto.AreaGetDto;
+import com.example.dto.AreaSelectDto;
 import com.example.dto.GetChannelDataByCodeDto;
 import com.example.enums.BaseCode;
 import com.example.vo.AreaVo;
@@ -31,7 +32,12 @@ public class BaseDataClientFallback implements BaseDataClient {
     }
     
     @Override
-    public ApiResponse<List<AreaVo>> selectByIdList(final AreaDto areaDto) {
+    public ApiResponse<List<AreaVo>> selectByIdList(final AreaSelectDto areaSelectDto) {
+        return ApiResponse.error(BaseCode.SYSTEM_ERROR);
+    }
+    
+    @Override
+    public ApiResponse<AreaVo> getById(final AreaGetDto areaGetDto) {
         return ApiResponse.error(BaseCode.SYSTEM_ERROR);
     }
 }

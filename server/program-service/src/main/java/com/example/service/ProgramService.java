@@ -9,17 +9,22 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.client.BaseDataClient;
 import com.example.common.ApiResponse;
-import com.example.dto.AreaDto;
+import com.example.dto.AreaSelectDto;
 import com.example.dto.ProgramDto;
+import com.example.dto.ProgramGetDto;
 import com.example.entity.Program;
 import com.example.entity.ProgramCategory;
+import com.example.entity.ProgramShowTime;
 import com.example.entity.TicketCategory;
 import com.example.mapper.ProgramCategoryMapper;
 import com.example.mapper.ProgramMapper;
+import com.example.mapper.ProgramShowTimeMapper;
 import com.example.mapper.TicketCategoryMapper;
 import com.example.util.PageUtil;
 import com.example.vo.AreaVo;
 import com.example.vo.ProgramListVo;
+import com.example.vo.ProgramVo;
+import com.example.vo.TicketCategoryVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +51,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @Autowired
     private ProgramMapper programMapper;
+    
+    @Autowired
+    private ProgramShowTimeMapper programShowTimeMapper;
     
     @Autowired
     private ProgramCategoryMapper programCategoryMapper; 
@@ -81,9 +89,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 .collect(Collectors.toMap(TicketCategory::getProgramId, ticketCategory -> ticketCategory, (v1, v2) -> v2));
         
         Map<Long,String> areaMap = new HashMap<>();
-        AreaDto areaDto = new AreaDto();
-        areaDto.setIdList(iPage.getRecords().stream().map(Program::getAreaId).collect(Collectors.toList()));
-        ApiResponse<List<AreaVo>> areaResponse = baseDataClient.selectByIdList(areaDto);
+        AreaSelectDto areaSelectDto = new AreaSelectDto();
+        areaSelectDto.setIdList(iPage.getRecords().stream().map(Program::getAreaId).collect(Collectors.toList()));
+        ApiResponse<List<AreaVo>> areaResponse = baseDataClient.selectByIdList(areaSelectDto);
         if (Objects.equals(areaResponse.getCode(), ApiResponse.ok().getCode())) {
             if (CollectionUtil.isNotEmpty(areaResponse.getData())) {
                 areaMap = areaResponse.getData().stream().collect(Collectors.toMap(AreaVo::getId,AreaVo::getName,(v1,v2) -> v2));
@@ -103,5 +111,39 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             programListVoList.add(programListVo);
         }
         return PageUtil.convertPage(iPage,programListVoList);
+    }
+    
+    public ProgramVo getById(ProgramGetDto programGetDto) {
+        ProgramVo programVo = new ProgramVo();
+        Program program = programMapper.selectById(programGetDto.getId());
+        if (Objects.isNull(program)) {
+            return programVo;
+        }
+        BeanUtil.copyProperties(program,programVo);
+        
+        ProgramCategory programCategory = programCategoryMapper.selectById(program.getProgramCategoryId());
+        if (Objects.nonNull(programCategory)) {
+            programVo.setProgramCategoryName(programCategory.getName());
+        }
+        
+        LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper = Wrappers.lambdaQuery(ProgramShowTime.class)
+                .eq(ProgramShowTime::getProgramId, program.getId());
+        ProgramShowTime programShowTime = programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper);
+        if (Objects.nonNull(programShowTime)) {
+            programVo.setShowTime(programShowTime.getShowTime());
+            programVo.setShowDayTime(programShowTime.getShowDayTime());
+            programVo.setShowWeekTime(programShowTime.getShowWeekTime());
+        }
+        
+        LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
+                .eq(TicketCategory::getProgramId, program.getId());
+        List<TicketCategory> ticketCategoryList = ticketCategoryMapper.selectList(ticketCategoryLambdaQueryWrapper);
+        List<TicketCategoryVo> ticketCategoryVoList = ticketCategoryList.stream().map(ticketCategory -> {
+            TicketCategoryVo ticketCategoryVo = new TicketCategoryVo();
+            BeanUtil.copyProperties(ticketCategory, ticketCategoryVo);
+            return ticketCategoryVo;
+        }).collect(Collectors.toList());
+        programVo.setTicketCategoryVoList(ticketCategoryVoList);
+        return programVo;
     }
 }

@@ -3,8 +3,10 @@ package com.example.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.common.ApiResponse;
 import com.example.dto.ProgramDto;
+import com.example.dto.ProgramGetDto;
 import com.example.service.ProgramService;
 import com.example.vo.ProgramListVo;
+import com.example.vo.ProgramVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,5 +37,11 @@ public class ProgramController {
     @PostMapping(value = "/selectPage")
     public ApiResponse<IPage<ProgramListVo>> selectPage(@Valid @RequestBody ProgramDto programDto) {
         return ApiResponse.ok(programService.selectPage(programDto));
+    }
+    
+    @ApiOperation(value = "查询详情(根据id)")
+    @PostMapping(value = "/getById")
+    public ApiResponse<ProgramVo> getById(@Valid @RequestBody ProgramGetDto programGetDto) {
+        return ApiResponse.ok(programService.getById(programGetDto));
     }
 }

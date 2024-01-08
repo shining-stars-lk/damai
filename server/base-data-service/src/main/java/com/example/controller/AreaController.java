@@ -1,7 +1,8 @@
 package com.example.controller;
 
 import com.example.common.ApiResponse;
-import com.example.dto.AreaDto;
+import com.example.dto.AreaGetDto;
+import com.example.dto.AreaSelectDto;
 import com.example.service.AreaService;
 import com.example.vo.AreaVo;
 import io.swagger.annotations.Api;
@@ -39,8 +40,13 @@ public class AreaController {
     
     @ApiOperation(value = "查询数据根据id集合")
     @PostMapping(value = "/selectByIdList")
-    public ApiResponse<List<AreaVo>> selectByIdList(@Valid @RequestBody AreaDto areaDto) {
-        return ApiResponse.ok(areaService.selectByIdList(areaDto));
+    public ApiResponse<List<AreaVo>> selectByIdList(@Valid @RequestBody AreaSelectDto areaSelectDto) {
+        return ApiResponse.ok(areaService.selectByIdList(areaSelectDto));
     }
-
+    
+    @ApiOperation(value = "查询数据根据id")
+    @PostMapping(value = "/area/getById")
+    public ApiResponse<AreaVo> getById(@Valid @RequestBody AreaGetDto areaGetDto){
+        return ApiResponse.ok(areaService.getById(areaGetDto));
+    }
 }
