@@ -1,7 +1,8 @@
 package com.example.client;
 
 import com.example.common.ApiResponse;
-import com.example.dto.AreaDto;
+import com.example.dto.AreaGetDto;
+import com.example.dto.AreaSelectDto;
 import com.example.dto.GetChannelDataByCodeDto;
 import com.example.vo.AreaVo;
 import com.example.vo.GetChannelDataVo;
@@ -29,5 +30,8 @@ public interface BaseDataClient {
     ApiResponse<TokenDataVo> get();
     
     @PostMapping(value = "/area/selectByIdList")
-    ApiResponse<List<AreaVo>> selectByIdList(AreaDto areaDto);
+    ApiResponse<List<AreaVo>> selectByIdList(AreaSelectDto areaSelectDto);
+    
+    @PostMapping(value = "/area/getById")
+    ApiResponse<AreaVo> getById(AreaGetDto areaGetDto);
 }
