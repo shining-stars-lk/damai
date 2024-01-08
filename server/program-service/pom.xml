@@ -10,10 +10,10 @@
     </parent>
 
 
-    <artifactId>base-data-service</artifactId>
+    <artifactId>program-service</artifactId>
 
-    <name>base-data-service</name>
-    <description>渠道基础数据服务</description>
+    <name>program-service</name>
+    <description>演出节目服务</description>
 
     <dependencies>
         <dependency>
@@ -48,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>base-data-client</artifactId>
+            <artifactId>program-client</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>

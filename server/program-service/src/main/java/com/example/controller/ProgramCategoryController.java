@@ -31,7 +31,7 @@ public class ProgramCategoryController {
     @Autowired
     private ProgramCategoryService programCategoryService;
     
-    @ApiOperation(value = "通过code查询渠道数据")
+    @ApiOperation(value = "通过类型查询节目类型")
     @PostMapping(value = "/selectByType")
     public ApiResponse<List<ProgramCategoryVo>> selectByType(@Valid @RequestBody ProgramCategoryDto programCategoryDto) {
         return ApiResponse.ok(programCategoryService.selectByType(programCategoryDto));
