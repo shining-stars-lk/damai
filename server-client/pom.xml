@@ -25,6 +25,7 @@
         <module>user-client</module>
         <module>job-client</module>
         <module>customize-client</module>
+        <module>program-client</module>
     </modules>
 
     <dependencies>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    status : 这个用于设置log4j2自身内部的信息输出,可以不设置,当设置成trace时,会看到log4j2内部各种详细输出
+    monitorInterval : Log4j能够自动检测修改配置文件和重新配置本身, 设置间隔秒数。
+-->
+<!-- configuration>loggers>root -->
+<!-- 优先级从高到低分别是：OFF、FATAL、ERROR、WARN、INFO、DEBUG、TRACE、ALL -->
+<Configuration status="WARN" monitorInterval="600">
+
+    <Properties>
+        <!-- 配置日志文件输出目录 -->
+        <Property name="LOG_HOME">.</Property>
+        <Property name="PROJECT_NAME">channel-data-service</Property>
+        <Property name="ENV">local</Property>
+        <Property name="FILE_NAME">log</Property>
+        <Property name="PATTERN">[channel-data-service] [%X{traceId}] %d{yyyy-MM-dd HH:mm:ss} %5p %c{1}:%L - %m%n</Property>
+        <Property name="ENCODING">UTF-8</Property>
+        <Property name="CUSTOM_MESSAGE_KEY">com.example</Property>
+    </Properties>
+
+    <Appenders>
+        <!--输出控制台的配置-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- 控制台只输出level及以上级别的信息(onMatch),其他的直接拒绝(onMismatch) -->
+            <!--  <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/> -->
+            <!-- 输出日志的格式 -->
+            <PatternLayout pattern="${PATTERN}"/>
+            <ThresholdFilter level="INFO"/>
+        </Console>
+
+        <!-- 输出到日志文件 -->
+        <RollingFile name="RollingFile" fileName="${LOG_HOME}/logs/${PROJECT_NAME}/${FILE_NAME}.log"
+                     filePattern="${LOG_HOME}/logs/${PROJECT_NAME}/$${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz">
+            <ThresholdFilter level="INFO"/>
+            <PatternLayout charset="${ENCODING}" pattern="${PATTERN}"/>
+            <Policies>
+                <!--  interval，integer型，指定两次封存动作之间的时间间隔。单位:以日志的命名精度来确定单位，比如yyyy-MM-dd-HH 单位为小时，yyyy-MM-dd-HH-mm 单位为分钟
+                    modulate，boolean型，说明是否对封存时间进行调制。若modulate=true，则封存时间将以0点为边界进行偏移计算 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- 最多保留文件数 -->
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+        <!-- 输出错误信息到日志文件 -->
+        <RollingFile name="RollingFileError" fileName="${LOG_HOME}/logs/${PROJECT_NAME}/${FILE_NAME}-error.log"
+                     filePattern="${LOG_HOME}/logs/${PROJECT_NAME}/$${date:yyyy-MM}/${FILE_NAME}-error-%d{yyyy-MM-dd}-%i.log.gz">
+            <ThresholdFilter level="ERROR"/>
+            <PatternLayout charset="${ENCODING}" pattern="${PATTERN}"/>
+            <Policies>
+                <!--  interval，integer型，指定两次封存动作之间的时间间隔。单位:以日志的命名精度来确定单位，比如yyyy-MM-dd-HH 单位为小时，yyyy-MM-dd-HH-mm 单位为分钟
+                    modulate，boolean型，说明是否对封存时间进行调制。若modulate=true，则封存时间将以0点为边界进行偏移计算 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- 最多保留文件数 -->
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <logger name="org.springframework" level="INFO" additivity="true"/>
+        <logger name="org.mybatis" level="INFO" additivity="true"/>
+        <!-- 配置日志的根节点 -->
+        <root level="INFO">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFile"/>
+            <appender-ref ref="RollingFileError"/>
+        </root>
+    </Loggers>
+</Configuration>
