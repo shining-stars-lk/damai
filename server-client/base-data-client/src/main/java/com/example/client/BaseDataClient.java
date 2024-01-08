@@ -1,12 +1,16 @@
 package com.example.client;
 
 import com.example.common.ApiResponse;
+import com.example.dto.AreaDto;
 import com.example.dto.GetChannelDataByCodeDto;
+import com.example.vo.AreaVo;
 import com.example.vo.GetChannelDataVo;
 import com.example.vo.TokenDataVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
 
 /**
  * @program: cook-frame
@@ -21,6 +25,9 @@ public interface BaseDataClient {
     @PostMapping("/channel/data/getByCode")
     ApiResponse<GetChannelDataVo> getByCode(GetChannelDataByCodeDto dto);
     
-    @PostMapping (value = "/get")
+    @PostMapping(value = "/get")
     ApiResponse<TokenDataVo> get();
+    
+    @PostMapping(value = "/area/selectByIdList")
+    ApiResponse<List<AreaVo>> selectByIdList(AreaDto areaDto);
 }

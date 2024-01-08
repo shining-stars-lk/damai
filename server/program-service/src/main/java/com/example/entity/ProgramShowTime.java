@@ -5,19 +5,19 @@ import com.example.data.BaseData;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * <p>
- * 节目票档表
+ * 节目演出时间表
  * </p>
  *
  * @author k
  * @since 2024-01-08
  */
 @Data
-@TableName("d_ticket_category")
-public class TicketCategory extends BaseData implements Serializable {
+@TableName("d_program_show_time")
+public class ProgramShowTime extends BaseData implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,33 +25,24 @@ public class TicketCategory extends BaseData implements Serializable {
      * 主键id
      */
     private Long id;
-    
+
     /**
      * 节目表id
      */
     private Long programId;
 
     /**
-     * 介绍
+     * 演出时间
      */
-    private String introduce;
+    private Date showTime;
+    
+    /**
+     * 演出时间(精确到天)
+     */
+    private Date showDayTime;
 
     /**
-     * 价格
+     * 演出时间所在的星期
      */
-    private BigDecimal price;
-    
-    /**
-     * 以下是业务字段
-     * */
-    
-    /**
-     * 最低价格
-     */
-    private BigDecimal minPrice;
-    
-    /**
-     * 最高价格
-     */
-    private BigDecimal maxPrice;
+    private String showWeekTime;
 }
