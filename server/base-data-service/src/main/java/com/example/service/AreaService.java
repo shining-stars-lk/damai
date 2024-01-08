@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.dto.AreaDto;
 import com.example.entity.Area;
 import com.example.enums.AreaType;
 import com.example.enums.BusinessStatus;
@@ -34,6 +35,13 @@ public class AreaService extends ServiceImpl<AreaMapper, Area> {
                 .or(wrapper -> wrapper
                         .eq(Area::getType, AreaType.province.getCode())
                         .eq(Area::getMunicipality,BusinessStatus.YES.getCode()));
+        List<Area> areas = areaMapper.selectList(lambdaQueryWrapper);
+        return BeanUtil.copyToList(areas,AreaVo.class);
+    }
+    
+    public List<AreaVo> selectByIdList(AreaDto areaDto) {
+        final LambdaQueryWrapper<Area> lambdaQueryWrapper = Wrappers.lambdaQuery(Area.class)
+                .in(Area::getId, areaDto.getIdList());
         List<Area> areas = areaMapper.selectList(lambdaQueryWrapper);
         return BeanUtil.copyToList(areas,AreaVo.class);
     }

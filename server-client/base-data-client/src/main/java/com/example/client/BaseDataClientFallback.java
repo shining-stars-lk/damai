@@ -1,11 +1,15 @@
 package com.example.client;
 
 import com.example.common.ApiResponse;
+import com.example.dto.AreaDto;
 import com.example.dto.GetChannelDataByCodeDto;
 import com.example.enums.BaseCode;
+import com.example.vo.AreaVo;
 import com.example.vo.GetChannelDataVo;
 import com.example.vo.TokenDataVo;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @program: cook-frame
@@ -23,6 +27,11 @@ public class BaseDataClientFallback implements BaseDataClient {
     
     @Override
     public ApiResponse<TokenDataVo> get() {
+        return ApiResponse.error(BaseCode.SYSTEM_ERROR);
+    }
+    
+    @Override
+    public ApiResponse<List<AreaVo>> selectByIdList(final AreaDto areaDto) {
         return ApiResponse.error(BaseCode.SYSTEM_ERROR);
     }
 }
