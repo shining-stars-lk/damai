@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ProgramMapper">
+
+    <select id="selectHomeList" parameterType="com.example.dto.ProgramListDto" resultType="com.example.entity.Program">
+        select
+        dp.id,dp.area_id,dp.program_category_id,dp.title,dp.actor,dp.item_picture,
+        ds.show_time,ds.show_week_time,ds.show_day_time
+        from
+        d_program dp left join d_program_show_time ds
+        where
+        dp.status = 1 and ds.status = 1
+        <if test ='areaId != null'>
+            and dp.area_id = #{logicNo,jdbcType=BIGINT}
+        </if>
+        <if test = 'programCategoryIds != null and programCategoryIds.size>0'>
+            and dp.program_category_id in
+            <foreach collection='programCategoryIds' item='programCategoryId' index='index' open='(' close=')' separator=','>
+                #{programCategoryId,jdbcType=BIGINT}
+            </foreach>
+        </if>
+        <if test = 'programCategoryIds == null or programCategoryIds.size == 0'>
+            and 1!=1
+        </if>
+    </select>
+    
+    <select id="selectPage" parameterType="com.example.dto.ProgramPageListDto" resultType="com.example.entity.Program">
+        select
+            dp.id,dp.area_id,dp.program_category_id,dp.title,dp.actor,dp.item_picture,
+            ds.show_time,ds.show_week_time,ds.show_day_time
+        from 
+            d_program dp left join d_program_show_time ds
+        where 
+            dp.status = 1 and ds.status = 1
+            <if test ='areaId != null'>
+             and dp.area_id = #{logicNo,jdbcType=BIGINT} 
+            </if>
+        <if test = 'programCategoryIds != null and programCategoryIds.size>0'>
+            and dp.program_category_id in
+            <foreach collection='programCategoryIds' item='programCategoryId' index='index' open='(' close=')' separator=','>
+                #{programCategoryId,jdbcType=BIGINT}
+            </foreach>
+        </if>
+        <if test = 'programCategoryIds == null or programCategoryIds.size == 0'>
+            and 1!=1
+        </if>
+        <if test = 'showTime != null'> and ds.show_day_time = #{showTime}</if>
+        <if test = 'time != null'> and ds.show_day_time <![CDATA[ <= ]]> #{time}</if>
+            
+    </select>
+</mapper>

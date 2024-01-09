@@ -2,8 +2,9 @@ package com.example.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.common.ApiResponse;
-import com.example.dto.ProgramDto;
 import com.example.dto.ProgramGetDto;
+import com.example.dto.ProgramListDto;
+import com.example.dto.ProgramPageListDto;
 import com.example.service.ProgramService;
 import com.example.vo.ProgramListVo;
 import com.example.vo.ProgramVo;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -33,10 +35,16 @@ public class ProgramController {
     @Autowired
     private ProgramService programService;
     
+    @ApiOperation(value = "查询主页列表")
+    @PostMapping(value = "/selectHomeList")
+    public ApiResponse<List<ProgramListVo>> selectHomeList(@Valid @RequestBody ProgramListDto programPageListDto) {
+        return ApiResponse.ok(programService.selectHomeList(programPageListDto));
+    }
+    
     @ApiOperation(value = "查询列表")
     @PostMapping(value = "/selectPage")
-    public ApiResponse<IPage<ProgramListVo>> selectPage(@Valid @RequestBody ProgramDto programDto) {
-        return ApiResponse.ok(programService.selectPage(programDto));
+    public ApiResponse<IPage<ProgramListVo>> selectPage(@Valid @RequestBody ProgramPageListDto programPageListDto) {
+        return ApiResponse.ok(programService.selectPage(programPageListDto));
     }
     
     @ApiOperation(value = "查询详情(根据id)")

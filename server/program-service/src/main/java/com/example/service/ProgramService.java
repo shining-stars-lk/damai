@@ -10,8 +10,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.client.BaseDataClient;
 import com.example.common.ApiResponse;
 import com.example.dto.AreaSelectDto;
-import com.example.dto.ProgramDto;
 import com.example.dto.ProgramGetDto;
+import com.example.dto.ProgramListDto;
+import com.example.dto.ProgramPageListDto;
 import com.example.entity.Program;
 import com.example.entity.ProgramCategory;
 import com.example.entity.ProgramShowTime;
@@ -64,9 +65,13 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     @Autowired
     private BaseDataClient baseDataClient;
     
-    public IPage<ProgramListVo> selectPage(final ProgramDto programDto) {
+    public List<ProgramListVo> selectHomeList(ProgramListDto programPageListDto) {
+        List<Program> programs = programMapper.selectHomeList(programPageListDto);
         
-        IPage<Program> iPage = programMapper.selectPage(PageUtil.getPageParams(programDto),programDto);
+    }
+    public IPage<ProgramListVo> selectPage(ProgramPageListDto programPageListDto) {
+        
+        IPage<Program> iPage = programMapper.selectPage(PageUtil.getPageParams(programPageListDto), programPageListDto);
         
         List<Long> programCategoryIdList = iPage.getRecords().stream().map(Program::getProgramCategoryId).collect(Collectors.toList());
         LambdaQueryWrapper<ProgramCategory> pcLambdaQueryWrapper = Wrappers.lambdaQuery(ProgramCategory.class)
@@ -146,4 +151,6 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         programVo.setTicketCategoryVoList(ticketCategoryVoList);
         return programVo;
     }
+    
+    
 }

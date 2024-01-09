@@ -14,8 +14,8 @@ import java.util.List;
  * @create: 2023-07-05
  **/
 @Data
-@ApiModel(value="ProgramDto", description ="节目")
-public class ProgramDto extends BasePageDto{
+@ApiModel(value="ProgramPageListDto", description ="节目")
+public class ProgramPageListDto extends BasePageDto{
     
     @ApiModelProperty(name ="areaId", dataType ="Long", value ="所在区域id")
     private Long areaId;
