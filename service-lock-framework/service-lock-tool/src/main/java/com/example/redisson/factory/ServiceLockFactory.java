@@ -1,13 +1,13 @@
 package com.example.redisson.factory;
 
 import com.example.redisson.LockType;
-import com.example.servicelock.ServiceLocker;
 import com.example.redisson.impl.RedissonFairLocker;
+import com.example.redisson.impl.RedissonReadLocker;
 import com.example.redisson.impl.RedissonReentrantLocker;
+import com.example.redisson.impl.RedissonWriteLocker;
+import com.example.servicelock.ServiceLocker;
 import lombok.AllArgsConstructor;
 import org.redisson.api.RedissonClient;
-
-import java.util.Objects;
 
 /**
  * @program: redis-example
@@ -23,9 +23,21 @@ public class ServiceLockFactory {
     
 
     public ServiceLocker getLock(LockType lockType){
-        if (Objects.requireNonNull(lockType) == LockType.Fair) {
-            return new RedissonFairLocker(redissonClient);
+        ServiceLocker lock;
+        switch (lockType) {
+            case Fair:
+                lock = new RedissonFairLocker(redissonClient);
+                break;
+            case Write:
+                lock = new RedissonWriteLocker(redissonClient);
+                break;
+            case Read:
+                lock = new RedissonReadLocker(redissonClient);
+                break;
+            default:
+                lock = new RedissonReentrantLocker(redissonClient);
+                break;
         }
-        return new RedissonReentrantLocker(redissonClient);
+        return lock;
     }
 }

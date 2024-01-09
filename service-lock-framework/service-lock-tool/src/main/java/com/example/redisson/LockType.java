@@ -14,7 +14,15 @@ public enum LockType {
     /**
      * 公平锁
      */
-    Fair;
+    Fair,
+    /**
+     * 读锁
+     */
+    Read,
+    /**
+     * 写锁
+     */
+    Write;
 
     LockType() {
     }

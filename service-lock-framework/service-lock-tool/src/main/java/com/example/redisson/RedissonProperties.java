@@ -38,4 +38,10 @@ public class RedissonProperties {
     private TimeUnit delayTimeUnit;
     
     private String consumeTopic;
+    
+    private String rbLoomFilterName = "user_register_rb_loom_filter";
+    
+    private Long expectedInsertions = 20000L;
+    
+    private Double falseProbability = 0.01D;
 }

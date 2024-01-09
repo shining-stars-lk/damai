@@ -1,7 +1,7 @@
 package com.example.servicelock.annotion;
 
-import com.example.servicelock.info.LockTimeOutStrategy;
 import com.example.redisson.LockType;
+import com.example.servicelock.info.LockTimeOutStrategy;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,6 +23,7 @@ public @interface ServiceLock {
      * 锁的类型(默认 可重入锁)
      * */
     LockType lockType() default LockType.Reentrant;
+    
     /**
      * 业务名称
      * @return name
