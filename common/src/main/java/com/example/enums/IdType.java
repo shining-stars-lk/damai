@@ -6,18 +6,20 @@ package com.example.enums;
  * @author: 星哥
  * @create: 2023-06-03
  **/
-public enum AreaType {
-    PROVINCE(1,"省"),
-    MUNICIPALITIES(2,"市"),
-    
-    PREFECTURE(3,"区或县"),
+public enum IdType {
+    IDENTITY(1, "身份证"),
+    HK_M_TW_PERMIT(2, "港澳台居民居住证"),
+    HKM_PASS(3, "港澳居民来往内地通行证"),
+    TW_PASS(4, "台湾居民来往内地通行证"),
+    PASSPORT(5, "护照"),
+    FOREIGNER_RESIDENCE_PERMIT(6,"外国人永久居住证"),
     ;
 
     private Integer code;
 
     private String msg;
 
-    AreaType(Integer code, String msg) {
+    IdType(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }
@@ -39,7 +41,7 @@ public enum AreaType {
     }
 
     public static String getMsg(Integer code) {
-        for (AreaType re : AreaType.values()) {
+        for (IdType re : IdType.values()) {
             if (re.code.intValue() == code.intValue()) {
                 return re.msg;
             }
@@ -47,8 +49,8 @@ public enum AreaType {
         return "";
     }
 
-    public static AreaType getRc(Integer code) {
-        for (AreaType re : AreaType.values()) {
+    public static IdType getRc(Integer code) {
+        for (IdType re : IdType.values()) {
             if (re.code.intValue() == code.intValue()) {
                 return re;
             }

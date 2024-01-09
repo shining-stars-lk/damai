@@ -16,8 +16,8 @@ import java.io.Serializable;
  * @since 2024-01-07
  */
 @Data
-@ApiModel(value="RegisterUserDto", description ="注册用户")
-public class RegisterUserDto implements Serializable {
+@ApiModel(value="UserRegisterDto", description ="注册用户")
+public class UserRegisterDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

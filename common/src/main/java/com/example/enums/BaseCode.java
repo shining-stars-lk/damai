@@ -21,6 +21,10 @@ public enum BaseCode {
     
     USER_EMPTY(604,"用户不存在"),
     
+    TICKET_USER_EXIST(605,"此购票人已存在"),
+    
+    TICKET_USER_EMPTY(606,"此购票人不存在"),
+    
     NOT_FOUND(404,"not found api %s %s"),
     
     GENERATE_RSA_SIGN_ERROR(999,"生成res签名验证失败"),
