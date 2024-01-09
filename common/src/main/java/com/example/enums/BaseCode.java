@@ -11,6 +11,16 @@ public enum BaseCode {
     SUCCESS(0, "OK"),
     SYSTEM_ERROR(-1,"系统异常"),
     
+    USER_EXIST(600,"用户已存在"),
+    
+    USER_LOG_IN_STATUS_ERROR(601,"用户不是登录状态"),
+    
+    USER_LOG_IN(602,"用户已登录"),
+    
+    USER_ID_EMPTY(603,"用户id为空"),
+    
+    USER_EMPTY(604,"用户不存在"),
+    
     NOT_FOUND(404,"not found api %s %s"),
     
     GENERATE_RSA_SIGN_ERROR(999,"生成res签名验证失败"),
@@ -45,10 +55,6 @@ public enum BaseCode {
     API_RULE_TIME_WINDOW_INTERSECT(1057,"已有的时间范围已经包含"),
     
     SUBMIT_FREQUENT(2000,"执行频繁，请稍后再试"),
-    
-    USER_ID_EMPTY(3000,"用户id为空"),
-    
-    USER_EMPTY(3001,"用户为空"),
     
     DEPARTMENT_STRATEGY(3002,"departmentStrategy策略实现未找到"),
     

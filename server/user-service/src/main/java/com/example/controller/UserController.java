@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.common.ApiResponse;
+import com.example.dto.ExistUserDto;
 import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
 import com.example.dto.logOutDto;
@@ -29,6 +30,20 @@ public class UserController {
     @Autowired
     private UserService userService;
     
+    @ApiOperation(value = "注册")
+    @PostMapping(value = "/register")
+    public ApiResponse<Void> register(@Valid @RequestBody RegisterUserDto registerUserDto){
+        userService.register(registerUserDto);
+        return ApiResponse.ok();
+    }
+    
+    @ApiOperation(value = "是否存在")
+    @PostMapping(value = "/exist")
+    public ApiResponse<Void> exist(@Valid @RequestBody ExistUserDto existUserDto){
+        userService.exist(existUserDto.getMobile());
+        return ApiResponse.ok();
+    }
+    
     @ApiOperation(value = "登录")
     @PostMapping(value = "/login")
     public ApiResponse<String> login(@Valid @RequestBody UserDto userDto) {
@@ -39,13 +54,6 @@ public class UserController {
     @PostMapping(value = "/logOut")
     public ApiResponse<Void> logOut(@Valid @RequestBody logOutDto logOutDto) {
         userService.logOut(logOutDto);
-        return ApiResponse.ok();
-    }
-    
-    @ApiOperation(value = "注册")
-    @PostMapping(value = "/register")
-    public ApiResponse register(@Valid @RequestBody RegisterUserDto registerUserDto){
-        userService.register(registerUserDto);
         return ApiResponse.ok();
     }
 }

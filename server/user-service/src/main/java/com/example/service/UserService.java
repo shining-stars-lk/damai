@@ -3,7 +3,6 @@ package com.example.service;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.client.BaseDataClient;
@@ -12,12 +11,14 @@ import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
 import com.example.dto.logOutDto;
 import com.example.entity.User;
-import com.example.enums.BusinessStatus;
+import com.example.enums.BaseCode;
+import com.example.exception.CookFrameException;
 import com.example.jwt.TokenUtil;
 import com.example.mapper.UserMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
-import com.example.util.DateUtils;
+import com.example.redisson.LockType;
+import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.RBloomFilterUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -26,10 +27,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import static com.example.core.DistributedLockConstants.REGISTER_USER_LOCK;
 
 /**
  * @program: cook-frame
@@ -62,21 +65,43 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     private Long tokenExpireTime;
     
     @Transactional
+    @ServiceLock(lockType= LockType.Write,name = REGISTER_USER_LOCK,keys = {"#registerUserDto.mobile"})
+    public void register(final RegisterUserDto registerUserDto) {
+        exist(registerUserDto.getMobile());
+        
+        User user = new User();
+        BeanUtils.copyProperties(registerUserDto,user);
+        user.setId(uidGenerator.getUID());
+        userMapper.insert(user);
+        
+        rBloomFilterUtil.add(user.getMobile());
+    }
+    
+    @ServiceLock(lockType= LockType.Read,name = REGISTER_USER_LOCK,keys = {"#mobile"})
+    public void exist(String mobile){
+        boolean contains = rBloomFilterUtil.contains(mobile);
+        if (contains) {
+            LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
+                    .eq(User::getMobile, mobile);
+            User user = userMapper.selectOne(queryWrapper);
+            if (Objects.nonNull(user)) {
+                throw new CookFrameException(BaseCode.USER_EXIST);
+            }
+        }
+    }
+    
     public String login(final UserDto userDto) {
         LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
                 .eq(User::getMobile, userDto.getMobile());
         User user = userMapper.selectOne(queryWrapper);
-        if (user == null) {
-            user = new User();
-            BeanUtils.copyProperties(userDto,user);
-            user.setId(uidGenerator.getUID());
-            user.setCreateTime(new Date());
-            userMapper.insert(user);
-        }else {
-            user.setEditTime(new Date());
-            userMapper.updateById(user);
+        if (Objects.isNull(user)) {
+            throw new CookFrameException(BaseCode.USER_EMPTY);
         }
-        cacheUser(user.getMobile());
+        Boolean loginResult = redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()));
+        if (loginResult) {
+            throw new CookFrameException(BaseCode.USER_LOG_IN);
+        }
+        redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),user,tokenExpireTime + 1000,TimeUnit.MILLISECONDS);
         return createToken(user.getId());
     }
     
@@ -86,41 +111,13 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         return TokenUtil.createToken(String.valueOf(uidGenerator.getUID()), JSON.toJSONString(map),tokenExpireTime,TOKEN_SECRET);
     }
     
-    @Transactional
     public void logOut(final logOutDto logOutDto) {
-        User user = new User();
-        user.setMobile(logOutDto.getMobile());
-        user.setLoginStatus(BusinessStatus.NO.getCode());
-        user.setEditTime(DateUtils.now());
-        LambdaUpdateWrapper<User> updateWrapper = Wrappers.lambdaUpdate(User.class)
-                .eq(User::getMobile,logOutDto.getMobile());
-        userMapper.update(user,updateWrapper);
-        delCacheUser(user.getMobile());
-    }
-    
-    public void cacheUser(String mobile){
         LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
-                .eq(User::getMobile, mobile);
+                .eq(User::getMobile, logOutDto.getMobile());
         User user = userMapper.selectOne(queryWrapper);
-        if (user != null) {
-            redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),user);
-            redisCache.expire(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),tokenExpireTime + 1000,TimeUnit.MILLISECONDS);
+        if (Objects.isNull(user)) {
+            throw new CookFrameException(BaseCode.USER_EMPTY);
         }
-    }
-    @Transactional
-    public void delCacheUser(String mobile){
-        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
-                .eq(User::getMobile, mobile);
-        User user = userMapper.selectOne(queryWrapper);
-        if (user != null) {
-            redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()));
-        }
-    }
-    
-    public void register(final RegisterUserDto registerUserDto) {
-        User user = new User();
-        BeanUtils.copyProperties(registerUserDto,user);
-        user.setId(uidGenerator.getUID());
-        userMapper.insert(user);
+        redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()));
     }
 }
