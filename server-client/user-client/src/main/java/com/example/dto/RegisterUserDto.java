@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -34,6 +35,7 @@ public class RegisterUserDto implements Serializable {
     private String password;
     
     @ApiModelProperty(name ="mobile", dataType ="String", value ="手机号",required = true)
+    @NotBlank
     private String mobile;
     
     @ApiModelProperty(name ="mailStatus", dataType ="Boolean", value ="是否邮箱认证 true:已验证 false:未验证")

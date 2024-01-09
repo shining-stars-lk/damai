@@ -21,6 +21,16 @@ public class DistributedLockConstants {
     /**
      * 分布式锁示例
      * */
-    public final static String LOCK_DATA = "lock_data"; 
-
+    public final static String LOCK_DATA = "lock_data";
+    
+    /**
+     * 注册用户
+     * */
+    public final static String REGISTER_USER_LOCK = "register_user_lock";
+    
+    /**
+     * 登录用户
+     * */
+    public final static String LOGIN_USER_LOCK = "login_user_lock";
+    
 }
