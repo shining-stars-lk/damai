@@ -15,6 +15,7 @@ import com.example.redisson.RedissonProperties;
 import com.example.redisson.factory.ServiceLockFactory;
 import com.example.servicelock.ServiceLockInfo;
 import com.example.servicelock.aspect.ServiceLockAspect;
+import com.example.util.RBloomFilterUtil;
 import com.example.util.ServiceLockUtil;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -112,5 +113,13 @@ public class DistributedAutoConfiguration {
     @Bean
     public Operate redissonOperate(RedissonClient redissonClient){
         return new RedissonOperate(redissonClient);
+    }
+    
+    /**
+     * 布隆过滤器
+     */
+    @Bean
+    public RBloomFilterUtil rBloomFilterUtil(RedissonClient redissonClient, RedissonProperties redissonProperties) {
+        return new RBloomFilterUtil(redissonClient,redissonProperties);
     }
 }

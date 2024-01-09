@@ -18,6 +18,7 @@ import com.example.mapper.UserMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
 import com.example.util.DateUtils;
+import com.example.util.RBloomFilterUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,9 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     
     @Autowired
     private BaseDataClient baseDataClient;
+    
+    @Autowired
+    private RBloomFilterUtil rBloomFilterUtil;
     
     @Value("${token.expire.time:86400000}")
     private Long tokenExpireTime;
