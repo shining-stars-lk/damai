@@ -33,9 +33,9 @@ public class AreaService extends ServiceImpl<AreaMapper, Area> {
     
     public List<AreaVo> selectCityData() {
         final LambdaQueryWrapper<Area> lambdaQueryWrapper = Wrappers.lambdaQuery(Area.class)
-                .eq(Area::getType, AreaType.municipalities.getCode())
+                .eq(Area::getType, AreaType.MUNICIPALITIES.getCode())
                 .or(wrapper -> wrapper
-                        .eq(Area::getType, AreaType.province.getCode())
+                        .eq(Area::getType, AreaType.PROVINCE.getCode())
                         .eq(Area::getMunicipality,BusinessStatus.YES.getCode()));
         List<Area> areas = areaMapper.selectList(lambdaQueryWrapper);
         return BeanUtil.copyToList(areas,AreaVo.class);

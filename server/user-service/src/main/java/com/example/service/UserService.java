@@ -1,5 +1,6 @@
 package com.example.service;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -7,9 +8,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.client.BaseDataClient;
 import com.example.core.RedisKeyEnum;
-import com.example.dto.RegisterUserDto;
-import com.example.dto.UserDto;
-import com.example.dto.logOutDto;
+import com.example.dto.UserIdDto;
+import com.example.dto.UserMobileDto;
+import com.example.dto.UserRegisterDto;
+import com.example.dto.UserUpdateDto;
 import com.example.entity.User;
 import com.example.enums.BaseCode;
 import com.example.exception.CookFrameException;
@@ -20,6 +22,7 @@ import com.example.redis.RedisKeyWrap;
 import com.example.redisson.LockType;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.RBloomFilterUtil;
+import com.example.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,12 +68,12 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     private Long tokenExpireTime;
     
     @Transactional
-    @ServiceLock(lockType= LockType.Write,name = REGISTER_USER_LOCK,keys = {"#registerUserDto.mobile"})
-    public void register(final RegisterUserDto registerUserDto) {
-        exist(registerUserDto.getMobile());
+    @ServiceLock(lockType= LockType.Write,name = REGISTER_USER_LOCK,keys = {"#userRegisterDto.mobile"})
+    public void register(final UserRegisterDto userRegisterDto) {
+        exist(userRegisterDto.getMobile());
         
         User user = new User();
-        BeanUtils.copyProperties(registerUserDto,user);
+        BeanUtils.copyProperties(userRegisterDto,user);
         user.setId(uidGenerator.getUID());
         userMapper.insert(user);
         
@@ -90,9 +93,9 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         }
     }
     
-    public String login(final UserDto userDto) {
+    public String login(final UserMobileDto userMobileDto) {
         LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
-                .eq(User::getMobile, userDto.getMobile());
+                .eq(User::getMobile, userMobileDto.getMobile());
         User user = userMapper.selectOne(queryWrapper);
         if (Objects.isNull(user)) {
             throw new CookFrameException(BaseCode.USER_EMPTY);
@@ -111,13 +114,45 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         return TokenUtil.createToken(String.valueOf(uidGenerator.getUID()), JSON.toJSONString(map),tokenExpireTime,TOKEN_SECRET);
     }
     
-    public void logOut(final logOutDto logOutDto) {
+    public void logOut(UserMobileDto userMobileDto) {
         LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
-                .eq(User::getMobile, logOutDto.getMobile());
+                .eq(User::getMobile, userMobileDto.getMobile());
         User user = userMapper.selectOne(queryWrapper);
         if (Objects.isNull(user)) {
             throw new CookFrameException(BaseCode.USER_EMPTY);
         }
         redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()));
+    }
+    
+    public void update(UserUpdateDto userUpdateDto){
+        User user = userMapper.selectById(userUpdateDto.getId());
+        if (Objects.isNull(user)) {
+            throw new CookFrameException(BaseCode.USER_EMPTY);
+        }
+        User updateUser = new User();
+        BeanUtil.copyProperties(userUpdateDto,updateUser);
+        userMapper.updateById(user);
+    }
+    
+    public UserVo getByMobile(UserMobileDto userMobileDto) {
+        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
+                .eq(User::getMobile, userMobileDto.getMobile());
+        User user = userMapper.selectOne(queryWrapper);
+        if (Objects.isNull(user)) {
+            throw new CookFrameException(BaseCode.USER_EMPTY);
+        }
+        UserVo userVo = new UserVo();
+        BeanUtil.copyProperties(user,userVo);
+        return userVo;
+    }
+    
+    public UserVo getById(UserIdDto userIdDto) {
+        User user = userMapper.selectById(userIdDto.getId());
+        if (Objects.isNull(user)) {
+            throw new CookFrameException(BaseCode.USER_EMPTY);
+        }
+        UserVo userVo = new UserVo();
+        BeanUtil.copyProperties(user,userVo);
+        return userVo;
     }
 }

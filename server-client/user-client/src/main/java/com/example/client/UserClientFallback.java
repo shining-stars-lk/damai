@@ -1,8 +1,5 @@
 package com.example.client;
 
-import com.example.common.ApiResponse;
-import com.example.dto.UserDto;
-import com.example.vo.UserVo;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,8 +11,4 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserClientFallback implements UserClient {
     
-    @Override
-    public ApiResponse<UserVo> login(final UserDto userDto) {
-        return null;
-    }
 }

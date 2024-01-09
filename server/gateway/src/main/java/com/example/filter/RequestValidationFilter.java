@@ -58,6 +58,7 @@ import static com.example.constant.GatewayConstant.ENCRYPT;
 import static com.example.constant.GatewayConstant.NO_VERIFY;
 import static com.example.constant.GatewayConstant.REQUEST_BODY;
 import static com.example.constant.GatewayConstant.TOKEN;
+import static com.example.constant.GatewayConstant.USER_ID;
 import static com.example.constant.GatewayConstant.VERIFY_VALUE;
 
 /**
@@ -214,6 +215,9 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         map.put(REQUEST_BODY,requestBody);
         if (StringUtil.isNotEmpty(code)) {
             map.put(CODE,code);
+        }
+        if (StringUtil.isNotEmpty(userId)) {
+            map.put(USER_ID,userId);
         }
         return map;
     }

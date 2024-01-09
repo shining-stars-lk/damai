@@ -1,5 +1,6 @@
 package com.example.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,27 +14,33 @@ import java.util.Date;
  **/
 
 @Data
+@ApiModel(value="UserVo", description ="用户数据")
 public class UserVo {
     
-    @ApiModelProperty(name ="id", dataType ="String", value ="用户id", required =true)
+    @ApiModelProperty(name ="id", dataType ="String", value ="用户id")
     private Long id;
     
-    @ApiModelProperty(name ="name", dataType ="String", value ="用户名字", required =true)
+    @ApiModelProperty(name ="name", dataType ="String", value ="用户名字")
     private String name;
     
-    @ApiModelProperty(name ="name", dataType ="String", value ="用户手机号", required =true)
+    @ApiModelProperty(name ="relName", dataType ="String", value ="用户真实名字")
+    private String relName;
+    
+    @ApiModelProperty(name ="gender", dataType ="Integer", value ="1:男 2:女")
+    private Integer gender;
+    
+    @ApiModelProperty(name ="name", dataType ="String", value ="用户手机号")
     private String mobile;
     
-    @ApiModelProperty(name ="password", dataType ="String", value ="用户密码", required =true)
-    private String password;
+    @ApiModelProperty(name ="mailStatus", dataType ="Integer", value ="是否邮箱认证 1:已验证 0:未验证")
+    private Integer mailStatus;
     
-    @ApiModelProperty(name ="age", dataType ="Integer", value ="用户年龄", required =true)
-    private Integer age;
+    @ApiModelProperty(name ="mail", dataType ="String", value ="邮箱地址")
+    private String mail;
     
+    @ApiModelProperty(name ="relAuthenticationStatus", dataType ="Integer", value ="是否实名认证 1:已验证 0:未验证")
+    private Integer relAuthenticationStatus;
     
-    @ApiModelProperty(name ="status", dataType ="Integer", value ="状态 1正常 0禁用", required =true)
-    private Integer status;
-    
-    @ApiModelProperty(name ="createTime", dataType ="Date", value ="创建时间", required =true)
+    @ApiModelProperty(name ="createTime", dataType ="Date", value ="创建时间")
     private Date createTime;
 }
