@@ -1,6 +1,5 @@
 package com.example.redisson.config;
 
-import com.example.core.StringUtil;
 import com.example.multiplesubmitlimit.aspect.MultipleSubmitLimitAspect;
 import com.example.multiplesubmitlimit.info.MultipleSubmitLimitInfo;
 import com.example.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyHandler;
@@ -17,10 +16,7 @@ import com.example.servicelock.ServiceLockInfo;
 import com.example.servicelock.aspect.ServiceLockAspect;
 import com.example.util.RBloomFilterUtil;
 import com.example.util.ServiceLockUtil;
-import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
-import org.redisson.config.SingleServerConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -31,33 +27,33 @@ import org.springframework.context.annotation.Bean;
  * @author: 星哥
  * @create: 2023-02-23
  **/
-@ConditionalOnProperty("redisson.address")
+@ConditionalOnProperty("spring.data.redis.host")
 @EnableConfigurationProperties(RedissonProperties.class)
 public class DistributedAutoConfiguration {
     
     private static final String ADDRESS_PREFIX = "redis";
     
-    /**
-     * 单机模式自动装配
-     * @return RedissonClient
-     */
-    @Bean
-    public RedissonClient redissonSingle(RedissonProperties redissonProperties) {
-        Config config = new Config();
-        SingleServerConfig serverConfig = config.useSingleServer()
-                .setAddress(ADDRESS_PREFIX+"://"+redissonProperties.getAddress()+":"+redissonProperties.getPort())
-                .setDatabase(redissonProperties.getDatabase())
-                .setTimeout(redissonProperties.getTimeout())
-                .setConnectionPoolSize(redissonProperties.getConnectionPoolSize())
-                .setConnectionMinimumIdleSize(redissonProperties.getConnectionMinimumIdleSize())
-                .setIdleConnectionTimeout(30000)
-                .setPingConnectionInterval(30000);
-        
-        if(StringUtil.isNotEmpty(redissonProperties.getPassword())) {
-            serverConfig.setPassword(redissonProperties.getPassword());
-        }
-        return Redisson.create(config);
-    }
+//    /**
+//     * 单机模式自动装配
+//     * @return RedissonClient
+//     */
+//    @Bean
+//    public RedissonClient redissonSingle(RedissonProperties redissonProperties) {
+//        Config config = new Config();
+//        SingleServerConfig serverConfig = config.useSingleServer()
+//                .setAddress(ADDRESS_PREFIX+"://"+redissonProperties.getAddress()+":"+redissonProperties.getPort())
+//                .setDatabase(redissonProperties.getDatabase())
+//                .setTimeout(redissonProperties.getTimeout())
+//                .setConnectionPoolSize(redissonProperties.getConnectionPoolSize())
+//                .setConnectionMinimumIdleSize(redissonProperties.getConnectionMinimumIdleSize())
+//                .setIdleConnectionTimeout(30000)
+//                .setPingConnectionInterval(30000);
+//        
+//        if(StringUtil.isNotEmpty(redissonProperties.getPassword())) {
+//            serverConfig.setPassword(redissonProperties.getPassword());
+//        }
+//        return Redisson.create(config);
+//    }
     
     @Bean
     public ServiceLockFactory serviceLockFactory(RedissonClient redissonClient){

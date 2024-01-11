@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -37,7 +38,7 @@ public class ProgramController {
     
     @ApiOperation(value = "查询主页列表")
     @PostMapping(value = "/selectHomeList")
-    public ApiResponse<List<ProgramListVo>> selectHomeList(@Valid @RequestBody ProgramListDto programPageListDto) {
+    public ApiResponse<Map<String,List<ProgramListVo>>> selectHomeList(@Valid @RequestBody ProgramListDto programPageListDto) {
         return ApiResponse.ok(programService.selectHomeList(programPageListDto));
     }
     
