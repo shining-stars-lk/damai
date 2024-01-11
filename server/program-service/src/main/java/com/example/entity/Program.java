@@ -37,6 +37,11 @@ public class Program extends BaseData implements Serializable {
     private Long programCategoryId;
     
     /**
+     * 父节目类型表id
+     * */
+    private Long parentProgramCategoryId;
+    
+    /**
      * 标题
      */
     private String title;

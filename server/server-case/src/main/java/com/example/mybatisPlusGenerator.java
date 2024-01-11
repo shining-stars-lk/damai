@@ -37,7 +37,7 @@ public class mybatisPlusGenerator {
                             .pathInfo(Collections.singletonMap(OutputFile.xml, "D://mybatispluscode")); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("d_ticket_user") // 设置需要生成的表名
+                    builder.addInclude("d_seat") // 设置需要生成的表名
                             .addTablePrefix("d_"); // 设置过滤表前缀
                 })
                 .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板

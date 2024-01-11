@@ -17,19 +17,19 @@ public class RedissonProperties {
 
     public static final String PREFIX = "redisson";
 
-    private int timeout = 3000;
-
-    private String address = "";
-
-    private String port = "6379";
-
-    private String password = "";
-
-    private int database = 2;
-
-    private int connectionPoolSize = 64;
-
-    private int connectionMinimumIdleSize = 10;
+//    private int timeout = 3000;
+//
+//    private String address = "";
+//
+//    private String port = "6379";
+//
+//    private String password = "";
+//
+//    private int database = 2;
+//
+//    private int connectionPoolSize = 64;
+//
+//    private int connectionMinimumIdleSize = 10;
 
     private String produceTopic;
     

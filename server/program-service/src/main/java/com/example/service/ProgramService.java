@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -65,9 +66,21 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     @Autowired
     private BaseDataClient baseDataClient;
     
-    public List<ProgramListVo> selectHomeList(ProgramListDto programPageListDto) {
-        List<Program> programs = programMapper.selectHomeList(programPageListDto);
-        
+    public Map<String,List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
+        Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>();
+        List<Program> programList = programMapper.selectHomeList(programPageListDto);
+        LambdaQueryWrapper<ProgramCategory> pcLambdaQueryWrapper = Wrappers.lambdaQuery(ProgramCategory.class)
+                .in(ProgramCategory::getId, programList.stream().map(Program::getParentProgramCategoryId).collect(Collectors.toList()));
+        List<ProgramCategory> programCategorieList = programCategoryMapper.selectList(pcLambdaQueryWrapper);
+        Map<Long, String> programCategorieMap = programCategorieList.stream()
+                .collect(Collectors.toMap(ProgramCategory::getId, ProgramCategory::getName, (v1, v2) -> v2));
+        Map<Long, List<Program>> programMap = programList.stream().collect(Collectors.groupingBy(Program::getParentProgramCategoryId));
+        for (Entry<Long, List<Program>> programEntry : programMap.entrySet()) {
+            Long key = programEntry.getKey();
+            List<Program> value = programEntry.getValue();
+            programListVoMap.put(programCategorieMap.get(key),BeanUtil.copyToList(value,ProgramListVo.class));
+        }
+        return programListVoMap;
     }
     public IPage<ProgramListVo> selectPage(ProgramPageListDto programPageListDto) {
         
