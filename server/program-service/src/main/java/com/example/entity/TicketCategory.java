@@ -41,17 +41,5 @@ public class TicketCategory extends BaseData implements Serializable {
      */
     private BigDecimal price;
     
-    /**
-     * 以下是业务字段
-     * */
     
-    /**
-     * 最低价格
-     */
-    private BigDecimal minPrice;
-    
-    /**
-     * 最高价格
-     */
-    private BigDecimal maxPrice;
 }

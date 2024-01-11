@@ -10,7 +10,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: www.cookframe.com:8848
+        server-addr: localhost:8848
         username: nacos
         password: nacos
       config:

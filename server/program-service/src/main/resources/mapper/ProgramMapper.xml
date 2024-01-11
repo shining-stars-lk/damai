@@ -31,39 +31,43 @@
         <if test ='areaId != null'>
             and dp.area_id = #{areaId,jdbcType=BIGINT}
         </if>
-        <if test = 'programCategoryIds != null and programCategoryIds.size>0'>
+        <if test = 'parentProgramCategoryIds != null and parentProgramCategoryIds.size>0'>
             and dp.parent_program_category_id in
-            <foreach collection='programCategoryIds' item='programCategoryId' index='index' open='(' close=')' separator=','>
-                #{programCategoryId,jdbcType=BIGINT}
+            <foreach collection='parentProgramCategoryIds' item='parentProgramCategoryId' index='index' open='(' close=')' separator=','>
+                #{parentProgramCategoryId,jdbcType=BIGINT}
             </foreach>
         </if>
-        <if test = 'programCategoryIds == null or programCategoryIds.size == 0'>
+        <if test = 'parentProgramCategoryIds == null or parentProgramCategoryIds.size == 0'>
             and 1!=1
         </if>
     </select>
     
-    <select id="selectPage" parameterType="com.example.dto.ProgramPageListDto" resultType="com.example.entity.Program">
+    <select id="selectPage" parameterType="com.example.dto.ProgramPageListDto" resultType="com.example.entity.ProgramV2">
         select
             dp.id,dp.area_id,dp.program_category_id,dp.parent_program_category_id,dp.title,dp.actor,
             dp.place,dp.item_picture,ds.show_time,ds.show_week_time,ds.show_day_time
         from 
             d_program dp left join d_program_show_time ds
+        on dp.id = ds.program_id
         where 
             dp.status = 1 and ds.status = 1
-            <if test ='areaId != null'>
-             and dp.area_id = #{areaId,jdbcType=BIGINT} 
+            <if test ='programPageListDto.areaId != null'>
+             and dp.area_id = #{programPageListDto.areaId,jdbcType=BIGINT} 
             </if>
-        <if test = 'programCategoryIds != null and programCategoryIds.size>0'>
+        <if test = 'programPageListDto.programCategoryIds != null and programPageListDto.programCategoryIds.size>0'>
             and dp.program_category_id in
-            <foreach collection='programCategoryIds' item='programCategoryId' index='index' open='(' close=')' separator=','>
+            <foreach collection='programPageListDto.programCategoryIds' item='programCategoryId' index='index' open='(' close=')' separator=','>
                 #{programCategoryId,jdbcType=BIGINT}
             </foreach>
         </if>
-        <if test = 'programCategoryIds == null or programCategoryIds.size == 0'>
-            and 1!=1
+        <if test = 'programPageListDto.parentProgramCategoryIds != null and programPageListDto.parentProgramCategoryIds.size>0'>
+            and dp.parent_program_category_id in
+            <foreach collection='programPageListDto.parentProgramCategoryIds' item='parentProgramCategoryId' index='index' open='(' close=')' separator=','>
+                #{parentProgramCategoryId,jdbcType=BIGINT}
+            </foreach>
         </if>
-        <if test = 'showTime != null'> and ds.show_day_time = #{showTime}</if>
-        <if test = 'time != null'> and ds.show_day_time <![CDATA[ <= ]]> #{time}</if>
+        <if test = 'programPageListDto.showTime != null'> and ds.show_day_time = #{programPageListDto.showTime}</if>
+        <if test = 'programPageListDto.time != null'> and ds.show_day_time <![CDATA[ <= ]]> #{programPageListDto.time}</if>
             
     </select>
 </mapper>
