@@ -70,7 +70,9 @@ public enum BaseCode {
     
     GENERATE_STRATEGY_NOT_EXIST(3006,"执行的生成策略不存在"),
     
-    REJECT_STRATEGY_NOT_EXIST(3007,"执行的拒绝策略不存在")
+    REJECT_STRATEGY_NOT_EXIST(3007,"执行的拒绝策略不存在"),
+    
+    PROGRAM_NOT_EXIST(4000,"节目不存在")
     ;
     
     private final Integer code;

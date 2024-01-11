@@ -4,8 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * @program: cook-frame
  * @description:
@@ -41,6 +39,9 @@ public class UserVo {
     @ApiModelProperty(name ="relAuthenticationStatus", dataType ="Integer", value ="是否实名认证 1:已验证 0:未验证")
     private Integer relAuthenticationStatus;
     
-    @ApiModelProperty(name ="createTime", dataType ="Date", value ="创建时间")
-    private Date createTime;
+    @ApiModelProperty(name ="idNumber", dataType ="String", value ="身份证号码")
+    private String idNumber;
+    
+    @ApiModelProperty(name ="address", dataType ="String", value ="收货地址")
+    private String address;
 }
