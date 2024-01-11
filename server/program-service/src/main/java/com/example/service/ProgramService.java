@@ -75,10 +75,31 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         Map<Long, String> programCategorieMap = programCategorieList.stream()
                 .collect(Collectors.toMap(ProgramCategory::getId, ProgramCategory::getName, (v1, v2) -> v2));
         Map<Long, List<Program>> programMap = programList.stream().collect(Collectors.groupingBy(Program::getParentProgramCategoryId));
+        
+        
+        
+        LambdaQueryWrapper<TicketCategory> tcLambdaQueryWrapper = Wrappers.query(TicketCategory.class)
+                .select("program_id,min(price) as min_price,max(price) as max_price")
+                .lambda()
+                .in(TicketCategory::getProgramId, programList.stream().map(Program::getId).collect(Collectors.toList()))
+                .groupBy(TicketCategory::getProgramId);
+        List<TicketCategory> ticketCategorieList = ticketCategoryMapper.selectList(tcLambdaQueryWrapper);
+        Map<Long, TicketCategory> ticketCategorieMap = ticketCategorieList
+                .stream()
+                .collect(Collectors.toMap(TicketCategory::getProgramId, ticketCategory -> ticketCategory, (v1, v2) -> v2));
+        
         for (Entry<Long, List<Program>> programEntry : programMap.entrySet()) {
             Long key = programEntry.getKey();
             List<Program> value = programEntry.getValue();
-            programListVoMap.put(programCategorieMap.get(key),BeanUtil.copyToList(value,ProgramListVo.class));
+            List<ProgramListVo> programListVoList = new ArrayList<>();
+            for (Program program : value) {
+                ProgramListVo programListVo = new ProgramListVo();
+                BeanUtil.copyProperties(program,programListVo);
+                programListVo.setMaxPrice(Optional.ofNullable(ticketCategorieMap.get(program.getId())).map(TicketCategory::getMaxPrice).orElse(null));
+                programListVo.setMinPrice(Optional.ofNullable(ticketCategorieMap.get(program.getId())).map(TicketCategory::getMinPrice).orElse(null));
+                programListVoList.add(programListVo);
+            }
+            programListVoMap.put(programCategorieMap.get(key),programListVoList);
         }
         return programListVoMap;
     }
@@ -97,7 +118,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         
         List<Long> programIdList = iPage.getRecords().stream().map(Program::getId).collect(Collectors.toList());
         LambdaQueryWrapper<TicketCategory> tcLambdaQueryWrapper = Wrappers.query(TicketCategory.class)
-                .select("program_id,min(price) as min_price,max(price) as max_pricefrom")
+                .select("program_id,min(price) as min_price,max(price) as max_price")
                 .lambda()
                 .in(TicketCategory::getProgramId, programIdList)
                 .groupBy(TicketCategory::getProgramId);
