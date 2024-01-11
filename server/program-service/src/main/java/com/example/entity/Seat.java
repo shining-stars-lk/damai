@@ -30,6 +30,11 @@ public class Seat extends BaseData implements Serializable {
      * 节目表id
      */
     private Long programId;
+    
+    /**
+     * 节目票档id
+     * */
+    private Long ticketCategoryId;
 
     /**
      * 排号

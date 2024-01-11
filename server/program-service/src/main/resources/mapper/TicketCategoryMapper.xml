@@ -28,4 +28,11 @@
         </foreach>
         group by program_id
     </select>
+    
+    <update id="updateRemainNumber">
+        update
+            d_ticket_category
+        set remain_number = remain_number - #{number,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 </mapper>

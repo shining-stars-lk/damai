@@ -18,4 +18,6 @@ import java.util.List;
 public interface TicketCategoryMapper extends BaseMapper<TicketCategory> {
 
     List<TicketCategoryAggregate> selectAggregateList(@Param("programIdList")List<Long> programIdList);
+    
+    int updateRemainNumber(@Param("number")Long number,@Param("id")Long id);
 }

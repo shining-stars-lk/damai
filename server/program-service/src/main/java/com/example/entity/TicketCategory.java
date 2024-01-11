@@ -41,5 +41,15 @@ public class TicketCategory extends BaseData implements Serializable {
      */
     private BigDecimal price;
     
+    /**
+     * 总数量
+     * */
+    private Long totalNumber;
+    
+    /**
+     * 剩余数量
+     * */
+    private Long remainNumber;
+    
     
 }
