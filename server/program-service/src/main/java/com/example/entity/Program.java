@@ -51,6 +51,11 @@ public class Program extends BaseData implements Serializable {
      * */
     private String actor;
     
+    /*
+     * 地点
+     * */
+    private String place;
+    
     /**
      * 项目图片
      * */

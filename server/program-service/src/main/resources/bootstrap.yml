@@ -1,16 +1,18 @@
 #服务端口
 server:
-  port: 6083
+  port: 6086
 # 应用名称
 spring:
   application:
-    name: base-data-service
+    name: program-service
   main:
     allow-bean-definition-overriding: true
   cloud:
     nacos:
       discovery:
-        server-addr: www.cookframe.com:8848
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
       config:
         server-addr: www.cookframe.com:8848
         file-extension: yaml

@@ -31,6 +31,9 @@ public class ProgramVo implements Serializable {
     @ApiModelProperty(name ="actor", dataType ="Long", value ="艺人")
     private String actor;
     
+    @ApiModelProperty(name ="place", dataType ="String", value ="地点")
+    private String place;
+    
     @ApiModelProperty(name ="id", dataType ="Long", value ="区域id")
     private String itemPicture;
     
