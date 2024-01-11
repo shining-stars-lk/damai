@@ -45,7 +45,7 @@ public class AreaController {
     }
     
     @ApiOperation(value = "查询数据根据id")
-    @PostMapping(value = "/area/getById")
+    @PostMapping(value = "/getById")
     public ApiResponse<AreaVo> getById(@Valid @RequestBody AreaGetDto areaGetDto){
         return ApiResponse.ok(areaService.getById(areaGetDto));
     }

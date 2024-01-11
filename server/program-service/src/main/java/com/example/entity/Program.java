@@ -5,7 +5,6 @@ import com.example.data.BaseData;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * <p>
@@ -150,22 +149,4 @@ public class Program extends BaseData implements Serializable {
      * 大麦网初始开售时全场可售门票总张数
      */
     private Long totalCount;
-    
-    /**
-     * 以下是连表查询需要的节目演出时间表字段
-     * */
-    /**
-     * 演出时间
-     */
-    private Date showTime;
-    
-    /**
-     * 演出时间(精确到天)
-     */
-    private Date showDayTime;
-    
-    /**
-     * 演出时间所在的星期
-     */
-    private String showWeekTime;
 }

@@ -42,7 +42,7 @@ public class ProgramController {
         return ApiResponse.ok(programService.selectHomeList(programPageListDto));
     }
     
-    @ApiOperation(value = "查询列表")
+    @ApiOperation(value = "查询分页列表")
     @PostMapping(value = "/selectPage")
     public ApiResponse<IPage<ProgramListVo>> selectPage(@Valid @RequestBody ProgramPageListDto programPageListDto) {
         return ApiResponse.ok(programService.selectPage(programPageListDto));

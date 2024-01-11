@@ -19,11 +19,12 @@ import java.util.List;
 public class ProgramListDto {
     
     @ApiModelProperty(name ="areaId", dataType ="Long", value ="所在区域id")
+    @NotNull
     private Long areaId;
     
-    @ApiModelProperty(name ="programCategoryIds", dataType ="Long[]", value ="节目类型id集合")
+    @ApiModelProperty(name ="parentProgramCategoryIds", dataType ="Long[]", value ="父节目类型id集合")
     @NotNull
-    private List<Long> programCategoryIds;
+    private List<Long> parentProgramCategoryIds;
     
     /**
      * 业务字段，后端自己填充
