@@ -14,5 +14,13 @@
 
     <name>program-client</name>
     <description>rpc</description>
+    
+    <dependencies>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>user-client</artifactId>
+            <version>${revision}</version>
+        </dependency>
+    </dependencies>
 
 </project>
