@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -25,6 +26,10 @@ public class SeatDto implements Serializable {
 
     @ApiModelProperty(name ="id", dataType ="Long", value ="座位id")
     private Long id;
+    
+    @ApiModelProperty(name ="ticketCategoryId", dataType ="Long", value ="节目票档id")
+    @NotNull
+    private Long ticketCategoryId;
     
     @ApiModelProperty(name ="rowCode", dataType ="String", value ="排号")
     @NotBlank
