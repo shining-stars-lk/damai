@@ -1,5 +1,6 @@
 package com.example.service;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -51,12 +52,16 @@ public class ProgramOrderService {
     private UidGenerator uidGenerator;
     
     public void create(final ProgramOrderCreateDto programOrderCreateDto) {
+        final List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
+        if (CollectionUtil.isEmpty(seatDtoList) && Objects.isNull(programOrderCreateDto.getTicketCategoryId())) {
+            throw new CookFrameException(BaseCode.TICKET_CATEGORY_NOT_EXIST);
+        }
+        
         Program program = programMapper.selectById(programOrderCreateDto.getProgramId());
         if (Objects.isNull(program)) {
             throw new CookFrameException(BaseCode.PROGRAM_NOT_EXIST);
         }
-        //todo 座位号的选择，这里先写死
-        final List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
+        
         
         Seat updateSeat = new Seat();
         updateSeat.setSellStatus(SellStatus.LOCK.getCode());
@@ -64,6 +69,7 @@ public class ProgramOrderService {
                 .eq(Seat::getSellStatus,SellStatus.NO_SOLD.getCode());
         
         BigDecimal orderPrice = new BigDecimal("0");
+        
         for (SeatDto seatDto : seatDtoList) {
             orderPrice = orderPrice.add(seatDto.getPrice());
             seatLambdaUpdateWrapper.or(i -> i.eq(Seat::getColCode,seatDto.getColCode()).eq(Seat::getRowCode,seatDto.getRowCode()));

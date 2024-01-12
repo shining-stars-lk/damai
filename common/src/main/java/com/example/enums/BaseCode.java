@@ -74,7 +74,10 @@ public enum BaseCode {
     
     PROGRAM_NOT_EXIST(4000,"节目不存在"),
     
-    SEAT_NOT_EXIST(4001,"座位不存在")
+    SEAT_NOT_EXIST(4001,"座位不存在"),
+    
+    TICKET_CATEGORY_NOT_EXIST(4001,"如果不选座位，那么票档必须要存在")
+    
     ;
     
     private final Integer code;

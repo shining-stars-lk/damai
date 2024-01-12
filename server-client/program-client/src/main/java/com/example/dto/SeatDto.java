@@ -33,11 +33,11 @@ public class SeatDto implements Serializable {
     
     @ApiModelProperty(name ="rowCode", dataType ="String", value ="排号")
     @NotBlank
-    private String rowCode;
+    private Integer rowCode;
     
     @ApiModelProperty(name ="colCode", dataType ="String", value ="列号")
     @NotBlank
-    private String colCode;
+    private Integer colCode;
     
     @ApiModelProperty(name ="seatType", dataType ="Integer", value ="座位类型")
     private Integer seatType;
