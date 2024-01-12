@@ -3,10 +3,8 @@ package com.example.kafka;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.example.entity.ProductOrder;
-import com.example.entity.PsOrder;
-import com.example.service.OrderService;
 import com.example.delayqueue.Producer;
+import com.example.entity.ProductOrder;
 import com.example.redisson.RedissonProperties;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +22,7 @@ import java.util.List;
 @Slf4j
 @AllArgsConstructor
 public class OrderMessageConsumer {
-
-    private OrderService orderService;
+    
     
     private Producer producer;
     
@@ -37,12 +34,12 @@ public class OrderMessageConsumer {
             Object key = consumerRecord.key();
             String value = (String)consumerRecord.value();
             JSONObject jsonObject = JSON.parseObject(value);
-            PsOrder psOrder = jsonObject.getObject("order", PsOrder.class);
+            //PsOrder psOrder = jsonObject.getObject("order", PsOrder.class);
             JSONArray productOrderJSONArray = jsonObject.getJSONArray("productOrderList");
             List<ProductOrder> productOrderList = productOrderJSONArray.toJavaList(ProductOrder.class);
-            orderService.saveOrderAndProductOrder(psOrder,productOrderList);
+            //orderService.saveOrderAndProductOrder(psOrder,productOrderList);
             //延迟队列发送消息
-            producer.produceMessage(redissonProperties.getProduceTopic(),String.valueOf(psOrder.getId()),redissonProperties.getDelayTime(),redissonProperties.getDelayTimeUnit());
+            //producer.produceMessage(redissonProperties.getProduceTopic(),String.valueOf(psOrder.getId()),redissonProperties.getDelayTime(),redissonProperties.getDelayTimeUnit());
         }catch (Exception e) {
             log.error("consumerOrderMessage error",e);
         }

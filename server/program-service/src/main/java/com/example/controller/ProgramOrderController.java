@@ -1,7 +1,7 @@
 package com.example.controller;
 
 import com.example.common.ApiResponse;
-import com.example.dto.ProgramOrderDto;
+import com.example.dto.ProgramOrderCreateDto;
 import com.example.service.ProgramOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,8 +31,8 @@ public class ProgramOrderController {
     
     @ApiOperation(value = "生成订单")
     @PostMapping(value = "/create")
-    public ApiResponse<Void> create(@Valid @RequestBody ProgramOrderDto programOrderDto) {
-        programOrderService.create(programOrderDto);
+    public ApiResponse<Void> create(@Valid @RequestBody ProgramOrderCreateDto programOrderCreateDto) {
+        programOrderService.create(programOrderCreateDto);
         return ApiResponse.ok();
     }
 }

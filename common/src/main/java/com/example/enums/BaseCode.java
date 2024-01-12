@@ -72,7 +72,9 @@ public enum BaseCode {
     
     REJECT_STRATEGY_NOT_EXIST(3007,"执行的拒绝策略不存在"),
     
-    PROGRAM_NOT_EXIST(4000,"节目不存在")
+    PROGRAM_NOT_EXIST(4000,"节目不存在"),
+    
+    SEAT_NOT_EXIST(4001,"座位不存在")
     ;
     
     private final Integer code;

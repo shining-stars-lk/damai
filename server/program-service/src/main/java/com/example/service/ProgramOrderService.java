@@ -1,8 +1,12 @@
 package com.example.service;
 
+import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.example.dto.ProgramOrderDto;
+import com.example.dto.OrderCreateDto;
+import com.example.dto.OrderTicketUserCreateDto;
+import com.example.dto.ProgramOrderCreateDto;
+import com.example.dto.ProgramOrderTicketUserDto;
 import com.example.dto.SeatDto;
 import com.example.entity.Program;
 import com.example.entity.Seat;
@@ -12,13 +16,17 @@ import com.example.exception.CookFrameException;
 import com.example.mapper.ProgramMapper;
 import com.example.mapper.SeatMapper;
 import com.example.mapper.TicketCategoryMapper;
+import com.example.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -39,19 +47,25 @@ public class ProgramOrderService {
     @Autowired
     private TicketCategoryMapper ticketCategoryMapper;
     
-    public void create(final ProgramOrderDto programOrderDto) {
-        Program program = programMapper.selectById(programOrderDto.getProgramId());
+    @Autowired
+    private UidGenerator uidGenerator;
+    
+    public void create(final ProgramOrderCreateDto programOrderCreateDto) {
+        Program program = programMapper.selectById(programOrderCreateDto.getProgramId());
         if (Objects.isNull(program)) {
             throw new CookFrameException(BaseCode.PROGRAM_NOT_EXIST);
         }
         //todo 座位号的选择，这里先写死
-        final List<SeatDto> seatDtoList = programOrderDto.getSeatDtoList();
+        final List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
         
         Seat updateSeat = new Seat();
         updateSeat.setSellStatus(SellStatus.LOCK.getCode());
         LambdaUpdateWrapper<Seat> seatLambdaUpdateWrapper = Wrappers.lambdaUpdate(Seat.class)
                 .eq(Seat::getSellStatus,SellStatus.NO_SOLD.getCode());
+        
+        BigDecimal orderPrice = new BigDecimal("0");
         for (SeatDto seatDto : seatDtoList) {
+            orderPrice = orderPrice.add(seatDto.getPrice());
             seatLambdaUpdateWrapper.or(i -> i.eq(Seat::getColCode,seatDto.getColCode()).eq(Seat::getRowCode,seatDto.getRowCode()));
         }
         //锁座位
@@ -65,5 +79,31 @@ public class ProgramOrderService {
             final Long value = entry.getValue();
             ticketCategoryMapper.updateRemainNumber(key,value);   
         }
+        
+        OrderCreateDto orderCreateDto = new OrderCreateDto();
+        orderCreateDto.setId(uidGenerator.getUID());
+        orderCreateDto.setProgramId(programOrderCreateDto.getProgramId());
+        orderCreateDto.setUserId(programOrderCreateDto.getUserId());
+        orderCreateDto.setOrderPrice(orderPrice);
+        orderCreateDto.setCreateOrderTime(DateUtils.now());
+        
+        List<OrderTicketUserCreateDto> orderTicketUserCreateDtoList = new ArrayList<>();
+        List<ProgramOrderTicketUserDto> programOrderTicketUserDtoList = programOrderCreateDto.getProgramOrderTicketUserDtoList();
+        for (int i = 0; i < programOrderTicketUserDtoList.size(); i++) {
+            ProgramOrderTicketUserDto programOrderTicketUserDto = programOrderTicketUserDtoList.get(i);
+            OrderTicketUserCreateDto orderTicketUserCreateDto = new OrderTicketUserCreateDto();
+            orderTicketUserCreateDto.setOrderId(orderCreateDto.getId());
+            orderTicketUserCreateDto.setProgramId(programOrderCreateDto.getProgramId());
+            orderTicketUserCreateDto.setUserId(programOrderCreateDto.getUserId());
+            orderTicketUserCreateDto.setTicketUserId(programOrderTicketUserDto.getId());
+            SeatDto seatDto = Optional.ofNullable(seatDtoList.get(i)).orElseThrow(() -> new CookFrameException(BaseCode.SEAT_NOT_EXIST));
+            orderTicketUserCreateDto.setSeatId(seatDto.getId());
+            orderTicketUserCreateDto.setOrderPrice(seatDto.getPrice());
+            orderTicketUserCreateDto.setCreateOrderTime(DateUtils.now());
+            orderTicketUserCreateDtoList.add(orderTicketUserCreateDto);
+        }
+        
+        orderCreateDto.setOrderTicketUserCreateDtoList(orderTicketUserCreateDtoList);
+        
     }
 }

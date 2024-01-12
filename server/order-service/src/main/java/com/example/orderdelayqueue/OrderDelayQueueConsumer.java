@@ -1,6 +1,5 @@
 package com.example.orderdelayqueue;
 
-import com.example.mapper.OrderMapper;
 import com.example.delayqueue.Consumer;
 import com.example.redisson.RedissonProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +24,6 @@ public class OrderDelayQueueConsumer {
     @Autowired
     private RedissonProperties redissonProperties;
     
-    @Autowired
-    private OrderMapper orderMapper;
-    
     /**
      * 延迟队列消费消息
      * */
@@ -36,7 +32,6 @@ public class OrderDelayQueueConsumer {
         consumer.consumeMessage(redissonProperties.getConsumeTopic(),message -> {
             log.info("OrderDelayQueueConsumer topic:{} message:{}",redissonProperties.getConsumeTopic(),message);
             String id = message;
-            orderMapper.timeOutCancelOrder(Long.parseLong(id));
         });
     }
 }

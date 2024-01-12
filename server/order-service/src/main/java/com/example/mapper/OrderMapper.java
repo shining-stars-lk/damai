@@ -1,16 +1,17 @@
 package com.example.mapper;
 
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.entity.PsOrder;
-import org.apache.ibatis.annotations.Param;
+import com.example.entity.Order;
 
 /**
- * @program: cook-frame
- * @description:
- * @author: 星哥
- * @create: 2023-06-14
- **/
-public interface OrderMapper extends BaseMapper<PsOrder> {
-    
-    int timeOutCancelOrder(@Param("id")Long id);
+ * <p>
+ * 节目类型表 Mapper 接口
+ * </p>
+ *
+ * @author k
+ * @since 2024-01-12
+ */
+public interface OrderMapper extends BaseMapper<Order> {
+
 }
