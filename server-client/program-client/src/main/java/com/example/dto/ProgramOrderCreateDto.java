@@ -34,4 +34,7 @@ public class ProgramOrderCreateDto {
     
     @ApiModelProperty(name ="ticketCategoryId", dataType ="Long", value = "节目票档id(如果不选座位，那么票档id必填)")
     private Long ticketCategoryId;
+    
+    @ApiModelProperty(name ="ticketCount", dataType ="Integer", value = "购买票数量(如果不选座位，那么购买票数量必填)")
+    private Integer ticketCount;
 }

@@ -76,7 +76,11 @@ public enum BaseCode {
     
     SEAT_NOT_EXIST(4001,"座位不存在"),
     
-    TICKET_CATEGORY_NOT_EXIST(4001,"如果不选座位，那么票档必须要存在")
+    SEAT_LOCK(4002,"座位已锁定"),
+    
+    SEAT_SOLD(4003,"座位已售卖"),
+    
+    TICKET_CATEGORY_NOT_EXIST(4004,"如果不选座位，那么票档必须要存在")
     
     ;
     
