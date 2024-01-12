@@ -14,16 +14,20 @@ import java.util.List;
  * @create: 2024-01-11
  **/
 @Data
-@ApiModel(value="ProgramOrderDto", description ="节目订单")
-public class ProgramOrderDto {
+@ApiModel(value="ProgramOrderCreateDto", description ="节目订单创建")
+public class ProgramOrderCreateDto {
     
     @ApiModelProperty(name ="programId", dataType ="Long", value ="节目id")
     @NotNull
     private Long programId;
     
-    @ApiModelProperty(name ="ticketUserDtoList", dataType ="List<TicketUserDto>", value ="购票人")
+    @ApiModelProperty(name ="userId", dataType ="Long", value ="用户id")
     @NotNull
-    private List<TicketUserDto> ticketUserDtoList;
+    private Long userId;
+    
+    @ApiModelProperty(name ="programOrderTicketUserDtoList", dataType ="List<ProgramOrderTicketUserDto>", value ="购票人集合")
+    @NotNull
+    private List<ProgramOrderTicketUserDto> programOrderTicketUserDtoList;
     
     @ApiModelProperty(name ="seatDtoList", dataType ="List<SeatDto>", value = "座位")
     private List<SeatDto> seatDtoList;

@@ -1,49 +1,34 @@
 package com.example.controller;
 
 import com.example.common.ApiResponse;
-import com.example.dto.GetOrderDto;
-import com.example.dto.InsertOrderDto;
-import com.example.dto.PayOrderDto;
+import com.example.dto.OrderCreateDto;
 import com.example.service.OrderService;
-import com.example.vo.GetOrderVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-
 /**
- * @program: cook-frame
- * @description:
- * @author: 星哥
- * @create: 2023-04-17
- **/
+ * <p>
+ * 节目类型表 前端控制器
+ * </p>
+ *
+ * @author k
+ * @since 2024-01-12
+ */
 @RestController
 @RequestMapping("/order")
+@Api(tags = "order", description = "订单")
 public class OrderController {
     
     @Autowired
     private OrderService orderService;
     
-    @PostMapping(value = "/getOrder")
-    public GetOrderVo getOrder(@RequestBody GetOrderDto getOrderDto){
-        return orderService.getOrder(getOrderDto);
-    }
-    
-    @PostMapping(value = "/getOrderV2")
-    public GetOrderVo getOrderV2(@RequestBody GetOrderDto getOrderDto){
-        return orderService.getOrderV2(getOrderDto);
-    }
-    
-    @PostMapping(value = "/insertOrder")
-    public ApiResponse<Boolean> insertOrder(@Valid @RequestBody InsertOrderDto dto) {
-        return orderService.insert(dto);
-    }
-    
-    @PostMapping(value = "/payOrder")
-    public ApiResponse<Boolean> payOrder(@Valid @RequestBody PayOrderDto dto) {
-        return orderService.pay(dto);
+    @ApiOperation(value = "创建订单")
+    @PostMapping(value = "/create")
+    public ApiResponse<String> create(OrderCreateDto orderCreateDto) {
+        return ApiResponse.ok(orderService.create(orderCreateDto));
     }
 }

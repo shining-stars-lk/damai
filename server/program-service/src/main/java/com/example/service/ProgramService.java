@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.client.BaseDataClient;
+import com.example.client.OrderClient;
 import com.example.common.ApiResponse;
 import com.example.dto.AreaGetDto;
 import com.example.dto.AreaSelectDto;
@@ -68,7 +68,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     private TicketCategoryMapper ticketCategoryMapper;
     
     @Autowired
-    private BaseDataClient baseDataClient;
+    private OrderClient orderClient;
     
     public Map<String,List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
         Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>();
@@ -149,7 +149,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         Map<Long,String> areaMap = new HashMap<>();
         AreaSelectDto areaSelectDto = new AreaSelectDto();
         areaSelectDto.setIdList(iPage.getRecords().stream().map(Program::getAreaId).distinct().collect(Collectors.toList()));
-        ApiResponse<List<AreaVo>> areaResponse = baseDataClient.selectByIdList(areaSelectDto);
+        ApiResponse<List<AreaVo>> areaResponse = orderClient.selectByIdList(areaSelectDto);
         if (Objects.equals(areaResponse.getCode(), ApiResponse.ok().getCode())) {
             if (CollectionUtil.isNotEmpty(areaResponse.getData())) {
                 areaMap = areaResponse.getData().stream().collect(Collectors.toMap(AreaVo::getId,AreaVo::getName,(v1,v2) -> v2));
@@ -195,7 +195,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         
         AreaGetDto areaGetDto = new AreaGetDto();
         areaGetDto.setId(program.getAreaId());
-        ApiResponse<AreaVo> areaResponse = baseDataClient.getById(areaGetDto);
+        ApiResponse<AreaVo> areaResponse = orderClient.getById(areaGetDto);
         if (Objects.equals(areaResponse.getCode(), ApiResponse.ok().getCode())) {
             if (Objects.nonNull(areaResponse.getData())) {
                 programVo.setAreaName(areaResponse.getData().getName());
