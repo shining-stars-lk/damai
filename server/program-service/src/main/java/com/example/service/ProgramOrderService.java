@@ -2,6 +2,7 @@ package com.example.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baidu.fsg.uid.UidGenerator;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.example.dto.OrderCreateDto;
@@ -70,12 +71,33 @@ public class ProgramOrderService {
         
         BigDecimal orderPrice = new BigDecimal("0");
         
-        for (SeatDto seatDto : seatDtoList) {
-            orderPrice = orderPrice.add(seatDto.getPrice());
-            seatLambdaUpdateWrapper.or(i -> i.eq(Seat::getColCode,seatDto.getColCode()).eq(Seat::getRowCode,seatDto.getRowCode()));
+        //入参座位不存在，那么
+        if (CollectionUtil.isNotEmpty(seatDtoList)) {
+            for (SeatDto seatDto : seatDtoList) {
+                LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = Wrappers.lambdaQuery(Seat.class)
+                        .eq(Seat::getProgramId,programOrderCreateDto.getProgramId())
+                        .eq(Seat::getTicketCategoryId,seatDto.getTicketCategoryId())
+                        .eq(Seat::getRowCode,seatDto.getRowCode())
+                        .eq(Seat::getColCode,seatDto.getColCode());
+                Seat seat = seatMapper.selectOne(seatLambdaQueryWrapper);
+                if (Objects.isNull(seat)) {
+                    throw new CookFrameException(BaseCode.SEAT_NOT_EXIST);
+                }
+                if (Objects.equals(seat.getSellStatus(), SellStatus.LOCK.getCode())) {
+                    throw new CookFrameException(BaseCode.SEAT_LOCK);
+                }
+                if (Objects.equals(seat.getSellStatus(), SellStatus.SOLD.getCode())) {
+                    throw new CookFrameException(BaseCode.SEAT_SOLD);
+                }
+                orderPrice = orderPrice.add(seatDto.getPrice());
+                seatLambdaUpdateWrapper.or(i -> i.eq(Seat::getColCode,seatDto.getColCode()).eq(Seat::getRowCode,seatDto.getRowCode()));
+            }
+            //锁座位
+            seatMapper.update(updateSeat, seatLambdaUpdateWrapper);
+        }else {
+            
         }
-        //锁座位
-        seatMapper.update(updateSeat, seatLambdaUpdateWrapper);
+        
         
         //扣票数
         Map<Long, Long> ticketCategoryCount = seatDtoList.stream()
