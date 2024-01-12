@@ -35,16 +35,16 @@ public class Seat extends BaseData implements Serializable {
      * 节目票档id
      * */
     private Long ticketCategoryId;
-
+    
     /**
      * 排号
      */
-    private String rowCode;
-
+    private Integer rowCode;
+    
     /**
      * 列号
      */
-    private String colCode;
+    private Integer colCode;
 
     /**
      * 座位类型 详见seatType枚举

@@ -31,4 +31,7 @@ public class ProgramOrderCreateDto {
     
     @ApiModelProperty(name ="seatDtoList", dataType ="List<SeatDto>", value = "座位")
     private List<SeatDto> seatDtoList;
+    
+    @ApiModelProperty(name ="ticketCategoryId", dataType ="Long", value = "节目票档id(如果不选座位，那么票档id必填)")
+    private Long ticketCategoryId;
 }
