@@ -22,10 +22,7 @@ import java.math.BigDecimal;
 public class SeatDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-
-    @ApiModelProperty(name ="id", dataType ="Long", value ="座位id")
-    private Long id;
+    
     
     @ApiModelProperty(name ="ticketCategoryId", dataType ="Long", value ="节目票档id")
     @NotNull
