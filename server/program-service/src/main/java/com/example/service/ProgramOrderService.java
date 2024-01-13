@@ -1,15 +1,18 @@
 package com.example.service;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.example.client.UserClient;
+import com.example.common.ApiResponse;
 import com.example.dto.OrderCreateDto;
 import com.example.dto.OrderTicketUserCreateDto;
 import com.example.dto.ProgramOrderCreateDto;
-import com.example.dto.ProgramOrderTicketUserDto;
 import com.example.dto.SeatDto;
+import com.example.dto.UserGetAndTicketUserListDto;
 import com.example.entity.Program;
 import com.example.entity.Seat;
 import com.example.enums.BaseCode;
@@ -19,6 +22,10 @@ import com.example.mapper.ProgramMapper;
 import com.example.mapper.SeatMapper;
 import com.example.mapper.TicketCategoryMapper;
 import com.example.util.DateUtils;
+import com.example.vo.TicketUserVo;
+import com.example.vo.UserGetAndTicketUserListVo;
+import com.example.vo.UserVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +44,7 @@ import java.util.stream.Collectors;
  * @author: k
  * @create: 2024-01-11
  **/
+@Slf4j
 @Service
 public class ProgramOrderService {
     
@@ -48,6 +56,9 @@ public class ProgramOrderService {
     
     @Autowired
     private TicketCategoryMapper ticketCategoryMapper;
+    
+    @Autowired
+    private UserClient userClient;
     
     @Autowired
     private UidGenerator uidGenerator;
@@ -68,6 +79,31 @@ public class ProgramOrderService {
         if (Objects.isNull(program)) {
             throw new CookFrameException(BaseCode.PROGRAM_NOT_EXIST);
         }
+        //验证用户和购票人信息正确性
+        UserVo userVo = new UserVo();
+        List<TicketUserVo> ticketUserVoList = new ArrayList<>();
+        UserGetAndTicketUserListDto userGetAndTicketUserListDto = new UserGetAndTicketUserListDto();
+        userGetAndTicketUserListDto.setUserId(programOrderCreateDto.getUserId());
+        userGetAndTicketUserListDto.setTicketUserIdList(programOrderCreateDto.getTicketUserIdList());
+        ApiResponse<UserGetAndTicketUserListVo> userGetAndTicketUserApiResponse = 
+                userClient.getUserAndTicketUserList(userGetAndTicketUserListDto);
+        if (Objects.equals(userGetAndTicketUserApiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+            UserGetAndTicketUserListVo userAndTicketUserListVo = 
+                    Optional.ofNullable(userGetAndTicketUserApiResponse.getData())
+                            .orElseThrow(() -> new CookFrameException(BaseCode.RPC_RESULT_DATA_EMPTY));
+            if (Objects.isNull(userAndTicketUserListVo.getUserVo())) {
+                throw new CookFrameException(BaseCode.USER_EMPTY);
+            }
+            ticketUserVoList = 
+                    Optional.ofNullable(userAndTicketUserListVo.getTicketUserVoList()).filter(list -> !list.isEmpty())
+                            .orElseThrow(() -> new CookFrameException(BaseCode.TICKET_USER_EMPTY));
+            
+        }else {
+            log.error("user client rpc getUserAndTicketUserList error response : {}", JSON.toJSONString(userGetAndTicketUserApiResponse));
+            throw new CookFrameException(userGetAndTicketUserApiResponse);
+        }
+        
+        
         //传入的座位总价格
         BigDecimal parameterOrderPrice = new BigDecimal("0");
         //库中的座位总价格
@@ -112,7 +148,6 @@ public class ProgramOrderService {
             }
         }else {
             //入参座位不存在，利用算法自动根据人数和票档进行分配相邻座位
-            
             Long ticketCategoryId = programOrderCreateDto.getTicketCategoryId();
             Integer ticketCount = programOrderCreateDto.getTicketCount();
             //根据票档和购买数量，查询出此节目下并且是可以售卖的座位列表
@@ -165,14 +200,13 @@ public class ProgramOrderService {
         
         //购票人订单构建
         List<OrderTicketUserCreateDto> orderTicketUserCreateDtoList = new ArrayList<>();
-        List<ProgramOrderTicketUserDto> programOrderTicketUserDtoList = programOrderCreateDto.getProgramOrderTicketUserDtoList();
-        for (int i = 0; i < programOrderTicketUserDtoList.size(); i++) {
-            ProgramOrderTicketUserDto programOrderTicketUserDto = programOrderTicketUserDtoList.get(i);
+        for (int i = 0; i < ticketUserVoList.size(); i++) {
+            TicketUserVo ticketUserVo = ticketUserVoList.get(i);
             OrderTicketUserCreateDto orderTicketUserCreateDto = new OrderTicketUserCreateDto();
             orderTicketUserCreateDto.setOrderId(orderCreateDto.getId());
             orderTicketUserCreateDto.setProgramId(programOrderCreateDto.getProgramId());
             orderTicketUserCreateDto.setUserId(programOrderCreateDto.getUserId());
-            orderTicketUserCreateDto.setTicketUserId(programOrderTicketUserDto.getId());
+            orderTicketUserCreateDto.setTicketUserId(ticketUserVo.getId());
             Seat seat = Optional.ofNullable(seatList.get(i)).orElseThrow(() -> new CookFrameException(BaseCode.SEAT_NOT_EXIST));
             orderTicketUserCreateDto.setSeatId(seat.getId());
             orderTicketUserCreateDto.setOrderPrice(seat.getPrice());

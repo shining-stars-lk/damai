@@ -1,12 +1,14 @@
 package com.example.controller;
 
 import com.example.common.ApiResponse;
+import com.example.dto.UserGetAndTicketUserListDto;
 import com.example.dto.UserExistDto;
 import com.example.dto.UserIdDto;
 import com.example.dto.UserMobileDto;
 import com.example.dto.UserRegisterDto;
 import com.example.dto.UserUpdateDto;
 import com.example.service.UserService;
+import com.example.vo.UserGetAndTicketUserListVo;
 import com.example.vo.UserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -77,4 +79,12 @@ public class UserController {
         userService.update(userUpdateDto);
         return ApiResponse.ok();
     }
+    
+    @ApiOperation(value = "查询用户和购票人集合")
+    @PostMapping(value = "/getUserAndTicketUserList")
+    public ApiResponse<UserGetAndTicketUserListVo> getUserAndTicketUserList(@Valid @RequestBody UserGetAndTicketUserListDto userGetAndTicketUserListDto) {
+        return ApiResponse.ok(userService.getUserAndTicketUserList(userGetAndTicketUserListDto));
+    }
+    
+    
 }

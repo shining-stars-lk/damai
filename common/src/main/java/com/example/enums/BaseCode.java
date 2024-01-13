@@ -88,6 +88,8 @@ public enum BaseCode {
     
     PRICE_ERROR(4007,"入参的订单价格大于座位规定价格"),
     
+    RPC_RESULT_DATA_EMPTY(4008,"rpc服务返回数据为空"),
+    
     ;
     
     private final Integer code;
