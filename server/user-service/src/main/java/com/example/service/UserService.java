@@ -6,22 +6,26 @@ import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.client.BaseDataClient;
 import com.example.core.RedisKeyEnum;
+import com.example.dto.UserGetAndTicketUserListDto;
 import com.example.dto.UserIdDto;
 import com.example.dto.UserMobileDto;
 import com.example.dto.UserRegisterDto;
 import com.example.dto.UserUpdateDto;
+import com.example.entity.TicketUser;
 import com.example.entity.User;
 import com.example.enums.BaseCode;
 import com.example.exception.CookFrameException;
 import com.example.jwt.TokenUtil;
+import com.example.mapper.TicketUserMapper;
 import com.example.mapper.UserMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
 import com.example.redisson.LockType;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.RBloomFilterUtil;
+import com.example.vo.UserGetAndTicketUserListVo;
+import com.example.vo.TicketUserVo;
 import com.example.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +64,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     private RedisCache redisCache;
     
     @Autowired
-    private BaseDataClient baseDataClient;
+    private TicketUserMapper ticketUserMapper;
     
     @Autowired
     private RBloomFilterUtil rBloomFilterUtil;
@@ -154,5 +159,21 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         UserVo userVo = new UserVo();
         BeanUtil.copyProperties(user,userVo);
         return userVo;
+    }
+    
+    public UserGetAndTicketUserListVo getUserAndTicketUserList(final UserGetAndTicketUserListDto userGetAndTicketUserListDto) {
+        UserIdDto userIdDto = new UserIdDto();
+        userIdDto.setId(userGetAndTicketUserListDto.getUserId());
+        UserVo userVo = getById(userIdDto);
+        
+        LambdaQueryWrapper<TicketUser> ticketUserLambdaQueryWrapper = Wrappers.lambdaQuery(TicketUser.class)
+                .in(TicketUser::getId, userGetAndTicketUserListDto.getTicketUserIdList());
+        List<TicketUser> ticketUserList = ticketUserMapper.selectList(ticketUserLambdaQueryWrapper);
+        List<TicketUserVo> ticketUserVoList = BeanUtil.copyToList(ticketUserList, TicketUserVo.class);
+        
+        UserGetAndTicketUserListVo userGetAndTicketUserListVo = new UserGetAndTicketUserListVo();
+        userGetAndTicketUserListVo.setUserVo(userVo);
+        userGetAndTicketUserListVo.setTicketUserVoList(ticketUserVoList);
+        return userGetAndTicketUserListVo;
     }
 }

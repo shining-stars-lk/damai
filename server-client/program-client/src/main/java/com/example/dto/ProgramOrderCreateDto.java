@@ -25,9 +25,9 @@ public class ProgramOrderCreateDto {
     @NotNull
     private Long userId;
     
-    @ApiModelProperty(name ="programOrderTicketUserDtoList", dataType ="List<ProgramOrderTicketUserDto>", value ="购票人集合")
+    @ApiModelProperty(name ="ticketUserIdList", dataType ="List<Long>", value ="购票人id集合")
     @NotNull
-    private List<ProgramOrderTicketUserDto> programOrderTicketUserDtoList;
+    private List<Long> ticketUserIdList;
     
     @ApiModelProperty(name ="seatDtoList", dataType ="List<SeatDto>", value = "座位")
     private List<SeatDto> seatDtoList;

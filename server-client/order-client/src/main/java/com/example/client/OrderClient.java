@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @FeignClient(value = "order-service",fallback = OrderClientFallback.class)
 public interface OrderClient {
     
+    /**
+     * 创建订单
+     * */
     @PostMapping("/order/create")
     ApiResponse<String> create(OrderCreateDto orderCreateDto);
 }
