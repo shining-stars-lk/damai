@@ -80,7 +80,13 @@ public enum BaseCode {
     
     SEAT_SOLD(4003,"座位已售卖"),
     
-    TICKET_CATEGORY_NOT_EXIST(4004,"如果不选座位，那么票档必须要存在")
+    SEAT_OCCUPY(4004,"座位已占用"),
+    
+    TICKET_CATEGORY_NOT_EXIST(4005,"如果不选座位，那么票档必须要存在"),
+    
+    TICKET_COUNT_NOT_EXIST(4006,"如果不选座位，那么购买票数量必须要存在"),
+    
+    PRICE_ERROR(4007,"入参的订单价格大于座位规定价格"),
     
     ;
     
