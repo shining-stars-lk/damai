@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * @program: redis-example
@@ -30,6 +31,19 @@ public interface RedisCache {
      * @return T 普通对象
      */
     <T> T get(RedisKeyWrap RedisKeyWrap, Class<T> clazz);
+    
+    /**
+     * 获取字符串对象(如果缓存中不存在，则执行给定的supplier接口)
+     *
+     * @param RedisKeyWrap   RedisKeyWrap
+     * @param clazz 类对象
+     * @param <T>   T
+     * @param supplier 缓存为空时，执行的逻辑
+     * @param ttl      过期时间
+     * @param timeUnit 时间单位
+     * @return T 普通对象
+     */
+    <T> T get(RedisKeyWrap RedisKeyWrap, Class<T> clazz, Supplier<T> supplier, long ttl, TimeUnit timeUnit);
 
     /**
      * 返回 key 中字符串值的子字符

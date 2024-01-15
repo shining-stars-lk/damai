@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +45,19 @@ public class RedisCacheImpl implements RedisCache {
             return (T) cachedValue;
         }
         return getComplex(cachedValue, clazz);
+    }
+    
+    @Override
+    public <T> T get(RedisKeyWrap RedisKeyWrap, Class<T> clazz, Supplier<T> supplier,long ttl, TimeUnit timeUnit) {
+        T t = get(RedisKeyWrap, clazz);
+        if (CacheUtil.isEmpty(t)) {
+            t = supplier.get();
+            if (CacheUtil.isEmpty(t)) {
+                return t;
+            }
+            set(RedisKeyWrap,t,ttl,timeUnit);
+        }
+        return t;
     }
 
     @Override
