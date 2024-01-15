@@ -15,6 +15,7 @@ import com.example.dto.SeatDto;
 import com.example.dto.UserGetAndTicketUserListDto;
 import com.example.entity.Program;
 import com.example.entity.Seat;
+import com.example.entity.TicketCategory;
 import com.example.enums.BaseCode;
 import com.example.enums.SellStatus;
 import com.example.exception.CookFrameException;
@@ -112,9 +113,24 @@ public class ProgramOrderService {
         List<Seat> seatList = new ArrayList<>();
         //入参座位存在
         if (CollectionUtil.isNotEmpty(seatDtoList)) {
+            //余票数量检测
+            LambdaQueryWrapper<TicketCategory> tcLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
+                    .in(TicketCategory::getId, seatDtoList.stream().map(SeatDto::getTicketCategoryId));
+            List<TicketCategory> ticketCategories = ticketCategoryMapper.selectList(tcLambdaQueryWrapper);
+            Map<Long, Long> seatTicketCategoryDtoCount = seatDtoList.stream()
+                    .collect(Collectors.groupingBy(SeatDto::getTicketCategoryId, Collectors.counting()));
+            for (TicketCategory ticketCategory : ticketCategories) {
+                Long count = Optional.ofNullable(seatTicketCategoryDtoCount.get(ticketCategory.getId())).orElseThrow(() -> new CookFrameException(BaseCode.TICKET_CATEGORY_NOT_EXIST_V2));
+                Long remainNumber = ticketCategory.getRemainNumber();
+                if (count > remainNumber) {
+                    throw new CookFrameException(BaseCode.TICKET_REMAIN_NUMBER_NOT_SUFFICIENT);
+                }
+            }
+            
             //构建批量座位查询条件
             LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = Wrappers.lambdaQuery(Seat.class)
-                    .eq(Seat::getProgramId,programOrderCreateDto.getProgramId());
+                    .eq(Seat::getProgramId,programOrderCreateDto.getProgramId())
+                    .eq(Seat::getSellStatus, SellStatus.NO_SOLD.getCode());
             for (SeatDto seatDto : seatDtoList) {
                 seatLambdaQueryWrapper.or(i -> i
                         .eq(Seat::getTicketCategoryId,seatDto.getTicketCategoryId())
@@ -146,6 +162,9 @@ public class ProgramOrderService {
                     throw new CookFrameException(BaseCode.PRICE_ERROR);
                 }
             }
+            
+            
+            
         }else {
             //入参座位不存在，利用算法自动根据人数和票档进行分配相邻座位
             Long ticketCategoryId = programOrderCreateDto.getTicketCategoryId();

@@ -90,6 +90,9 @@ public enum BaseCode {
     
     RPC_RESULT_DATA_EMPTY(4008,"rpc服务返回数据为空"),
     
+    TICKET_CATEGORY_NOT_EXIST_V2(4009,"票档不存在"),
+    
+    TICKET_REMAIN_NUMBER_NOT_SUFFICIENT(4010,"余票数量不足"),
     ;
     
     private final Integer code;
