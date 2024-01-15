@@ -96,9 +96,21 @@ public class CacheUtil {
      * @param object
      */
     public static void checkNotEmpty(Object object) {
-        if (object == null) {
+        if (isEmpty(object)) {
             throw new RuntimeException("请求参数缺失");
         }
+    }
+    
+    /**
+     * 判断 object 是否为空
+     *
+     * @param object
+     */
+    public static boolean isEmpty(Object object) {
+        if (object == null) {
+            return true;
+        }
+        return object instanceof String && StringUtil.isEmpty((String) object);
     }
 
     public static List<String> getBatchKey(Collection<RedisKeyWrap> list){
