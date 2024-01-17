@@ -93,6 +93,8 @@ public enum BaseCode {
     TICKET_CATEGORY_NOT_EXIST_V2(4009,"票档不存在"),
     
     TICKET_REMAIN_NUMBER_NOT_SUFFICIENT(4010,"余票数量不足"),
+    
+    COMPOSITE_NOT_EXIST(4011,"通用验证不存在"),
     ;
     
     private final Integer code;

@@ -56,7 +56,7 @@ public class UserController {
     @ApiOperation(value = "是否存在")
     @PostMapping(value = "/exist")
     public ApiResponse<Void> exist(@Valid @RequestBody UserExistDto userExistDto){
-        userService.exist(userExistDto.getMobile());
+        userService.exist(userExistDto);
         return ApiResponse.ok();
     }
     
