@@ -17,7 +17,6 @@ import com.example.servicelock.aspect.ServiceLockAspect;
 import com.example.util.RBloomFilterUtil;
 import com.example.util.ServiceLockUtil;
 import org.redisson.api.RedissonClient;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -27,7 +26,6 @@ import org.springframework.context.annotation.Bean;
  * @author: 星哥
  * @create: 2023-02-23
  **/
-@ConditionalOnProperty("spring.data.redis.host")
 @EnableConfigurationProperties(RedissonProperties.class)
 public class DistributedAutoConfiguration {
     

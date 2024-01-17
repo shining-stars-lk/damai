@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.core.RedisKeyEnum;
+import com.example.dto.UserExistDto;
 import com.example.dto.UserGetAndTicketUserListDto;
 import com.example.dto.UserIdDto;
 import com.example.dto.UserMobileDto;
@@ -75,7 +76,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     @Transactional
     @ServiceLock(lockType= LockType.Write,name = REGISTER_USER_LOCK,keys = {"#userRegisterDto.mobile"})
     public void register(final UserRegisterDto userRegisterDto) {
-        exist(userRegisterDto.getMobile());
+        doExist(userRegisterDto.getMobile());
         
         User user = new User();
         BeanUtils.copyProperties(userRegisterDto,user);
@@ -86,7 +87,11 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
     
     @ServiceLock(lockType= LockType.Read,name = REGISTER_USER_LOCK,keys = {"#mobile"})
-    public void exist(String mobile){
+    public void exist(UserExistDto userExistDto){
+        doExist(userExistDto.getMobile());
+    }
+    
+    public void doExist(String mobile){
         boolean contains = rBloomFilterUtil.contains(mobile);
         if (contains) {
             LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
