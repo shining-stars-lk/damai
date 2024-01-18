@@ -29,5 +29,6 @@
         <module>job-service</module>
         <module>customize-service</module>
         <module>program-service</module>
+        <module>pay-service</module>
     </modules>
 </project>
