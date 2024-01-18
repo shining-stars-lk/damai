@@ -5,12 +5,12 @@ import com.example.dto.UserRegisterDto;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserTestCheckHandler extends CompositeInterface<UserRegisterDto> {
+public class EHandler extends CompositeInterface<UserRegisterDto> {
     
     
     @Override
     public void execute(final UserRegisterDto userRegisterDto) {
-        System.out.println("输出");
+        System.out.println("E输出");
     }
     
     @Override
@@ -19,8 +19,13 @@ public class UserTestCheckHandler extends CompositeInterface<UserRegisterDto> {
     }
     
     @Override
+    public Integer executeParentOrder() {
+        return 1;
+    }
+    
+    @Override
     public Integer executeTier() {
-        return 2;
+        return 3;
     }
     
     @Override
