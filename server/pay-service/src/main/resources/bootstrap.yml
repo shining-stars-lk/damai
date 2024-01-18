@@ -1,0 +1,21 @@
+#服务端口
+server:
+  port: 6087
+# 应用名称
+spring:
+  application:
+    name: pay-service
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
+      config:
+        server-addr: www.cookframe.com:8848
+        file-extension: yaml
+        shared-configs:
+          - data-id: common.yaml
+            refresh: true
