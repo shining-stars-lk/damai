@@ -32,6 +32,8 @@ import com.example.mapper.SeatMapper;
 import com.example.mapper.TicketCategoryMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
+import com.example.redisson.LockType;
+import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.PageUtil;
 import com.example.vo.AreaVo;
 import com.example.vo.ProgramListVo;
@@ -54,6 +56,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.example.core.DistributedLockConstants.PROGRAM_LOCK;
 import static com.example.service.cache.ExpireTime.EXPIRE_TIME;
 
 /**
@@ -198,6 +201,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         return PageUtil.convertPage(iPage,programListVoList);
     }
     
+    @ServiceLock(lockType= LockType.Read,name = PROGRAM_LOCK,keys = {"#programGetDto.id"})
     public ProgramVo getById(ProgramGetDto programGetDto) {
         ProgramVo redisProgramVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM,programGetDto.getId()),ProgramVo.class,() -> {
             ProgramVo programVo = new ProgramVo();

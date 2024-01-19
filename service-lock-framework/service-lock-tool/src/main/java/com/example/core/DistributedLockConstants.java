@@ -26,11 +26,16 @@ public class DistributedLockConstants {
     /**
      * 注册用户
      * */
-    public final static String REGISTER_USER_LOCK = "register_user_lock";
+    public final static String REGISTER_USER_LOCK = "d_mai_register_user_lock";
     
     /**
      * 登录用户
      * */
-    public final static String LOGIN_USER_LOCK = "login_user_lock";
+    public final static String LOGIN_USER_LOCK = "d_mai_login_user_lock";
+    
+    /**
+     * 登录用户
+     * */
+    public final static String PROGRAM_LOCK = "d_mai_program_lock";
     
 }
