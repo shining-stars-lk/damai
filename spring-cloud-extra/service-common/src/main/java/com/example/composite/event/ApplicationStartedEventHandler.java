@@ -1,15 +1,18 @@
 package com.example.composite.event;
 
+import com.example.composite.AbstractComposite;
 import com.example.composite.CompositeContainer;
-import com.example.composite.CompositeInterface;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * ApplicationStartedEventHandler 类用于处理应用程序启动事件。
@@ -19,19 +22,20 @@ public class ApplicationStartedEventHandler implements ApplicationListener<Appli
     
     private final CompositeContainer compositeContainer;
     
-    
     @Override
     public void onApplicationEvent(final ApplicationStartedEvent event) {
-        // 获取所有 CompositeInterface 类型的 Bean
-        Map<String, CompositeInterface> compositeInterfaceMap = event.getApplicationContext().getBeansOfType(CompositeInterface.class);
+        // 获取所有 AbstractComposite 类型的 Bean
+        Map<String, AbstractComposite> compositeInterfaceMap = event.getApplicationContext().getBeansOfType(AbstractComposite.class);
         
-        // 构建组件树结构
-        CompositeInterface root = buildMenu(compositeInterfaceMap.values());
-        
-        // 如果根节点存在，则执行业务逻辑
-        if (root != null) {
-            root.executeByLevel(null);
-        }
+        Map<String, List<AbstractComposite>> collect = compositeInterfaceMap.values().stream().collect(Collectors.groupingBy(AbstractComposite::type));
+        collect.forEach((k,v) -> {
+            // 构建组件树结构
+            AbstractComposite root = build(v);
+            // 如果根节点存在，则执行业务逻辑
+            if (Objects.nonNull(root)) {
+                compositeContainer.add(k,root);
+            }
+        });
     }
     
     /**
@@ -39,23 +43,26 @@ public class ApplicationStartedEventHandler implements ApplicationListener<Appli
      * @param groupedByTier 按层级组织的组件映射。
      * @param currentTier 当前处理的层级。
      */
-    private static void buildTree(Map<Integer, Map<Integer, CompositeInterface>> groupedByTier, int currentTier) {
-        Map<Integer, CompositeInterface> currentLevelComponents = groupedByTier.get(currentTier);
-        Map<Integer, CompositeInterface> nextLevelComponents = groupedByTier.get(currentTier + 1);
+    private static void buildTree(Map<Integer, Map<Integer, AbstractComposite>> groupedByTier, int currentTier) {
+        Map<Integer, AbstractComposite> currentLevelComponents = groupedByTier.get(currentTier);
+        Map<Integer, AbstractComposite> nextLevelComponents = groupedByTier.get(currentTier + 1);
         
         if (currentLevelComponents == null) {
-            return; // 当前层级没有组件时，直接返回
+            // 当前层级没有组件时，直接返回
+            return; 
         }
         
         if (nextLevelComponents != null) {
-            for (CompositeInterface child : nextLevelComponents.values()) {
+            for (AbstractComposite child : nextLevelComponents.values()) {
                 Integer parentOrder = child.executeParentOrder();
                 if (parentOrder == null || parentOrder == 0) {
-                    continue; // 跳过根节点
+                    // 跳过根节点
+                    continue; 
                 }
-                CompositeInterface parent = currentLevelComponents.get(parentOrder);
+                AbstractComposite parent = currentLevelComponents.get(parentOrder);
                 if (parent != null) {
-                    parent.add(child); // 将子节点添加到父节点的子列表中
+                    // 将子节点添加到父节点的子列表中
+                    parent.add(child); 
                 }
             }
         }
@@ -69,19 +76,21 @@ public class ApplicationStartedEventHandler implements ApplicationListener<Appli
      * @param components 组件集合。
      * @return 根节点。
      */
-    public static CompositeInterface buildMenu(Collection<CompositeInterface> components) {
+    public static AbstractComposite build(Collection<AbstractComposite> components) {
         // 按层级和执行顺序组织组件
-        Map<Integer, Map<Integer, CompositeInterface>> groupedByTier = new TreeMap<>();
+        Map<Integer, Map<Integer, AbstractComposite>> groupedByTier = new TreeMap<>();
         
-        for (CompositeInterface component : components) {
+        for (AbstractComposite component : components) {
             groupedByTier.computeIfAbsent(component.executeTier(), k -> new HashMap<>())
-                    .put(component.executeOrder(), component); // 使用 executeOrder 作为键
+                    // 使用 executeOrder 作为键
+                    .put(component.executeOrder(), component); 
         }
         
         // 找到最小层级
         Integer minTier = groupedByTier.keySet().stream().min(Integer::compare).orElse(null);
         if (minTier == null) {
-            return null; // 没有组件时返回空
+            // 没有组件时返回空
+            return null;
         }
         
         // 构建组件树

@@ -5,16 +5,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 /**
- * 抽象类 CompositeInterface 表示组合接口，用于构建和执行具有层级结构的业务逻辑。
+ * 抽象类 AbstractComposite 表示组合接口，用于构建和执行具有层级结构的业务逻辑。
  * @param <T> 泛型参数，表示执行业务时传递的参数类型。
  */
-public abstract class CompositeInterface<T> {
+public abstract class AbstractComposite<T> {
+    
     /**
      * 存储子节点的列表
      * 
      */
-    
-    protected List<CompositeInterface<T>> list = new ArrayList<>(); 
+    protected List<AbstractComposite<T>> list = new ArrayList<>(); 
     
     /**
      * 执行具体业务的抽象方法，由子类具体实现。
@@ -44,18 +44,18 @@ public abstract class CompositeInterface<T> {
     
     /**
      * 将子组件添加到当前组件的子列表中。
-     * @param compositeInterface 子组件实例。
+     * @param abstractComposite 子组件实例。
      */
-    public void add(CompositeInterface<T> compositeInterface) {
-        list.add(compositeInterface);
+    public void add(AbstractComposite<T> abstractComposite) {
+        list.add(abstractComposite);
     }
     
     /**
      * 按层次结构执行每个组件的业务逻辑。
      * @param param 泛型参数，用于业务执行。
      */
-    public void executeByLevel(T param) {
-        Queue<CompositeInterface<T>> queue = new LinkedList<>();
+    public void allExecute(T param) {
+        Queue<AbstractComposite<T>> queue = new LinkedList<>();
         // 将当前对象加入队列
         queue.add(this); 
         
@@ -65,9 +65,10 @@ public abstract class CompositeInterface<T> {
             
             for (int i = 0; i < levelSize; i++) {
                 // 从队列中取出一个元素
-                CompositeInterface<T> current = queue.poll(); 
+                AbstractComposite<T> current = queue.poll(); 
                 
                 // 执行当前元素的业务逻辑
+                assert current != null;
                 current.execute(param);
                 
                 // 将当前元素的子元素加入队列，以便在下一次迭代中处理

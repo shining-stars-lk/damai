@@ -6,6 +6,7 @@ import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.composite.CompositeContainer;
 import com.example.core.RedisKeyEnum;
 import com.example.dto.UserExistDto;
 import com.example.dto.UserGetAndTicketUserListDto;
@@ -16,6 +17,7 @@ import com.example.dto.UserUpdateDto;
 import com.example.entity.TicketUser;
 import com.example.entity.User;
 import com.example.enums.BaseCode;
+import com.example.enums.CompositeCheckType;
 import com.example.exception.CookFrameException;
 import com.example.jwt.TokenUtil;
 import com.example.mapper.TicketUserMapper;
@@ -70,13 +72,16 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     @Autowired
     private RBloomFilterUtil rBloomFilterUtil;
     
+    @Autowired
+    private CompositeContainer compositeContainer;
+    
     @Value("${token.expire.time:86400000}")
     private Long tokenExpireTime;
     
     @Transactional
     @ServiceLock(lockType= LockType.Write,name = REGISTER_USER_LOCK,keys = {"#userRegisterDto.mobile"})
     public void register(final UserRegisterDto userRegisterDto) {
-        doExist(userRegisterDto.getMobile());
+        compositeContainer.execute(CompositeCheckType.USER_REGISTER_CHECK.getValue(),userRegisterDto);
         
         User user = new User();
         BeanUtils.copyProperties(userRegisterDto,user);
