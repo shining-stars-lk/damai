@@ -63,6 +63,19 @@ public interface RedisCache {
      * @return List<T>
      */
     <T> List<T> getValueIsList(RedisKeyWrap RedisKeyWrap, Class<T> clazz);
+    
+    /**
+     * 获取字符串对象, 并且字符串中是集合内容(如果缓存中不存在，则执行给定的supplier接口)
+     *
+     * @param RedisKeyWrap
+     * @param clazz
+     * @param <T>
+     * @param supplier 缓存为空时，执行的逻辑
+     * @param ttl      过期时间
+     * @param timeUnit 时间单位
+     * @return List<T>
+     */
+    <T> List<T> getValueIsList(RedisKeyWrap RedisKeyWrap, Class<T> clazz, Supplier<List<T>> supplier,long ttl, TimeUnit timeUnit)
 
 
     /**

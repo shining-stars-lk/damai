@@ -13,7 +13,7 @@
     <artifactId>redis-tool</artifactId>
 
     <name>redis-tool</name>
-    <description>分布式锁和防重复提交工具</description>
+    <description>redis操作工具</description>
     
     <dependencies>
         <dependency>

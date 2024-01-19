@@ -97,6 +97,8 @@ public enum BaseCode {
     COMPOSITE_NOT_EXIST(4011,"通用验证不存在"),
     
     USER_REGISTER_FREQUENCY(4012,"用户注册频繁"),
+    
+    PROGRAM_SHOW_TIME_NOT_EXIST(4013,"节目演出时间不存在"),
     ;
     
     private final Integer code;

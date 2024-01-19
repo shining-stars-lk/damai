@@ -57,7 +57,7 @@ public class Seat extends BaseData implements Serializable {
     private BigDecimal price;
 
     /**
-     * 0:已买 1可卖
+     * 1未售卖 2锁定 3已售卖
      */
     private Integer sellStatus;
 }

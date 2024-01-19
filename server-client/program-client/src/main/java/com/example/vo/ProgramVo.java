@@ -115,7 +115,9 @@ public class ProgramVo implements Serializable {
     @ApiModelProperty(name ="showWeekTime", dataType ="String", value ="演出时间所在的星期")
     private String showWeekTime;
     
-    
     @ApiModelProperty(name ="ticketCategoryVoList", dataType ="List<TicketCategoryVo>", value ="节目票档")
     private List<TicketCategoryVo> ticketCategoryVoList;
+    
+    @ApiModelProperty(name ="seatVoList", dataType ="List<SeatVo>", value ="座位列表")
+    private List<SeatVo> seatVoList;
 }

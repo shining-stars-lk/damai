@@ -53,7 +53,7 @@ public class RedisCacheImpl implements RedisCache {
         if (CacheUtil.isEmpty(t)) {
             t = supplier.get();
             if (CacheUtil.isEmpty(t)) {
-                return t;
+                return null;
             }
             set(RedisKeyWrap,t,ttl,timeUnit);
         }
@@ -73,10 +73,25 @@ public class RedisCacheImpl implements RedisCache {
         String key = RedisKeyWrap.getRelKey();
         String valueStr = redisTemplate.opsForValue().get(key);
         if (StringUtil.isEmpty(valueStr)) {
-            return new ArrayList();
+            return new ArrayList<>();
         }
-        List<T> resultStrList = JSON.parseArray(valueStr, clazz);
-        return resultStrList;
+        return JSON.parseArray(valueStr, clazz);
+    }
+    
+    @Override
+    public <T> List<T> getValueIsList(RedisKeyWrap RedisKeyWrap, Class<T> clazz, Supplier<List<T>> supplier,long ttl, TimeUnit timeUnit) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        String valueStr = redisTemplate.opsForValue().get(key);
+        List<T> tList = null;
+        if (CacheUtil.isEmpty(valueStr)) {
+            tList = supplier.get();
+            if (CacheUtil.isEmpty(tList)) {
+                return null;
+            }
+            set(RedisKeyWrap,tList,ttl,timeUnit);
+        }
+        return tList;
     }
 
 

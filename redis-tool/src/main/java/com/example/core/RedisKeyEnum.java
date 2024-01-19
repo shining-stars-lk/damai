@@ -49,6 +49,10 @@ public enum RedisKeyEnum {
     PLATFORM_NOTICE_FLAG("platform_notice_flag","platform_notice_flag的key","platform_notice_flag的value","k"),
     
     CHANNEL_DATA("channel_data:%s","channel_data的key","channel_data的value","k"),
+    
+    PROGRAM("d_mai_program_%S","节目id","节目","k"),
+    
+    PROGRAM_SHOW_TIME("d_mai_program_show_time_%S","节目演出时间id","节目演出时间","k"),
     ;
 
     /**
