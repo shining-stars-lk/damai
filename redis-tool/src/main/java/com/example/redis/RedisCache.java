@@ -75,7 +75,7 @@ public interface RedisCache {
      * @param timeUnit 时间单位
      * @return List<T>
      */
-    <T> List<T> getValueIsList(RedisKeyWrap RedisKeyWrap, Class<T> clazz, Supplier<List<T>> supplier,long ttl, TimeUnit timeUnit)
+    <T> List<T> getValueIsList(RedisKeyWrap RedisKeyWrap, Class<T> clazz, Supplier<List<T>> supplier,long ttl, TimeUnit timeUnit);
 
 
     /**
