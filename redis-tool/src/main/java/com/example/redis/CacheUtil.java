@@ -110,7 +110,13 @@ public class CacheUtil {
         if (object == null) {
             return true;
         }
-        return object instanceof String && StringUtil.isEmpty((String) object);
+        if (object instanceof String) {
+            return StringUtil.isEmpty((String) object);
+        }
+        if (object instanceof Collection) {
+            return ((Collection<?>)object).size() == 0;
+        }
+        return true;
     }
 
     public static List<String> getBatchKey(Collection<RedisKeyWrap> list){

@@ -16,7 +16,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * @create: 2023-05-28
  **/
 @ConditionalOnProperty("spring.redis.host")
-public class RedisToolConfig {
+public class RedisToolAutoConfig {
 
     @Bean("redisToolRedisTemplate")
     public RedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
