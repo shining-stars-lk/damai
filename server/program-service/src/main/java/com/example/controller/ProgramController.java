@@ -5,9 +5,7 @@ import com.example.common.ApiResponse;
 import com.example.dto.ProgramGetDto;
 import com.example.dto.ProgramListDto;
 import com.example.dto.ProgramPageListDto;
-import com.example.entity.Seat;
 import com.example.service.ProgramService;
-import com.example.service.SeatService;
 import com.example.vo.ProgramListVo;
 import com.example.vo.ProgramVo;
 import io.swagger.annotations.Api;
@@ -38,9 +36,6 @@ public class ProgramController {
     @Autowired
     private ProgramService programService;
     
-    @Autowired
-    private SeatService seatService;
-    
     @ApiOperation(value = "查询主页列表")
     @PostMapping(value = "/selectHomeList")
     public ApiResponse<Map<String,List<ProgramListVo>>> selectHomeList(@Valid @RequestBody ProgramListDto programPageListDto) {
@@ -57,10 +52,5 @@ public class ProgramController {
     @PostMapping(value = "/getById")
     public ApiResponse<ProgramVo> getById(@Valid @RequestBody ProgramGetDto programGetDto) {
         return ApiResponse.ok(programService.getById(programGetDto));
-    }
-    
-    @PostMapping(value = "/test")
-    public ApiResponse<List<Seat>> test(Integer count) {
-        return ApiResponse.ok(seatService.test(count));
     }
 }

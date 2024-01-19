@@ -95,6 +95,8 @@ public enum BaseCode {
     TICKET_REMAIN_NUMBER_NOT_SUFFICIENT(4010,"余票数量不足"),
     
     COMPOSITE_NOT_EXIST(4011,"通用验证不存在"),
+    
+    USER_REGISTER_FREQUENCY(4012,"用户注册频繁"),
     ;
     
     private final Integer code;
