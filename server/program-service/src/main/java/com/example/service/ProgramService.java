@@ -208,11 +208,8 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             //根据id查询到节目
             Program program = Optional.ofNullable(programMapper.selectById(programGetDto.getId())).orElseThrow(() -> new CookFrameException(BaseCode.PROGRAM_NOT_EXIST));
             BeanUtil.copyProperties(program,programVo);
-            //查询节目类型
-            ProgramCategory programCategory = programCategoryMapper.selectById(program.getProgramCategoryId());
-            if (Objects.nonNull(programCategory)) {
-                programVo.setProgramCategoryName(programCategory.getName());
-            }
+            
+            
             //查询区域
             AreaGetDto areaGetDto = new AreaGetDto();
             areaGetDto.setId(program.getAreaId());
@@ -237,6 +234,12 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             return programVo;
         },EXPIRE_TIME, TimeUnit.DAYS);
         
+        //查询节目类型
+        ProgramCategory programCategory = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_CATEGORY_HASH)
+                ,String.valueOf(redisProgramVo.getProgramCategoryId()),ProgramCategory.class);
+        if (Objects.nonNull(programCategory)) {
+            redisProgramVo.setProgramCategoryName(programCategory.getName());
+        }
         
         //查询节目演出时间
         ProgramShowTime redisProgramShowTime = 

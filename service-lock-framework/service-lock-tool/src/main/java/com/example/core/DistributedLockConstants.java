@@ -34,8 +34,13 @@ public class DistributedLockConstants {
     public final static String LOGIN_USER_LOCK = "d_mai_login_user_lock";
     
     /**
-     * 登录用户
+     * 节目
      * */
     public final static String PROGRAM_LOCK = "d_mai_program_lock";
+    
+    /**
+     * 节目类型
+     * */
+    public final static String PROGRAM_CATEGORY_LOCK = "d_mai_program_category_lock";
     
 }

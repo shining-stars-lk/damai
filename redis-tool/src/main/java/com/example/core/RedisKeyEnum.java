@@ -53,6 +53,8 @@ public enum RedisKeyEnum {
     PROGRAM("d_mai_program_%S","节目id","节目","k"),
     
     PROGRAM_SHOW_TIME("d_mai_program_show_time_%S","节目演出时间id","节目演出时间","k"),
+    
+    PROGRAM_CATEGORY_HASH("d_mai_program_category_hash","节目类型hash集合","节目类型hash集合","k"),
     ;
 
     /**
