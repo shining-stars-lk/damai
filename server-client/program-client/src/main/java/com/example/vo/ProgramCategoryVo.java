@@ -21,19 +21,19 @@ public class ProgramCategoryVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 区域id
+     * 主键id
      */
     @ApiModelProperty(name ="id", dataType ="Long", value ="区域id")
     private Long id;
 
     /**
-     * 父区域id
+     * 父id
      */
     @ApiModelProperty(name ="parentId", dataType ="Long", value ="父区域id")
     private Long parentId;
 
     /**
-     * 区域名字
+     * 名字
      */
     @ApiModelProperty(name ="name", dataType ="String", value ="区域名字")
     private String name;

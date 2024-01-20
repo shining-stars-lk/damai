@@ -130,6 +130,11 @@
             <artifactId>jasypt-spring-boot-starter</artifactId>
             <version>${jasypt.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>thread-pool</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 
     <build>

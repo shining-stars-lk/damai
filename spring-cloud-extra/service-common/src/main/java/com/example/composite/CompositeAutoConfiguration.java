@@ -1,13 +1,14 @@
 package com.example.composite;
 
-import com.example.composite.event.ApplicationStartedEventHandler;
+import com.example.event.ApplicationStartedEventHandler;
+import com.example.init.InitDataContainer;
 import org.springframework.context.annotation.Bean;
 
 public class CompositeAutoConfiguration {
     
     @Bean
-    public ApplicationStartedEventHandler applicationStartedEventHandler(CompositeContainer compositeContainer){
-        return new ApplicationStartedEventHandler(compositeContainer);
+    public ApplicationStartedEventHandler applicationStartedEventHandler(CompositeContainer compositeContainer, InitDataContainer initDataContainer){
+        return new ApplicationStartedEventHandler(compositeContainer,initDataContainer);
     }
     
     @Bean
