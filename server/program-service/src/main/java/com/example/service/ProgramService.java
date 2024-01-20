@@ -221,16 +221,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             }else {
                 log.error("base-data rpc getById error areaResponse:{}", JSON.toJSONString(areaResponse));
             }
-            //查询节目票档
-            LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
-                    .eq(TicketCategory::getProgramId, program.getId());
-            List<TicketCategory> ticketCategoryList = ticketCategoryMapper.selectList(ticketCategoryLambdaQueryWrapper);
-            List<TicketCategoryVo> ticketCategoryVoList = ticketCategoryList.stream().map(ticketCategory -> {
-                TicketCategoryVo ticketCategoryVo = new TicketCategoryVo();
-                BeanUtil.copyProperties(ticketCategory, ticketCategoryVo);
-                return ticketCategoryVo;
-            }).collect(Collectors.toList());
-            programVo.setTicketCategoryVoList(ticketCategoryVoList);
+            
             return programVo;
         },EXPIRE_TIME, TimeUnit.DAYS);
         
@@ -243,7 +234,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         
         //查询节目演出时间
         ProgramShowTime redisProgramShowTime = 
-                redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM,programGetDto.getId()),ProgramShowTime.class,() -> {
+                redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME,programGetDto.getId()),ProgramShowTime.class,() -> {
                     LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper = 
                             Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, redisProgramVo.getId());
                     return Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
@@ -256,7 +247,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         
         //查询座位
         List<SeatVo> redisSeatVoList = 
-                redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM, programGetDto.getId()), SeatVo.class, () -> {
+                redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LIST, programGetDto.getId()), SeatVo.class, () -> {
                     LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, redisProgramVo.getId());
                     List<Seat> seats = seatMapper.selectList(seatLambdaQueryWrapper);
                     List<SeatVo> seatVoList = new ArrayList<>(seats.size());
@@ -269,6 +260,36 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                     return seatVoList;
         }, EXPIRE_TIME, TimeUnit.DAYS);
         redisProgramVo.setSeatVoList(redisSeatVoList);
+        
+        //查询节目票档
+        List<TicketCategoryVo> ticketCategoryVoList = 
+        redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_CATEGORY_LIST, programGetDto.getId()), TicketCategoryVo.class, () -> {
+            LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
+                    .eq(TicketCategory::getProgramId, redisProgramVo.getId());
+            List<TicketCategory> ticketCategoryList = ticketCategoryMapper.selectList(ticketCategoryLambdaQueryWrapper);
+            return ticketCategoryList.stream().map(ticketCategory -> {
+                ticketCategory.setRemainNumber(null);
+                TicketCategoryVo ticketCategoryVo = new TicketCategoryVo();
+                BeanUtil.copyProperties(ticketCategory, ticketCategoryVo);
+                return ticketCategoryVo;
+            }).collect(Collectors.toList());
+        }, EXPIRE_TIME, TimeUnit.DAYS);
+        redisProgramVo.setTicketCategoryVoList(ticketCategoryVoList);
+        
+        //余票数量
+        Boolean exist = redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programGetDto.getId()));
+        if (exist) {
+                
+        }else {
+            LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
+                    .eq(TicketCategory::getProgramId, redisProgramVo.getId());
+            List<TicketCategory> ticketCategoryList = ticketCategoryMapper.selectList(ticketCategoryLambdaQueryWrapper);
+            Map<String, Long> map = ticketCategoryList.stream().collect(Collectors.toMap(t -> String.valueOf(t.getId()), 
+                    TicketCategory::getRemainNumber, (v1, v2) -> v2));
+            redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programGetDto.getId()),map);
+        }
+        
+        
         return redisProgramVo;
     }
     
