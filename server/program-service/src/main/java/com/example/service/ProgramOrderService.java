@@ -22,6 +22,7 @@ import com.example.exception.CookFrameException;
 import com.example.mapper.ProgramMapper;
 import com.example.mapper.SeatMapper;
 import com.example.mapper.TicketCategoryMapper;
+import com.example.service.tool.SeatMatch;
 import com.example.util.DateUtils;
 import com.example.vo.TicketUserVo;
 import com.example.vo.UserGetAndTicketUserListVo;

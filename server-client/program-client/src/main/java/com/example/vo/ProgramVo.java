@@ -104,6 +104,30 @@ public class ProgramVo implements Serializable {
     private Long totalCount;
     
     /**
+     * 是否允许退款 1:允许 0:不允许
+     */
+    @ApiModelProperty(name ="permitRefund", dataType ="Integer", value ="否允许退款 1:允许 0:不允许")
+    private Integer permitRefund;
+    
+    /**
+     * 是否允许选座 1:允许选座 0:不允许选座
+     */
+    @ApiModelProperty(name ="permitChooseSeat", dataType ="Integer", value ="是否允许选座 1:允许选座 0:不允许选座")
+    private Integer permitChooseSeat;
+    
+    /**
+     * 电子票/快递票 1:是 0:不是
+     */
+    @ApiModelProperty(name ="electronicDeliveryTicket", dataType ="Integer", value ="电子票/快递票 1:是 0:不是")
+    private Integer electronicDeliveryTicket;
+    
+    /**
+     * 电子发票 1:是 0:不是
+     */
+    @ApiModelProperty(name ="electronicInvoice", dataType ="Integer", value ="电子发票 1:是 0:不是")
+    private Integer electronicInvoice;
+    
+    /**
      * 业务字段
      * */
     @ApiModelProperty(name ="showTime", dataType ="Date", value ="演出时间")
