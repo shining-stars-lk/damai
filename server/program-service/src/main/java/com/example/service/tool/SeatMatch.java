@@ -1,4 +1,4 @@
-package com.example.service;
+package com.example.service.tool;
 
 import com.example.entity.Seat;
 

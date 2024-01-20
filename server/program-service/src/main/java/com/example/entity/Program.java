@@ -149,4 +149,24 @@ public class Program extends BaseData implements Serializable {
      * 大麦网初始开售时全场可售门票总张数
      */
     private Long totalCount;
+    
+    /**
+     * 是否允许退款 1:允许 0:不允许
+     */
+    private Integer permitRefund;
+    
+    /**
+     * 是否允许选座 1:允许选座 0:不允许选座
+     */
+    private Integer permitChooseSeat;
+    
+    /**
+     * 电子票/快递票 1:是 0:不是
+     */
+    private Integer electronicDeliveryTicket;
+    
+    /**
+     * 电子发票 1:是 0:不是
+     */
+    private Integer electronicInvoice;
 }
