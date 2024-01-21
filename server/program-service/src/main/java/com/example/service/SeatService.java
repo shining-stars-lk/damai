@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.example.service.cache.ExpireTime.EXPIRE_TIME;
 
@@ -41,19 +42,23 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
      * 查询座位
      * */
     public List<SeatVo> selectSeatByProgramId(Long programId) {
-        List<SeatVo> redisSeatVoList =
-                redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LIST, programId), SeatVo.class, () -> {
-                    LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, programId);
-                    List<Seat> seats = seatMapper.selectList(seatLambdaQueryWrapper);
-                    List<SeatVo> seatVoList = new ArrayList<>(seats.size());
-                    for (Seat seat : seats) {
-                        SeatVo seatVo = new SeatVo();
-                        BeanUtil.copyProperties(seat, seatVo);
-                        seatVo.setSeatTypeName(SeatType.getMsg(seat.getSeatType()));
-                        seatVoList.add(seatVo);
-                    }
-                    return seatVoList;
-                }, EXPIRE_TIME, TimeUnit.DAYS);
-        return redisSeatVoList;
+        List<SeatVo> seatVoList = new ArrayList<>();
+        if (redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LIST, programId))) {
+            seatVoList = redisCache.getAllForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LIST, programId),SeatVo.class);
+        }else {
+            LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, programId);
+            List<Seat> seats = seatMapper.selectList(seatLambdaQueryWrapper);
+            for (Seat seat : seats) {
+                SeatVo seatVo = new SeatVo();
+                BeanUtil.copyProperties(seat, seatVo);
+                seatVo.setSeatTypeName(SeatType.getMsg(seat.getSeatType()));
+                seatVoList.add(seatVo);
+            }
+            redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LIST, programId)
+                    ,seatVoList.stream().collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
+                    ,EXPIRE_TIME, TimeUnit.DAYS);
+            return seatVoList;
+        }
+        return seatVoList;
     }
 }
