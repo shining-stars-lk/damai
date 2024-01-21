@@ -19,11 +19,8 @@ import com.example.entity.Program;
 import com.example.entity.ProgramCategory;
 import com.example.entity.ProgramShowTime;
 import com.example.entity.ProgramV2;
-import com.example.entity.Seat;
-import com.example.entity.TicketCategory;
 import com.example.entity.TicketCategoryAggregate;
 import com.example.enums.BaseCode;
-import com.example.enums.SeatType;
 import com.example.exception.CookFrameException;
 import com.example.mapper.ProgramCategoryMapper;
 import com.example.mapper.ProgramMapper;
@@ -92,6 +89,18 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     @Autowired
     private RedisCache redisCache;
     
+    @Autowired
+    private ProgramService programService;
+    
+    @Autowired
+    private ProgramShowTimeService programShowTimeService;
+    
+    @Autowired
+    private SeatService seatService;
+    
+    @Autowired
+    private TicketCategoryService ticketCategoryService;
+    
     public Map<String,List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
         Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>();
         
@@ -131,19 +140,19 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 BeanUtil.copyProperties(program,programListVo);
                 //演出时间
                 programListVo.setShowTime(Optional.ofNullable(ProgramShowTimeMap.get(program.getId()))
-                        .filter(list -> list.size() > 0)
+                        .filter(list -> !list.isEmpty())
                         .map(list -> list.get(0))
                         .map(ProgramShowTime::getShowTime)
                         .orElse(null));
                 //演出时间(精确到天)
                 programListVo.setShowDayTime(Optional.ofNullable(ProgramShowTimeMap.get(program.getId()))
-                        .filter(list -> list.size() > 0)
+                        .filter(list -> !list.isEmpty())
                         .map(list -> list.get(0))
                         .map(ProgramShowTime::getShowDayTime)
                         .orElse(null));
                 //演出时间所在的星期
                 programListVo.setShowWeekTime(Optional.ofNullable(ProgramShowTimeMap.get(program.getId()))
-                        .filter(list -> list.size() > 0)
+                        .filter(list -> !list.isEmpty())
                         .map(list -> list.get(0))
                         .map(ProgramShowTime::getShowWeekTime)
                         .orElse(null));
@@ -201,14 +210,44 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         return PageUtil.convertPage(iPage,programListVoList);
     }
     
-    @ServiceLock(lockType= LockType.Read,name = PROGRAM_LOCK,keys = {"#programGetDto.id"})
-    public ProgramVo getById(ProgramGetDto programGetDto) {
-        ProgramVo redisProgramVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM,programGetDto.getId()),ProgramVo.class,() -> {
+    public ProgramVo getDetail(ProgramGetDto programGetDto) {
+        ProgramVo redisProgramVo = programService.getById(programGetDto.getId());
+        
+        //查询节目类型
+        ProgramCategory programCategory = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_CATEGORY_HASH)
+                ,String.valueOf(redisProgramVo.getProgramCategoryId()),ProgramCategory.class);
+        if (Objects.nonNull(programCategory)) {
+            redisProgramVo.setProgramCategoryName(programCategory.getName());
+        }
+        
+        //查询节目演出时间
+        ProgramShowTime redisProgramShowTime = programShowTimeService.selectProgramShowTimeByProgramId(redisProgramVo.getId());
+        redisProgramVo.setShowTime(redisProgramShowTime.getShowTime());
+        redisProgramVo.setShowDayTime(redisProgramShowTime.getShowDayTime());
+        redisProgramVo.setShowWeekTime(redisProgramShowTime.getShowWeekTime());
+        
+        
+        //查询座位
+        List<SeatVo> redisSeatVoList = seatService.selectSeatByProgramId(redisProgramVo.getId());
+        redisProgramVo.setSeatVoList(redisSeatVoList);
+        
+        //查询节目票档
+        List<TicketCategoryVo> ticketCategoryVoList = ticketCategoryService.selectTicketCategoryListByProgramId(redisProgramVo.getId());
+        redisProgramVo.setTicketCategoryVoList(ticketCategoryVoList);
+        
+        //余票数量
+        ticketCategoryService.setRedisRemainNumber(redisProgramVo.getId());
+        
+        return redisProgramVo;
+    }
+    
+    @ServiceLock(lockType= LockType.Read,name = PROGRAM_LOCK,keys = {"#programId"})
+    public ProgramVo getById(Long programId) {
+        return redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM,programId),ProgramVo.class,() -> {
             ProgramVo programVo = new ProgramVo();
             //根据id查询到节目
-            Program program = Optional.ofNullable(programMapper.selectById(programGetDto.getId())).orElseThrow(() -> new CookFrameException(BaseCode.PROGRAM_NOT_EXIST));
+            Program program = Optional.ofNullable(programMapper.selectById(programId)).orElseThrow(() -> new CookFrameException(BaseCode.PROGRAM_NOT_EXIST));
             BeanUtil.copyProperties(program,programVo);
-            
             
             //查询区域
             AreaGetDto areaGetDto = new AreaGetDto();
@@ -221,78 +260,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             }else {
                 log.error("base-data rpc getById error areaResponse:{}", JSON.toJSONString(areaResponse));
             }
-            
             return programVo;
         },EXPIRE_TIME, TimeUnit.DAYS);
-        
-        //查询节目类型
-        ProgramCategory programCategory = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_CATEGORY_HASH)
-                ,String.valueOf(redisProgramVo.getProgramCategoryId()),ProgramCategory.class);
-        if (Objects.nonNull(programCategory)) {
-            redisProgramVo.setProgramCategoryName(programCategory.getName());
-        }
-        
-        //查询节目演出时间
-        ProgramShowTime redisProgramShowTime = 
-                redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME,programGetDto.getId()),ProgramShowTime.class,() -> {
-                    LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper = 
-                            Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, redisProgramVo.getId());
-                    return Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
-                            .orElseThrow(() -> new CookFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
-        },EXPIRE_TIME,TimeUnit.DAYS);
-        redisProgramVo.setShowTime(redisProgramShowTime.getShowTime());
-        redisProgramVo.setShowDayTime(redisProgramShowTime.getShowDayTime());
-        redisProgramVo.setShowWeekTime(redisProgramShowTime.getShowWeekTime());
-        
-        
-        //查询座位
-        List<SeatVo> redisSeatVoList = 
-                redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LIST, programGetDto.getId()), SeatVo.class, () -> {
-                    LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, redisProgramVo.getId());
-                    List<Seat> seats = seatMapper.selectList(seatLambdaQueryWrapper);
-                    List<SeatVo> seatVoList = new ArrayList<>(seats.size());
-                    for (Seat seat : seats) {
-                        SeatVo seatVo = new SeatVo();
-                        BeanUtil.copyProperties(seat, seatVo);
-                        seatVo.setSeatTypeName(SeatType.getMsg(seat.getSeatType()));
-                        seatVoList.add(seatVo);
-                    }
-                    return seatVoList;
-        }, EXPIRE_TIME, TimeUnit.DAYS);
-        redisProgramVo.setSeatVoList(redisSeatVoList);
-        
-        //查询节目票档
-        List<TicketCategoryVo> ticketCategoryVoList = 
-        redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_CATEGORY_LIST, programGetDto.getId()), TicketCategoryVo.class, () -> {
-            LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
-                    .eq(TicketCategory::getProgramId, redisProgramVo.getId());
-            List<TicketCategory> ticketCategoryList = ticketCategoryMapper.selectList(ticketCategoryLambdaQueryWrapper);
-            return ticketCategoryList.stream().map(ticketCategory -> {
-                ticketCategory.setRemainNumber(null);
-                TicketCategoryVo ticketCategoryVo = new TicketCategoryVo();
-                BeanUtil.copyProperties(ticketCategory, ticketCategoryVo);
-                return ticketCategoryVo;
-            }).collect(Collectors.toList());
-        }, EXPIRE_TIME, TimeUnit.DAYS);
-        redisProgramVo.setTicketCategoryVoList(ticketCategoryVoList);
-        
-        //余票数量
-        Boolean exist = redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programGetDto.getId()));
-        if (exist) {
-                
-        }else {
-            LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
-                    .eq(TicketCategory::getProgramId, redisProgramVo.getId());
-            List<TicketCategory> ticketCategoryList = ticketCategoryMapper.selectList(ticketCategoryLambdaQueryWrapper);
-            Map<String, Long> map = ticketCategoryList.stream().collect(Collectors.toMap(t -> String.valueOf(t.getId()), 
-                    TicketCategory::getRemainNumber, (v1, v2) -> v2));
-            redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programGetDto.getId()),map);
-        }
-        
-        
-        return redisProgramVo;
     }
-    
     /**
      * 根据节目类型id集合查询节目类型名字
      * @param programCategoryIdList 节目类型id集合

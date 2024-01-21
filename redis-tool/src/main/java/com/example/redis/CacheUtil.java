@@ -116,7 +116,7 @@ public class CacheUtil {
         if (object instanceof Collection) {
             return ((Collection<?>)object).size() == 0;
         }
-        return true;
+        return false;
     }
 
     public static List<String> getBatchKey(Collection<RedisKeyWrap> list){
