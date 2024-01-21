@@ -49,8 +49,8 @@ public class ProgramController {
     }
     
     @ApiOperation(value = "查询详情(根据id)")
-    @PostMapping(value = "/getById")
-    public ApiResponse<ProgramVo> getById(@Valid @RequestBody ProgramGetDto programGetDto) {
-        return ApiResponse.ok(programService.getById(programGetDto));
+    @PostMapping(value = "/get/detail")
+    public ApiResponse<ProgramVo> getDetail(@Valid @RequestBody ProgramGetDto programGetDto) {
+        return ApiResponse.ok(programService.getDetail(programGetDto));
     }
 }
