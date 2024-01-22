@@ -110,6 +110,11 @@
             <artifactId>jasypt-spring-boot-starter</artifactId>
             <version>${jasypt.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+            <version>${alipay-sdk-java-version}</version>
+        </dependency>
     </dependencies>
 
     <build>
