@@ -54,7 +54,11 @@ public enum RedisKeyEnum {
     
     PROGRAM_SHOW_TIME("d_mai_program_show_time_%S","节目演出时间id","节目演出时间","k"),
     
-    PROGRAM_SEAT_LIST("d_mai_program_seat_list_%S","节目座位集合id","节目座位集合","k"),
+    PROGRAM_SEAT_NO_SOLD_HASH("d_mai_program_seat_no_sold_hash_%S","节目座位未售卖集合id","节目座位未售卖集合","k"),
+    
+    PROGRAM_SEAT_LOCK_HASH("d_mai_program_seat_lock_hash_%S","节目座位锁定集合id","节目座位锁定集合","k"),
+    
+    PROGRAM_SEAT_SOLD_HASH("d_mai_program_seat_sold_hash_%S","节目座位已售卖集合id","节目座位已售卖集合","k"),
     
     PROGRAM_TICKET_CATEGORY_LIST("d_mai_program_ticket_category_list_%S","节目票档集合id","节目票档集合","k"),
     

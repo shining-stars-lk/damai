@@ -86,19 +86,21 @@ public enum BaseCode {
     
     TICKET_COUNT_NOT_EXIST(4006,"如果不选座位，那么购买票数量必须要存在"),
     
-    PRICE_ERROR(4007,"入参的订单价格大于座位规定价格"),
+    TICKET_COUNT_ERROR(4007,"如果不选座位，购买票数量必须大于0"),
     
-    RPC_RESULT_DATA_EMPTY(4008,"rpc服务返回数据为空"),
+    PRICE_ERROR(4008,"入参的订单价格大于座位规定价格"),
     
-    TICKET_CATEGORY_NOT_EXIST_V2(4009,"票档不存在"),
+    RPC_RESULT_DATA_EMPTY(4009,"rpc服务返回数据为空"),
     
-    TICKET_REMAIN_NUMBER_NOT_SUFFICIENT(4010,"余票数量不足"),
+    TICKET_CATEGORY_NOT_EXIST_V2(4010,"票档不存在"),
     
-    COMPOSITE_NOT_EXIST(4011,"通用验证不存在"),
+    TICKET_REMAIN_NUMBER_NOT_SUFFICIENT(4011,"余票数量不足"),
     
-    USER_REGISTER_FREQUENCY(4012,"用户注册频繁"),
+    COMPOSITE_NOT_EXIST(4012,"通用验证不存在"),
     
-    PROGRAM_SHOW_TIME_NOT_EXIST(4013,"节目演出时间不存在"),
+    USER_REGISTER_FREQUENCY(4013,"用户注册频繁"),
+    
+    PROGRAM_SHOW_TIME_NOT_EXIST(4014,"节目演出时间不存在"),
     ;
     
     private final Integer code;

@@ -347,6 +347,18 @@ public class RedisCacheImpl implements RedisCache {
 
         return parseObjects(valuesObj, clazz);
     }
+    
+    @Override
+    public <T> Map<String,T> getAllMapForHash(RedisKeyWrap RedisKeyWrap, Class<T> clazz) {
+        CacheUtil.checkNotBlank(RedisKeyWrap);
+        String key = RedisKeyWrap.getRelKey();
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries(key);
+        Map<String,T> map = new HashMap<>();
+        entries.forEach((k,v) -> {
+            map.put(String.valueOf(k),getComplex(v, clazz));
+        });
+        return map;
+    }
 
     @Override
     public <T> T indexForList(RedisKeyWrap RedisKeyWrap, long index, Class<T> clazz) {
