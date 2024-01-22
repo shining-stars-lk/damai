@@ -384,8 +384,17 @@ public interface RedisCache {
      * @return
      */
     <T> List<T> getAllForHash(RedisKeyWrap RedisKeyWrap, Class<T> clazz);
-
-
+    
+    /**
+     * 谨慎使用！
+     * 获取 Hash Key 下所有值，返回值为map
+     *
+     * @param RedisKeyWrap
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    <T> Map<String,T> getAllMapForHash(RedisKeyWrap RedisKeyWrap, Class<T> clazz);
     /**
      * 判断hash中 key是否存在
      *

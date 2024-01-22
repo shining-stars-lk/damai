@@ -35,7 +35,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,12 +62,10 @@ public class ApiRestrictService {
     
     private DefaultRedisScript redisScript;
     
-    private ConcurrentHashMap<String,Long> zSetMap = new ConcurrentHashMap<>();
-    
     @PostConstruct
     public void init(){
         try {
-            redisScript = new DefaultRedisScript();
+            redisScript = new DefaultRedisScript<>();
             redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/apiLimit.lua")));
             redisScript.setResultType(List.class);
         } catch (Exception e) {
