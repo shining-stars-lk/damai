@@ -38,8 +38,7 @@ public class ProgramOrderController {
     
     @ApiOperation(value = "生成订单")
     @PostMapping(value = "/create/v2")
-    public ApiResponse<Void> createV2(@Valid @RequestBody ProgramOrderCreateDto programOrderCreateDto) {
-        programOrderService.createV2(programOrderCreateDto);
-        return ApiResponse.ok();
+    public ApiResponse<String> createV2(@Valid @RequestBody ProgramOrderCreateDto programOrderCreateDto) {
+        return ApiResponse.ok(programOrderService.createV2(programOrderCreateDto));
     }
 }
