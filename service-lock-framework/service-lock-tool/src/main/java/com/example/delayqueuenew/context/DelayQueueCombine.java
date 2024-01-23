@@ -20,17 +20,16 @@ public class DelayQueueCombine {
     private final List<DelayQueue> delayQueueList = new ArrayList<>();
     
     public DelayQueueCombine(DelayQueuePart delayQueuePart){
-        Integer isolationRegionCount = delayQueuePart.getIsolationRegionCount();
+        Integer isolationRegionCount = delayQueuePart.getRedissonProperties().getIsolationRegionCount();
         isolationRegionSelector =new IsolationRegionSelector(isolationRegionCount);
         for(int i = 0; i < isolationRegionCount; i++) {
             String topic = delayQueuePart.getConsumerTask().topic();
-            delayQueuePart.setRelTopic(topic + "-" + i);
-            delayQueueList.add(new DelayQueue(delayQueuePart));
+            delayQueueList.add(new DelayQueue(delayQueuePart,topic + "-" + i));
         }
     }
     
-    public void put(String content,long delayTime, TimeUnit timeUnit){
+    public void offer(String content,long delayTime, TimeUnit timeUnit){
         int index = isolationRegionSelector.getIndex();
-        delayQueueList.get(index).put(content, delayTime, timeUnit);
+        delayQueueList.get(index).offer(content, delayTime, timeUnit);
     }
 }

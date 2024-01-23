@@ -16,15 +16,15 @@ import java.util.concurrent.TimeUnit;
  **/
 public class DelayQueueContext {
     
-    private static final Map<String, DelayQueueCombine> delayQueueCombineMap = new ConcurrentHashMap<>();
+    private final Map<String, DelayQueueCombine> delayQueueCombineMap = new ConcurrentHashMap<>();
     
-    public static void put(String key,DelayQueueCombine delayQueueCombine){
+    public void putTask(String key,DelayQueueCombine delayQueueCombine){
         delayQueueCombineMap.put(key,delayQueueCombine);
     }
     
-    public static void send(String clientName,String content,long delayTime, TimeUnit timeUnit) {
-        DelayQueueCombine delayQueueCombine = Optional.ofNullable(delayQueueCombineMap.get(clientName))
+    public void sendMessage(String topic,String content,long delayTime, TimeUnit timeUnit) {
+        DelayQueueCombine delayQueueCombine = Optional.ofNullable(delayQueueCombineMap.get(topic))
                 .orElseThrow(() -> new CookFrameException(BaseCode.DELAY_QUEUE_CLIENT_NOT_EXIST));
-        delayQueueCombine.put(content, delayTime, timeUnit);
+        delayQueueCombine.offer(content, delayTime, timeUnit);
     }
 }

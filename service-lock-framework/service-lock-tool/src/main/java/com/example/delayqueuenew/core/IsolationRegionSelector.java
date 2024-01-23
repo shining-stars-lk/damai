@@ -19,16 +19,14 @@ public class IsolationRegionSelector {
 
 	private int reset() {
 		count.set(0);
-		return 0;
+		return count.get();
 	}
 	
 	public synchronized int getIndex() {
-		// get volidate
 		int cur = count.get();
 		if (cur >= thresholdValue) {
 			cur = reset();
 		} else {
-			// incr
 			count.incrementAndGet();
 		}
 		return cur;

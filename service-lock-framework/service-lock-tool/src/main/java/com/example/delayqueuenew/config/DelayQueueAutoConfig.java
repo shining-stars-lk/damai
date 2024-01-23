@@ -1,6 +1,7 @@
 package com.example.delayqueuenew.config;
 
 
+import com.example.delayqueuenew.context.DelayQueueContext;
 import com.example.delayqueuenew.event.DelayQueueInitHandler;
 import com.example.redisson.RedissonProperties;
 import com.example.redisson.config.DistributedAutoConfiguration;
@@ -20,5 +21,10 @@ public class DelayQueueAutoConfig {
     @Bean
     public DelayQueueInitHandler DelayQueueInitHandler(RedissonProperties redissonProperties, RedissonClient redissonClient){
         return new DelayQueueInitHandler(redissonProperties, redissonClient);
+    }
+    
+    @Bean
+    public DelayQueueContext delayQueueContext(){
+        return new DelayQueueContext();
     }
 }
