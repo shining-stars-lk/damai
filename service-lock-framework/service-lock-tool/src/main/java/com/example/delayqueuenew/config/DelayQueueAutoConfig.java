@@ -19,8 +19,9 @@ import org.springframework.context.annotation.Bean;
 public class DelayQueueAutoConfig {
     
     @Bean
-    public DelayQueueInitHandler DelayQueueInitHandler(RedissonProperties redissonProperties, RedissonClient redissonClient){
-        return new DelayQueueInitHandler(redissonProperties, redissonClient);
+    public DelayQueueInitHandler DelayQueueInitHandler(RedissonProperties redissonProperties, RedissonClient redissonClient,
+                                                       DelayQueueContext delayQueueContext){
+        return new DelayQueueInitHandler(redissonProperties, redissonClient, delayQueueContext);
     }
     
     @Bean
