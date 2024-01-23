@@ -30,6 +30,16 @@ public class RedissonProperties {
 //    private int connectionPoolSize = 64;
 //
 //    private int connectionMinimumIdleSize = 10;
+    
+    /**
+     * 从队列拉取数据的线程数量，如果业务过慢可调大
+     * */
+    private Integer threadCount = 4;
+    
+    /**
+     * 延时队列的隔离分区数，延时有瓶颈时 可调大次数，但会增大redis的cpu消耗
+     * */
+    private Integer isolationRegionCount = 5;
 
     private String produceTopic;
     
