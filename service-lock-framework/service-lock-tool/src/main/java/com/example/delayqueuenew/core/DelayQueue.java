@@ -1,14 +1,17 @@
 package com.example.delayqueuenew.core;
 
 import com.example.delayqueuenew.context.DelayQueuePart;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RedissonClient;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -17,59 +20,70 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author: k
  * @create: 2024-01-23
  **/
-public class DelayQueue implements Runnable {
-    
-    private final DelayQueuePart delayQueuePart;
-    
-    private volatile boolean running;
-    private RBlockingQueue<String> blockingQueue;
-    private RDelayedQueue<String> delayedQueue;
+@Slf4j
+public class DelayQueue {
+    private final AtomicBoolean runFlag = new AtomicBoolean(false);
+    private final RBlockingQueue<String> blockingQueue;
+    private final RDelayedQueue<String> delayedQueue;
     /** 拉队列线程池 */
-    private ExecutorService executorService;
-    private static final String ThreadNameAlias = "RedissonFastDelayQueueThread-";
-    private final AtomicInteger incr = new AtomicInteger(1);
+    private final ExecutorService executorService;
+    private final AtomicInteger threadCount = new AtomicInteger(1);
     
-    private Thread loop = null;
+    private volatile Thread thread = null;
     
-    public DelayQueue(DelayQueuePart delayQueuePart){
-        this.delayQueuePart = delayQueuePart;
-        //初始化线程池
-        newPollThreadExecutor();
-        //初始化队列
-        newDelayQueue();
-        //将监听队列的任务启动
-        newLoopThread();
+    
+    public DelayQueue(DelayQueuePart delayQueuePart,String relTopic){
+        this.executorService = new ThreadPoolExecutor(
+                delayQueuePart.getRedissonProperties().getCorePoolSize(),
+                delayQueuePart.getRedissonProperties().getMaximumPoolSize(),
+                delayQueuePart.getRedissonProperties().getKeepAliveTime(),
+                delayQueuePart.getRedissonProperties().getUnit(),
+                new LinkedBlockingQueue<>(delayQueuePart.getRedissonProperties().getWorkQueueSize()),
+                r -> new Thread(Thread.currentThread().getThreadGroup(), r, 
+                        "delay-queue-consume-thread-" + threadCount.getAndIncrement()));
+        
+        RedissonClient redissonClient = delayQueuePart.getRedissonClient();
+        this.blockingQueue = redissonClient.getBlockingQueue(relTopic);
+        this.delayedQueue = redissonClient.getDelayedQueue(blockingQueue);
+        
+        if (Objects.isNull(this.thread) || !this.runFlag.get()) {
+            synchronized (this) {
+                if (Objects.isNull(thread)) {
+                    this.thread = new Thread(Thread.currentThread().getThreadGroup(), () -> {
+                        while (this.runFlag.get() && !Thread.interrupted()) {
+                            try {
+                                assert blockingQueue != null;
+                                String content = blockingQueue.take();
+                                executorService.execute(() -> {
+                                    try {
+                                        delayQueuePart.getConsumerTask().execute(content);
+                                    }catch (Exception e) {
+                                        log.error("consumer execute error",e);
+                                    }
+                                });
+                            } catch (InterruptedException e) {
+                                destroy();
+                            } catch (Throwable e) {
+                                log.error("blockingQueue take error",e);
+                            }
+                        }
+                    }, "listen-thread");
+                }
+                if (!this.runFlag.get()) {
+                    this.runFlag.set(true);
+                    this.thread.start();
+                }
+            }
+        }
+        
     }
     
-    public void put(String content, long delayTime, TimeUnit timeUnit) {
+    public void offer(String content, long delayTime, TimeUnit timeUnit) {
         delayedQueue.offer(content,delayTime,timeUnit);
     }
     
-    private void newPollThreadExecutor() {
-        Integer threadCount = delayQueuePart.getThreadCount();
-        executorService = new ThreadPoolExecutor(threadCount, threadCount, 3000, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(1024),
-                r -> new Thread(Thread.currentThread().getThreadGroup(), r, ThreadNameAlias + incr.getAndIncrement()));
-    }
-    
-    private void newDelayQueue() {
-        final RedissonClient redissonClient = delayQueuePart.getRedissonClient();
-        this.blockingQueue = redissonClient.getBlockingQueue(delayQueuePart.getRelTopic());
-        this.delayedQueue = redissonClient.getDelayedQueue(blockingQueue);
-    }
-    
-    private synchronized void newLoopThread() {
-        if (loop == null) {
-            loop = new Thread(Thread.currentThread().getThreadGroup(), this, ThreadNameAlias + "MainLoop");
-            if (!running) {
-                running = true;
-                loop.start();
-            }
-        }
-    }
-    
     public void destroy() {
-        running = false;
+        runFlag.set(false);
         try {
             if (executorService != null) {
                 executorService.shutdown();
@@ -78,26 +92,7 @@ public class DelayQueue implements Runnable {
                 delayedQueue.destroy();
             }
         } catch (Exception e) {
-        }
-    }
-    
-    @Override
-    public void run() {
-        while (running && !Thread.interrupted()) {
-            try {
-                String content = blockingQueue.take();
-                executorService.execute(() -> {
-                    try {
-                        delayQueuePart.getConsumerTask().execute(content);
-                    }catch (Exception e) {
-                        
-                    }
-                });
-            } catch (InterruptedException e) {
-                destroy();
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
+            log.error("destroy error",e);
         }
     }
 }

@@ -23,6 +23,8 @@ public class DelayQueueInitHandler implements ApplicationListener<ApplicationSta
     
     private final RedissonClient redissonClient;
     
+    private final DelayQueueContext delayQueueContext;
+    
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
         Map<String, ConsumerTask> consumerTaskMap = event.getApplicationContext().getBeansOfType(ConsumerTask.class);
@@ -30,9 +32,9 @@ public class DelayQueueInitHandler implements ApplicationListener<ApplicationSta
             return;
         }
         for (ConsumerTask consumerTask : consumerTaskMap.values()) {
-            DelayQueuePart delayQueuePart = new DelayQueuePart(redissonClient, redissonProperties.getThreadCount(), redissonProperties.getIsolationRegionCount(), consumerTask);
+            DelayQueuePart delayQueuePart = new DelayQueuePart(redissonClient,redissonProperties,consumerTask);
             DelayQueueCombine delayQueueCombine = new DelayQueueCombine(delayQueuePart);
-            DelayQueueContext.put(consumerTask.topic(),delayQueueCombine);
+            delayQueueContext.putTask(consumerTask.topic(),delayQueueCombine);
         }
     }
     
