@@ -101,6 +101,8 @@ public enum BaseCode {
     USER_REGISTER_FREQUENCY(4013,"用户注册频繁"),
     
     PROGRAM_SHOW_TIME_NOT_EXIST(4014,"节目演出时间不存在"),
+    
+    DELAY_QUEUE_CLIENT_NOT_EXIST(5001,"延迟队列客户端不存在"),
     ;
     
     private final Integer code;

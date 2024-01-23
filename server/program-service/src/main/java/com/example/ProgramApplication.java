@@ -1,5 +1,6 @@
 package com.example;
 
+import com.luo.delayqueue.EnableRedissonFastDelayQueue;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableFeignClients
 @EnableHystrix
 @SpringBootApplication
+@EnableRedissonFastDelayQueue(partition = 3, poll = 2)
 public class ProgramApplication {
 
     public static void main(String[] args) {
