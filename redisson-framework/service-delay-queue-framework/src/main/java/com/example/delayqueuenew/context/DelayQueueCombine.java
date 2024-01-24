@@ -23,8 +23,7 @@ public class DelayQueueCombine {
         Integer isolationRegionCount = delayQueuePart.getDelayQueueProperties().getIsolationRegionCount();
         isolationRegionSelector =new IsolationRegionSelector(isolationRegionCount);
         for(int i = 0; i < isolationRegionCount; i++) {
-            String topic = delayQueuePart.getConsumerTask().topic();
-            delayQueueList.add(new DelayQueue(delayQueuePart,topic + "-" + i));
+            delayQueueList.add(new DelayQueue(delayQueuePart,delayQueuePart.getConsumerTask().topic() + "-" + i));
         }
     }
     

@@ -18,8 +18,8 @@ public class DelayQueueContext {
     
     private final Map<String, DelayQueueCombine> delayQueueCombineMap = new ConcurrentHashMap<>();
     
-    public void putTask(String key,DelayQueueCombine delayQueueCombine){
-        delayQueueCombineMap.put(key,delayQueueCombine);
+    public void putTask(String topic,DelayQueueCombine delayQueueCombine){
+        delayQueueCombineMap.put(topic,delayQueueCombine);
     }
     
     public void sendMessage(String topic,String content,long delayTime, TimeUnit timeUnit) {

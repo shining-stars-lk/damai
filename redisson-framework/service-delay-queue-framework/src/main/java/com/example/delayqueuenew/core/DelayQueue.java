@@ -85,10 +85,10 @@ public class DelayQueue {
     public void destroy() {
         runFlag.set(false);
         try {
-            if (executorService != null) {
+            if (Objects.nonNull(executorService)) {
                 executorService.shutdown();
             }
-            if (delayedQueue != null) {
+            if (Objects.nonNull(delayedQueue)) {
                 delayedQueue.destroy();
             }
         } catch (Exception e) {
