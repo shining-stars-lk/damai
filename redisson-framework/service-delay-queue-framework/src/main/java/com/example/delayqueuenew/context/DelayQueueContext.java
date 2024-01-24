@@ -1,10 +1,9 @@
 package com.example.delayqueuenew.context;
 
-import com.example.enums.BaseCode;
-import com.example.exception.CookFrameException;
+import com.example.delayqueuenew.config.DelayQueueProperties;
+import org.redisson.api.RedissonClient;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -16,15 +15,22 @@ import java.util.concurrent.TimeUnit;
  **/
 public class DelayQueueContext {
     
-    private final Map<String, DelayQueueCombine> delayQueueCombineMap = new ConcurrentHashMap<>();
+    private final DelayQueueProperties delayQueueProperties;
     
-    public void putTask(String topic,DelayQueueCombine delayQueueCombine){
-        delayQueueCombineMap.put(topic,delayQueueCombine);
+    private final RedissonClient redissonClient;
+    
+    private final Map<String, DelayQueueProduceCombine> delayQueueProduceCombineMap = new ConcurrentHashMap<>();
+    
+    public DelayQueueContext(DelayQueueProperties delayQueueProperties,RedissonClient redissonClient){
+        this.delayQueueProperties = delayQueueProperties;
+        this.redissonClient = redissonClient;
     }
     
-    public void sendMessage(String topic,String content,long delayTime, TimeUnit timeUnit) {
-        DelayQueueCombine delayQueueCombine = Optional.ofNullable(delayQueueCombineMap.get(topic))
-                .orElseThrow(() -> new CookFrameException(BaseCode.DELAY_QUEUE_CLIENT_NOT_EXIST));
-        delayQueueCombine.offer(content, delayTime, timeUnit);
+    public synchronized void sendMessage(String topic,String content,long delayTime, TimeUnit timeUnit) {
+        DelayQueueProduceCombine delayQueueProduceCombine = delayQueueProduceCombineMap.computeIfAbsent(topic,k -> {
+            DelayQueueBasePart delayQueueBasePart = new DelayQueueBasePart(redissonClient,delayQueueProperties);
+            return new DelayQueueProduceCombine(delayQueueBasePart,topic);
+        });
+        delayQueueProduceCombine.offer(content,delayTime,timeUnit);
     }
 }

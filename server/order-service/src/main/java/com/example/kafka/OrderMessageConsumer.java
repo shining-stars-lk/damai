@@ -3,7 +3,7 @@ package com.example.kafka;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.example.delayqueue.Producer;
+import com.example.delayconsumer.Producer;
 import com.example.entity.ProductOrder;
 import com.example.redisson.RedissonProperties;
 import com.example.service.OrderService;

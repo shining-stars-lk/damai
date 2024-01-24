@@ -1,4 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.example.delayqueuenew.config.DelayQueueAutoConfig,\
-  com.example.delayqueue.ProduceConfig,\
-  com.example.delayqueue.ConsumeConfig
+  com.example.delayconsumer.ProduceConfig,\
+  com.example.delayconsumer.ConsumeConfig

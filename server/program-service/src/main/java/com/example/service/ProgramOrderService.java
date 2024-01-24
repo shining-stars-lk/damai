@@ -13,6 +13,7 @@ import com.example.client.UserClient;
 import com.example.common.ApiResponse;
 import com.example.composite.CompositeContainer;
 import com.example.core.RedisKeyEnum;
+import com.example.dto.DelayOrderCancelDto;
 import com.example.dto.OrderCreateDto;
 import com.example.dto.OrderTicketUserCreateDto;
 import com.example.dto.ProgramOrderCreateDto;
@@ -30,6 +31,7 @@ import com.example.mapper.SeatMapper;
 import com.example.mapper.TicketCategoryMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
+import com.example.service.delaysend.DelayOrderCancelSend;
 import com.example.service.tool.SeatMatch;
 import com.example.util.DateUtils;
 import com.example.vo.SeatVo;
@@ -85,6 +87,9 @@ public class ProgramOrderService {
     
     @Autowired
     private CompositeContainer compositeContainer;
+    
+    @Autowired
+    private DelayOrderCancelSend delayOrderCancelSend;
     
     public void create(final ProgramOrderCreateDto programOrderCreateDto) {
         //验证手动选择座位和自动分配座位的参数是否正确
@@ -363,9 +368,6 @@ public class ProgramOrderService {
         
         programCacheOperate.programCacheOperate(keys,data);
         
-        if (1 ==1 ) {
-            return null;
-        }
 //        //构建锁座位条件
 //        Seat updateSeat = new Seat();
 //        updateSeat.setSellStatus(SellStatus.LOCK.getCode());
@@ -419,11 +421,20 @@ public class ProgramOrderService {
         
         orderCreateDto.setOrderTicketUserCreateDtoList(orderTicketUserCreateDtoList);
         
+        String orderId;
         ApiResponse<String> createOrderResponse = orderClient.create(orderCreateDto);
         if (Objects.equals(createOrderResponse.getCode(), BaseCode.SUCCESS.getCode())) {
-            return createOrderResponse.getData();
+            orderId = createOrderResponse.getData();
         }else {
+            log.error("创建订单失败 需人工处理 orderCreateDto : {}",JSON.toJSONString(orderCreateDto));
             throw new CookFrameException(createOrderResponse);
         }
+        
+        //延迟队列创建
+        DelayOrderCancelDto delayOrderCancelDto = new DelayOrderCancelDto();
+        delayOrderCancelDto.setOrderId(orderCreateDto.getId());
+        delayOrderCancelSend.sendMessage(JSON.toJSONString(delayOrderCancelDto));
+        
+        return orderId;
     }
 }

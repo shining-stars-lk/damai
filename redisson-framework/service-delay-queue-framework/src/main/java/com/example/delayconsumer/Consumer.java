@@ -1,4 +1,4 @@
-package com.example.delayqueue;
+package com.example.delayconsumer;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

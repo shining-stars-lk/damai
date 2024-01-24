@@ -1,7 +1,7 @@
 //package com.example.delay;
 //
-//import com.luo.delayqueue.DelayTrigger;
-//import com.luo.delayqueue.RedissonFastDelayQueueClient;
+//import com.luo.delayconsumer.DelayTrigger;
+//import com.luo.delayconsumer.RedissonFastDelayQueueClient;
 //
 //@RedissonFastDelayQueueClient
 //public class OnReceiveMsg {

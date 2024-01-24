@@ -2,10 +2,10 @@ package com.example.delayqueuenew.event;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.example.delayqueuenew.config.DelayQueueProperties;
-import com.example.delayqueuenew.context.DelayQueueCombine;
 import com.example.delayqueuenew.context.DelayQueueContext;
 import com.example.delayqueuenew.context.DelayQueuePart;
 import com.example.delayqueuenew.core.ConsumerTask;
+import com.example.delayqueuenew.core.DelayConsumerQueue;
 import lombok.AllArgsConstructor;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -33,8 +33,11 @@ public class DelayQueueInitHandler implements ApplicationListener<ApplicationSta
         }
         for (ConsumerTask consumerTask : consumerTaskMap.values()) {
             DelayQueuePart delayQueuePart = new DelayQueuePart(redissonClient,delayQueueProperties,consumerTask);
-            DelayQueueCombine delayQueueCombine = new DelayQueueCombine(delayQueuePart);
-            delayQueueContext.putTask(consumerTask.topic(),delayQueueCombine);
+            Integer isolationRegionCount = delayQueuePart.getDelayQueueProperties().getIsolationRegionCount();
+            for(int i = 0; i < isolationRegionCount; i++) {
+                DelayConsumerQueue delayConsumerQueue = new DelayConsumerQueue(delayQueuePart, delayQueuePart.getConsumerTask().topic() + "-" + i);
+                delayConsumerQueue.listenStart();
+            }
         }
     }
     

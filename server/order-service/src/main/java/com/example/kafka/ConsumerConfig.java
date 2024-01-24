@@ -1,7 +1,7 @@
 package com.example.kafka;
 
 import com.example.service.OrderService;
-import com.example.delayqueue.Producer;
+import com.example.delayconsumer.Producer;
 import com.example.redisson.RedissonProperties;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

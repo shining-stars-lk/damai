@@ -102,7 +102,31 @@ public enum BaseCode {
     
     PROGRAM_SHOW_TIME_NOT_EXIST(4014,"节目演出时间不存在"),
     
+    ORDER_NOT_EXIST(4015,"订单不存在"),
+    
+    ORDER_CANCEL(4016,"订单已取消"),
+    
+    ORDER_PAY(4017,"订单已支付"),
+    
+    ORDER_REFUND(4018,"订单已退单"),
+    
+    ORDER_CANAL_ERROR(4019,"订单取消失败"),
+    
+    TICKET_USER_ORDER_NOT_EXIST(4019,"购票人订单不存在"),
+    
+    TICKET_USER_ORDER_CANCEL(4020,"购票人订单已取消"),
+    
+    TICKET_USER_ORDER_PAY(4021,"购票人订单已支付"),
+    
+    TICKET_USER_ORDER_REFUND(4022,"购票人订单已退单"),
+    
+    LOCK_SEAT_LIST_EMPTY(4023,"锁定的座位为空"),
+    
+    ORDER_EXIST(4024,"订单存在"),
+    
     DELAY_QUEUE_CLIENT_NOT_EXIST(5001,"延迟队列客户端不存在"),
+    
+    DELAY_QUEUE_MESSAGE_NOT_EXIST(5002,"延迟队列消息不存在"),
     ;
     
     private final Integer code;
