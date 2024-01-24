@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.delayqueue.Producer;
 import com.example.entity.ProductOrder;
 import com.example.redisson.RedissonProperties;
+import com.example.service.OrderService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -23,6 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderMessageConsumer {
     
+    private OrderService orderService;
     
     private Producer producer;
     

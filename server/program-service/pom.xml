@@ -48,6 +48,11 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
+            <artifactId>service-delay-queue-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
             <artifactId>service-common</artifactId>
             <version>${revision}</version>
         </dependency>
