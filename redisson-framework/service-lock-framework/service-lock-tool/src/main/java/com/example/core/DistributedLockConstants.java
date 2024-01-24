@@ -43,4 +43,9 @@ public class DistributedLockConstants {
      * */
     public final static String PROGRAM_CATEGORY_LOCK = "d_mai_program_category_lock";
     
+    /**
+     * 取消订单
+     * */
+    public final static String ORDER_CANCEL_LOCK = "d_order_cancel_lock";
+    
 }

@@ -23,7 +23,7 @@ public class DelayQueueAutoConfig {
     }
     
     @Bean
-    public DelayQueueContext delayQueueContext(){
-        return new DelayQueueContext();
+    public DelayQueueContext delayQueueContext(DelayQueueProperties delayQueueProperties, RedissonClient redissonClient){
+        return new DelayQueueContext(delayQueueProperties,redissonClient);
     }
 }
