@@ -26,7 +26,7 @@ public class DelayQueueContext {
         this.redissonClient = redissonClient;
     }
     
-    public synchronized void sendMessage(String topic,String content,long delayTime, TimeUnit timeUnit) {
+    public void sendMessage(String topic,String content,long delayTime, TimeUnit timeUnit) {
         DelayQueueProduceCombine delayQueueProduceCombine = delayQueueProduceCombineMap.computeIfAbsent(topic,k -> {
             DelayQueueBasePart delayQueueBasePart = new DelayQueueBasePart(redissonClient,delayQueueProperties);
             return new DelayQueueProduceCombine(delayQueueBasePart,topic);
