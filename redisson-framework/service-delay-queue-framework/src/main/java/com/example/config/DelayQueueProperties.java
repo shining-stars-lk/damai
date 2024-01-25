@@ -45,12 +45,4 @@ public class DelayQueueProperties {
      * 延时队列的隔离分区数，延时有瓶颈时 可调大次数，但会增大redis的cpu消耗(同一个topic发送者和消费者的隔离分区数必须相同)
      * */
     private Integer isolationRegionCount = 5;
-
-    private String produceTopic;
-    
-    private Long delayTime;
-    
-    private TimeUnit delayTimeUnit;
-    
-    private String consumeTopic;
 }

@@ -53,7 +53,17 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
+            <artifactId>service-lock-tool</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
             <artifactId>service-lossless</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>pay-client</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>

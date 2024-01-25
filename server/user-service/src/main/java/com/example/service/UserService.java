@@ -78,7 +78,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     @Value("${token.expire.time:86400000}")
     private Long tokenExpireTime;
     
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @ServiceLock(lockType= LockType.Write,name = REGISTER_USER_LOCK,keys = {"#userRegisterDto.mobile"})
     public void register(final UserRegisterDto userRegisterDto) {
         compositeContainer.execute(CompositeCheckType.USER_REGISTER_CHECK.getValue(),userRegisterDto);

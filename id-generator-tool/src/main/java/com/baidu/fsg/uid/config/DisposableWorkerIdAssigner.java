@@ -43,7 +43,7 @@
 //     * 
 //     * @return assigned worker id
 //     */
-//    @Transactional
+//    @Transactional(rollbackFor = Exception.class)
 //    public long assignWorkerId() {
 //        // build worker node entity
 //        WorkerNode workerNodeEntity = buildWorkerNode();

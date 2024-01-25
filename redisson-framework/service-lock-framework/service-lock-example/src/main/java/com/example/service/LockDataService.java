@@ -39,7 +39,7 @@ public class LockDataService {
         return lockDataVo;
     }
     
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void addServiceLock(LockDataDto lockDataDto){
         LockData lockData = new LockData();
         BeanUtils.copyProperties(lockDataDto,lockData);
@@ -47,7 +47,7 @@ public class LockDataService {
     }
     
     @ServiceLock(name = LOCK_DATA,keys = {"#lockDataDto.id"},waitTime = 5L)
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void addStockServiceLock(LockDataDto lockDataDto){
         addStock(lockDataDto);
     }
