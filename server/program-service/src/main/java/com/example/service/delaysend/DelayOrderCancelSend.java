@@ -1,6 +1,6 @@
 package com.example.service.delaysend;
 
-import com.example.delayqueuenew.context.DelayQueueContext;
+import com.example.context.DelayQueueContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

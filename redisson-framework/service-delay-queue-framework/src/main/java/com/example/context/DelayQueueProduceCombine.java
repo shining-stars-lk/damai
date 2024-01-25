@@ -1,7 +1,7 @@
-package com.example.delayqueuenew.context;
+package com.example.context;
 
-import com.example.delayqueuenew.core.DelayProduceQueue;
-import com.example.delayqueuenew.core.IsolationRegionSelector;
+import com.example.core.DelayProduceQueue;
+import com.example.core.IsolationRegionSelector;
 
 import java.util.ArrayList;
 import java.util.List;

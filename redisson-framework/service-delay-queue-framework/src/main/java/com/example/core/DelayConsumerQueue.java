@@ -1,6 +1,6 @@
-package com.example.delayqueuenew.core;
+package com.example.core;
 
-import com.example.delayqueuenew.context.DelayQueuePart;
+import com.example.context.DelayQueuePart;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;

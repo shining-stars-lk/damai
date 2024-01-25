@@ -2,7 +2,7 @@ package com.example.service.delayconsumer;
 
 import com.alibaba.fastjson.JSON;
 import com.example.core.StringUtil;
-import com.example.delayqueuenew.core.ConsumerTask;
+import com.example.core.ConsumerTask;
 import com.example.dto.DelayOrderCancelDto;
 import com.example.dto.OrderCancelDto;
 import com.example.service.OrderService;

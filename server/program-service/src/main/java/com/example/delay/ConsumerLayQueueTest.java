@@ -1,6 +1,6 @@
 package com.example.delay;
 
-import com.example.delayqueuenew.core.ConsumerTask;
+import com.example.core.ConsumerTask;
 import org.springframework.stereotype.Component;
 
 /**

@@ -1,8 +1,8 @@
-package com.example.delayqueuenew.config;
+package com.example.config;
 
 
-import com.example.delayqueuenew.context.DelayQueueContext;
-import com.example.delayqueuenew.event.DelayQueueInitHandler;
+import com.example.context.DelayQueueContext;
+import com.example.event.DelayQueueInitHandler;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
