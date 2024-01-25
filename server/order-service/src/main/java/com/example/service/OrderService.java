@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.client.PayClient;
 import com.example.common.ApiResponse;
 import com.example.core.RedisKeyEnum;
+import com.example.dto.NotifyDto;
 import com.example.dto.OrderCancelDto;
 import com.example.dto.OrderCreateDto;
 import com.example.dto.OrderPayDto;
@@ -22,6 +23,7 @@ import com.example.entity.Order;
 import com.example.entity.OrderTicketUser;
 import com.example.enums.BaseCode;
 import com.example.enums.OrderStatus;
+import com.example.enums.PayChannel;
 import com.example.enums.SellStatus;
 import com.example.exception.CookFrameException;
 import com.example.mapper.OrderMapper;
@@ -42,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.example.constant.Constant.ALIPAY_NOTIFY_SUCCESS_RESULT;
 import static com.example.core.DistributedLockConstants.ORDER_CANCEL_LOCK;
 
 /**
@@ -206,7 +209,9 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (Objects.equals(order.getOrderStatus(), OrderStatus.REFUND.getCode())) {
             throw new CookFrameException(BaseCode.ORDER_REFUND);
         }
-        
+        if (orderPayDto.getPrice().compareTo(order.getOrderPrice()) != 0) {
+            throw new CookFrameException(BaseCode.PAY_PRICE_NOT_EQUAL_ORDER_PRICE);
+        }
         //调用支付服务进行支付
         PayDto payDto = new PayDto();
         payDto.setOrderNumber(orderNumber);
@@ -221,6 +226,20 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (!Objects.equals(payResponse.getCode(), BaseCode.SUCCESS.getCode())) {
             throw new CookFrameException(payResponse);
         }
-        return null;
+        return payResponse.getData();
+    }
+    
+    public String alipayNotify(Map<String, String> params){
+        NotifyDto notifyDto = new NotifyDto();
+        notifyDto.setChannel(PayChannel.ALIPAY.getValue());
+        notifyDto.setParams(params);
+        ApiResponse<String> notifyResponse = payClient.notify(notifyDto);
+        if (!Objects.equals(notifyResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+            throw new CookFrameException(notifyResponse);
+        }
+        //将订单状态更新
+        if (ALIPAY_NOTIFY_SUCCESS_RESULT.equals(notifyResponse.getData())) {
+            
+        }
     }
 }

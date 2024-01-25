@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.common.ApiResponse;
+import com.example.dto.NotifyDto;
 import com.example.dto.PayDto;
 import com.example.dto.TradeCheckDto;
 import com.example.service.PayService;
@@ -11,11 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Map;
 
 /**
  * <p>
@@ -39,10 +38,10 @@ public class PayController {
         return ApiResponse.ok(payService.commonPay(payDto));
     }
     
-    @ApiOperation(value = "支付宝支付后通知")
-    @PostMapping(value = "/alipay/notify")
-    public ApiResponse<String> alipayNotify(@RequestParam Map<String, String> params) {
-        return ApiResponse.ok(payService.alipayNotify(params,params.get("out_trade_no")));
+    @ApiOperation(value = "支付后回到通知")
+    @PostMapping(value = "/notify")
+    public ApiResponse<String> notify(@Valid @RequestBody NotifyDto notifyDto) {
+        return ApiResponse.ok(payService.notify(notifyDto,notifyDto.getParams().get("out_trade_no")));
     }
     
     @ApiOperation(value = "支付状态查询")

@@ -135,6 +135,8 @@ public enum BaseCode {
     PAY_BILL_IS_NOT_NO_PAY(6002,"此账单不是未支付状态"),
     
     ALIPAY_TRADE_STATUS_NOT_EXIST(6003,"支付宝支付状态未知"),
+    
+    PAY_PRICE_NOT_EQUAL_ORDER_PRICE(6004,"支付金额和订单金额不一致"),
     ;
     
     private final Integer code;

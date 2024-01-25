@@ -1,5 +1,7 @@
 package com.example.pay;
 
+import com.example.entity.PayBill;
+
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -15,11 +17,9 @@ public interface PayStrategyHandler {
     
     boolean signVerify(Map<String, String> params);
     
+    boolean dataVerify(Map<String, String> params, PayBill payBill);
+    
     TradeResult queryTrade(String outTradeNo);
-    
-    String getSellerId();
-    
-    String getAppId();
     
     String getChannel();
 }
