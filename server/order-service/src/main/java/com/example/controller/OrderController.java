@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.common.ApiResponse;
 import com.example.dto.OrderCancelDto;
 import com.example.dto.OrderCreateDto;
+import com.example.dto.OrderPayDto;
 import com.example.service.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,8 +39,8 @@ public class OrderController {
     
     @ApiOperation(value = "订单支付")
     @PostMapping(value = "/pay")
-    public ApiResponse<String> pay(@Valid @RequestBody OrderCreateDto orderCreateDto) {
-        return ApiResponse.ok(orderService.create(orderCreateDto));
+    public ApiResponse<String> pay(@Valid @RequestBody OrderPayDto orderPayDto) {
+        return ApiResponse.ok(orderService.pay(orderPayDto));
     }
     
     @ApiOperation(value = "订单取消")
