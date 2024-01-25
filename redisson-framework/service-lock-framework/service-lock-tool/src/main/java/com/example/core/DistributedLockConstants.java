@@ -48,4 +48,14 @@ public class DistributedLockConstants {
      * */
     public final static String ORDER_CANCEL_LOCK = "d_order_cancel_lock";
     
+    /**
+     * 支付宝回调
+     * */
+    public final static String ALIPAY_NOTIFY = "d_alipay_notify";
+    
+    /**
+     * 交易状态检查
+     * */
+    public final static String TRADE_CHECK = "d_trade_check";
+    
 }

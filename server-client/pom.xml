@@ -26,6 +26,7 @@
         <module>job-client</module>
         <module>customize-client</module>
         <module>program-client</module>
+        <module>pay-client</module>
     </modules>
 
     <dependencies>

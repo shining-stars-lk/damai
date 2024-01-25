@@ -51,12 +51,12 @@ public class RuleService {
     @Resource
     private UidGenerator uidGenerator;
     
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void ruleAdd(RuleDto ruleDto) {
         add(ruleDto);
         saveAllRuleCache();
     }
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Long add(RuleDto ruleDto) {
         delAll();
         Rule rule = new Rule();
@@ -67,26 +67,26 @@ public class RuleService {
         return rule.getId();
     }
     
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void ruleUpdate(final RuleUpdateDto ruleUpdateDto) {
         update(ruleUpdateDto);
         saveAllRuleCache();
     }
     
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(final RuleUpdateDto ruleUpdateDto) {
         Rule rule = new Rule();
         BeanUtils.copyProperties(ruleUpdateDto,rule);
         ruleMapper.updateById(rule);
     }
     
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void ruleUpdateStatus(final RuleStatusDto ruleStatusDto) {
         updateStatus(ruleStatusDto);
         saveAllRuleCache();
     }
     
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateStatus(final RuleStatusDto ruleStatusDto) {
         Rule rule = new Rule();
         rule.setId(ruleStatusDto.getId());

@@ -127,6 +127,14 @@ public enum BaseCode {
     DELAY_QUEUE_CLIENT_NOT_EXIST(5001,"延迟队列客户端不存在"),
     
     DELAY_QUEUE_MESSAGE_NOT_EXIST(5002,"延迟队列消息不存在"),
+    
+    PAY_ERROR(6000,"支付异常"),
+    
+    PAY_STRATEGY_NOT_EXIST(6001,"此支付策略不存在"),
+    
+    PAY_BILL_IS_NOT_NO_PAY(6002,"此账单不是未支付状态"),
+    
+    ALIPAY_TRADE_STATUS_NOT_EXIST(6003,"支付宝支付状态未知"),
     ;
     
     private final Integer code;

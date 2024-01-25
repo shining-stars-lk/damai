@@ -36,6 +36,12 @@ public class OrderController {
         return ApiResponse.ok(orderService.create(orderCreateDto));
     }
     
+    @ApiOperation(value = "订单支付")
+    @PostMapping(value = "/pay")
+    public ApiResponse<String> pay(@Valid @RequestBody OrderCreateDto orderCreateDto) {
+        return ApiResponse.ok(orderService.create(orderCreateDto));
+    }
+    
     @ApiOperation(value = "订单取消")
     @PostMapping(value = "/cancel")
     public ApiResponse<Boolean> cancel(@Valid @RequestBody OrderCancelDto orderCancelDto) {

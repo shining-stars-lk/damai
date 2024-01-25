@@ -61,7 +61,7 @@ public class ProgramCategoryService extends ServiceImpl<ProgramCategoryMapper, P
         return BeanUtil.copyToList(programCategories,ProgramCategoryVo.class);
     }
     
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @ServiceLock(lockType= LockType.Write,name = PROGRAM_CATEGORY_LOCK,keys = {"all"})
     public void saveBatch(final List<ProgramCategoryAddDto> programCategoryAddDtoList) {
         List<ProgramCategory> programCategoryList = programCategoryAddDtoList.stream().map((programCategoryAddDto) -> {

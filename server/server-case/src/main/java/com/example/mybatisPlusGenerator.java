@@ -11,7 +11,7 @@ import java.util.Collections;
 public class mybatisPlusGenerator {
     
     public static void main(String[] args) {
-        FastAutoGenerator.create("jdbc:mysql://82.157.255.105:3306/damai_order?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&remarks=true&useInformationSchema=true", "root", "qaz321qwe!")
+        FastAutoGenerator.create("jdbc:mysql://82.157.255.105:3306/damai_pay?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&remarks=true&useInformationSchema=true", "root", "qaz321qwe!")
                 .globalConfig(builder -> {
                     builder.author("k") // 设置作者
                             //.enableSwagger() // 开启 swagger 模式
@@ -37,7 +37,7 @@ public class mybatisPlusGenerator {
                             .pathInfo(Collections.singletonMap(OutputFile.xml, "D://mybatispluscode")); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("d_order_ticket_user") // 设置需要生成的表名
+                    builder.addInclude("d_pay_bill") // 设置需要生成的表名
                             .addTablePrefix("d_"); // 设置过滤表前缀
                 })
                 .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板

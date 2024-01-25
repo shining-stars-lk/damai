@@ -2,7 +2,6 @@ package com.example.event;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.example.config.DelayQueueProperties;
-import com.example.context.DelayQueueContext;
 import com.example.context.DelayQueuePart;
 import com.example.core.ConsumerTask;
 import com.example.core.DelayConsumerQueue;
@@ -22,8 +21,6 @@ public class DelayQueueInitHandler implements ApplicationListener<ApplicationSta
     private final DelayQueueProperties delayQueueProperties;
     
     private final RedissonClient redissonClient;
-    
-    private final DelayQueueContext delayQueueContext;
     
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {

@@ -51,7 +51,7 @@ public class ChannelDataService {
         return getChannelDataVo;
     }
     
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void add(ChannelDataAddDto channelDataAddDto) {
         ChannelData channelData = new ChannelData();
         BeanUtils.copyProperties(channelDataAddDto,channelData);

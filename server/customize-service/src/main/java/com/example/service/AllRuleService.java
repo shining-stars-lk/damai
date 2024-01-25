@@ -32,7 +32,7 @@ public class AllRuleService {
     @Autowired
     private DepthRuleService depthRuleService;
     
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void add(final AllRuleDto allRuleDto) {
         ruleService.add(allRuleDto.getRuleDto());
         depthRuleService.delAll();
