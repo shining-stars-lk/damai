@@ -10,6 +10,7 @@ import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.example.AlipayTradeStatus;
+import com.example.entity.PayBill;
 import com.example.enums.BaseCode;
 import com.example.enums.PayBillStatus;
 import com.example.enums.PayChannel;
@@ -82,6 +83,38 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
     }
     
     @Override
+    public boolean dataVerify(final Map<String, String> params, PayBill payBill) {
+        //2 判断 total_amount 是否确实为该订单的实际金额（即商户订单创建时的金额）
+        BigDecimal notifyPayAmount = new BigDecimal(params.get("total_amount"));
+        BigDecimal payAmount = payBill.getPayAmount();
+        if (notifyPayAmount.compareTo(payAmount) != 0) {
+            log.error("回调金额和账单支付金额不一致 回调金额 : {}, 账单支付金额 : {}",notifyPayAmount,payAmount);
+            return false;
+        }
+        //3 校验通知中的 seller_id（或者 seller_email) 是否为 out_trade_no 这笔单据的对应的操作方
+        String notifySellerId = params.get("seller_id");
+        String alipaySellerId = aliPayProperties.getSellerId();
+        if (!notifySellerId.equals(alipaySellerId)) {
+            log.error("回调商户pid和已配置商户pid不一致 回调商户pid : {}, 已配置商户pid : {}",notifySellerId,alipaySellerId);
+            return false;
+        }
+        //4 验证 app_id 是否为该商户本身
+        String notifyAppId = params.get("app_id");
+        String alipayAppId = aliPayProperties.getAppId();
+        if(!notifyAppId.equals(alipayAppId)){
+            log.error("回调appId和已配置appId不一致 回调appId : {}, 已配置appId : {}",notifyAppId,alipayAppId);
+            return false;
+        }
+        //在支付宝的业务通知中，只有交易通知状态为 TRADE_SUCCESS时，支付宝才会认定为买家付款成功
+        String tradeStatus = params.get("trade_status");
+        if(!"TRADE_SUCCESS".equals(tradeStatus)){
+            log.error("支付未成功 tradeStatus : {}",tradeStatus);
+            return false;
+        }
+        return true;
+    }
+    
+    @Override
     public TradeResult queryTrade(String outTradeNo) {
         TradeResult tradeResult = new TradeResult();
         tradeResult.setSuccess(false);
@@ -108,16 +141,6 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
             log.error("alipay trade query error",e);
         }
         return tradeResult;
-    }
-    
-    @Override
-    public String getSellerId() {
-        return aliPayProperties.getSellerId();
-    }
-    
-    @Override
-    public String getAppId() {
-        return aliPayProperties.getAppId();
     }
     
     @Override
