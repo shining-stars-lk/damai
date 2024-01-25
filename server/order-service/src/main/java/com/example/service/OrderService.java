@@ -10,10 +10,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.client.PayClient;
+import com.example.common.ApiResponse;
 import com.example.core.RedisKeyEnum;
 import com.example.dto.OrderCancelDto;
 import com.example.dto.OrderCreateDto;
+import com.example.dto.OrderPayDto;
 import com.example.dto.OrderTicketUserCreateDto;
+import com.example.dto.PayDto;
 import com.example.entity.Order;
 import com.example.entity.OrderTicketUser;
 import com.example.enums.BaseCode;
@@ -24,6 +28,7 @@ import com.example.mapper.OrderMapper;
 import com.example.mapper.OrderTicketUserMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
+import com.example.service.properties.OrderProperties;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.DateUtils;
 import com.example.vo.SeatVo;
@@ -67,6 +72,12 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     
     @Autowired
     private RedisCache redisCache;
+    
+    @Autowired
+    private PayClient payClient;
+    
+    @Autowired
+    private OrderProperties orderProperties;
     
     @Transactional(rollbackFor = Exception.class)
     public String create(final OrderCreateDto orderCreateDto) {
@@ -178,5 +189,38 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         programCacheReverseOperate.programCacheReverseOperate(keys,data);
         
         return true;
+    }
+    
+    public String pay(OrderPayDto orderPayDto) {
+        String orderNumber = orderPayDto.getOrderNumber();
+        Order order = orderMapper.selectById(orderNumber);
+        if (Objects.isNull(order)) {
+            throw new CookFrameException(BaseCode.ORDER_NOT_EXIST);
+        }
+        if (Objects.equals(order.getOrderStatus(), OrderStatus.CANCEL.getCode())) {
+            throw new CookFrameException(BaseCode.ORDER_CANCEL);
+        }
+        if (Objects.equals(order.getOrderStatus(), OrderStatus.PAY.getCode())) {
+            throw new CookFrameException(BaseCode.ORDER_PAY);
+        }
+        if (Objects.equals(order.getOrderStatus(), OrderStatus.REFUND.getCode())) {
+            throw new CookFrameException(BaseCode.ORDER_REFUND);
+        }
+        
+        //调用支付服务进行支付
+        PayDto payDto = new PayDto();
+        payDto.setOrderNumber(orderNumber);
+        payDto.setPayBillType(orderPayDto.getPayBillType());
+        payDto.setSubject(orderPayDto.getSubject());
+        payDto.setChannel(orderPayDto.getChannel());
+        payDto.setPlatform(orderPayDto.getPlatform());
+        payDto.setPrice(orderPayDto.getPrice());
+        payDto.setNotifyUrl(orderProperties.getOrderPayNotifyUrl());
+        payDto.setReturnUrl(orderProperties.getOrderPayReturnUrl());
+        ApiResponse<String> payResponse = payClient.commonPay(payDto);
+        if (!Objects.equals(payResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+            throw new CookFrameException(payResponse);
+        }
+        return null;
     }
 }
