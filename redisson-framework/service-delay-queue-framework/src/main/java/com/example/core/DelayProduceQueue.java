@@ -1,4 +1,4 @@
-package com.example.delayqueuenew.core;
+package com.example.core;
 
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RedissonClient;

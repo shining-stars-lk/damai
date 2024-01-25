@@ -1,11 +1,11 @@
-package com.example.delayqueuenew.event;
+package com.example.event;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.example.delayqueuenew.config.DelayQueueProperties;
-import com.example.delayqueuenew.context.DelayQueueContext;
-import com.example.delayqueuenew.context.DelayQueuePart;
-import com.example.delayqueuenew.core.ConsumerTask;
-import com.example.delayqueuenew.core.DelayConsumerQueue;
+import com.example.config.DelayQueueProperties;
+import com.example.context.DelayQueueContext;
+import com.example.context.DelayQueuePart;
+import com.example.core.ConsumerTask;
+import com.example.core.DelayConsumerQueue;
 import lombok.AllArgsConstructor;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.context.event.ApplicationStartedEvent;

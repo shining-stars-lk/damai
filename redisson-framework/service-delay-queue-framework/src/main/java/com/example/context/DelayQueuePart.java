@@ -1,7 +1,7 @@
-package com.example.delayqueuenew.context;
+package com.example.context;
 
-import com.example.delayqueuenew.config.DelayQueueProperties;
-import com.example.delayqueuenew.core.ConsumerTask;
+import com.example.config.DelayQueueProperties;
+import com.example.core.ConsumerTask;
 import lombok.Data;
 import org.redisson.api.RedissonClient;
 
@@ -19,7 +19,7 @@ public class DelayQueuePart extends DelayQueueBasePart {
      * */
     private final ConsumerTask consumerTask;
     
-    public DelayQueuePart(RedissonClient redissonClient,DelayQueueProperties delayQueueProperties,ConsumerTask consumerTask){
+    public DelayQueuePart(RedissonClient redissonClient, DelayQueueProperties delayQueueProperties, ConsumerTask consumerTask){
         super(redissonClient,delayQueueProperties);
         this.consumerTask = consumerTask;
     }

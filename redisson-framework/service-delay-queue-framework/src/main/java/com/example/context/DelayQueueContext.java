@@ -1,6 +1,6 @@
-package com.example.delayqueuenew.context;
+package com.example.context;
 
-import com.example.delayqueuenew.config.DelayQueueProperties;
+import com.example.config.DelayQueueProperties;
 import org.redisson.api.RedissonClient;
 
 import java.util.Map;

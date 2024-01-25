@@ -41,7 +41,7 @@ import static com.example.core.DistributedLockConstants.ORDER_CANCEL_LOCK;
 
 /**
  * <p>
- * 节目类型表 服务实现类
+ * 订单表 服务实现类
  * </p>
  *
  * @author k

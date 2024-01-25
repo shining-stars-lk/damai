@@ -1,4 +1,4 @@
-package com.example.delayqueuenew.core;
+package com.example.core;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
