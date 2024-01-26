@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @program: cook-frame
@@ -22,6 +21,6 @@ public class TradeCheckDto {
     private String outTradeNo;
     
     @ApiModelProperty(name ="channel", dataType ="Integer", value ="支付渠道 alipay：支付宝 wx：微信")
-    @NotNull
+    @NotBlank
     private String channel;
 }
