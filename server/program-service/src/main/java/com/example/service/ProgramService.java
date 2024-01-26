@@ -14,6 +14,7 @@ import com.example.dto.AreaGetDto;
 import com.example.dto.AreaSelectDto;
 import com.example.dto.ProgramGetDto;
 import com.example.dto.ProgramListDto;
+import com.example.dto.ProgramOperateDataDto;
 import com.example.dto.ProgramPageListDto;
 import com.example.entity.Program;
 import com.example.entity.ProgramCategory;
@@ -281,10 +282,13 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         //根据节目id统计出票档的最低价和最高价的集合
         List<TicketCategoryAggregate> ticketCategorieList = ticketCategoryMapper.selectAggregateList(programIdList);
         //将集合转换为map，key：节目id，value：票档
-        Map<Long, TicketCategoryAggregate> ticketCategorieMap = ticketCategorieList
+        return ticketCategorieList
                 .stream()
                 .collect(Collectors.toMap(TicketCategoryAggregate::getProgramId, ticketCategory -> ticketCategory, (v1, v2) -> v2));
-        return ticketCategorieMap;
+    }
+    
+    public void OperateProgramData(ProgramOperateDataDto programOperateDataDto){
+        
     }
     
 }
