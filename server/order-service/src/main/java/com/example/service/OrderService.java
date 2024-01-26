@@ -20,6 +20,7 @@ import com.example.dto.OrderPayCheckDto;
 import com.example.dto.OrderPayDto;
 import com.example.dto.OrderTicketUserCreateDto;
 import com.example.dto.PayDto;
+import com.example.dto.ProgramOperateDataDto;
 import com.example.dto.TradeCheckDto;
 import com.example.entity.Order;
 import com.example.entity.OrderTicketUser;
@@ -33,6 +34,7 @@ import com.example.mapper.OrderMapper;
 import com.example.mapper.OrderTicketUserMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
+import com.example.service.delaysend.DelayOperateProgramDataSend;
 import com.example.service.properties.OrderProperties;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.DateUtils;
@@ -93,6 +95,9 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     
     @Autowired
     private OrderService orderService;
+    
+    @Autowired
+    private DelayOperateProgramDataSend delayOperateProgramDataSend;
     
     @Transactional(rollbackFor = Exception.class)
     public String create(final OrderCreateDto orderCreateDto) {
@@ -284,7 +289,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             throw new CookFrameException(BaseCode.LOCK_SEAT_LIST_EMPTY);
         }
         
-        
+        /**=====操作缓存相关数据====*/
         //redis解除锁座位
         List<String> unLockSeatIdList = seatVoList.stream().map(SeatVo::getId).map(String::valueOf).collect(Collectors.toList());
         Map<String, SeatVo> unLockSeatVoMap = seatVoList.stream().collect(Collectors
@@ -313,16 +318,17 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         //如果是订单支付的操作，那么添加到已售卖的座位数据
         data[1] = JSON.toJSONString(seatDataList);
         
+        //根据座位集合统计出对应的票档数量
+        Map<Long, Long> ticketCategoryCountMap = seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, Collectors.counting()));
+        JSONArray jsonArray = new JSONArray();
+        ticketCategoryCountMap.forEach((k,v) -> {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("ticketCategoryId",String.valueOf(k));
+            jsonObject.put("count",v);
+            jsonArray.add(jsonObject);
+        });
+        
         if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
-            //redis恢复库存
-            Map<Long, Long> increaseMap = seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, Collectors.counting()));
-            JSONArray jsonArray = new JSONArray();
-            increaseMap.forEach((k,v) -> {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("ticketCategoryId",String.valueOf(k));
-                jsonObject.put("increaseCount",v);
-                jsonArray.add(jsonObject);
-            });
             //没有售卖座位的key
             keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
             //恢复库存的key
@@ -334,5 +340,15 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_SOLD_HASH, programId).getRelKey());
         }
         programCacheReverseOperate.programCacheReverseOperate(keys,data);
+        
+        //如果是支付成功了，发送延迟队列给program服务，将数据库中的票档的余票更新、座位状态更新
+        if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
+            ProgramOperateDataDto programOperateDataDto = new ProgramOperateDataDto();
+            programOperateDataDto.setProgramId(programId);
+            programOperateDataDto.setSeatIdList(JSON.parseArray((String)data[0],Long.class));
+            programOperateDataDto.setTicketCategoryCountMap(ticketCategoryCountMap);
+            programOperateDataDto.setSellStatus(SellStatus.SOLD.getCode());
+            delayOperateProgramDataSend.sendMessage(JSON.toJSONString(programOperateDataDto));
+        }
     }
 }

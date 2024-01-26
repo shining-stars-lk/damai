@@ -15,7 +15,7 @@ if (operate_order_status == 2) then
     -- 恢复库存
     for index,increase_data in ipairs(increase_data_list) do
         local ticket_category_id = increase_data.ticketCategoryId
-        local increase_count = increase_data.increaseCount
+        local increase_count = increase_data.count
         redis.call('HINCRBY',program_ticket_remain_number_hash_key,ticket_category_id,increase_count)
     end
 end
