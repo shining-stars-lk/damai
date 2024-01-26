@@ -139,6 +139,12 @@ public enum BaseCode {
     PAY_PRICE_NOT_EQUAL_ORDER_PRICE(6004,"支付金额和订单金额不一致"),
     
     OPERATE_ORDER_STATUS_NOT_PERMIT(6005,"操作订单状态不允许"),
+    
+    PAY_CHANNEL_NOT_EXIST(6006,"支付方式不存在"),
+    
+    PAY_BILL_NOT_EXIST(6007,"账单不存在"),
+    
+    PAY_TRADE_CHECK_ERROR(6008,"支付状态检查错误"),
     ;
     
     private final Integer code;

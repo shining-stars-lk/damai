@@ -13,10 +13,10 @@ import javax.validation.constraints.NotNull;
  * @create: 2023-06-25
  **/
 @Data
-@ApiModel(value="PayOrderDto", description ="支付")
-public class PayOrderDto {
+@ApiModel(value="OrderPayCheckDto", description ="订单支付后状态检查")
+public class OrderPayCheckDto {
     
-    @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
+    @ApiModelProperty(name ="id", dataType ="String", value ="订单id", required =true)
     @NotNull
     private Long id;
     

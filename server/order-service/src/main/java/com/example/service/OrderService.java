@@ -16,13 +16,16 @@ import com.example.core.RedisKeyEnum;
 import com.example.dto.NotifyDto;
 import com.example.dto.OrderCancelDto;
 import com.example.dto.OrderCreateDto;
+import com.example.dto.OrderPayCheckDto;
 import com.example.dto.OrderPayDto;
 import com.example.dto.OrderTicketUserCreateDto;
 import com.example.dto.PayDto;
+import com.example.dto.TradeCheckDto;
 import com.example.entity.Order;
 import com.example.entity.OrderTicketUser;
 import com.example.enums.BaseCode;
 import com.example.enums.OrderStatus;
+import com.example.enums.PayBillStatus;
 import com.example.enums.PayChannel;
 import com.example.enums.SellStatus;
 import com.example.exception.CookFrameException;
@@ -34,7 +37,9 @@ import com.example.service.properties.OrderProperties;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.DateUtils;
 import com.example.vo.NotifyVo;
+import com.example.vo.OrderPayCheckVo;
 import com.example.vo.SeatVo;
+import com.example.vo.TradeCheckVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.constant.Constant.ALIPAY_NOTIFY_SUCCESS_RESULT;
@@ -152,6 +158,54 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         return payResponse.getData();
     }
     
+    public OrderPayCheckVo payCheck(OrderPayCheckDto orderPayCheckDto){
+        OrderPayCheckVo orderPayCheckVo = new OrderPayCheckVo();
+        Order order = orderMapper.selectById(orderPayCheckDto.getId());
+        if (Objects.isNull(order)) {
+            throw new CookFrameException(BaseCode.ORDER_NOT_EXIST);
+        }
+        BeanUtil.copyProperties(order,orderPayCheckVo);
+        TradeCheckDto tradeCheckDto = new TradeCheckDto();
+        tradeCheckDto.setOutTradeNo(String.valueOf(orderPayCheckDto.getId()));
+        tradeCheckDto.setChannel(Optional.ofNullable(PayChannel.getRc(orderPayCheckDto.getPayChannelType()))
+                .map(PayChannel::getValue).orElseThrow(() -> new CookFrameException(BaseCode.PAY_CHANNEL_NOT_EXIST)));
+        ApiResponse<TradeCheckVo> tradeCheckVoApiResponse = payClient.tradeCheck(tradeCheckDto);
+        if (!Objects.equals(tradeCheckVoApiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+            throw new CookFrameException(tradeCheckVoApiResponse);
+        }
+        TradeCheckVo tradeCheckVo = Optional.ofNullable(tradeCheckVoApiResponse.getData())
+                .orElseThrow(() -> new CookFrameException(BaseCode.PAY_BILL_NOT_EXIST));
+        if (tradeCheckVo.isSuccess()) {
+            Integer payBillStatus = tradeCheckVo.getPayBillStatus();
+            Integer orderStatus = order.getOrderStatus();
+            if (!Objects.equals(orderStatus, payBillStatus)) {
+                Order updateOrder = new Order();
+                updateOrder.setId(order.getId());
+                updateOrder.setOrderStatus(payBillStatus);
+                orderPayCheckVo.setOrderStatus(payBillStatus);
+                if (Objects.equals(payBillStatus, PayBillStatus.PAY.getCode())) {
+                    updateOrder.setPayOrderTime(DateUtils.now());
+                    orderPayCheckVo.setPayOrderTime(DateUtils.now());
+                }else if (Objects.equals(payBillStatus, PayBillStatus.CANCEL.getCode())) {
+                    updateOrder.setCancelOrderTime(DateUtils.now());
+                    orderPayCheckVo.setCancelOrderTime(DateUtils.now());
+                }
+                orderMapper.updateById(updateOrder);
+            }
+            //将订单更新为支付状态
+            if (Objects.equals(payBillStatus, PayBillStatus.PAY.getCode())) {
+                orderService.updateOrderRelatedData(order.getId(),OrderStatus.PAY);
+                //将订单更新为取消状态
+            } else if (Objects.equals(payBillStatus, PayBillStatus.CANCEL.getCode())) {
+                orderService.updateOrderRelatedData(order.getId(),OrderStatus.CANCEL);
+            }
+            
+        }else {
+            throw new CookFrameException(BaseCode.PAY_TRADE_CHECK_ERROR);
+        }
+        return orderPayCheckVo;
+    }
+    
     
     @ServiceLock(name = ORDER_CANCEL_LOCK,keys = {"#outTradeNo"})
     public String alipayNotify(Map<String, String> params, String outTradeNo){
@@ -168,6 +222,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         }
         return notifyResponse.getData().getPayResult();
     }
+    
+    /**
+     * 更新订单和购票人订单状态以及操作缓存数据
+     * */
     @Transactional(rollbackFor = Exception.class)
     public void updateOrderRelatedData(Long orderId,OrderStatus orderStatus){
         if (!(Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode()) ||
@@ -248,7 +306,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         //锁定座位的key
         keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
         
-        String[] data = new String[3];
+        Object[] data = new String[3];
         //扣除锁定的座位数据
         data[0] = JSON.toJSONString(unLockSeatIdList);
         //如果是订单取消的操作，那么添加到未售卖的座位数据
