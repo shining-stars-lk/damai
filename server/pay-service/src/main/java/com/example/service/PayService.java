@@ -28,11 +28,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.example.constant.Constant.ALIPAY_NOTIFY_FAILURE_RESULT;
 import static com.example.constant.Constant.ALIPAY_NOTIFY_SUCCESS_RESULT;
-import static com.example.core.DistributedLockConstants.ALIPAY_NOTIFY;
 import static com.example.core.DistributedLockConstants.TRADE_CHECK;
 
 /**
@@ -84,14 +84,14 @@ public class PayService {
     }
     
     @Transactional(rollbackFor = Exception.class)
-    @ServiceLock(name = ALIPAY_NOTIFY,keys = {"#outTradeNo"})
-    public NotifyVo notify(NotifyDto notifyDto, String outTradeNo){
+    public NotifyVo notify(NotifyDto notifyDto){
         NotifyVo notifyVo = new NotifyVo();
         
         log.info("回调通知参数 ===> {}", JSON.toJSONString(notifyDto));
+        Map<String, String> params = notifyDto.getParams();
         //验签
         PayStrategyHandler payStrategyHandler = payStrategyContext.get(notifyDto.getChannel());
-        boolean signVerifyResult = payStrategyHandler.signVerify(notifyDto.getParams());
+        boolean signVerifyResult = payStrategyHandler.signVerify(params);
         if (!signVerifyResult) {
             notifyVo.setPayResult(ALIPAY_NOTIFY_FAILURE_RESULT);
             return notifyVo;
@@ -99,7 +99,7 @@ public class PayService {
         //按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验
         //1 商户需要验证该通知数据中的 out_trade_no 是否为商户系统中创建的订单号
         LambdaQueryWrapper<PayBill> payBillLambdaQueryWrapper =
-                Wrappers.lambdaQuery(PayBill.class).eq(PayBill::getOutOrderNo, outTradeNo);
+                Wrappers.lambdaQuery(PayBill.class).eq(PayBill::getOutOrderNo, params.get("out_trade_no"));
         PayBill payBill = payBillMapper.selectOne(payBillLambdaQueryWrapper);
         if (Objects.isNull(payBill)) {
             log.error("账单为空 notifyDto : {}",JSON.toJSONString(notifyDto));
@@ -134,7 +134,7 @@ public class PayService {
         updatePayBill.setPayBillStatus(PayBillStatus.PAY.getCode());
         
         LambdaUpdateWrapper<PayBill> payBillLambdaUpdateWrapper =
-                Wrappers.lambdaUpdate(PayBill.class).eq(PayBill::getOutOrderNo, outTradeNo);
+                Wrappers.lambdaUpdate(PayBill.class).eq(PayBill::getOutOrderNo, params.get("out_trade_no"));
         
         payBillMapper.update(updatePayBill,payBillLambdaUpdateWrapper);
         notifyVo.setOutTradeNo(payBill.getOutOrderNo());

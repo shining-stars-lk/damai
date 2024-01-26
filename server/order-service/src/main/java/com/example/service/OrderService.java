@@ -35,6 +35,7 @@ import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.DateUtils;
 import com.example.vo.NotifyVo;
 import com.example.vo.SeatVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +57,7 @@ import static com.example.core.DistributedLockConstants.ORDER_CANCEL_LOCK;
  * @author k
  * @since 2024-01-12
  */
+@Slf4j
 @Service
 public class OrderService extends ServiceImpl<OrderMapper, Order> {
     
@@ -83,6 +85,9 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     @Autowired
     private OrderProperties orderProperties;
     
+    @Autowired
+    private OrderService orderService;
+    
     @Transactional(rollbackFor = Exception.class)
     public String create(final OrderCreateDto orderCreateDto) {
         Order oldOrder = orderMapper.selectById(orderCreateDto.getId());
@@ -108,90 +113,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     @Transactional(rollbackFor = Exception.class)
     @ServiceLock(name = ORDER_CANCEL_LOCK,keys = {"#orderCancelDto.orderId"})
     public boolean cancel(OrderCancelDto orderCancelDto){
-        Order order = orderMapper.selectById(orderCancelDto.getOrderId());
-        if (Objects.isNull(order)) {
-            throw new CookFrameException(BaseCode.ORDER_NOT_EXIST);
-        }
-        if (Objects.equals(order.getOrderStatus(), OrderStatus.CANCEL.getCode())) {
-            throw new CookFrameException(BaseCode.ORDER_CANCEL);
-        }
-        if (Objects.equals(order.getOrderStatus(), OrderStatus.PAY.getCode())) {
-            throw new CookFrameException(BaseCode.ORDER_PAY);
-        }
-        if (Objects.equals(order.getOrderStatus(), OrderStatus.REFUND.getCode())) {
-            throw new CookFrameException(BaseCode.ORDER_REFUND);
-        }
-        Order updateOrder = new Order();
-        updateOrder.setId(order.getId());
-        updateOrder.setOrderStatus(OrderStatus.CANCEL.getCode());
-        updateOrder.setCancelOrderTime(DateUtils.now());
-        int updateOrderResult = orderMapper.updateById(updateOrder);
-        
-        OrderTicketUser updateOrderTicketUser = new OrderTicketUser();
-        updateOrderTicketUser.setOrderStatus(OrderStatus.CANCEL.getCode());
-        updateOrderTicketUser.setCancelOrderTime(DateUtils.now());
-        
-        LambdaUpdateWrapper<OrderTicketUser> orderTicketUserLambdaUpdateWrapper = 
-                Wrappers.lambdaUpdate(OrderTicketUser.class).eq(OrderTicketUser::getOrderId, order.getId());
-        
-        int updateTicketUserOrderResult = 
-                orderTicketUserMapper.update(updateOrderTicketUser,orderTicketUserLambdaUpdateWrapper);
-        if (updateOrderResult <= 0 || updateTicketUserOrderResult <= 0) {
-            throw new CookFrameException(BaseCode.ORDER_CANAL_ERROR); 
-        }
-        
-        LambdaQueryWrapper<OrderTicketUser> orderTicketUserLambdaQueryWrapper =
-                Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderId, orderCancelDto.getOrderId());
-        List<OrderTicketUser> orderTicketUserList = orderTicketUserMapper.selectList(orderTicketUserLambdaQueryWrapper);
-        if (CollectionUtil.isEmpty(orderTicketUserList)) {
-            throw new CookFrameException(BaseCode.TICKET_USER_ORDER_NOT_EXIST);
-        }
-        Long programId = orderTicketUserList.get(0).getProgramId();
-        
-        List<String> seatIdList =
-                orderTicketUserList.stream().map(OrderTicketUser::getSeatId).map(String::valueOf).collect(Collectors.toList());
-        List<SeatVo> seatVoList = redisCache.multiGetForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId), seatIdList, SeatVo.class);
-        if (CollectionUtil.isEmpty(seatVoList)) {
-            throw new CookFrameException(BaseCode.LOCK_SEAT_LIST_EMPTY);
-        }
-        
-        //redis恢复库存
-        Map<Long, Long> increaseMap = seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, Collectors.counting()));
-        JSONArray jsonArray = new JSONArray();
-        increaseMap.forEach((k,v) -> {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("ticketCategoryId",String.valueOf(k));
-            jsonObject.put("increaseCount",v);
-            jsonArray.add(jsonObject);
-        });
-        //redis解除锁座位
-        List<String> unLockSeatIdList = seatVoList.stream().map(SeatVo::getId).map(String::valueOf).collect(Collectors.toList());
-        Map<String, SeatVo> unLockSeatVoMap = seatVoList.stream().collect(Collectors
-                .toMap(seatVo -> String.valueOf(seatVo.getId()), seatVo -> seatVo, (v1, v2) -> v2));
-        List<String> seatNoSoldDataList = new ArrayList<>();
-        unLockSeatVoMap.forEach((k,v) -> {
-            seatNoSoldDataList.add(k);
-            v.setSellStatus(SellStatus.NO_SOLD.getCode());
-            seatNoSoldDataList.add(JSON.toJSONString(v));
-        });
-        List<String> keys = new ArrayList<>();
-        //锁定座位的key
-        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
-        //没有售卖座位的key
-        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
-        //恢复库存的key
-        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
-        
-        String[] data = new String[3];
-        //扣除锁定的座位数据
-        data[1] = JSON.toJSONString(unLockSeatIdList);
-        //添加未售卖的座位数据
-        data[2] = JSON.toJSONString(seatNoSoldDataList);
-        //恢复库存数据
-        data[0] = JSON.toJSONString(jsonArray);
-        
-        programCacheReverseOperate.programCacheReverseOperate(keys,data);
-        
+        updateOrderRelatedData(orderCancelDto.getOrderId(),OrderStatus.CANCEL);
         return true;
     }
     
@@ -230,7 +152,9 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         return payResponse.getData();
     }
     
-    public String alipayNotify(Map<String, String> params){
+    
+    @ServiceLock(name = ORDER_CANCEL_LOCK,keys = {"#outTradeNo"})
+    public String alipayNotify(Map<String, String> params, String outTradeNo){
         NotifyDto notifyDto = new NotifyDto();
         notifyDto.setChannel(PayChannel.ALIPAY.getValue());
         notifyDto.setParams(params);
@@ -240,12 +164,11 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         }
         //将订单状态更新
         if (ALIPAY_NOTIFY_SUCCESS_RESULT.equals(notifyResponse.getData().getPayResult())) {
-            updateOrderRelatedData(Long.parseLong(notifyResponse.getData().getOutTradeNo()),OrderStatus.PAY);
-            return null;
+            orderService.updateOrderRelatedData(Long.parseLong(notifyResponse.getData().getOutTradeNo()),OrderStatus.PAY);
         }
-        return null;
+        return notifyResponse.getData().getPayResult();
     }
-    
+    @Transactional(rollbackFor = Exception.class)
     public void updateOrderRelatedData(Long orderId,OrderStatus orderStatus){
         if (!(Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode()) ||
                 Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode()))) {
@@ -256,13 +179,16 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             throw new CookFrameException(BaseCode.ORDER_NOT_EXIST);
         }
         if (Objects.equals(order.getOrderStatus(), OrderStatus.CANCEL.getCode())) {
-            throw new CookFrameException(BaseCode.ORDER_CANCEL);
+            log.info("订单已取消 orderId : {}",orderId);
+            return;
         }
         if (Objects.equals(order.getOrderStatus(), OrderStatus.PAY.getCode())) {
-            throw new CookFrameException(BaseCode.ORDER_PAY);
+            log.info("订单已支付 orderId : {}",orderId);
+            return;
         }
         if (Objects.equals(order.getOrderStatus(), OrderStatus.REFUND.getCode())) {
-            throw new CookFrameException(BaseCode.ORDER_REFUND);
+            log.info("订单已退单 orderId : {}",orderId);
+            return;
         }
         //将订单更新为取消或者支付状态
         Order updateOrder = new Order();
@@ -270,7 +196,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         updateOrder.setOrderStatus(orderStatus.getCode());
         updateOrder.setCancelOrderTime(DateUtils.now());
         int updateOrderResult = orderMapper.updateById(updateOrder);
-        
+        //将购票人订单更新为取消或者支付状态
         OrderTicketUser updateOrderTicketUser = new OrderTicketUser();
         updateOrderTicketUser.setOrderStatus(orderStatus.getCode());
         updateOrderTicketUser.setCancelOrderTime(DateUtils.now());
@@ -291,9 +217,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             throw new CookFrameException(BaseCode.TICKET_USER_ORDER_NOT_EXIST);
         }
         Long programId = orderTicketUserList.get(0).getProgramId();
-        
+        //查询到购票人的座位
         List<String> seatIdList =
                 orderTicketUserList.stream().map(OrderTicketUser::getSeatId).map(String::valueOf).collect(Collectors.toList());
+        //从redis中查询锁定中的座位
         List<SeatVo> seatVoList = redisCache.multiGetForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId), seatIdList, SeatVo.class);
         if (CollectionUtil.isEmpty(seatVoList)) {
             throw new CookFrameException(BaseCode.LOCK_SEAT_LIST_EMPTY);
