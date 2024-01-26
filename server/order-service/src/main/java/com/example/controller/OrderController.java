@@ -48,7 +48,7 @@ public class OrderController {
     @ApiOperation(value = "支付宝支付后回调通知")
     @PostMapping(value = "/alipay/notify")
     public String alipayNotify(@RequestParam Map<String, String> params) {
-        return orderService.alipayNotify(params);
+        return orderService.alipayNotify(params,params.get("out_trade_no"));
     }
     
     @ApiOperation(value = "订单取消")

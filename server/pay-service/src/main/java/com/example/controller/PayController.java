@@ -42,7 +42,7 @@ public class PayController {
     @ApiOperation(value = "支付后回到通知")
     @PostMapping(value = "/notify")
     public ApiResponse<NotifyVo> notify(@Valid @RequestBody NotifyDto notifyDto) {
-        return ApiResponse.ok(payService.notify(notifyDto,notifyDto.getParams().get("out_trade_no")));
+        return ApiResponse.ok(payService.notify(notifyDto));
     }
     
     @ApiOperation(value = "支付状态查询")
