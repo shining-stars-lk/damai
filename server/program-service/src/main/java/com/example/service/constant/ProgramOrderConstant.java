@@ -15,4 +15,6 @@ public class ProgramOrderConstant {
     public static final Long DELAY_ORDER_CANCEL_TIME = 5L;
     
     public static final TimeUnit DELAY_ORDER_CANCEL_TIME_UNIT = TimeUnit.SECONDS;
+    
+    public static final String DELAY_OPERATE_PROGRAM_DATA_TOPIC = "d_delay_operate_program_data_topic";
 }
