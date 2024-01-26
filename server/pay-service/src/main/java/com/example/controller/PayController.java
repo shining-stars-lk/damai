@@ -5,6 +5,7 @@ import com.example.dto.NotifyDto;
 import com.example.dto.PayDto;
 import com.example.dto.TradeCheckDto;
 import com.example.service.PayService;
+import com.example.vo.NotifyVo;
 import com.example.vo.TradeCheckVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,7 +41,7 @@ public class PayController {
     
     @ApiOperation(value = "支付后回到通知")
     @PostMapping(value = "/notify")
-    public ApiResponse<String> notify(@Valid @RequestBody NotifyDto notifyDto) {
+    public ApiResponse<NotifyVo> notify(@Valid @RequestBody NotifyDto notifyDto) {
         return ApiResponse.ok(payService.notify(notifyDto,notifyDto.getParams().get("out_trade_no")));
     }
     

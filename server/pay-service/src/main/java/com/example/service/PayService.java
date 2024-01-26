@@ -20,6 +20,7 @@ import com.example.pay.PayStrategyHandler;
 import com.example.pay.TradeResult;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.DateUtils;
+import com.example.vo.NotifyVo;
 import com.example.vo.TradeCheckVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,13 +85,16 @@ public class PayService {
     
     @Transactional(rollbackFor = Exception.class)
     @ServiceLock(name = ALIPAY_NOTIFY,keys = {"#outTradeNo"})
-    public String notify(NotifyDto notifyDto, String outTradeNo){
+    public NotifyVo notify(NotifyDto notifyDto, String outTradeNo){
+        NotifyVo notifyVo = new NotifyVo();
+        
         log.info("回调通知参数 ===> {}", JSON.toJSONString(notifyDto));
         //验签
         PayStrategyHandler payStrategyHandler = payStrategyContext.get(notifyDto.getChannel());
         boolean signVerifyResult = payStrategyHandler.signVerify(notifyDto.getParams());
         if (!signVerifyResult) {
-            return ALIPAY_NOTIFY_FAILURE_RESULT;
+            notifyVo.setPayResult(ALIPAY_NOTIFY_FAILURE_RESULT);
+            return notifyVo;
         }
         //按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验
         //1 商户需要验证该通知数据中的 out_trade_no 是否为商户系统中创建的订单号
@@ -99,24 +103,32 @@ public class PayService {
         PayBill payBill = payBillMapper.selectOne(payBillLambdaQueryWrapper);
         if (Objects.isNull(payBill)) {
             log.error("账单为空 notifyDto : {}",JSON.toJSONString(notifyDto));
-            return ALIPAY_NOTIFY_FAILURE_RESULT;
+            notifyVo.setPayResult(ALIPAY_NOTIFY_FAILURE_RESULT);
+            return notifyVo;
         }
         if (Objects.equals(payBill.getPayBillStatus(), PayBillStatus.PAY.getCode())) {
             log.info("账单已支付 notifyDto : {}",JSON.toJSONString(notifyDto));
-            return ALIPAY_NOTIFY_SUCCESS_RESULT;
+            notifyVo.setOutTradeNo(payBill.getOutOrderNo());
+            notifyVo.setPayResult(ALIPAY_NOTIFY_SUCCESS_RESULT);
+            return notifyVo;
         }
         if (Objects.equals(payBill.getPayBillStatus(), PayBillStatus.CANCEL.getCode())) {
             log.info("账单已取消 notifyDto : {}",JSON.toJSONString(notifyDto));
-            return ALIPAY_NOTIFY_SUCCESS_RESULT;
+            notifyVo.setOutTradeNo(payBill.getOutOrderNo());
+            notifyVo.setPayResult(ALIPAY_NOTIFY_SUCCESS_RESULT);
+            return notifyVo;
         }
         if (Objects.equals(payBill.getPayBillStatus(), PayBillStatus.REFUND.getCode())) {
             log.info("账单已退单 notifyDto : {}",JSON.toJSONString(notifyDto));
-            return ALIPAY_NOTIFY_SUCCESS_RESULT;
+            notifyVo.setOutTradeNo(payBill.getOutOrderNo());
+            notifyVo.setPayResult(ALIPAY_NOTIFY_SUCCESS_RESULT);
+            return notifyVo;
         }
         
         boolean dataVerify = payStrategyHandler.dataVerify(notifyDto.getParams(), payBill);
         if (!dataVerify) {
-            return ALIPAY_NOTIFY_FAILURE_RESULT;
+            notifyVo.setPayResult(ALIPAY_NOTIFY_FAILURE_RESULT);
+            return notifyVo;
         }
         PayBill updatePayBill = new PayBill();
         updatePayBill.setPayBillStatus(PayBillStatus.PAY.getCode());
@@ -125,7 +137,9 @@ public class PayService {
                 Wrappers.lambdaUpdate(PayBill.class).eq(PayBill::getOutOrderNo, outTradeNo);
         
         payBillMapper.update(updatePayBill,payBillLambdaUpdateWrapper);
-        return ALIPAY_NOTIFY_SUCCESS_RESULT;
+        notifyVo.setOutTradeNo(payBill.getOutOrderNo());
+        notifyVo.setPayResult(ALIPAY_NOTIFY_SUCCESS_RESULT);
+        return notifyVo;
     }
     
     @Transactional(rollbackFor = Exception.class)
