@@ -33,6 +33,7 @@ import com.example.redis.RedisKeyWrap;
 import com.example.service.properties.OrderProperties;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.DateUtils;
+import com.example.vo.NotifyVo;
 import com.example.vo.SeatVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -233,128 +234,120 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         NotifyDto notifyDto = new NotifyDto();
         notifyDto.setChannel(PayChannel.ALIPAY.getValue());
         notifyDto.setParams(params);
-        ApiResponse<String> notifyResponse = payClient.notify(notifyDto);
+        ApiResponse<NotifyVo> notifyResponse = payClient.notify(notifyDto);
         if (!Objects.equals(notifyResponse.getCode(), BaseCode.SUCCESS.getCode())) {
             throw new CookFrameException(notifyResponse);
         }
         //将订单状态更新
-        if (ALIPAY_NOTIFY_SUCCESS_RESULT.equals(notifyResponse.getData())) {
+        if (ALIPAY_NOTIFY_SUCCESS_RESULT.equals(notifyResponse.getData().getPayResult())) {
+            updateOrderRelatedData(Long.parseLong(notifyResponse.getData().getOutTradeNo()),OrderStatus.PAY);
             return null;
         }
         return null;
     }
     
     public void updateOrderRelatedData(Long orderId,OrderStatus orderStatus){
+        if (!(Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode()) ||
+                Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode()))) {
+            throw new CookFrameException(BaseCode.OPERATE_ORDER_STATUS_NOT_PERMIT);
+        }
         Order order = orderMapper.selectById(orderId);
         if (Objects.isNull(order)) {
             throw new CookFrameException(BaseCode.ORDER_NOT_EXIST);
         }
-        if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode()) || 
-                Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
-            if (Objects.equals(order.getOrderStatus(), OrderStatus.CANCEL.getCode())) {
-                throw new CookFrameException(BaseCode.ORDER_CANCEL);
-            }
-            if (Objects.equals(order.getOrderStatus(), OrderStatus.PAY.getCode())) {
-                throw new CookFrameException(BaseCode.ORDER_PAY);
-            }
-            if (Objects.equals(order.getOrderStatus(), OrderStatus.REFUND.getCode())) {
-                throw new CookFrameException(BaseCode.ORDER_REFUND);
-            }
-            //将订单更新为取消或者支付状态
-            Order updateOrder = new Order();
-            updateOrder.setId(order.getId());
-            updateOrder.setOrderStatus(orderStatus.getCode());
-            updateOrder.setCancelOrderTime(DateUtils.now());
-            int updateOrderResult = orderMapper.updateById(updateOrder);
-            
-            OrderTicketUser updateOrderTicketUser = new OrderTicketUser();
-            updateOrderTicketUser.setOrderStatus(orderStatus.getCode());
-            updateOrderTicketUser.setCancelOrderTime(DateUtils.now());
-            
-            LambdaUpdateWrapper<OrderTicketUser> orderTicketUserLambdaUpdateWrapper =
-                    Wrappers.lambdaUpdate(OrderTicketUser.class).eq(OrderTicketUser::getOrderId, order.getId());
-            
-            int updateTicketUserOrderResult =
-                    orderTicketUserMapper.update(updateOrderTicketUser,orderTicketUserLambdaUpdateWrapper);
-            if (updateOrderResult <= 0 || updateTicketUserOrderResult <= 0) {
-                throw new CookFrameException(BaseCode.ORDER_CANAL_ERROR);
-            }
-            
-            LambdaQueryWrapper<OrderTicketUser> orderTicketUserLambdaQueryWrapper =
-                    Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderId, orderId);
-            List<OrderTicketUser> orderTicketUserList = orderTicketUserMapper.selectList(orderTicketUserLambdaQueryWrapper);
-            if (CollectionUtil.isEmpty(orderTicketUserList)) {
-                throw new CookFrameException(BaseCode.TICKET_USER_ORDER_NOT_EXIST);
-            }
-            Long programId = orderTicketUserList.get(0).getProgramId();
-            
-            List<String> seatIdList =
-                    orderTicketUserList.stream().map(OrderTicketUser::getSeatId).map(String::valueOf).collect(Collectors.toList());
-            List<SeatVo> seatVoList = redisCache.multiGetForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId), seatIdList, SeatVo.class);
-            if (CollectionUtil.isEmpty(seatVoList)) {
-                throw new CookFrameException(BaseCode.LOCK_SEAT_LIST_EMPTY);
-            }
-            
-            
-            //redis解除锁座位
-            List<String> unLockSeatIdList = seatVoList.stream().map(SeatVo::getId).map(String::valueOf).collect(Collectors.toList());
-            Map<String, SeatVo> unLockSeatVoMap = seatVoList.stream().collect(Collectors
-                    .toMap(seatVo -> String.valueOf(seatVo.getId()), seatVo -> seatVo, (v1, v2) -> v2));
-            List<String> seatNoSoldDataList = new ArrayList<>();
-            unLockSeatVoMap.forEach((k,v) -> {
-                seatNoSoldDataList.add(k);
-                if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())){
-                    v.setSellStatus(SellStatus.NO_SOLD.getCode());
-                }else if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
-                    v.setSellStatus(SellStatus.SOLD.getCode());
-                }
-                seatNoSoldDataList.add(JSON.toJSONString(v));
-            });
-            
-            List<String> keys = new ArrayList<>();
-            //锁定座位的key
-            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
-            
-            String[] data = new String[3];
-            //扣除锁定的座位数据
-            data[0] = JSON.toJSONString(unLockSeatIdList);
-            
-            if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
-                //redis恢复库存
-                Map<Long, Long> increaseMap = seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, Collectors.counting()));
-                JSONArray jsonArray = new JSONArray();
-                increaseMap.forEach((k,v) -> {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("ticketCategoryId",String.valueOf(k));
-                    jsonObject.put("increaseCount",v);
-                    jsonArray.add(jsonObject);
-                });
-                //没有售卖座位的key
-                keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
-                //恢复库存的key
-                keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
-                //添加未售卖的座位数据
-                data[1] = JSON.toJSONString(seatNoSoldDataList);
-                //恢复库存数据
-                data[2] = JSON.toJSONString(jsonArray);
-            }else if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
-                //已售卖座位的key
-                keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_SOLD_HASH, programId).getRelKey());
-                //添加已售卖的座位数据
-                data[1] = JSON.toJSONString(seatNoSoldDataList);
-            }
+        if (Objects.equals(order.getOrderStatus(), OrderStatus.CANCEL.getCode())) {
+            throw new CookFrameException(BaseCode.ORDER_CANCEL);
+        }
+        if (Objects.equals(order.getOrderStatus(), OrderStatus.PAY.getCode())) {
+            throw new CookFrameException(BaseCode.ORDER_PAY);
+        }
+        if (Objects.equals(order.getOrderStatus(), OrderStatus.REFUND.getCode())) {
+            throw new CookFrameException(BaseCode.ORDER_REFUND);
+        }
+        //将订单更新为取消或者支付状态
+        Order updateOrder = new Order();
+        updateOrder.setId(order.getId());
+        updateOrder.setOrderStatus(orderStatus.getCode());
+        updateOrder.setCancelOrderTime(DateUtils.now());
+        int updateOrderResult = orderMapper.updateById(updateOrder);
+        
+        OrderTicketUser updateOrderTicketUser = new OrderTicketUser();
+        updateOrderTicketUser.setOrderStatus(orderStatus.getCode());
+        updateOrderTicketUser.setCancelOrderTime(DateUtils.now());
+        
+        LambdaUpdateWrapper<OrderTicketUser> orderTicketUserLambdaUpdateWrapper =
+                Wrappers.lambdaUpdate(OrderTicketUser.class).eq(OrderTicketUser::getOrderId, order.getId());
+        
+        int updateTicketUserOrderResult =
+                orderTicketUserMapper.update(updateOrderTicketUser,orderTicketUserLambdaUpdateWrapper);
+        if (updateOrderResult <= 0 || updateTicketUserOrderResult <= 0) {
+            throw new CookFrameException(BaseCode.ORDER_CANAL_ERROR);
+        }
+        
+        LambdaQueryWrapper<OrderTicketUser> orderTicketUserLambdaQueryWrapper =
+                Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderId, orderId);
+        List<OrderTicketUser> orderTicketUserList = orderTicketUserMapper.selectList(orderTicketUserLambdaQueryWrapper);
+        if (CollectionUtil.isEmpty(orderTicketUserList)) {
+            throw new CookFrameException(BaseCode.TICKET_USER_ORDER_NOT_EXIST);
+        }
+        Long programId = orderTicketUserList.get(0).getProgramId();
+        
+        List<String> seatIdList =
+                orderTicketUserList.stream().map(OrderTicketUser::getSeatId).map(String::valueOf).collect(Collectors.toList());
+        List<SeatVo> seatVoList = redisCache.multiGetForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId), seatIdList, SeatVo.class);
+        if (CollectionUtil.isEmpty(seatVoList)) {
+            throw new CookFrameException(BaseCode.LOCK_SEAT_LIST_EMPTY);
         }
         
         
+        //redis解除锁座位
+        List<String> unLockSeatIdList = seatVoList.stream().map(SeatVo::getId).map(String::valueOf).collect(Collectors.toList());
+        Map<String, SeatVo> unLockSeatVoMap = seatVoList.stream().collect(Collectors
+                .toMap(seatVo -> String.valueOf(seatVo.getId()), seatVo -> seatVo, (v1, v2) -> v2));
+        List<String> seatDataList = new ArrayList<>();
+        unLockSeatVoMap.forEach((k,v) -> {
+            seatDataList.add(k);
+            if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())){
+                v.setSellStatus(SellStatus.NO_SOLD.getCode());
+            }else if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
+                v.setSellStatus(SellStatus.SOLD.getCode());
+            }
+            seatDataList.add(JSON.toJSONString(v));
+        });
         
+        List<String> keys = new ArrayList<>();
+        //操作类型
+        keys.add(String.valueOf(orderStatus.getCode()));
+        //锁定座位的key
+        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
         
+        String[] data = new String[3];
+        //扣除锁定的座位数据
+        data[0] = JSON.toJSONString(unLockSeatIdList);
+        //如果是订单取消的操作，那么添加到未售卖的座位数据
+        //如果是订单支付的操作，那么添加到已售卖的座位数据
+        data[1] = JSON.toJSONString(seatDataList);
         
-        
-        
-        
-        
-        
-        
+        if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
+            //redis恢复库存
+            Map<Long, Long> increaseMap = seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, Collectors.counting()));
+            JSONArray jsonArray = new JSONArray();
+            increaseMap.forEach((k,v) -> {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("ticketCategoryId",String.valueOf(k));
+                jsonObject.put("increaseCount",v);
+                jsonArray.add(jsonObject);
+            });
+            //没有售卖座位的key
+            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
+            //恢复库存的key
+            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
+            //恢复库存数据
+            data[2] = JSON.toJSONString(jsonArray);
+        }else if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
+            //已售卖座位的key
+            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_SOLD_HASH, programId).getRelKey());
+        }
         programCacheReverseOperate.programCacheReverseOperate(keys,data);
     }
 }

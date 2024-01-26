@@ -4,6 +4,7 @@ import com.example.common.ApiResponse;
 import com.example.dto.NotifyDto;
 import com.example.dto.PayDto;
 import com.example.dto.TradeCheckDto;
+import com.example.vo.NotifyVo;
 import com.example.vo.TradeCheckVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public interface PayClient {
     ApiResponse<String> commonPay(PayDto payDto);
     
     @PostMapping(value = "/pay/notify")
-    ApiResponse<String> notify(NotifyDto notifyDto);
+    ApiResponse<NotifyVo> notify(NotifyDto notifyDto);
     
     @PostMapping(value = "/pay/trade/check")
     ApiResponse<TradeCheckVo> tradeCheck(TradeCheckDto tradeCheckDto);

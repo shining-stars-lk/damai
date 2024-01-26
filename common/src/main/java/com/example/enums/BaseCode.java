@@ -137,6 +137,8 @@ public enum BaseCode {
     ALIPAY_TRADE_STATUS_NOT_EXIST(6003,"支付宝支付状态未知"),
     
     PAY_PRICE_NOT_EQUAL_ORDER_PRICE(6004,"支付金额和订单金额不一致"),
+    
+    OPERATE_ORDER_STATUS_NOT_PERMIT(6005,"操作订单状态不允许"),
     ;
     
     private final Integer code;
