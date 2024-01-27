@@ -11,17 +11,20 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.client.PayClient;
+import com.example.client.UserClient;
 import com.example.common.ApiResponse;
 import com.example.core.RedisKeyEnum;
 import com.example.dto.NotifyDto;
 import com.example.dto.OrderCancelDto;
 import com.example.dto.OrderCreateDto;
+import com.example.dto.OrderGetDto;
 import com.example.dto.OrderPayCheckDto;
 import com.example.dto.OrderPayDto;
 import com.example.dto.OrderTicketUserCreateDto;
 import com.example.dto.PayDto;
 import com.example.dto.ProgramOperateDataDto;
 import com.example.dto.TradeCheckDto;
+import com.example.dto.UserGetAndTicketUserListDto;
 import com.example.entity.Order;
 import com.example.entity.OrderTicketUser;
 import com.example.enums.BaseCode;
@@ -39,9 +42,13 @@ import com.example.service.properties.OrderProperties;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.DateUtils;
 import com.example.vo.NotifyVo;
+import com.example.vo.OrderGetVo;
 import com.example.vo.OrderPayCheckVo;
+import com.example.vo.OrderTicketUserVo;
 import com.example.vo.SeatVo;
 import com.example.vo.TradeCheckVo;
+import com.example.vo.UserAndTicketUserInfoVo;
+import com.example.vo.UserGetAndTicketUserListVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -89,6 +96,9 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     
     @Autowired
     private PayClient payClient;
+    
+    @Autowired
+    private UserClient userClient;
     
     @Autowired
     private OrderProperties orderProperties;
@@ -350,5 +360,54 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             programOperateDataDto.setSellStatus(SellStatus.SOLD.getCode());
             delayOperateProgramDataSend.sendMessage(JSON.toJSONString(programOperateDataDto));
         }
+    }
+    
+    public OrderGetVo get(OrderGetDto orderGetDto) {
+        //查询订单
+        Order order = orderMapper.selectById(orderGetDto.getOrderId());
+        if (Objects.isNull(order)) {
+            throw new CookFrameException(BaseCode.ORDER_NOT_EXIST);
+        }
+        //查询购票人订单
+        LambdaQueryWrapper<OrderTicketUser> orderTicketUserLambdaQueryWrapper = 
+                Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderId, orderGetDto.getOrderId());
+        List<OrderTicketUser> orderTicketUserList = orderTicketUserMapper.selectList(orderTicketUserLambdaQueryWrapper);
+        if (CollectionUtil.isEmpty(orderTicketUserList)) {
+            throw new CookFrameException(BaseCode.TICKET_USER_ORDER_NOT_EXIST);   
+        }
+        
+        OrderGetVo orderGetVo = new OrderGetVo();
+        BeanUtil.copyProperties(order,orderGetVo);
+        
+        orderGetVo.setOrderTicketUserVoList(BeanUtil.copyToList(orderTicketUserList, OrderTicketUserVo.class));
+        
+        //查询用户和购票人信息
+        UserGetAndTicketUserListDto userGetAndTicketUserListDto = new UserGetAndTicketUserListDto();
+        userGetAndTicketUserListDto.setUserId(order.getUserId());
+        userGetAndTicketUserListDto.setTicketUserIdList(orderTicketUserList.stream()
+                .map(OrderTicketUser::getTicketUserId).collect(Collectors.toList()));
+        ApiResponse<UserGetAndTicketUserListVo> userGetAndTicketUserApiResponse = 
+                userClient.getUserAndTicketUserList(userGetAndTicketUserListDto);
+        
+        if (!Objects.equals(userGetAndTicketUserApiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+            throw new CookFrameException(userGetAndTicketUserApiResponse);
+            
+        }
+        //验证用户和购票人信息是否存在
+        UserGetAndTicketUserListVo userAndTicketUserListVo =
+                Optional.ofNullable(userGetAndTicketUserApiResponse.getData())
+                        .orElseThrow(() -> new CookFrameException(BaseCode.RPC_RESULT_DATA_EMPTY));
+        if (Objects.isNull(userAndTicketUserListVo.getUserVo())) {
+            throw new CookFrameException(BaseCode.USER_EMPTY);
+        }
+        if (CollectionUtil.isEmpty(userAndTicketUserListVo.getTicketUserVoList())) {
+            throw new CookFrameException(BaseCode.TICKET_USER_EMPTY);
+        }
+        
+        UserAndTicketUserInfoVo userAndTicketUserInfoVo = new UserAndTicketUserInfoVo();
+        BeanUtil.copyProperties(userAndTicketUserListVo, userAndTicketUserInfoVo);
+        orderGetVo.setUserAndTicketUserInfoVo(userAndTicketUserInfoVo);
+        
+        return orderGetVo;
     }
 }

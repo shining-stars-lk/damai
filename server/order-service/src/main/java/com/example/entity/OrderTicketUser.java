@@ -51,6 +51,11 @@ public class OrderTicketUser extends BaseData implements Serializable {
      * 座位id
      */
     private Long seatId;
+    
+    /**
+     * 座位信息
+     * */
+    private String seatInfo;
 
     /**
      * 订单价格

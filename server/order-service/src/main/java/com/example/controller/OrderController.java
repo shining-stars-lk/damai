@@ -3,9 +3,11 @@ package com.example.controller;
 import com.example.common.ApiResponse;
 import com.example.dto.OrderCancelDto;
 import com.example.dto.OrderCreateDto;
+import com.example.dto.OrderGetDto;
 import com.example.dto.OrderPayCheckDto;
 import com.example.dto.OrderPayDto;
 import com.example.service.OrderService;
+import com.example.vo.OrderGetVo;
 import com.example.vo.OrderPayCheckVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -63,5 +65,11 @@ public class OrderController {
     @PostMapping(value = "/cancel")
     public ApiResponse<Boolean> cancel(@Valid @RequestBody OrderCancelDto orderCancelDto) {
         return ApiResponse.ok(orderService.cancel(orderCancelDto));
+    }
+    
+    @ApiOperation(value = "订单详情")
+    @PostMapping(value = "/get")
+    public ApiResponse<OrderGetVo> get(@Valid @RequestBody OrderGetDto orderGetDto) {
+        return ApiResponse.ok(orderService.get(orderGetDto));
     }
 }

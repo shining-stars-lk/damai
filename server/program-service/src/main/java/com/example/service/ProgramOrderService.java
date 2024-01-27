@@ -252,6 +252,7 @@ public class ProgramOrderService {
             orderTicketUserCreateDto.setTicketUserId(ticketUserVo.getId());
             Seat seat = Optional.ofNullable(seatList.get(i)).orElseThrow(() -> new CookFrameException(BaseCode.SEAT_NOT_EXIST));
             orderTicketUserCreateDto.setSeatId(seat.getId());
+            orderTicketUserCreateDto.setSeatInfo(seat.getRowCode()+"排"+seat.getColCode()+"列");
             orderTicketUserCreateDto.setOrderPrice(seat.getPrice());
             orderTicketUserCreateDto.setCreateOrderTime(DateUtils.now());
             orderTicketUserCreateDtoList.add(orderTicketUserCreateDto);
@@ -414,6 +415,7 @@ public class ProgramOrderService {
             orderTicketUserCreateDto.setTicketUserId(ticketUserId);
             SeatVo seatVo = Optional.ofNullable(purchaseSeatList.get(i)).orElseThrow(() -> new CookFrameException(BaseCode.SEAT_NOT_EXIST));
             orderTicketUserCreateDto.setSeatId(seatVo.getId());
+            orderTicketUserCreateDto.setSeatInfo(seatVo.getRowCode()+"排"+seatVo.getColCode()+"列");
             orderTicketUserCreateDto.setOrderPrice(seatVo.getPrice());
             orderTicketUserCreateDto.setCreateOrderTime(DateUtils.now());
             orderTicketUserCreateDtoList.add(orderTicketUserCreateDto);
