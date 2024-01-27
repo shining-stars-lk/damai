@@ -18,6 +18,7 @@ import com.example.dto.NotifyDto;
 import com.example.dto.OrderCancelDto;
 import com.example.dto.OrderCreateDto;
 import com.example.dto.OrderGetDto;
+import com.example.dto.OrderListDto;
 import com.example.dto.OrderPayCheckDto;
 import com.example.dto.OrderPayDto;
 import com.example.dto.OrderTicketUserCreateDto;
@@ -360,6 +361,19 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             programOperateDataDto.setSellStatus(SellStatus.SOLD.getCode());
             delayOperateProgramDataSend.sendMessage(JSON.toJSONString(programOperateDataDto));
         }
+    }
+    
+    public List<OrderGetVo> selectList(OrderListDto orderListDto) {
+        List<OrderGetVo> orderGetVoList = new ArrayList<>();
+        LambdaQueryWrapper<Order> orderLambdaQueryWrapper = 
+                Wrappers.lambdaQuery(Order.class).eq(Order::getUserId, orderListDto.getUserId());
+        List<Order> orderList = orderMapper.selectList(orderLambdaQueryWrapper);
+        if (CollectionUtil.isEmpty(orderList)) {
+            return orderGetVoList;
+        }
+        List<OrderGetVo> orderGetVoList1 = BeanUtil.copyToList(orderList, OrderGetVo.class);
+        //TODO 每个订单下的购票人订单数量统计
+        return null;
     }
     
     public OrderGetVo get(OrderGetDto orderGetDto) {
