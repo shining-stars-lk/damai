@@ -147,6 +147,8 @@ public enum BaseCode {
     PAY_TRADE_CHECK_ERROR(6008,"支付状态检查错误"),
     
     UPDATE_TICKET_CATEGORY_COUNT_NOT_CORRECT(6009,"更新票档数量不正确"),
+    
+    GET_USER_AND_TICKET_USER_ERROR(6010,"获取用户和购票人信息错误"),
     ;
     
     private final Integer code;
