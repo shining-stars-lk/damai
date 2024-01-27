@@ -35,4 +35,13 @@
         set remain_number = remain_number - #{number,jdbcType=BIGINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
+    
+    <update id="batchUpdateRemainNumber">
+        <foreach collection="ticketCategoryCountMap" item="ticketCategoryCount" index="index">
+            update
+                d_ticket_category
+            set remain_number = remain_number - #{ticketCategoryCount.count,jdbcType=BIGINT}
+            where id = #{ticketCategoryCount.id,jdbcType=BIGINT}
+        </foreach>
+    </update>
 </mapper>

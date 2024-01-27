@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -20,8 +21,10 @@ import com.example.entity.Program;
 import com.example.entity.ProgramCategory;
 import com.example.entity.ProgramShowTime;
 import com.example.entity.ProgramV2;
+import com.example.entity.Seat;
 import com.example.entity.TicketCategoryAggregate;
 import com.example.enums.BaseCode;
+import com.example.enums.SellStatus;
 import com.example.exception.CookFrameException;
 import com.example.mapper.ProgramCategoryMapper;
 import com.example.mapper.ProgramMapper;
@@ -41,6 +44,7 @@ import com.example.vo.TicketCategoryVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -287,8 +291,37 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 .collect(Collectors.toMap(TicketCategoryAggregate::getProgramId, ticketCategory -> ticketCategory, (v1, v2) -> v2));
     }
     
+    @Transactional(rollbackFor = Exception.class)
     public void OperateProgramData(ProgramOperateDataDto programOperateDataDto){
+        Map<Long, Long> ticketCategoryCountMap = programOperateDataDto.getTicketCategoryCountMap();
+        //从库中查询座位集合
+        List<Long> seatIdList = programOperateDataDto.getSeatIdList();
+        LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = 
+                Wrappers.lambdaQuery(Seat.class).in(Seat::getId, seatIdList);
+        List<Seat> seatList = seatMapper.selectList(seatLambdaQueryWrapper);
+        //如果库中的座位集合为空或者库中的座位集合数量和传入的座位数量不相同则抛出异常
+        if (CollectionUtil.isEmpty(seatList) || seatList.size() != seatIdList.size()) {
+            throw new CookFrameException(BaseCode.SEAT_NOT_EXIST);
+        }
+        for (Seat seat : seatList) {
+            //如果库中的座位有一个已经是已售卖的状态，则抛出异常
+            if (Objects.equals(seat.getSellStatus(), SellStatus.SOLD.getCode())) {
+                throw new CookFrameException(BaseCode.SEAT_SOLD);
+            }
+        }
+        //将库中的座位集合批量更新为售卖状态
+        LambdaUpdateWrapper<Seat> seatLambdaUpdateWrapper = 
+                Wrappers.lambdaUpdate(Seat.class).in(Seat::getId, seatIdList);
+        Seat updateSeat = new Seat();
+        updateSeat.setSellStatus(SellStatus.SOLD.getCode());
+        seatMapper.update(updateSeat,seatLambdaUpdateWrapper);
         
+        //将库中的对应票档进行更新库存
+        int updateRemainNumberCount = 
+                ticketCategoryMapper.batchUpdateRemainNumber(ticketCategoryCountMap);
+        if (updateRemainNumberCount != ticketCategoryCountMap.size()) {
+            throw new CookFrameException(BaseCode.UPDATE_TICKET_CATEGORY_COUNT_NOT_CORRECT);
+        }
     }
     
 }

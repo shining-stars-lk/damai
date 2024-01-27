@@ -145,6 +145,8 @@ public enum BaseCode {
     PAY_BILL_NOT_EXIST(6007,"账单不存在"),
     
     PAY_TRADE_CHECK_ERROR(6008,"支付状态检查错误"),
+    
+    UPDATE_TICKET_CATEGORY_COUNT_NOT_CORRECT(6009,"更新票档数量不正确"),
     ;
     
     private final Integer code;
