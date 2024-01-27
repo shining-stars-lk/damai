@@ -4,6 +4,7 @@ import com.example.common.ApiResponse;
 import com.example.dto.OrderCancelDto;
 import com.example.dto.OrderCreateDto;
 import com.example.dto.OrderGetDto;
+import com.example.dto.OrderListDto;
 import com.example.dto.OrderPayCheckDto;
 import com.example.dto.OrderPayDto;
 import com.example.service.OrderService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,6 +67,12 @@ public class OrderController {
     @PostMapping(value = "/cancel")
     public ApiResponse<Boolean> cancel(@Valid @RequestBody OrderCancelDto orderCancelDto) {
         return ApiResponse.ok(orderService.cancel(orderCancelDto));
+    }
+    
+    @ApiOperation(value = "查询列表")
+    @PostMapping(value = "/select/list")
+    public ApiResponse<List<OrderGetVo>> selectList(@Valid @RequestBody OrderListDto orderListDto) {
+        return ApiResponse.ok(orderService.selectList(orderListDto));
     }
     
     @ApiOperation(value = "订单详情")
