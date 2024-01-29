@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -30,6 +31,18 @@ public class OrderCreateDto {
     @ApiModelProperty(name ="userId", dataType ="Long", value ="用户id", required =true)
     @NotNull
     private Long userId;
+    
+    @ApiModelProperty(name ="programTitle", dataType ="String", value ="节目标题", required =true)
+    @NotBlank
+    private String programTitle;
+    
+    @ApiModelProperty(name ="programPlace", dataType ="String", value ="节目地点", required =true)
+    @NotBlank
+    private String programPlace;
+    
+    @ApiModelProperty(name ="programShowTime", dataType ="Date", value ="节目演出时间", required =true)
+    @NotNull
+    private Date programShowTime;
     
     @ApiModelProperty(name ="distributionMode", dataType ="String", value ="配送方式")
     private String distributionMode;

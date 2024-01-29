@@ -9,6 +9,7 @@ import com.example.dto.OrderPayCheckDto;
 import com.example.dto.OrderPayDto;
 import com.example.service.OrderService;
 import com.example.vo.OrderGetVo;
+import com.example.vo.OrderListVo;
 import com.example.vo.OrderPayCheckVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,7 +40,7 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
     
-    @ApiOperation(value = "订单创建")
+    @ApiOperation(value = "订单创建(由内部program服务调用)")
     @PostMapping(value = "/create")
     public ApiResponse<String> create(@Valid @RequestBody OrderCreateDto orderCreateDto) {
         return ApiResponse.ok(orderService.create(orderCreateDto));
@@ -69,13 +70,13 @@ public class OrderController {
         return ApiResponse.ok(orderService.cancel(orderCancelDto));
     }
     
-    @ApiOperation(value = "查询列表")
+    @ApiOperation(value = "查看订单列表")
     @PostMapping(value = "/select/list")
-    public ApiResponse<List<OrderGetVo>> selectList(@Valid @RequestBody OrderListDto orderListDto) {
+    public ApiResponse<List<OrderListVo>> selectList(@Valid @RequestBody OrderListDto orderListDto) {
         return ApiResponse.ok(orderService.selectList(orderListDto));
     }
     
-    @ApiOperation(value = "订单详情")
+    @ApiOperation(value = "查看订单详情")
     @PostMapping(value = "/get")
     public ApiResponse<OrderGetVo> get(@Valid @RequestBody OrderGetDto orderGetDto) {
         return ApiResponse.ok(orderService.get(orderGetDto));
