@@ -6,7 +6,6 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @program: cook-frame
@@ -15,8 +14,8 @@ import java.util.List;
  * @create: 2024-01-26
  **/
 @Data
-@ApiModel(value="OrderGetVo", description ="订单详情")
-public class OrderGetVo {
+@ApiModel(value="OrderListVo", description ="订单列表")
+public class OrderListVo {
     
     @ApiModelProperty(name ="id", dataType ="Long", value ="订单id")
     private Long id;
@@ -35,12 +34,6 @@ public class OrderGetVo {
     
     @ApiModelProperty(name ="programShowTime", dataType ="Date", value ="节目演出时间")
     private Date programShowTime;
-    
-    @ApiModelProperty(name ="distributionMode", dataType ="String", value ="配送方式")
-    private String distributionMode;
-    
-    @ApiModelProperty(name ="takeTicketMode", dataType ="String", value ="取票方式")
-    private String takeTicketMode;
 
     @ApiModelProperty(name ="orderPrice", dataType ="BigDecimal", value ="订单价格")
     private BigDecimal orderPrice;
@@ -54,15 +47,6 @@ public class OrderGetVo {
     @ApiModelProperty(name ="createOrderTime", dataType ="Date", value ="生成订单时间")
     private Date createOrderTime;
     
-    @ApiModelProperty(name ="cancelOrderTime", dataType ="Date", value ="取消订单时间")
-    private Date cancelOrderTime;
-    
-    @ApiModelProperty(name ="payOrderTime", dataType ="Date", value ="支付订单时间")
-    private Date payOrderTime;
-    
-    @ApiModelProperty(name ="orderTicketUserVoList", dataType ="List<OrderTicketUserVo>", value ="购票人订单集合")
-    private List<OrderTicketUserVo> orderTicketUserVoList;
-    
-    @ApiModelProperty(name ="userAndTicketUserInfoVo", dataType ="UserAndTicketUserInfoVo", value ="用户和购票人信息")
-    private UserAndTicketUserInfoVo userAndTicketUserInfoVo;
+    @ApiModelProperty(name ="ticketCount", dataType ="Integer", value ="票品张数")
+    private Integer ticketCount;
 }

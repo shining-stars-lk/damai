@@ -39,6 +39,21 @@ public class Order extends BaseData implements Serializable {
      * 用户id
      */
     private Long userId;
+    
+    /**
+     * 节目标题
+     * */
+    private String programTitle;
+    
+    /**
+     * 节目地点
+     * */
+    private String programPlace;
+    
+    /**
+     * 节目演出时间
+     * */
+    private Date programShowTime;
 
     /**
      * 配送方式

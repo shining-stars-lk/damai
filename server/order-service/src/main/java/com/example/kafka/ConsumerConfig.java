@@ -1,8 +1,5 @@
 package com.example.kafka;
 
-import com.example.service.OrderService;
-import com.example.delayconsumer.Producer;
-import com.example.redisson.RedissonProperties;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -46,10 +43,5 @@ public class ConsumerConfig {
         factory.setConcurrency(1);
         factory.getContainerProperties().setPollTimeout(1000);
         return factory;
-    }
-    
-    @Bean
-    public OrderMessageConsumer orderMessageConsumer(OrderService orderService, Producer producer, RedissonProperties redissonProperties){
-        return new OrderMessageConsumer(orderService, producer, redissonProperties);
     }
 }

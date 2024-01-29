@@ -28,6 +28,7 @@ import com.example.dto.TradeCheckDto;
 import com.example.dto.UserGetAndTicketUserListDto;
 import com.example.entity.Order;
 import com.example.entity.OrderTicketUser;
+import com.example.entity.OrderTicketUserAggregate;
 import com.example.enums.BaseCode;
 import com.example.enums.OrderStatus;
 import com.example.enums.PayBillStatus;
@@ -44,12 +45,15 @@ import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.DateUtils;
 import com.example.vo.NotifyVo;
 import com.example.vo.OrderGetVo;
+import com.example.vo.OrderListVo;
 import com.example.vo.OrderPayCheckVo;
 import com.example.vo.OrderTicketUserVo;
 import com.example.vo.SeatVo;
+import com.example.vo.TicketUserInfoVo;
 import com.example.vo.TradeCheckVo;
 import com.example.vo.UserAndTicketUserInfoVo;
 import com.example.vo.UserGetAndTicketUserListVo;
+import com.example.vo.UserInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -174,6 +178,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         return payResponse.getData();
     }
     
+    @Transactional(rollbackFor = Exception.class)
     public OrderPayCheckVo payCheck(OrderPayCheckDto orderPayCheckDto){
         OrderPayCheckVo orderPayCheckVo = new OrderPayCheckVo();
         Order order = orderMapper.selectById(orderPayCheckDto.getId());
@@ -363,17 +368,25 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         }
     }
     
-    public List<OrderGetVo> selectList(OrderListDto orderListDto) {
-        List<OrderGetVo> orderGetVoList = new ArrayList<>();
+    public List<OrderListVo> selectList(OrderListDto orderListDto) {
+        List<OrderListVo> orderListVos = new ArrayList<>();
         LambdaQueryWrapper<Order> orderLambdaQueryWrapper = 
                 Wrappers.lambdaQuery(Order.class).eq(Order::getUserId, orderListDto.getUserId());
         List<Order> orderList = orderMapper.selectList(orderLambdaQueryWrapper);
         if (CollectionUtil.isEmpty(orderList)) {
-            return orderGetVoList;
+            return orderListVos;
         }
-        List<OrderGetVo> orderGetVoList1 = BeanUtil.copyToList(orderList, OrderGetVo.class);
-        //TODO 每个订单下的购票人订单数量统计
-        return null;
+        orderListVos = BeanUtil.copyToList(orderList, OrderListVo.class);
+        //每个订单下的购票人订单数量统计
+        List<OrderTicketUserAggregate> orderTicketUserAggregateList = 
+                orderTicketUserMapper.selectOrderTicketUserAggregate(orderList.stream().map(Order::getId).collect(Collectors.toList()));
+        Map<Long, Integer> orderTicketUserAggregateMap = orderTicketUserAggregateList.stream()
+                .collect(Collectors.toMap(OrderTicketUserAggregate::getOrderId, 
+                        OrderTicketUserAggregate::getOrderTicketUserCount, (v1, v2) -> v2));
+        for (OrderListVo orderListVo : orderListVos) {
+            orderListVo.setTicketCount(orderTicketUserAggregateMap.get(orderListVo.getId()));
+        }
+        return orderListVos;
     }
     
     public OrderGetVo get(OrderGetDto orderGetDto) {
@@ -417,9 +430,11 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (CollectionUtil.isEmpty(userAndTicketUserListVo.getTicketUserVoList())) {
             throw new CookFrameException(BaseCode.TICKET_USER_EMPTY);
         }
-        
+        UserInfoVo userInfoVo = new UserInfoVo();
+        BeanUtil.copyProperties(userAndTicketUserListVo.getUserVo(),userInfoVo);
         UserAndTicketUserInfoVo userAndTicketUserInfoVo = new UserAndTicketUserInfoVo();
-        BeanUtil.copyProperties(userAndTicketUserListVo, userAndTicketUserInfoVo);
+        userAndTicketUserInfoVo.setUserInfoVo(userInfoVo);
+        userAndTicketUserInfoVo.setTicketUserInfoVoList(BeanUtil.copyToList(userAndTicketUserListVo.getTicketUserVoList(), TicketUserInfoVo.class));
         orderGetVo.setUserAndTicketUserInfoVo(userAndTicketUserInfoVo);
         
         return orderGetVo;

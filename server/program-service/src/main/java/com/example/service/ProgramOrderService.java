@@ -34,6 +34,7 @@ import com.example.redis.RedisKeyWrap;
 import com.example.service.delaysend.DelayOrderCancelSend;
 import com.example.service.tool.SeatMatch;
 import com.example.util.DateUtils;
+import com.example.vo.ProgramVo;
 import com.example.vo.SeatVo;
 import com.example.vo.TicketUserVo;
 import com.example.vo.UserGetAndTicketUserListVo;
@@ -396,11 +397,16 @@ public class ProgramOrderService {
 //            ticketCategoryMapper.updateRemainNumber(ticketCategoryId,count);
 //        }
         
+        //获取要购买的节目信息
+        ProgramVo programVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM, programOrderCreateDto.getProgramId()), ProgramVo.class);
         //主订单参数构建
         OrderCreateDto orderCreateDto = new OrderCreateDto();
         orderCreateDto.setId(uidGenerator.getUID());
         orderCreateDto.setProgramId(programOrderCreateDto.getProgramId());
         orderCreateDto.setUserId(programOrderCreateDto.getUserId());
+        orderCreateDto.setProgramTitle(programVo.getTitle());
+        orderCreateDto.setProgramPlace(programVo.getPlace());
+        orderCreateDto.setProgramShowTime(programVo.getShowTime());
         orderCreateDto.setOrderPrice(parameterOrderPrice);
         orderCreateDto.setCreateOrderTime(DateUtils.now());
         
