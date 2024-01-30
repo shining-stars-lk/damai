@@ -46,11 +46,6 @@ public class User extends BaseData implements Serializable {
     private String password;
 
     /**
-     * 手机号
-     */
-    private String mobile;
-
-    /**
      * 是否邮箱认证 1:已验证 0:未验证
      */
     private Integer mailStatus;

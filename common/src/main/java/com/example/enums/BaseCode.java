@@ -10,7 +10,7 @@ public enum BaseCode {
     
     SUCCESS(0, "OK"),
     SYSTEM_ERROR(-1,"系统异常"),
-    
+    USER_MOBILE_EMPTY(500,"用户手机号不存在"),
     USER_EXIST(600,"用户已存在"),
     
     USER_LOG_IN_STATUS_ERROR(601,"用户不是登录状态"),

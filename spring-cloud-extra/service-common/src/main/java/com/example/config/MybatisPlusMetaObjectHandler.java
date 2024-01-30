@@ -8,7 +8,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import java.util.Date;
 
 @Slf4j
-public class MyMetaObjectHandler implements MetaObjectHandler {
+public class MybatisPlusMetaObjectHandler implements MetaObjectHandler {
     
     @Override
     public void insertFill(MetaObject metaObject) {
