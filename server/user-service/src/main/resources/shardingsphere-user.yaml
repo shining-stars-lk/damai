@@ -1,0 +1,50 @@
+dataSources:
+  ds_0:
+    dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://www.cookframe.com:3306/damai_user_0?&characterEncoding=utf8&useUnicode=true&useSSL=false&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&autoReconnect=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: ENC(jUol6OiOd/YgFXH22VCrVoYx2umur1r6NCNQilcdhSk=)
+
+  ds_1:
+    dataSourceClassName: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://www.cookframe.com:3306/damai_user_1?&characterEncoding=utf8&useUnicode=true&useSSL=false&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&autoReconnect=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: ENC(jUol6OiOd/YgFXH22VCrVoYx2umur1r6NCNQilcdhSk=)
+    
+rules:
+  - !SHARDING
+    tables:
+      # 对user_mobile表进行分库分表
+      d_user_mobile:
+        # 库为ds_0 ds_1 表为d_user_mobile_0 至 d_user_mobile_7
+        actualDataNodes: ds_${0..1}.t_user_mobile_${0..8}
+        # 分库策略
+        databaseStrategy:
+          standard:
+            # 使用user_mobile作为分片键
+            shardingColumn: user_mobile
+            # 自定义使用user_mobile使用hash取模作为分库算法
+            shardingAlgorithmName: database_user_mobile_hash_mod_model
+        # 分表策略      
+        tableStrategy:
+          standard:
+            # 使用user_mobile作为分片键
+            shardingColumn: user_mobile
+            # 自定义使用user_mobile使用hash取模作为分表算法
+            shardingAlgorithmName: table_user_mobile_hash_mod_model
+    shardingAlgorithms:
+      database_user_mobile_hash_mod_model:
+        type: CLASS_BASED
+        props:
+          totalTableCount: 8
+          databaseTableCount: 4
+          strategy: standard
+          algorithmClassName: com.example.shardingsphere.HashModShardingAlgorithm
+      table_user_mobile_hash_mod_model:
+        type: HASH_MOD
+        props:
+          sharding-count: 8
+      
+      

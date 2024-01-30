@@ -13,7 +13,7 @@ public class MybatisPlusAutoConfiguration {
      * */
     @Bean
     public MetaObjectHandler metaObjectHandler(){
-        return new MyMetaObjectHandler();
+        return new MybatisPlusMetaObjectHandler();
     }
     
     /**

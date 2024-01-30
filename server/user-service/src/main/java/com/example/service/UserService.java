@@ -16,12 +16,14 @@ import com.example.dto.UserRegisterDto;
 import com.example.dto.UserUpdateDto;
 import com.example.entity.TicketUser;
 import com.example.entity.User;
+import com.example.entity.UserMobile;
 import com.example.enums.BaseCode;
 import com.example.enums.CompositeCheckType;
 import com.example.exception.CookFrameException;
 import com.example.jwt.TokenUtil;
 import com.example.mapper.TicketUserMapper;
 import com.example.mapper.UserMapper;
+import com.example.mapper.UserMobileMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
 import com.example.redisson.LockType;
@@ -61,6 +63,9 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     private UserMapper userMapper;
     
     @Autowired
+    private UserMobileMapper userMobileMapper;
+    
+    @Autowired
     private UidGenerator uidGenerator;
     
     @Autowired
@@ -80,15 +85,20 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     
     @Transactional(rollbackFor = Exception.class)
     @ServiceLock(lockType= LockType.Write,name = REGISTER_USER_LOCK,keys = {"#userRegisterDto.mobile"})
-    public void register(final UserRegisterDto userRegisterDto) {
+    public void register(UserRegisterDto userRegisterDto) {
         compositeContainer.execute(CompositeCheckType.USER_REGISTER_CHECK.getValue(),userRegisterDto);
-        
+        //用户表添加
         User user = new User();
         BeanUtils.copyProperties(userRegisterDto,user);
         user.setId(uidGenerator.getUID());
         userMapper.insert(user);
-        
-        rBloomFilterUtil.add(user.getMobile());
+        //用户手机表添加
+        UserMobile userMobile = new UserMobile();
+        userMobile.setId(uidGenerator.getUID());
+        userMobile.setUserId(user.getId());
+        userMobile.setMobile(userRegisterDto.getMobile());
+        userMobileMapper.insert(userMobile);
+        rBloomFilterUtil.add(userMobile.getMobile());
     }
     
     @ServiceLock(lockType= LockType.Read,name = REGISTER_USER_LOCK,keys = {"#mobile"})
@@ -99,25 +109,29 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     public void doExist(String mobile){
         boolean contains = rBloomFilterUtil.contains(mobile);
         if (contains) {
-            LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
-                    .eq(User::getMobile, mobile);
-            User user = userMapper.selectOne(queryWrapper);
-            if (Objects.nonNull(user)) {
+            LambdaQueryWrapper<UserMobile> queryWrapper = Wrappers.lambdaQuery(UserMobile.class)
+                    .eq(UserMobile::getMobile, mobile);
+            UserMobile userMobile = userMobileMapper.selectOne(queryWrapper);
+            if (Objects.nonNull(userMobile)) {
                 throw new CookFrameException(BaseCode.USER_EXIST);
             }
         }
     }
     
-    public String login(final UserMobileDto userMobileDto) {
-        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
-                .eq(User::getMobile, userMobileDto.getMobile());
-        User user = userMapper.selectOne(queryWrapper);
-        if (Objects.isNull(user)) {
-            throw new CookFrameException(BaseCode.USER_EMPTY);
+    public String login(UserMobileDto userMobileDto) {
+        LambdaQueryWrapper<UserMobile> queryWrapper = Wrappers.lambdaQuery(UserMobile.class)
+                .eq(UserMobile::getMobile, userMobileDto.getMobile());
+        UserMobile userMobile = userMobileMapper.selectOne(queryWrapper);
+        if (Objects.isNull(userMobile)) {
+            throw new CookFrameException(BaseCode.USER_MOBILE_EMPTY);
         }
-        Boolean loginResult = redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()));
+        Boolean loginResult = redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,userMobile.getUserId()));
         if (loginResult) {
             throw new CookFrameException(BaseCode.USER_LOG_IN);
+        }
+        User user = userMapper.selectById(userMobile.getUserId());
+        if (Objects.isNull(user)) {
+            throw new CookFrameException(BaseCode.USER_EMPTY);
         }
         redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),user,tokenExpireTime + 1000,TimeUnit.MILLISECONDS);
         return createToken(user.getId());
@@ -130,13 +144,13 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
     
     public void logOut(UserMobileDto userMobileDto) {
-        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
-                .eq(User::getMobile, userMobileDto.getMobile());
-        User user = userMapper.selectOne(queryWrapper);
-        if (Objects.isNull(user)) {
-            throw new CookFrameException(BaseCode.USER_EMPTY);
+        LambdaQueryWrapper<UserMobile> queryWrapper = Wrappers.lambdaQuery(UserMobile.class)
+                .eq(UserMobile::getMobile, userMobileDto.getMobile());
+        UserMobile userMobile = userMobileMapper.selectOne(queryWrapper);
+        if (Objects.isNull(userMobile)) {
+            throw new CookFrameException(BaseCode.USER_MOBILE_EMPTY);
         }
-        redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()));
+        redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,userMobile.getUserId()));
     }
     
     public void update(UserUpdateDto userUpdateDto){
@@ -150,9 +164,13 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
     
     public UserVo getByMobile(UserMobileDto userMobileDto) {
-        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery(User.class)
-                .eq(User::getMobile, userMobileDto.getMobile());
-        User user = userMapper.selectOne(queryWrapper);
+        LambdaQueryWrapper<UserMobile> queryWrapper = Wrappers.lambdaQuery(UserMobile.class)
+                .eq(UserMobile::getMobile, userMobileDto.getMobile());
+        UserMobile userMobile = userMobileMapper.selectOne(queryWrapper);
+        if (Objects.isNull(userMobile)) {
+            throw new CookFrameException(BaseCode.USER_MOBILE_EMPTY);
+        }
+        User user = userMapper.selectById(userMobile.getUserId());
         if (Objects.isNull(user)) {
             throw new CookFrameException(BaseCode.USER_EMPTY);
         }
