@@ -74,11 +74,6 @@ public class User extends BaseData implements Serializable {
      * 收货地址
      * */
     private String address;
-
-    /**
-     * 登录状态 1登录 0退出
-     */
-    private Integer loginStatus;
     
     
 }
