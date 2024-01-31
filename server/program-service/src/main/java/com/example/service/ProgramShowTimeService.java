@@ -11,9 +11,13 @@ import com.example.exception.CookFrameException;
 import com.example.mapper.ProgramShowTimeMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
+import com.example.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -48,5 +52,30 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
                             .orElseThrow(() -> new CookFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
                 },EXPIRE_TIME, TimeUnit.DAYS);
         return redisProgramShowTime;
+    }
+    
+    @Transactional(rollbackFor = Exception.class)
+    public void renewal(){
+        LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
+                Wrappers.lambdaQuery(ProgramShowTime.class).
+                        le(ProgramShowTime::getShowTime, DateUtils.addDay(DateUtils.now(), 1));
+        List<ProgramShowTime> programShowTimes = programShowTimeMapper.selectList(programShowTimeLambdaQueryWrapper);
+        for (ProgramShowTime programShowTime : programShowTimes) {
+            Date oldShowTime = programShowTime.getShowTime();
+            Date newShowTime = DateUtils.addMonth(oldShowTime, 1);
+            Date newShowDayTime = DateUtils.parseDateTime(DateUtils.formatDate(newShowTime) + " 00:00:00");
+            ProgramShowTime updateProgramShowTime = new ProgramShowTime();
+            updateProgramShowTime.setId(programShowTime.getId());
+            updateProgramShowTime.setProgramId(programShowTime.getProgramId());
+            updateProgramShowTime.setShowTime(newShowTime);
+            updateProgramShowTime.setShowDayTime(newShowDayTime);
+            updateProgramShowTime.setShowWeekTime(DateUtils.getWeekStr(newShowTime));
+            updateProgramShowTime.setCreateTime(programShowTime.getCreateTime());
+            updateProgramShowTime.setEditTime(DateUtils.now());
+            updateProgramShowTime.setStatus(programShowTime.getStatus());
+            programShowTimeMapper.updateById(updateProgramShowTime);
+            redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME,programShowTime.getProgramId())
+                    ,updateProgramShowTime,EXPIRE_TIME, TimeUnit.DAYS);
+        }
     }
 }
