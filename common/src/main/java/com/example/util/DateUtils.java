@@ -332,6 +332,21 @@ public class DateUtils {
         calendar.setTime(date);
         return getWeek(calendar);
     }
+    
+    /**
+     * 获取星期几
+     *
+     * @param date 时间
+     * @return 0（时间为空）， 1（周一）， 2（周二），3（周三），4（周四），5（周五），6（周六），7（周日）
+     */
+    public static String getWeekStr(Date date) {
+        if (Objects.isNull(date)) {
+            return "未知";
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return getWeekStr(calendar);
+    }
  
     /**
      * 获取星期几
@@ -357,6 +372,33 @@ public class DateUtils {
             return 7;
         default:
             return 0;
+        }
+    }
+    
+    /**
+     * 获取星期几
+     *
+     * @param calendar 时间
+     * @return 星期
+     */
+    private static String getWeekStr(Calendar calendar) {
+        switch (calendar.get(Calendar.DAY_OF_WEEK)) {
+            case Calendar.MONDAY:
+                return "周一";
+            case Calendar.TUESDAY:
+                return "周二";
+            case Calendar.WEDNESDAY:
+                return "周三";
+            case Calendar.THURSDAY:
+                return "周四";
+            case Calendar.FRIDAY:
+                return "周五";
+            case Calendar.SATURDAY:
+                return "周六";
+            case Calendar.SUNDAY:
+                return "周日";
+            default:
+                return "未知";
         }
     }
  
