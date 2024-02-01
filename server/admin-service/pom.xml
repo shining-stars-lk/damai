@@ -10,10 +10,10 @@
     </parent>
 
 
-    <artifactId>admin</artifactId>
+    <artifactId>admin-service</artifactId>
 
-    <name>admin</name>
-    <description>服务监控</description>
+    <name>admin-service</name>
+    <description>微服务监控服务</description>
 
     <dependencies>
         <dependency>

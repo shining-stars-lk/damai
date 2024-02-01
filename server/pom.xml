@@ -25,7 +25,7 @@
         <module>base-data-service</module>
         <module>user-service</module>
         <module>server-case</module>
-        <module>admin</module>
+        <module>admin-service</module>
         <module>job-service</module>
         <module>customize-service</module>
         <module>program-service</module>
