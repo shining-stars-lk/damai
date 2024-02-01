@@ -21,7 +21,7 @@
         <module>product-service</module>
         <module>department-service</module>
         <module>employee-service</module>
-        <module>gateway</module>
+        <module>gateway-service</module>
         <module>base-data-service</module>
         <module>user-service</module>
         <module>server-case</module>

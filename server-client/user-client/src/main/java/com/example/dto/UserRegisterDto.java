@@ -50,6 +50,13 @@ public class UserRegisterDto implements Serializable {
     @ApiModelProperty(name ="idNumber", dataType ="String", value ="身份证号码")
     private String idNumber;
     
+    @ApiModelProperty(name ="captchaType", dataType ="String", value ="验证码类型:(clickWord,blockPuzzle)")
+    private String captchaType;
     
+    @ApiModelProperty(name ="pointJson", dataType ="String", value ="点坐标(base64加密传输)")
+    private String pointJson;
+    
+    @ApiModelProperty(name ="token", dataType ="String", value ="UUID(每次请求的验证码唯一标识)")
+    private String token;
     
 }

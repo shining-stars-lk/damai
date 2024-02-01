@@ -1,13 +1,16 @@
 package com.example.controller;
 
+import com.anji.captcha.model.common.ResponseModel;
+import com.anji.captcha.model.vo.CaptchaVO;
 import com.example.common.ApiResponse;
-import com.example.dto.UserGetAndTicketUserListDto;
 import com.example.dto.UserExistDto;
+import com.example.dto.UserGetAndTicketUserListDto;
 import com.example.dto.UserIdDto;
 import com.example.dto.UserMobileDto;
 import com.example.dto.UserRegisterDto;
 import com.example.dto.UserUpdateDto;
 import com.example.service.UserService;
+import com.example.vo.CheckVerifyVo;
 import com.example.vo.UserGetAndTicketUserListVo;
 import com.example.vo.UserVo;
 import io.swagger.annotations.Api;
@@ -44,6 +47,18 @@ public class UserController {
     @PostMapping(value = "/getById")
     public ApiResponse<UserVo> getById(@Valid @RequestBody UserIdDto userIdDto){
         return ApiResponse.ok(userService.getById(userIdDto));
+    }
+    
+    @ApiOperation(value = "检查是否需要验证码")
+    @PostMapping(value = "/check/verify")
+    public ApiResponse<CheckVerifyVo> checkVerify(){
+        return ApiResponse.ok(userService.checkVerify());
+    }
+    
+    @ApiOperation(value = "获取验证码")
+    @PostMapping(value = "/get/captcha/code")
+    public ResponseModel getCaptchaCode(@RequestBody CaptchaVO captchaVO){
+        return userService.getCaptchaCode(captchaVO);
     }
     
     @ApiOperation(value = "注册")

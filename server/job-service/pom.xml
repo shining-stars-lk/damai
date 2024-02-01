@@ -49,7 +49,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>thread-pool</artifactId>
+            <artifactId>thread-pool-tool</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>

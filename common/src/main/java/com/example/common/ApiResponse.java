@@ -1,6 +1,8 @@
 package com.example.common;
 
 import com.example.enums.BaseCode;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,12 +14,16 @@ import java.io.Serializable;
  * @create: 2023-04-27
  **/
 @Data
+@ApiModel(value="ApiResponse",description="数据响应规范结构")
 public class ApiResponse<T> implements Serializable {
     
+    @ApiModelProperty(name="code", dataType = "Integer", value="响应码 0:成功 其余:失败")
     private Integer code;
-
+    
+    @ApiModelProperty(name="message", dataType = "String", value="错误信息")
     private String message;
-
+    
+    @ApiModelProperty(name="data", value="响应的具体数据")
     private T data;
     
     private ApiResponse() {}

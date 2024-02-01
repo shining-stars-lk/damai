@@ -24,7 +24,14 @@ public class CookFrameException extends BaseException {
 	public CookFrameException(String message) {
 		super(message);
 	}
-
+	
+	
+	public CookFrameException(String code, String message) {
+		super(message);
+		this.code = Integer.parseInt(code);
+		this.message = message;
+	}
+	
 	public CookFrameException(Integer code, String message) {
 		super(message);
 		this.code = code;
