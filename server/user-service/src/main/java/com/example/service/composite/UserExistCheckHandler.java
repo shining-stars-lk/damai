@@ -13,6 +13,9 @@ public class UserExistCheckHandler extends AbstractComposite<UserRegisterDto> {
     @Autowired
     private UserService userService;
 
+    /**
+     * 验证是否已注册用户
+     * */
     @Override
     public void execute(final UserRegisterDto userRegisterDto) {
         userService.doExist(userRegisterDto.getMobile());

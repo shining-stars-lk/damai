@@ -21,6 +21,9 @@ public class UserRegisterCountCheckHandler extends AbstractComposite<UserRegiste
     @Autowired
     private RequestCounter requestCounter;
     
+    /**
+     * 验证每秒用户注册请求是否超过最大限制
+     * */
     @Override
     protected void execute(final UserRegisterDto param) {
         boolean result = requestCounter.onRequest();

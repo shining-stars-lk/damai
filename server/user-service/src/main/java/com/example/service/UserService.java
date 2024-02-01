@@ -2,6 +2,8 @@ package com.example.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
+import com.anji.captcha.model.common.ResponseModel;
+import com.anji.captcha.model.vo.CaptchaVO;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -27,10 +29,12 @@ import com.example.mapper.UserMobileMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
 import com.example.redisson.LockType;
+import com.example.service.tool.RequestCounter;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.RBloomFilterUtil;
-import com.example.vo.UserGetAndTicketUserListVo;
+import com.example.vo.CheckVerifyVo;
 import com.example.vo.TicketUserVo;
+import com.example.vo.UserGetAndTicketUserListVo;
 import com.example.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -73,6 +77,12 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     
     @Autowired
     private TicketUserMapper ticketUserMapper;
+    
+    @Autowired
+    private CaptchaHandle captchaHandle;
+    
+    @Autowired
+    private RequestCounter requestCounter;
     
     @Autowired
     private RBloomFilterUtil rBloomFilterUtil;
@@ -203,5 +213,19 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         userGetAndTicketUserListVo.setUserVo(userVo);
         userGetAndTicketUserListVo.setTicketUserVoList(ticketUserVoList);
         return userGetAndTicketUserListVo;
+    }
+    
+    public CheckVerifyVo checkVerify() {
+        CheckVerifyVo checkVerifyVo = new CheckVerifyVo();
+        checkVerifyVo.setType(0);
+        boolean result = requestCounter.onRequest();
+        if (result) {
+            checkVerifyVo.setType(1);
+        }
+        return checkVerifyVo;
+    }
+    
+    public ResponseModel getCaptchaCode(CaptchaVO captchaVO) {
+        return captchaHandle.getCaptchaCode(captchaVO);
     }
 }
