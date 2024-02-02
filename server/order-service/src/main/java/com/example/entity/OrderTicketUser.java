@@ -26,11 +26,11 @@ public class OrderTicketUser extends BaseData implements Serializable {
      * 主键id
      */
     private Long id;
-
+    
     /**
-     * 订单id
-     */
-    private Long orderId;
+     * 订单编号
+     * */
+    private Long orderNumber;
 
     /**
      * 节目表id

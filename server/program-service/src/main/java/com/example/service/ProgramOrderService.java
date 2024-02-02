@@ -236,7 +236,8 @@ public class ProgramOrderService {
         
         //主订单参数构建
         OrderCreateDto orderCreateDto = new OrderCreateDto();
-        orderCreateDto.setId(uidGenerator.getUID());
+        //TODO 生成订单编号
+        orderCreateDto.setOrderNumber(null);
         orderCreateDto.setProgramId(programOrderCreateDto.getProgramId());
         orderCreateDto.setUserId(programOrderCreateDto.getUserId());
         orderCreateDto.setOrderPrice(parameterOrderPrice);
@@ -247,7 +248,7 @@ public class ProgramOrderService {
         for (int i = 0; i < ticketUserVoList.size(); i++) {
             TicketUserVo ticketUserVo = ticketUserVoList.get(i);
             OrderTicketUserCreateDto orderTicketUserCreateDto = new OrderTicketUserCreateDto();
-            orderTicketUserCreateDto.setOrderId(orderCreateDto.getId());
+            orderTicketUserCreateDto.setOrderNumber(orderCreateDto.getOrderNumber());
             orderTicketUserCreateDto.setProgramId(programOrderCreateDto.getProgramId());
             orderTicketUserCreateDto.setUserId(programOrderCreateDto.getUserId());
             orderTicketUserCreateDto.setTicketUserId(ticketUserVo.getId());
@@ -401,7 +402,8 @@ public class ProgramOrderService {
         ProgramVo programVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM, programOrderCreateDto.getProgramId()), ProgramVo.class);
         //主订单参数构建
         OrderCreateDto orderCreateDto = new OrderCreateDto();
-        orderCreateDto.setId(uidGenerator.getUID());
+        //TODO 生成订单编号
+        orderCreateDto.setOrderNumber(null);
         orderCreateDto.setProgramId(programOrderCreateDto.getProgramId());
         orderCreateDto.setUserId(programOrderCreateDto.getUserId());
         orderCreateDto.setProgramTitle(programVo.getTitle());
@@ -415,7 +417,7 @@ public class ProgramOrderService {
         for (int i = 0; i < ticketUserIdList.size(); i++) {
             Long ticketUserId = ticketUserIdList.get(i);
             OrderTicketUserCreateDto orderTicketUserCreateDto = new OrderTicketUserCreateDto();
-            orderTicketUserCreateDto.setOrderId(orderCreateDto.getId());
+            orderTicketUserCreateDto.setOrderNumber(orderCreateDto.getOrderNumber());
             orderTicketUserCreateDto.setProgramId(programOrderCreateDto.getProgramId());
             orderTicketUserCreateDto.setUserId(programOrderCreateDto.getUserId());
             orderTicketUserCreateDto.setTicketUserId(ticketUserId);
@@ -440,7 +442,7 @@ public class ProgramOrderService {
         
         //延迟队列创建
         DelayOrderCancelDto delayOrderCancelDto = new DelayOrderCancelDto();
-        delayOrderCancelDto.setOrderId(orderCreateDto.getId());
+        delayOrderCancelDto.setOrderNumber(orderCreateDto.getOrderNumber());
         delayOrderCancelSend.sendMessage(JSON.toJSONString(delayOrderCancelDto));
         
         return orderId;

@@ -115,12 +115,13 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     private DelayOperateProgramDataSend delayOperateProgramDataSend;
     
     @Transactional(rollbackFor = Exception.class)
-    public String create(final OrderCreateDto orderCreateDto) {
-        Order oldOrder = orderMapper.selectById(orderCreateDto.getId());
+    public String create(OrderCreateDto orderCreateDto) {
+        LambdaQueryWrapper<Order> orderLambdaQueryWrapper = 
+                Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, orderCreateDto.getOrderNumber());
+        Order oldOrder = orderMapper.selectOne(orderLambdaQueryWrapper);
         if (Objects.nonNull(oldOrder)) {
             throw new CookFrameException(BaseCode.ORDER_EXIST);
         }
-        
         Order order = new Order();
         BeanUtil.copyProperties(orderCreateDto,order);
         
@@ -133,19 +134,21 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         }
         orderMapper.insert(order);
         orderTicketUserService.saveBatch(orderTicketUserList);
-        return String.valueOf(order.getId());
+        return String.valueOf(order.getOrderNumber());
     }
     
     @Transactional(rollbackFor = Exception.class)
     @ServiceLock(name = ORDER_CANCEL_LOCK,keys = {"#orderCancelDto.orderId"})
     public boolean cancel(OrderCancelDto orderCancelDto){
-        updateOrderRelatedData(orderCancelDto.getOrderId(),OrderStatus.CANCEL);
+        updateOrderRelatedData(orderCancelDto.getOrderNumber(),OrderStatus.CANCEL);
         return true;
     }
     
     public String pay(OrderPayDto orderPayDto) {
-        String orderNumber = orderPayDto.getOrderNumber();
-        Order order = orderMapper.selectById(orderNumber);
+        Long orderNumber = orderPayDto.getOrderNumber();
+        LambdaQueryWrapper<Order> orderLambdaQueryWrapper =
+                Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, orderNumber);
+        Order order = orderMapper.selectOne(orderLambdaQueryWrapper);
         if (Objects.isNull(order)) {
             throw new CookFrameException(BaseCode.ORDER_NOT_EXIST);
         }
@@ -163,7 +166,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         }
         //调用支付服务进行支付
         PayDto payDto = new PayDto();
-        payDto.setOrderNumber(orderNumber);
+        payDto.setOrderNumber(String.valueOf(orderNumber));
         payDto.setPayBillType(orderPayDto.getPayBillType());
         payDto.setSubject(orderPayDto.getSubject());
         payDto.setChannel(orderPayDto.getChannel());
@@ -181,13 +184,15 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     @Transactional(rollbackFor = Exception.class)
     public OrderPayCheckVo payCheck(OrderPayCheckDto orderPayCheckDto){
         OrderPayCheckVo orderPayCheckVo = new OrderPayCheckVo();
-        Order order = orderMapper.selectById(orderPayCheckDto.getId());
+        LambdaQueryWrapper<Order> orderLambdaQueryWrapper =
+                Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, orderPayCheckDto.getOrderNumber());
+        Order order = orderMapper.selectOne(orderLambdaQueryWrapper);
         if (Objects.isNull(order)) {
             throw new CookFrameException(BaseCode.ORDER_NOT_EXIST);
         }
         BeanUtil.copyProperties(order,orderPayCheckVo);
         TradeCheckDto tradeCheckDto = new TradeCheckDto();
-        tradeCheckDto.setOutTradeNo(String.valueOf(orderPayCheckDto.getId()));
+        tradeCheckDto.setOutTradeNo(String.valueOf(orderPayCheckDto.getOrderNumber()));
         tradeCheckDto.setChannel(Optional.ofNullable(PayChannel.getRc(orderPayCheckDto.getPayChannelType()))
                 .map(PayChannel::getValue).orElseThrow(() -> new CookFrameException(BaseCode.PAY_CHANNEL_NOT_EXIST)));
         ApiResponse<TradeCheckVo> tradeCheckVoApiResponse = payClient.tradeCheck(tradeCheckDto);
@@ -211,6 +216,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
                     updateOrder.setCancelOrderTime(DateUtils.now());
                     orderPayCheckVo.setCancelOrderTime(DateUtils.now());
                 }
+                //更新订单状态
                 orderMapper.updateById(updateOrder);
             }
             //将订单更新为支付状态
@@ -248,25 +254,27 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
      * 更新订单和购票人订单状态以及操作缓存数据
      * */
     @Transactional(rollbackFor = Exception.class)
-    public void updateOrderRelatedData(Long orderId,OrderStatus orderStatus){
+    public void updateOrderRelatedData(Long orderNumber,OrderStatus orderStatus){
         if (!(Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode()) ||
                 Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode()))) {
             throw new CookFrameException(BaseCode.OPERATE_ORDER_STATUS_NOT_PERMIT);
         }
-        Order order = orderMapper.selectById(orderId);
+        LambdaQueryWrapper<Order> orderLambdaQueryWrapper =
+                Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, orderNumber);
+        Order order = orderMapper.selectOne(orderLambdaQueryWrapper);
         if (Objects.isNull(order)) {
             throw new CookFrameException(BaseCode.ORDER_NOT_EXIST);
         }
         if (Objects.equals(order.getOrderStatus(), OrderStatus.CANCEL.getCode())) {
-            log.info("订单已取消 orderId : {}",orderId);
+            log.info("订单已取消 orderNumber : {}",orderNumber);
             return;
         }
         if (Objects.equals(order.getOrderStatus(), OrderStatus.PAY.getCode())) {
-            log.info("订单已支付 orderId : {}",orderId);
+            log.info("订单已支付 orderNumber : {}",orderNumber);
             return;
         }
         if (Objects.equals(order.getOrderStatus(), OrderStatus.REFUND.getCode())) {
-            log.info("订单已退单 orderId : {}",orderId);
+            log.info("订单已退单 orderNumber : {}",orderNumber);
             return;
         }
         //将订单更新为取消或者支付状态
@@ -281,7 +289,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         updateOrderTicketUser.setCancelOrderTime(DateUtils.now());
         
         LambdaUpdateWrapper<OrderTicketUser> orderTicketUserLambdaUpdateWrapper =
-                Wrappers.lambdaUpdate(OrderTicketUser.class).eq(OrderTicketUser::getOrderId, order.getId());
+                Wrappers.lambdaUpdate(OrderTicketUser.class).eq(OrderTicketUser::getOrderNumber, order.getOrderNumber());
         
         int updateTicketUserOrderResult =
                 orderTicketUserMapper.update(updateOrderTicketUser,orderTicketUserLambdaUpdateWrapper);
@@ -290,7 +298,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         }
         
         LambdaQueryWrapper<OrderTicketUser> orderTicketUserLambdaQueryWrapper =
-                Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderId, orderId);
+                Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderNumber, order.getOrderNumber());
         List<OrderTicketUser> orderTicketUserList = orderTicketUserMapper.selectList(orderTicketUserLambdaQueryWrapper);
         if (CollectionUtil.isEmpty(orderTicketUserList)) {
             throw new CookFrameException(BaseCode.TICKET_USER_ORDER_NOT_EXIST);
@@ -379,25 +387,27 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         orderListVos = BeanUtil.copyToList(orderList, OrderListVo.class);
         //每个订单下的购票人订单数量统计
         List<OrderTicketUserAggregate> orderTicketUserAggregateList = 
-                orderTicketUserMapper.selectOrderTicketUserAggregate(orderList.stream().map(Order::getId).collect(Collectors.toList()));
+                orderTicketUserMapper.selectOrderTicketUserAggregate(orderList.stream().map(Order::getOrderNumber).collect(Collectors.toList()));
         Map<Long, Integer> orderTicketUserAggregateMap = orderTicketUserAggregateList.stream()
-                .collect(Collectors.toMap(OrderTicketUserAggregate::getOrderId, 
+                .collect(Collectors.toMap(OrderTicketUserAggregate::getOrderNumber, 
                         OrderTicketUserAggregate::getOrderTicketUserCount, (v1, v2) -> v2));
         for (OrderListVo orderListVo : orderListVos) {
-            orderListVo.setTicketCount(orderTicketUserAggregateMap.get(orderListVo.getId()));
+            orderListVo.setTicketCount(orderTicketUserAggregateMap.get(orderListVo.getOrderNumber()));
         }
         return orderListVos;
     }
     
     public OrderGetVo get(OrderGetDto orderGetDto) {
         //查询订单
-        Order order = orderMapper.selectById(orderGetDto.getOrderId());
+        LambdaQueryWrapper<Order> orderLambdaQueryWrapper =
+                Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, orderGetDto.getOrderNumber());
+        Order order = orderMapper.selectOne(orderLambdaQueryWrapper);
         if (Objects.isNull(order)) {
             throw new CookFrameException(BaseCode.ORDER_NOT_EXIST);
         }
         //查询购票人订单
         LambdaQueryWrapper<OrderTicketUser> orderTicketUserLambdaQueryWrapper = 
-                Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderId, orderGetDto.getOrderId());
+                Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderNumber, order.getOrderNumber());
         List<OrderTicketUser> orderTicketUserList = orderTicketUserMapper.selectList(orderTicketUserLambdaQueryWrapper);
         if (CollectionUtil.isEmpty(orderTicketUserList)) {
             throw new CookFrameException(BaseCode.TICKET_USER_ORDER_NOT_EXIST);   

@@ -28,9 +28,9 @@ public class OrderPayDto implements Serializable {
     @NotNull
     private Integer platform;
     
-    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单号")
+    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单编号")
     @NotNull
-    private String orderNumber;
+    private Long orderNumber;
     
     @ApiModelProperty(name ="subject", dataType ="String", value ="订单标题")
     @NotBlank

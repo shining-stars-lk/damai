@@ -20,9 +20,9 @@ import java.util.List;
 @ApiModel(value="OrderCreateDto", description ="订单创建")
 public class OrderCreateDto {
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="订单id", required =true)
+    @ApiModelProperty(name ="id", dataType ="Long", value ="订单编号", required =true)
     @NotNull
-    private Long id;
+    private Long orderNumber;
     
     @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id", required =true)
     @NotNull

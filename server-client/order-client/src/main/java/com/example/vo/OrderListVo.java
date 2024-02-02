@@ -17,8 +17,8 @@ import java.util.Date;
 @ApiModel(value="OrderListVo", description ="订单列表")
 public class OrderListVo {
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="订单id")
-    private Long id;
+    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单编号")
+    private Long orderNumber;
     
     @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id")
     private Long programId;

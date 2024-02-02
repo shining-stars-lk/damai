@@ -19,9 +19,9 @@ import java.util.Date;
 @ApiModel(value="OrderTicketUserCreateDto", description ="购票人订单创建")
 public class OrderTicketUserCreateDto {
     
-    @ApiModelProperty(name ="orderId", dataType ="Long", value ="订单id", required =true)
+    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单编号", required =true)
     @NotNull
-    private Long orderId;
+    private Long orderNumber;
     
     @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id", required =true)
     @NotNull

@@ -16,8 +16,8 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value="OrderCancelDto", description ="订单取消")
 public class OrderCancelDto {
     
-    @ApiModelProperty(name ="orderId", dataType ="Long", value ="订单id", required =true)
+    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单编号", required =true)
     @NotNull
-    private Long orderId;
+    private Long orderNumber;
     
 }

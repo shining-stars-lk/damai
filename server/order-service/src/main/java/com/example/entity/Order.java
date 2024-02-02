@@ -1,7 +1,5 @@
 package com.example.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.data.BaseData;
 import lombok.Data;
@@ -27,8 +25,12 @@ public class Order extends BaseData implements Serializable {
     /**
      * 主键id
      */
-    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+    
+    /**
+     * 订单编号
+     * */
+    private Long orderNumber;
 
     /**
      * 节目表id
