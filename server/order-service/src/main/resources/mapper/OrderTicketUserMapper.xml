@@ -20,11 +20,11 @@
 <mapper namespace="com.example.mapper.OrderTicketUserMapper">
     <select id="selectOrderTicketUserAggregate" resultType="com.example.entity.OrderTicketUserAggregate">
         select
-            order_id,count(*) as order_ticket_user_count
+            order_number,count(*) as order_ticket_user_count
         from d_order_ticket_user
-        where order_id in
-        <foreach collection='orderIdList' item='orderId' index='index' open='(' close=')' separator=','>
-            #{orderId,jdbcType=BIGINT}
+        where order_number in
+        <foreach collection='orderNumberList' item='orderNumber' index='index' open='(' close=')' separator=','>
+            #{orderNumber,jdbcType=BIGINT}
         </foreach>
         group by create_order_time desc
     </select>

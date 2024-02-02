@@ -17,6 +17,6 @@ import java.util.List;
  */
 public interface OrderTicketUserMapper extends BaseMapper<OrderTicketUser> {
     
-    List<OrderTicketUserAggregate> selectOrderTicketUserAggregate(@Param("orderIdList")List<Long> orderIdList);
+    List<OrderTicketUserAggregate> selectOrderTicketUserAggregate(@Param("orderNumberList")List<Long> orderNumberList);
 
 }

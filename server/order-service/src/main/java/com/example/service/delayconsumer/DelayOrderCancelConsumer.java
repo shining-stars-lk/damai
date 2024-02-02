@@ -36,7 +36,7 @@ public class DelayOrderCancelConsumer implements ConsumerTask {
         
         //取消订单
         OrderCancelDto orderCancelDto = new OrderCancelDto();
-        orderCancelDto.setOrderId(delayOrderCancelDto.getOrderId());
+        orderCancelDto.setOrderNumber(delayOrderCancelDto.getOrderNumber());
         boolean cancel = orderService.cancel(orderCancelDto);
         if (cancel) {
             log.info("延迟订单取消成功 orderCancelDto : {}",content);

@@ -16,9 +16,9 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value="OrderPayCheckDto", description ="订单支付后状态检查")
 public class OrderPayCheckDto {
     
-    @ApiModelProperty(name ="id", dataType ="String", value ="订单id", required =true)
+    @ApiModelProperty(name ="orderNumber", dataType ="String", value ="订单编号", required =true)
     @NotNull
-    private Long id;
+    private Long orderNumber;
     
     @ApiModelProperty(name ="payChannelType", dataType ="Integer", value ="支付方式1.支付宝 2.微信", required =true)
     @NotNull

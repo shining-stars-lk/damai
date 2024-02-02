@@ -16,8 +16,8 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value="OrderGetDto", description ="订单查看")
 public class OrderGetDto {
     
-    @ApiModelProperty(name ="orderId", dataType ="Long", value ="订单id", required =true)
+    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单编号", required =true)
     @NotNull
-    private Long orderId;
+    private Long orderNumber;
     
 }

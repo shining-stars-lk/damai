@@ -37,7 +37,7 @@ public class ProgramCacheOperate {
         }
     }
     
-    public void programCacheOperate(List<String> keys, Object... args){
+    public void programCacheOperate(List<String> keys, String[] args){
         redisCache.getInstance().execute(redisScript, keys, args);
     }
 }
