@@ -22,7 +22,7 @@ public class CaptchaHandle {
     
     private final CaptchaService captchaService;
     
-    public ResponseModel getCaptchaCode(CaptchaVO captchaVO) {
+    public ResponseModel getCaptcha(CaptchaVO captchaVO) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         assert requestAttributes != null;
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
@@ -30,7 +30,7 @@ public class CaptchaHandle {
         return captchaService.get(captchaVO);
     }
     
-    public ResponseModel checkCaptchaCode(CaptchaVO captchaVO) {
+    public ResponseModel checkCaptcha(CaptchaVO captchaVO) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         assert requestAttributes != null;
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();

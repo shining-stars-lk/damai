@@ -38,27 +38,33 @@ public class UserController {
     private UserService userService;
     
     @ApiOperation(value = "查询(通过手机号)")
-    @PostMapping(value = "/getByMobile")
+    @PostMapping(value = "/get/mobile")
     public ApiResponse<UserVo> getByMobile(@Valid @RequestBody UserMobileDto userMobileDto){
         return ApiResponse.ok(userService.getByMobile(userMobileDto));
     }
     
     @ApiOperation(value = "查询(通过id)")
-    @PostMapping(value = "/getById")
+    @PostMapping(value = "/get/id")
     public ApiResponse<UserVo> getById(@Valid @RequestBody UserIdDto userIdDto){
         return ApiResponse.ok(userService.getById(userIdDto));
     }
     
     @ApiOperation(value = "检查是否需要验证码")
-    @PostMapping(value = "/check/verify")
-    public ApiResponse<CheckVerifyVo> checkVerify(){
-        return ApiResponse.ok(userService.checkVerify());
+    @PostMapping(value = "/check/need/captcha")
+    public ApiResponse<CheckVerifyVo> checkNeedCaptcha(){
+        return ApiResponse.ok(userService.checkNeedCaptcha());
     }
     
     @ApiOperation(value = "获取验证码")
-    @PostMapping(value = "/get/captcha/code")
-    public ResponseModel getCaptchaCode(@RequestBody CaptchaVO captchaVO){
-        return userService.getCaptchaCode(captchaVO);
+    @PostMapping(value = "/get/captcha")
+    public ResponseModel getCaptcha(@RequestBody CaptchaVO captchaVO){
+        return userService.getCaptcha(captchaVO);
+    }
+    
+    @ApiOperation(value = "验证验证码")
+    @PostMapping(value = "/verify/captcha")
+    public ResponseModel verifyCaptcha(@RequestBody CaptchaVO captchaVO){
+        return userService.verifyCaptcha(captchaVO);
     }
     
     @ApiOperation(value = "注册")
