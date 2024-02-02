@@ -5,8 +5,6 @@ server:
 spring:
   application:
     name: user-service
-  main:
-    allow-bean-definition-overriding: true
   cloud:
     nacos:
       discovery:
@@ -19,3 +17,4 @@ spring:
         shared-configs:
           - data-id: common.yaml
             refresh: true
+    

@@ -215,7 +215,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         return userGetAndTicketUserListVo;
     }
     
-    public CheckVerifyVo checkVerify() {
+    public CheckVerifyVo checkNeedCaptcha() {
         CheckVerifyVo checkVerifyVo = new CheckVerifyVo();
         checkVerifyVo.setType(0);
         boolean result = requestCounter.onRequest();
@@ -225,7 +225,11 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         return checkVerifyVo;
     }
     
-    public ResponseModel getCaptchaCode(CaptchaVO captchaVO) {
-        return captchaHandle.getCaptchaCode(captchaVO);
+    public ResponseModel getCaptcha(CaptchaVO captchaVO) {
+        return captchaHandle.getCaptcha(captchaVO);
+    }
+    
+    public ResponseModel verifyCaptcha(final CaptchaVO captchaVO) {
+        return captchaHandle.checkCaptcha(captchaVO);
     }
 }

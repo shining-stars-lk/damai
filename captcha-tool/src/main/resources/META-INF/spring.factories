@@ -1,2 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.example.config.CaptchaAutoConfig
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.example.config.CaptchaEnvironment
