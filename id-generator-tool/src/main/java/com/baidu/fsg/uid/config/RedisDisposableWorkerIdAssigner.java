@@ -1,8 +1,6 @@
 package com.baidu.fsg.uid.config;
 
 import com.baidu.fsg.uid.worker.WorkerIdAssigner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
 /**
@@ -12,8 +10,6 @@ import org.springframework.data.redis.core.RedisTemplate;
  * @create: 2023-05-23
  **/
 public class RedisDisposableWorkerIdAssigner implements WorkerIdAssigner {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(RedisDisposableWorkerIdAssigner.class);
     
     private RedisTemplate redisTemplate;
     

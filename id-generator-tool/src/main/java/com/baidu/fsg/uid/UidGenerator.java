@@ -31,6 +31,10 @@ public interface UidGenerator {
      * @throws UidGenerateException
      */
     long getUID() throws UidGenerateException;
+    
+    long getId();
+    
+    long getOrderNumber(long userId,long tableCount);
 
     /**
      * Parse the UID into elements which are used to generate the UID. <br>
