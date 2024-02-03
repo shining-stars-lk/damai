@@ -20,6 +20,7 @@ import com.example.dto.ProgramOrderCreateDto;
 import com.example.dto.SeatDto;
 import com.example.dto.UserGetAndTicketUserListDto;
 import com.example.entity.Program;
+import com.example.entity.ProgramShowTime;
 import com.example.entity.Seat;
 import com.example.entity.TicketCategory;
 import com.example.enums.BaseCode;
@@ -402,6 +403,9 @@ public class ProgramOrderService {
         
         //获取要购买的节目信息
         ProgramVo programVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM, programOrderCreateDto.getProgramId()), ProgramVo.class);
+        //查询节目演出时间
+        ProgramShowTime programShowTime = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME
+                ,programOrderCreateDto.getProgramId()),ProgramShowTime.class);
         //主订单参数构建
         OrderCreateDto orderCreateDto = new OrderCreateDto();
         //生成订单编号
@@ -410,7 +414,7 @@ public class ProgramOrderService {
         orderCreateDto.setUserId(programOrderCreateDto.getUserId());
         orderCreateDto.setProgramTitle(programVo.getTitle());
         orderCreateDto.setProgramPlace(programVo.getPlace());
-        orderCreateDto.setProgramShowTime(programVo.getShowTime());
+        orderCreateDto.setProgramShowTime(programShowTime.getShowTime());
         orderCreateDto.setOrderPrice(parameterOrderPrice);
         orderCreateDto.setCreateOrderTime(DateUtils.now());
         
