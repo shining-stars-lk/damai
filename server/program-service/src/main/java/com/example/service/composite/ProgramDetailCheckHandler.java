@@ -1,18 +1,12 @@
 package com.example.service.composite;
 
 import com.example.composite.AbstractComposite;
-import com.example.core.RedisKeyEnum;
+import com.example.dto.ProgramGetDto;
 import com.example.dto.ProgramOrderCreateDto;
-import com.example.enums.BaseCode;
 import com.example.enums.CompositeCheckType;
-import com.example.exception.CookFrameException;
-import com.example.redis.RedisCache;
-import com.example.redis.RedisKeyWrap;
-import com.example.vo.ProgramVo;
+import com.example.service.ProgramService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 /**
  * @program: cook-frame
@@ -21,17 +15,16 @@ import java.util.Objects;
  * @create: 2024-01-22
  **/
 @Component
-public class ProgramExistCheckHandler extends AbstractComposite<ProgramOrderCreateDto> {
+public class ProgramDetailCheckHandler extends AbstractComposite<ProgramOrderCreateDto> {
     
     @Autowired
-    private RedisCache redisCache;
+    private ProgramService programService;
     @Override
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
-        //查询要购买的节目
-        ProgramVo programVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM, programOrderCreateDto.getProgramId()), ProgramVo.class);
-        if (Objects.isNull(programVo)) {
-            throw new CookFrameException(BaseCode.PROGRAM_NOT_EXIST);
-        }
+        //避免节目不存在，再次缓存
+        ProgramGetDto programGetDto = new ProgramGetDto();
+        programGetDto.setId(programOrderCreateDto.getProgramId());
+        programService.getDetail(programGetDto);
     }
     
     @Override
@@ -51,6 +44,6 @@ public class ProgramExistCheckHandler extends AbstractComposite<ProgramOrderCrea
     
     @Override
     public Integer executeOrder() {
-        return 3;
+        return 2;
     }
 }

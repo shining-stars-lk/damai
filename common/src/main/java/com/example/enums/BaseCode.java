@@ -149,6 +149,10 @@ public enum BaseCode {
     UPDATE_TICKET_CATEGORY_COUNT_NOT_CORRECT(60009,"更新票档数量不正确"),
     
     GET_USER_AND_TICKET_USER_ERROR(60010,"获取用户和购票人信息错误"),
+    
+    ORDER_NUMBER_NOT_EXIST(70000,"order_number的值不存在"),
+    
+    USER_ID_NOT_EXIST(70001,"user_id的值不存在"),
     ;
     
     private final Integer code;

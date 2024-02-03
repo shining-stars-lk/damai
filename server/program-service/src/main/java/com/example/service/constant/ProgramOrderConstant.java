@@ -20,5 +20,5 @@ public class ProgramOrderConstant {
     
     public static final Long ORDER_DATABASE_COUNT = 2L;
     
-    public static final Long ORDER_TABLE_COUNT = 6L;
+    public static final Long ORDER_TABLE_COUNT = 4L;
 }

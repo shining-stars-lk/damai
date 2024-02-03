@@ -39,8 +39,7 @@ public class TicketCategoryService extends ServiceImpl<TicketCategoryMapper, Tic
     private TicketCategoryMapper ticketCategoryMapper;
     
     public List<TicketCategoryVo> selectTicketCategoryListByProgramId(Long programId){
-        List<TicketCategoryVo> ticketCategoryVoList =
-                redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_CATEGORY_LIST, programId), TicketCategoryVo.class, () -> {
+        return redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_CATEGORY_LIST, programId), TicketCategoryVo.class, () -> {
                     LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
                             .eq(TicketCategory::getProgramId, programId);
                     List<TicketCategory> ticketCategoryList = ticketCategoryMapper.selectList(ticketCategoryLambdaQueryWrapper);
@@ -51,7 +50,6 @@ public class TicketCategoryService extends ServiceImpl<TicketCategoryMapper, Tic
                         return ticketCategoryVo;
                     }).collect(Collectors.toList());
                 }, EXPIRE_TIME, TimeUnit.DAYS);
-        return ticketCategoryVoList;
     }
     
     /**
