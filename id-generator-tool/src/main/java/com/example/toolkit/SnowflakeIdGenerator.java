@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -17,28 +18,28 @@ public class SnowflakeIdGenerator {
     /**
      * 时间起始标记点，作为基准，一般取系统的最近时间（一旦确定不能变动）
      */
-    private static final long twepoch = IdGeneratorConstant.TWEPOCH;
+    private static final long twepoch = 1288834974657L;
     /**
      * 机器标识位数
      */
-    private final long workerIdBits = IdGeneratorConstant.WORKER_ID_BITS;
-    private final long datacenterIdBits = IdGeneratorConstant.DATA_CENTER_ID_BITS;
-    private final long maxWorkerId = IdGeneratorConstant.MAX_WORKER_ID;
-    private final long maxDatacenterId = IdGeneratorConstant.MAX_DATA_CENTER_ID;
+    private final long workerIdBits = 5L;
+    private final long datacenterIdBits = 5L;
+    private final long maxWorkerId = -1L ^ (-1L << workerIdBits);
+    private final long maxDatacenterId = -1L ^ (-1L << datacenterIdBits);
     /**
      * 毫秒内自增位
      */
-    private final long sequenceBits = IdGeneratorConstant.SEQUENCE_BITS;
-    private final long workerIdShift = IdGeneratorConstant.WORKER_ID_SHIFT;
-    private final long datacenterIdShift = IdGeneratorConstant.DATA_CENTER_ID_SHIFT;
+    private final long sequenceBits = 12L;
+    private final long workerIdShift = sequenceBits;
+    private final long datacenterIdShift = sequenceBits + workerIdBits;
     /**
      * 时间戳左移动位
      */
-    private final long timestampLeftShift = IdGeneratorConstant.TIMESTAMP_LEFT_SHIFT;
-    private final long sequenceMask = IdGeneratorConstant.SEQUENCE_MASK;
-
+    private final long timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits;
+    private final long sequenceMask = -1L ^ (-1L << sequenceBits);
+    
     private final long workerId;
-
+    
     /**
      * 数据标识 ID 部分
      */
@@ -55,6 +56,16 @@ public class SnowflakeIdGenerator {
      * IP 地址
      */
     private InetAddress inetAddress;
+    
+    public SnowflakeIdGenerator(WorkDataCenterId workDataCenterId) {
+        if (Objects.nonNull(workDataCenterId.getDataCenterId())) {
+            this.workerId = workDataCenterId.getWorkId();
+            this.datacenterId = workDataCenterId.getDataCenterId();
+        }else {
+            this.datacenterId = getDatacenterId(maxDatacenterId);
+            workerId = getMaxWorkerId(datacenterId, maxWorkerId);
+        }
+    }
 
     public SnowflakeIdGenerator(InetAddress inetAddress) {
         this.inetAddress = inetAddress;
@@ -128,13 +139,8 @@ public class SnowflakeIdGenerator {
         }
         return id;
     }
-
-    /**
-     * 获取下一个 ID
-     *
-     * @return 下一个 ID
-     */
-    public synchronized long nextId() {
+    
+    public long getBase(){
         long timestamp = timeGen();
         //闰秒
         if (timestamp < lastTimestamp) {
@@ -153,7 +159,7 @@ public class SnowflakeIdGenerator {
                 throw new RuntimeException(String.format("Clock moved backwards.  Refusing to generate id for %d milliseconds", offset));
             }
         }
-
+        
         if (lastTimestamp == timestamp) {
             // 相同毫秒内，序列号自增
             sequence = (sequence + 1) & sequenceMask;
@@ -165,14 +171,41 @@ public class SnowflakeIdGenerator {
             // 不同毫秒内，序列号置为 1 - 2 随机数
             sequence = ThreadLocalRandom.current().nextLong(1, 3);
         }
-
+        
         lastTimestamp = timestamp;
+        
+        return timestamp;
+    }
+
+    /**
+     * 获取分布式id
+     *
+     * @return id
+     */
+    public synchronized long nextId() {
+        long timestamp = getBase();
 
         // 时间戳部分 | 数据中心部分 | 机器标识部分 | 序列号部分
         return ((timestamp - twepoch) << timestampLeftShift)
             | (datacenterId << datacenterIdShift)
             | (workerId << workerIdShift)
             | sequence;
+    }
+    
+    /**
+     * 获取订单编号
+     *
+     * @return orderNumber
+     */
+    public synchronized long getOrderNumber(long userId,long tableCount) {
+        long timestamp = getBase();
+        long sequenceShift = log2N(tableCount);
+        // 时间戳部分 | 数据中心部分 | 机器标识部分 | 序列号部分 | 用户id基因
+        return ((timestamp - twepoch) << timestampLeftShift)
+                | (datacenterId << datacenterIdShift)
+                | (workerId << workerIdShift)
+                | (sequence << (sequenceBits - sequenceShift))
+                | (userId % tableCount);
     }
 
     protected long tilNextMillis(long lastTimestamp) {
@@ -192,6 +225,13 @@ public class SnowflakeIdGenerator {
      */
     public static long parseIdTimestamp(long id) {
         return (id>>22)+twepoch;
+    }
+    
+    /*
+    * 求log2(N)
+    * */
+    public long log2N(long N) {
+        return (long)(Math.log(N)/ Math.log(2));
     }
     
     public long getMaxWorkerId() {

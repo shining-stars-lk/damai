@@ -15,14 +15,6 @@
  */
 package com.baidu.fsg.uid.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.util.Assert;
-
 import com.baidu.fsg.uid.BitsAllocator;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baidu.fsg.uid.buffer.BufferPaddingExecutor;
@@ -30,6 +22,13 @@ import com.baidu.fsg.uid.buffer.RejectedPutBufferHandler;
 import com.baidu.fsg.uid.buffer.RejectedTakeBufferHandler;
 import com.baidu.fsg.uid.buffer.RingBuffer;
 import com.baidu.fsg.uid.exception.UidGenerateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a cached implementation of {@link UidGenerator} extends
@@ -82,6 +81,16 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
             LOGGER.error("Generate unique id exception. ", e);
             throw new UidGenerateException(e);
         }
+    }
+    
+    @Override
+    public long getId(){
+        return super.getId();
+    }
+    
+    @Override
+    public long getOrderNumber(long userId,long tableCount) {
+        return super.getOrderNumber(userId,tableCount);
     }
 
     @Override

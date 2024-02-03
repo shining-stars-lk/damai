@@ -20,6 +20,7 @@ import com.baidu.fsg.uid.UidGenerator;
 import com.baidu.fsg.uid.exception.UidGenerateException;
 import com.baidu.fsg.uid.utils.DateUtils;
 import com.baidu.fsg.uid.worker.WorkerIdAssigner;
+import com.example.toolkit.SnowflakeIdGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +80,11 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
 
     /** Spring property */
     protected WorkerIdAssigner workerIdAssigner;
+    
+    /**
+     * 分库分表基因法生成id
+     * */
+    protected SnowflakeIdGenerator snowflakeIdGenerator;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -102,6 +108,16 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
             LOGGER.error("Generate unique id exception. ", e);
             throw new UidGenerateException(e);
         }
+    }
+    
+    @Override
+    public long getId(){
+        return snowflakeIdGenerator.nextId();
+    }
+    
+    @Override
+    public long getOrderNumber(long userId,long tableCount) {
+        return snowflakeIdGenerator.getOrderNumber(userId,tableCount);
     }
 
     @Override
@@ -189,7 +205,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     public void setWorkerIdAssigner(WorkerIdAssigner workerIdAssigner) {
         this.workerIdAssigner = workerIdAssigner;
     }
-
+    
     public void setTimeBits(int timeBits) {
         if (timeBits > 0) {
             this.timeBits = timeBits;
@@ -213,5 +229,9 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
             this.epochStr = epochStr;
             this.epochSeconds = TimeUnit.MILLISECONDS.toSeconds(DateUtils.parseByDayPattern(epochStr).getTime());
         }
+    }
+    
+    public void setSnowflakeIdGenerator(final SnowflakeIdGenerator snowflakeIdGenerator) {
+        this.snowflakeIdGenerator = snowflakeIdGenerator;
     }
 }

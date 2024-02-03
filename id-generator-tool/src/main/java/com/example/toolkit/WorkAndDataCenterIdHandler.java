@@ -1,5 +1,6 @@
 package com.example.toolkit;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -19,34 +20,39 @@ import java.util.stream.Stream;
 @Slf4j
 public class WorkAndDataCenterIdHandler {
     
-    private final String SNOWFLAKE_ID_HASH = "snowflake_id_hash";
+    private final String SNOWFLAKE_WORK_ID_KEY = "snowflake_work_id";
     
-    private final String SNOWFLAKE_WORK_ID_HASH_KEY = "snowflake_work_id_hash_key";
+    private final String SNOWFLAKE_DATA_CENTER_ID_key = "snowflake_data_center_id";
     
-    private final String SNOWFLAKE_DATA_CENTER_ID_HASH_KEY = "snowflake_data_center_id_hash_key";
     
-    public final List<String> keys = Stream.of(SNOWFLAKE_ID_HASH,SNOWFLAKE_WORK_ID_HASH_KEY,SNOWFLAKE_DATA_CENTER_ID_HASH_KEY)
-            .collect(Collectors.toList());
+    public final List<String> keys = Stream.of(SNOWFLAKE_WORK_ID_KEY,SNOWFLAKE_DATA_CENTER_ID_key).collect(Collectors.toList());
     
     private StringRedisTemplate stringRedisTemplate;
     
-    private DefaultRedisScript redisScript;
+    private DefaultRedisScript<String> redisScript;
     
     public WorkAndDataCenterIdHandler(StringRedisTemplate stringRedisTemplate){
         this.stringRedisTemplate = stringRedisTemplate;
         try {
             redisScript = new DefaultRedisScript<>();
-            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/ProgramData.lua")));
-            redisScript.setResultType(Integer.class);
+            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/workAndDataCenterId.lua")));
+            redisScript.setResultType(String.class);
         } catch (Exception e) {
             log.error("redisScript init lua error",e);
         }
     }
     
-    public void getWorkAndDataCenterId(){
-        String[] data = new String[2];
-        data[0] = String.valueOf(IdGeneratorConstant.MAX_WORKER_ID);
-        data[1] = String.valueOf(IdGeneratorConstant.MAX_DATA_CENTER_ID);
-        stringRedisTemplate.execute(redisScript, keys, data);
+    public WorkDataCenterId getWorkAndDataCenterId(){
+        WorkDataCenterId workDataCenterId = new WorkDataCenterId();
+        try {
+            String[] data = new String[2];
+            data[0] = String.valueOf(IdGeneratorConstant.MAX_WORKER_ID);
+            data[1] = String.valueOf(IdGeneratorConstant.MAX_DATA_CENTER_ID);
+            String result = stringRedisTemplate.execute(redisScript, keys, data);
+            workDataCenterId = JSON.parseObject(result,WorkDataCenterId.class);
+        }catch (Exception e) {
+            log.error("getWorkAndDataCenterId error",e);
+        }
+        return workDataCenterId;
     }
 }
