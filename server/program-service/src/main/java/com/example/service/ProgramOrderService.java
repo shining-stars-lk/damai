@@ -302,7 +302,7 @@ public class ProgramOrderService {
         List<String> keys = new ArrayList<>();
         keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programOrderCreateDto.getProgramId()).getRelKey());
         keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programOrderCreateDto.getProgramId()).getRelKey());
-        String[] data = new String[3];
+        String[] data = new String[2];
         //入参座位存在
         JSONArray jsonArray = new JSONArray();
         if (CollectionUtil.isNotEmpty(seatDtoList)) {
@@ -311,10 +311,10 @@ public class ProgramOrderService {
                     .collect(Collectors.groupingBy(SeatDto::getTicketCategoryId, Collectors.counting()));
             for (final Entry<Long, Long> entry : seatTicketCategoryDtoCount.entrySet()) {
                 Long ticketCategoryId = entry.getKey();
-                Long count = entry.getValue();
+                Long ticketCount = entry.getValue();
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("ticketCategoryId",ticketCategoryId);
-                jsonObject.put("count",count);
+                jsonObject.put("ticketCount",ticketCount);
                 jsonArray.add(jsonObject);
             }
         }else {
