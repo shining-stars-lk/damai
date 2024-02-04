@@ -41,7 +41,7 @@ public class OrderPayDto implements Serializable {
     private BigDecimal price;
     
     @ApiModelProperty(name ="channel", dataType ="Integer", value ="支付渠道 alipay：支付宝 wx：微信")
-    @NotNull
+    @NotBlank
     private String channel;
 
     @ApiModelProperty(name ="payBillType", dataType ="Integer", value ="支付种类 1节目")

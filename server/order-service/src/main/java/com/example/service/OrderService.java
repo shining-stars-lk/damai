@@ -68,6 +68,7 @@ import java.util.stream.Collectors;
 
 import static com.example.constant.Constant.ALIPAY_NOTIFY_SUCCESS_RESULT;
 import static com.example.core.DistributedLockConstants.ORDER_CANCEL_LOCK;
+import static com.example.core.DistributedLockConstants.ORDER_PAY_CHECK;
 
 /**
  * <p>
@@ -94,7 +95,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     private OrderTicketUserService orderTicketUserService;
     
     @Autowired
-    private ProgramCacheReverseOperate programCacheReverseOperate;
+    private ProgramCacheOperate programCacheOperate;
     
     @Autowired
     private RedisCache redisCache;
@@ -137,8 +138,11 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         return String.valueOf(order.getOrderNumber());
     }
     
+    /**
+     * 订单取消，以订单编号加锁
+     * */
     @Transactional(rollbackFor = Exception.class)
-    @ServiceLock(name = ORDER_CANCEL_LOCK,keys = {"#orderCancelDto.orderId"})
+    @ServiceLock(name = ORDER_CANCEL_LOCK,keys = {"#orderCancelDto.orderNumber"})
     public boolean cancel(OrderCancelDto orderCancelDto){
         updateOrderRelatedData(orderCancelDto.getOrderNumber(),OrderStatus.CANCEL);
         return true;
@@ -181,7 +185,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         return payResponse.getData();
     }
     
-    @Transactional(rollbackFor = Exception.class)
+    /**
+     * 支付后订单检查，以订单编号加锁，防止多次更新
+     * */
+    @ServiceLock(name = ORDER_PAY_CHECK,keys = {"#orderPayCheckDto.orderNumber"})
     public OrderPayCheckVo payCheck(OrderPayCheckDto orderPayCheckDto){
         OrderPayCheckVo orderPayCheckVo = new OrderPayCheckVo();
         LambdaQueryWrapper<Order> orderLambdaQueryWrapper =
@@ -205,28 +212,15 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             Integer payBillStatus = tradeCheckVo.getPayBillStatus();
             Integer orderStatus = order.getOrderStatus();
             if (!Objects.equals(orderStatus, payBillStatus)) {
-                Order updateOrder = new Order();
-                updateOrder.setId(order.getId());
-                updateOrder.setOrderStatus(payBillStatus);
                 orderPayCheckVo.setOrderStatus(payBillStatus);
                 if (Objects.equals(payBillStatus, PayBillStatus.PAY.getCode())) {
-                    updateOrder.setPayOrderTime(DateUtils.now());
                     orderPayCheckVo.setPayOrderTime(DateUtils.now());
+                    updateOrderRelatedData(order.getId(),OrderStatus.PAY);
                 }else if (Objects.equals(payBillStatus, PayBillStatus.CANCEL.getCode())) {
-                    updateOrder.setCancelOrderTime(DateUtils.now());
                     orderPayCheckVo.setCancelOrderTime(DateUtils.now());
+                    updateOrderRelatedData(order.getId(),OrderStatus.CANCEL);
                 }
-                //更新订单状态
-                orderMapper.updateById(updateOrder);
             }
-            //将订单更新为支付状态
-            if (Objects.equals(payBillStatus, PayBillStatus.PAY.getCode())) {
-                orderService.updateOrderRelatedData(order.getId(),OrderStatus.PAY);
-                //将订单更新为取消状态
-            } else if (Objects.equals(payBillStatus, PayBillStatus.CANCEL.getCode())) {
-                orderService.updateOrderRelatedData(order.getId(),OrderStatus.CANCEL);
-            }
-            
         }else {
             throw new CookFrameException(BaseCode.PAY_TRADE_CHECK_ERROR);
         }
@@ -281,16 +275,23 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         Order updateOrder = new Order();
         updateOrder.setId(order.getId());
         updateOrder.setOrderStatus(orderStatus.getCode());
-        updateOrder.setCancelOrderTime(DateUtils.now());
-        int updateOrderResult = orderMapper.updateById(updateOrder);
+        
         //将购票人订单更新为取消或者支付状态
         OrderTicketUser updateOrderTicketUser = new OrderTicketUser();
         updateOrderTicketUser.setOrderStatus(orderStatus.getCode());
-        updateOrderTicketUser.setCancelOrderTime(DateUtils.now());
+        if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
+            updateOrder.setPayOrderTime(DateUtils.now());
+            updateOrderTicketUser.setPayOrderTime(DateUtils.now());
+        } else if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
+            updateOrder.setCancelOrderTime(DateUtils.now());
+            updateOrderTicketUser.setCancelOrderTime(DateUtils.now());
+        }
+        //更新订单
+        int updateOrderResult = orderMapper.updateById(updateOrder);
         
+        //更新购票人订单
         LambdaUpdateWrapper<OrderTicketUser> orderTicketUserLambdaUpdateWrapper =
                 Wrappers.lambdaUpdate(OrderTicketUser.class).eq(OrderTicketUser::getOrderNumber, order.getOrderNumber());
-        
         int updateTicketUserOrderResult =
                 orderTicketUserMapper.update(updateOrderTicketUser,orderTicketUserLambdaUpdateWrapper);
         if (updateOrderResult <= 0 || updateTicketUserOrderResult <= 0) {
@@ -363,7 +364,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             //已售卖座位的key
             keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_SOLD_HASH, programId).getRelKey());
         }
-        programCacheReverseOperate.programCacheReverseOperate(keys,data);
+        programCacheOperate.programCacheReverseOperate(keys,data);
         
         //如果是支付成功了，发送延迟队列给program服务，将数据库中的票档的余票更新、座位状态更新
         if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {

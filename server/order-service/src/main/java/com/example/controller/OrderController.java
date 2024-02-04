@@ -40,7 +40,7 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
     
-    @ApiOperation(value = "订单创建(由内部program服务调用)")
+    @ApiOperation(value = "订单创建(不提供给前端调用，只允许内部program服务调用)")
     @PostMapping(value = "/create")
     public ApiResponse<String> create(@Valid @RequestBody OrderCreateDto orderCreateDto) {
         return ApiResponse.ok(orderService.create(orderCreateDto));

@@ -18,13 +18,9 @@
 
     <modules>
         <module>order-service</module>
-        <module>product-service</module>
-        <module>department-service</module>
-        <module>employee-service</module>
         <module>gateway-service</module>
         <module>base-data-service</module>
         <module>user-service</module>
-        <module>server-case</module>
         <module>admin-service</module>
         <module>job-service</module>
         <module>customize-service</module>

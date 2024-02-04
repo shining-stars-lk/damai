@@ -1,4 +1,4 @@
-package com.example;
+package com.example.mybatisplus;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;

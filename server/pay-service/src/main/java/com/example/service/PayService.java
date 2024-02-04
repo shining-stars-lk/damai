@@ -33,6 +33,7 @@ import java.util.Objects;
 
 import static com.example.constant.Constant.ALIPAY_NOTIFY_FAILURE_RESULT;
 import static com.example.constant.Constant.ALIPAY_NOTIFY_SUCCESS_RESULT;
+import static com.example.core.DistributedLockConstants.COMMON_PAY;
 import static com.example.core.DistributedLockConstants.TRADE_CHECK;
 
 /**
@@ -54,6 +55,10 @@ public class PayService {
     @Autowired
     private UidGenerator uidGenerator;
     
+    /**
+     * 通用支付，用订单号加锁防止多次支付成功，不依赖第三方支付的幂等性
+     * */
+    @ServiceLock(name = COMMON_PAY,keys = {"payDto.orderNumber"})
     @Transactional(rollbackFor = Exception.class)
     public String commonPay(PayDto payDto) {
         LambdaQueryWrapper<PayBill> payBillLambdaQueryWrapper = 

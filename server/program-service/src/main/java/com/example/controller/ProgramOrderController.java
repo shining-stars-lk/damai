@@ -31,14 +31,7 @@ public class ProgramOrderController {
     
     @ApiOperation(value = "生成订单")
     @PostMapping(value = "/create")
-    public ApiResponse<Void> create(@Valid @RequestBody ProgramOrderCreateDto programOrderCreateDto) {
-        programOrderService.create(programOrderCreateDto);
-        return ApiResponse.ok();
-    }
-    
-    @ApiOperation(value = "生成订单")
-    @PostMapping(value = "/create/v2")
-    public ApiResponse<String> createV2(@Valid @RequestBody ProgramOrderCreateDto programOrderCreateDto) {
-        return ApiResponse.ok(programOrderService.createV2(programOrderCreateDto));
+    public ApiResponse<String> create(@Valid @RequestBody ProgramOrderCreateDto programOrderCreateDto) {
+        return ApiResponse.ok(programOrderService.create(programOrderCreateDto));
     }
 }
