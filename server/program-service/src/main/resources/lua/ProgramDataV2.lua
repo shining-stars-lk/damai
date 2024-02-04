@@ -1,6 +1,6 @@
 local ticket_remain_number_hash_key = KEYS[1]
 local seat_no_sold_hash_key = KEYS[2]
-local type = tonumber(KEYS[2])
+local type = tonumber(KEYS[3])
 local ticket_count_list = cjson.decode(ARGV[1]) 
 -- 要购买的座位
 local purchase_seat_list = {}
@@ -14,7 +14,7 @@ if (type == 1) then
         -- 入参座位的票档id
         local ticket_category_id = ticket_count.ticketCategoryId
         -- 入参座位的票档数量
-        local count = ticket_count.count
+        local ticketCount = ticket_count.ticketCount
         -- 从缓存中获取相应票档数量
         local remain_number_str = redis.call('hget', ticket_remain_number_hash_key, tostring(ticket_category_id))
         -- 如果为空直接返回
@@ -23,7 +23,7 @@ if (type == 1) then
         end
         local remain_number = tonumber(remain_number_str)
         -- 入参座位的票档数量大于缓存中获取相应票档数量，说明票档数量不足，直接返回
-        if (count > remain_number) then
+        if (ticketCount > remain_number) then
             return 1
         end
     end
@@ -66,7 +66,7 @@ if (type == 2) then
         -- 入参选择的票档id
         local ticket_category_id = ticket_count.ticketCategoryId
         -- 入参选择的票档数量
-        local count = ticket_count.count
+        local ticketCount = ticket_count.ticketCount
         -- 从缓存中获取相应票档数量
         local remain_number_str = redis.call('hget', ticket_remain_number_hash_key, tostring(ticket_category_id))
         -- 如果为空直接返回
@@ -75,7 +75,7 @@ if (type == 2) then
         end
         local remain_number = tonumber(remain_number_str)
         -- 入参的票档数量大于缓存中获取相应票档数量，说明票档数量不足，直接返回
-        if (count > remain_number) then
+        if (ticketCount > remain_number) then
             return 1
         end
         local seat_vo_no_sold_str_list = redis.call('hvals',seat_no_sold_hash_key)
@@ -86,45 +86,48 @@ if (type == 2) then
                 table.insert(filter_seat_vo_no_sold_list,seat_vo_no_sold)
             end
         end
-        purchase_seat_list = findAdjacentSeatVos(filter_seat_vo_no_sold_list,count)
+        -- purchase_seat_list = findAdjacentSeatVos(filter_seat_vo_no_sold_list,count)
+        purchase_seat_list = filter_seat_vo_no_sold_list
     end
 end
 
 return cjson.encode(purchase_seat_list)
 
-function findAdjacentSeatVos(allSeats, seatCount)
-    local adjacentSeats = {}
 
-    -- 对可用座位排序
-    table.sort(allSeats, function(s1, s2)
-        if s1.rowCode == s2.rowCode then
-            return s1.colCode < s2.colCode
-        else
-            return s1.rowCode < s2.rowCode
-        end
-    end)
 
-    -- 寻找相邻座位
-    for i = 1, #allSeats - seatCount + 1 do
-        local seatsFound = true
-        for j = 0, seatCount - 2 do
-            local current = allSeats[i + j]
-            local next = allSeats[i + j + 1]
-
-            if not (current.rowCode == next.rowCode and next.colCode - current.colCode == 1) then
-                seatsFound = false
-                break
-            end
-        end
-        if seatsFound then
-            for k = 0, seatCount - 1 do
-                table.insert(adjacentSeats, allSeats[i + k])
-            end
-            return adjacentSeats
-        end
-    end
-    -- 如果没有找到，返回空列表
-    return adjacentSeats
-end
+--function findAdjacentSeatVos(allSeats, seatCount)
+--    local adjacentSeats = {}
+--
+--    -- 对可用座位排序
+--    table.sort(allSeats, function(s1, s2)
+--        if s1.rowCode == s2.rowCode then
+--            return s1.colCode < s2.colCode
+--        else
+--            return s1.rowCode < s2.rowCode
+--        end
+--    end)
+--
+--    -- 寻找相邻座位
+--    for i = 1, #allSeats - seatCount + 1 do
+--        local seatsFound = true
+--        for j = 0, seatCount - 2 do
+--            local current = allSeats[i + j]
+--            local next = allSeats[i + j + 1]
+--
+--            if not (current.rowCode == next.rowCode and next.colCode - current.colCode == 1) then
+--                seatsFound = false
+--                break
+--            end
+--        end
+--        if seatsFound then
+--            for k = 0, seatCount - 1 do
+--                table.insert(adjacentSeats, allSeats[i + k])
+--            end
+--            return adjacentSeats
+--        end
+--    end
+--    -- 如果没有找到，返回空列表
+--    return adjacentSeats
+--end
 
 
