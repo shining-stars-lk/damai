@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baidu.fsg.uid.UidGenerator;
 import com.example.client.OrderClient;
-import com.example.client.UserClient;
 import com.example.common.ApiResponse;
 import com.example.composite.CompositeContainer;
 import com.example.core.RedisKeyEnum;
@@ -31,7 +30,6 @@ import com.example.service.lua.ProgramCacheCreateOrderData;
 import com.example.service.lua.ProgramCacheCreateOrderOperate;
 import com.example.service.lua.ProgramCacheOperate;
 import com.example.service.tool.SeatMatch;
-import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.DateUtils;
 import com.example.vo.ProgramVo;
 import com.example.vo.SeatVo;
@@ -48,7 +46,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.core.DistributedLockConstants.PROGRAM_ORDER_CREATE;
 import static com.example.service.constant.ProgramOrderConstant.ORDER_TABLE_COUNT;
 
 /**
@@ -69,9 +66,6 @@ public class ProgramOrderService {
     
     @Autowired
     private TicketCategoryMapper ticketCategoryMapper;
-    
-    @Autowired
-    private UserClient userClient;
     
     @Autowired
     private OrderClient orderClient;
@@ -97,7 +91,6 @@ public class ProgramOrderService {
     /**
      * 订单创建，使用节目id作为锁
      * */
-    @ServiceLock(name = PROGRAM_ORDER_CREATE,keys = {"#programOrderCreateDto.programId"})
     public String create(ProgramOrderCreateDto programOrderCreateDto) {
         compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
         //节目id

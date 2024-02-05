@@ -124,6 +124,16 @@ public enum BaseCode {
     
     ORDER_EXIST(40025,"订单存在"),
     
+    SEAT_ID_EMPTY(40026,"座位id为空"),
+    
+    SEAT_TICKET_CATEGORY_ID_EMPTY(40026,"座位的票档id为空"),
+    
+    SEAT_ROW_CODE_EMPTY(40026,"座位的rowCode为空"),
+    
+    SEAT_COL_CODE_EMPTY(40026,"座位的colCode为空"),
+    
+    SEAT_PRICE_EMPTY(40026,"座位价格为空"),
+    
     DELAY_QUEUE_CLIENT_NOT_EXIST(50001,"延迟队列客户端不存在"),
     
     DELAY_QUEUE_MESSAGE_NOT_EXIST(50002,"延迟队列消息不存在"),

@@ -24,7 +24,25 @@ public class ProgramOrderCreateParamCheckHandler extends AbstractComposite<Progr
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
         //验证手动选择座位和自动分配座位的参数是否正确
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
-        if (CollectionUtil.isEmpty(seatDtoList)) {
+        if (CollectionUtil.isNotEmpty(seatDtoList)) {
+            for (SeatDto seatDto : seatDtoList) {
+                if (Objects.isNull(seatDto.getId())) {
+                    throw new CookFrameException(BaseCode.SEAT_ID_EMPTY);
+                }
+                if (Objects.isNull(seatDto.getTicketCategoryId())) {
+                    throw new CookFrameException(BaseCode.SEAT_TICKET_CATEGORY_ID_EMPTY);
+                }
+                if (Objects.isNull(seatDto.getRowCode())) {
+                    throw new CookFrameException(BaseCode.SEAT_ROW_CODE_EMPTY);
+                }
+                if (Objects.isNull(seatDto.getColCode())) {
+                    throw new CookFrameException(BaseCode.SEAT_COL_CODE_EMPTY);
+                }
+                if (Objects.isNull(seatDto.getPrice())) {
+                    throw new CookFrameException(BaseCode.SEAT_PRICE_EMPTY);
+                }
+            }
+        }else {
             if (Objects.isNull(programOrderCreateDto.getTicketCategoryId())) {
                 throw new CookFrameException(BaseCode.TICKET_CATEGORY_NOT_EXIST);
             }

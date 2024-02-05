@@ -17,7 +17,12 @@ import java.util.concurrent.TimeUnit;
 public class RedissonWriteLocker implements ServiceLocker {
 
     private final RedissonClient redissonClient;
-
+    
+    @Override
+    public RLock getLock(String lockKey) {
+        return redissonClient.getFairLock(lockKey);
+    }
+    
     @Override
     public RLock lock(String lockKey) {
         RLock lock = redissonClient.getReadWriteLock(lockKey).writeLock();

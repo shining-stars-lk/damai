@@ -55,9 +55,14 @@ public class DistributedLockConstants {
     public final static String TRADE_CHECK = "d_trade_check_lock";
     
     /**
-     * 节目服务订单创建
+     * 节目服务订单创建V1
      * */
-    public final static String PROGRAM_ORDER_CREATE = "d_program_order_create_lock";
+    public final static String PROGRAM_ORDER_CREATE_V1 = "d_program_order_create_v1_lock";
+    
+    /**
+     * 节目服务订单创建V2
+     * */
+    public final static String PROGRAM_ORDER_CREATE_V2 = "d_program_order_create_v2_lock";
     
     /**
      * 支付服务的通用支付
