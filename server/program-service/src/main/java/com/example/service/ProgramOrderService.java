@@ -27,6 +27,9 @@ import com.example.mapper.TicketCategoryMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
 import com.example.service.delaysend.DelayOrderCancelSend;
+import com.example.service.lua.ProgramCacheCreateOrderData;
+import com.example.service.lua.ProgramCacheCreateOrderOperate;
+import com.example.service.lua.ProgramCacheOperate;
 import com.example.service.tool.SeatMatch;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.DateUtils;
@@ -83,7 +86,7 @@ public class ProgramOrderService {
     private ProgramCacheOperate programCacheOperate;
     
     @Autowired
-    private ProgramCacheOperateV2 programCacheOperateV2;
+    private ProgramCacheCreateOrderOperate programCacheCreateOrderOperate;
     
     @Autowired
     private CompositeContainer compositeContainer;
@@ -106,7 +109,6 @@ public class ProgramOrderService {
         //要购买的座位
         List<SeatVo> purchaseSeatList = new ArrayList<>();
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
-        List<Long> ticketUserIdList = programOrderCreateDto.getTicketUserIdList();
         //该节目下所有未售卖的座位
         List<SeatVo> seatVoList = redisCache.getAllForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programOrderCreateDto.getProgramId()), SeatVo.class);
         //该节目下的余票数量
@@ -166,12 +168,73 @@ public class ProgramOrderService {
         }
         //进行操作缓存中的数据
         updateProgramCacheData(programId,purchaseSeatList,OrderStatus.NO_PAY);
-        
+        //将筛选出来的购买的座位信息传入，执行创建订单的操作
+        return doCreate(programOrderCreateDto,purchaseSeatList);
+    }
+    
+    /**
+     * 订单创建，进行优化，一开始直接判断要购买的座位和票的数量是足够，不足够直接返回，这样能将大量无用的抢购请求直接返回掉，
+     * 既能减少了锁竞争的压力，也能减少上锁的时间
+     * */
+    public String createNew(ProgramOrderCreateDto programOrderCreateDto) {
+        compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
+        //节目id
+        Long programId = programOrderCreateDto.getProgramId();
+        List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
+        List<String> keys = new ArrayList<>();
+        //票档数量的key
+        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
+        //没有售卖的座位key
+        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
+        //锁定的座位key
+        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
+        String[] data = new String[2];
+        //入参座位存在
+        JSONArray jsonArray = new JSONArray();
+        if (CollectionUtil.isNotEmpty(seatDtoList)) {
+            keys.add("1");
+            Map<Long, Long> seatTicketCategoryDtoCount = seatDtoList.stream()
+                    .collect(Collectors.groupingBy(SeatDto::getTicketCategoryId, Collectors.counting()));
+            //将入参的座位集合统计出票档id和票档数量
+            for (final Entry<Long, Long> entry : seatTicketCategoryDtoCount.entrySet()) {
+                Long ticketCategoryId = entry.getKey();
+                Long ticketCount = entry.getValue();
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("ticketCategoryId",ticketCategoryId);
+                jsonObject.put("ticketCount",ticketCount);
+                jsonArray.add(jsonObject);
+            }
+        }else {
+            //入参座位不存在
+            keys.add("2");
+            //如果不选择座位，则直接传入票档id和票档数量
+            Long ticketCategoryId = programOrderCreateDto.getTicketCategoryId();
+            Integer ticketCount = programOrderCreateDto.getTicketCount();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("ticketCategoryId",ticketCategoryId);
+            jsonObject.put("ticketCount",ticketCount);
+            jsonArray.add(jsonObject);
+        }
+        data[0] = JSON.toJSONString(jsonArray);
+        data[1] = JSON.toJSONString(seatDtoList);
+        //升级后的lua脚本处理票档数量和座位状态的检验，以及扣减票档数量的操作
+        String result = programCacheCreateOrderOperate.programCacheOperate(keys, data);
+        ProgramCacheCreateOrderData programCacheCreateOrderData = JSON.parseObject(result, ProgramCacheCreateOrderData.class);
+        if (!Objects.equals(programCacheCreateOrderData.getCode(), BaseCode.SUCCESS.getCode())) {
+            throw new CookFrameException(Objects.requireNonNull(BaseCode.getRc(programCacheCreateOrderData.getCode())));
+        }
+        List<SeatVo> purchaseSeatList = programCacheCreateOrderData.getPurchaseSeatList();
+        //将筛选出来的购买的座位信息传入，执行创建订单的操作
+        return doCreate(programOrderCreateDto,purchaseSeatList);
+    }
+    
+    private String doCreate(ProgramOrderCreateDto programOrderCreateDto,List<SeatVo> purchaseSeatList){
+        Long programId = programOrderCreateDto.getProgramId();
         //获取要购买的节目信息
-        ProgramVo programVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM, programOrderCreateDto.getProgramId()), ProgramVo.class);
+        ProgramVo programVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM, programId), ProgramVo.class);
         //查询节目演出时间
         ProgramShowTime programShowTime = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME
-                ,programOrderCreateDto.getProgramId()),ProgramShowTime.class);
+                ,programId),ProgramShowTime.class);
         //主订单参数构建
         OrderCreateDto orderCreateDto = new OrderCreateDto();
         //生成订单编号
@@ -181,10 +244,12 @@ public class ProgramOrderService {
         orderCreateDto.setProgramTitle(programVo.getTitle());
         orderCreateDto.setProgramPlace(programVo.getPlace());
         orderCreateDto.setProgramShowTime(programShowTime.getShowTime());
-        orderCreateDto.setOrderPrice(parameterOrderPrice);
+        BigDecimal databaseOrderPrice = purchaseSeatList.stream().map(SeatVo::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+        orderCreateDto.setOrderPrice(databaseOrderPrice);
         orderCreateDto.setCreateOrderTime(DateUtils.now());
         
         //购票人订单构建
+        List<Long> ticketUserIdList = programOrderCreateDto.getTicketUserIdList();
         List<OrderTicketUserCreateDto> orderTicketUserCreateDtoList = new ArrayList<>();
         for (int i = 0; i < ticketUserIdList.size(); i++) {
             Long ticketUserId = ticketUserIdList.get(i);
@@ -203,10 +268,10 @@ public class ProgramOrderService {
         
         orderCreateDto.setOrderTicketUserCreateDtoList(orderTicketUserCreateDtoList);
         
-        String orderId;
+        String orderNumber;
         ApiResponse<String> createOrderResponse = orderClient.create(orderCreateDto);
         if (Objects.equals(createOrderResponse.getCode(), BaseCode.SUCCESS.getCode())) {
-            orderId = createOrderResponse.getData();
+            orderNumber = createOrderResponse.getData();
         }else {
             //订单创建失败将操作缓存中的数据还原
             updateProgramCacheData(programId,purchaseSeatList,OrderStatus.CANCEL);
@@ -219,7 +284,7 @@ public class ProgramOrderService {
         delayOrderCancelDto.setOrderNumber(orderCreateDto.getOrderNumber());
         delayOrderCancelSend.sendMessage(JSON.toJSONString(delayOrderCancelDto));
         
-        return orderId;
+        return orderNumber;
     }
     
     private void updateProgramCacheData(long programId,List<SeatVo> seatVoList,OrderStatus orderStatus){
@@ -284,116 +349,5 @@ public class ProgramOrderService {
         }
         
         programCacheOperate.programCacheOperate(keys,data);
-    }
-    
-    
-    /**
-     * 订单创建，进行优化，使用节目id作为锁
-     * */
-    public String createNew(ProgramOrderCreateDto programOrderCreateDto) {
-        compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
-        //节目id
-        Long programId = programOrderCreateDto.getProgramId();
-        //传入的座位总价格
-        BigDecimal parameterOrderPrice = new BigDecimal("0");
-        //库中的座位总价格
-        BigDecimal databaseOrderPrice = new BigDecimal("0");
-        List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
-        List<String> keys = new ArrayList<>();
-        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programOrderCreateDto.getProgramId()).getRelKey());
-        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programOrderCreateDto.getProgramId()).getRelKey());
-        String[] data = new String[2];
-        //入参座位存在
-        JSONArray jsonArray = new JSONArray();
-        if (CollectionUtil.isNotEmpty(seatDtoList)) {
-            keys.add("1");
-            Map<Long, Long> seatTicketCategoryDtoCount = seatDtoList.stream()
-                    .collect(Collectors.groupingBy(SeatDto::getTicketCategoryId, Collectors.counting()));
-            for (final Entry<Long, Long> entry : seatTicketCategoryDtoCount.entrySet()) {
-                Long ticketCategoryId = entry.getKey();
-                Long ticketCount = entry.getValue();
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("ticketCategoryId",ticketCategoryId);
-                jsonObject.put("ticketCount",ticketCount);
-                jsonArray.add(jsonObject);
-            }
-        }else {
-            //入参座位不存在
-            keys.add("2");
-            Long ticketCategoryId = programOrderCreateDto.getTicketCategoryId();
-            Integer ticketCount = programOrderCreateDto.getTicketCount();
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("ticketCategoryId",ticketCategoryId);
-            jsonObject.put("ticketCount",ticketCount);
-            jsonArray.add(jsonObject);
-        }
-        data[0] = JSON.toJSONString(jsonArray);
-        data[1] = JSON.toJSONString(seatDtoList);
-        //TODO lua脚本
-        String s = programCacheOperateV2.programCacheOperate(keys, data);
-        System.out.println(s);
-        
-        
-        return null;
-        
-        
-        
-        
-//        //进行操作缓存中的数据
-//        updateProgramCacheData(programId,purchaseSeatList,OrderStatus.NO_PAY);
-//        
-//        //获取要购买的节目信息
-//        ProgramVo programVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM, programOrderCreateDto.getProgramId()), ProgramVo.class);
-//        //查询节目演出时间
-//        ProgramShowTime programShowTime = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME
-//                ,programOrderCreateDto.getProgramId()),ProgramShowTime.class);
-//        //主订单参数构建
-//        OrderCreateDto orderCreateDto = new OrderCreateDto();
-//        //生成订单编号
-//        orderCreateDto.setOrderNumber(uidGenerator.getOrderNumber(programOrderCreateDto.getUserId(),ORDER_TABLE_COUNT));
-//        orderCreateDto.setProgramId(programOrderCreateDto.getProgramId());
-//        orderCreateDto.setUserId(programOrderCreateDto.getUserId());
-//        orderCreateDto.setProgramTitle(programVo.getTitle());
-//        orderCreateDto.setProgramPlace(programVo.getPlace());
-//        orderCreateDto.setProgramShowTime(programShowTime.getShowTime());
-//        orderCreateDto.setOrderPrice(parameterOrderPrice);
-//        orderCreateDto.setCreateOrderTime(DateUtils.now());
-//        
-//        //购票人订单构建
-//        List<OrderTicketUserCreateDto> orderTicketUserCreateDtoList = new ArrayList<>();
-//        for (int i = 0; i < ticketUserIdList.size(); i++) {
-//            Long ticketUserId = ticketUserIdList.get(i);
-//            OrderTicketUserCreateDto orderTicketUserCreateDto = new OrderTicketUserCreateDto();
-//            orderTicketUserCreateDto.setOrderNumber(orderCreateDto.getOrderNumber());
-//            orderTicketUserCreateDto.setProgramId(programOrderCreateDto.getProgramId());
-//            orderTicketUserCreateDto.setUserId(programOrderCreateDto.getUserId());
-//            orderTicketUserCreateDto.setTicketUserId(ticketUserId);
-//            SeatVo seatVo = Optional.ofNullable(purchaseSeatList.get(i)).orElseThrow(() -> new CookFrameException(BaseCode.SEAT_NOT_EXIST));
-//            orderTicketUserCreateDto.setSeatId(seatVo.getId());
-//            orderTicketUserCreateDto.setSeatInfo(seatVo.getRowCode()+"排"+seatVo.getColCode()+"列");
-//            orderTicketUserCreateDto.setOrderPrice(seatVo.getPrice());
-//            orderTicketUserCreateDto.setCreateOrderTime(DateUtils.now());
-//            orderTicketUserCreateDtoList.add(orderTicketUserCreateDto);
-//        }
-//        
-//        orderCreateDto.setOrderTicketUserCreateDtoList(orderTicketUserCreateDtoList);
-//        
-//        String orderId;
-//        ApiResponse<String> createOrderResponse = orderClient.create(orderCreateDto);
-//        if (Objects.equals(createOrderResponse.getCode(), BaseCode.SUCCESS.getCode())) {
-//            orderId = createOrderResponse.getData();
-//        }else {
-//            //订单创建失败将操作缓存中的数据还原
-//            updateProgramCacheData(programId,purchaseSeatList,OrderStatus.CANCEL);
-//            log.error("创建订单失败 需人工处理 orderCreateDto : {}",JSON.toJSONString(orderCreateDto));
-//            throw new CookFrameException(createOrderResponse);
-//        }
-//        
-//        //延迟队列创建
-//        DelayOrderCancelDto delayOrderCancelDto = new DelayOrderCancelDto();
-//        delayOrderCancelDto.setOrderNumber(orderCreateDto.getOrderNumber());
-//        delayOrderCancelSend.sendMessage(JSON.toJSONString(delayOrderCancelDto));
-//        
-//        return orderId;
     }
 }
