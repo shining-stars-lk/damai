@@ -14,6 +14,7 @@ dataSources:
     password: qaz321qwe!
     
 rules:
+  # 分库分表规则
   - !SHARDING
     tables:
       # 对d_user_mobile表进行分库分表
@@ -107,7 +108,45 @@ rules:
         type: HASH_MOD
         props:
           # 分表数量
-          sharding-count: 2      
+          sharding-count: 2
+  # 加密规则
+  - !ENCRYPT
+    tables:
+      # d_user表
+      d_user:
+        columns:
+          # 对id_number列进行加密
+          id_number:
+            # 密文列id_number
+            cipherColumn: id_number
+            # 自定义的加密算法
+            encryptorName: user_encryption_algorithm
+      # d_user_mobile表
+      d_user_mobile:
+        columns:
+          # 对mobile列进行加密
+          mobile:
+            # 密文列id_number
+            cipherColumn: mobile
+            # 自定义的加密算法
+            encryptorName: user_encryption_algorithm
+      # d_ticket_user表
+      d_ticket_user:
+        columns:
+          # 对id_number列进行加密
+          id_number:
+            # 密文列id_number
+            cipherColumn: id_number
+            # 自定义的加密算法
+            encryptorName: user_encryption_algorithm      
+    encryptors:
+      user_encryption_algorithm:
+        type: SM4
+        props:
+          sm4-key: sss
+          sm4-mode: CBC
+          sm4-iv: sss
+          sm4-padding: sss
 props:
   # 打印真实sql
   sql-show: true      
