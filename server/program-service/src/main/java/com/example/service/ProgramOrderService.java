@@ -88,9 +88,7 @@ public class ProgramOrderService {
     @Autowired
     private DelayOrderCancelSend delayOrderCancelSend;
     
-    /**
-     * 订单创建，使用节目id作为锁
-     * */
+    
     public String create(ProgramOrderCreateDto programOrderCreateDto) {
         compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
         //节目id
@@ -165,10 +163,7 @@ public class ProgramOrderService {
         return doCreate(programOrderCreateDto,purchaseSeatList);
     }
     
-    /**
-     * 订单创建，进行优化，一开始直接判断要购买的座位和票的数量是足够，不足够直接返回，这样能将大量无用的抢购请求直接返回掉，
-     * 既能减少了锁竞争的压力，也能减少上锁的时间
-     * */
+    
     public String createNew(ProgramOrderCreateDto programOrderCreateDto) {
         compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
         //节目id
