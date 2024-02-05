@@ -6,6 +6,7 @@ import com.example.servicelock.ServiceLocker;
 import com.example.servicelock.info.LockTimeOutStrategy;
 import com.example.redisson.factory.ServiceLockFactory;
 import lombok.AllArgsConstructor;
+import org.redisson.api.RLock;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * @create: 2023-05-28
  **/
 @AllArgsConstructor
-public class ServiceLockUtil {
+public class ServiceLockTool {
     
     private final ServiceLockFactory serviceLockFactory;
 
@@ -102,5 +103,29 @@ public class ServiceLockUtil {
             LockTimeOutStrategy.FAIL.handler(lockName);
         }
         return null;
+    }
+    
+    /**
+     * 获得锁
+     * @param lockType 锁类型
+     * @param name 锁的业务名
+     * @param keys 锁的标识
+     *
+     * */
+    public RLock getLock(LockType lockType, String name, String [] keys) {
+        String lockName = serviceLockInfo.simpleGetLockName(name,keys);
+        ServiceLocker lock = serviceLockFactory.getLock(lockType);
+        return lock.getLock(lockName);
+    }
+    
+    /**
+     * 获得锁
+     * @param lockType 锁类型
+     * @param lockName 锁名
+     *
+     * */
+    public RLock getLock(LockType lockType, String lockName) {
+        ServiceLocker lock = serviceLockFactory.getLock(lockType);
+        return lock.getLock(lockName);
     }
 }

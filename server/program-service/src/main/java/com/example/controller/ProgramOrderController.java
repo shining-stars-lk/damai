@@ -2,7 +2,7 @@ package com.example.controller;
 
 import com.example.common.ApiResponse;
 import com.example.dto.ProgramOrderCreateDto;
-import com.example.service.ProgramOrderService;
+import com.example.lock.ProgramOrderLock;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +27,23 @@ import javax.validation.Valid;
 public class ProgramOrderController {
     
     @Autowired
-    private ProgramOrderService programOrderService;
+    private ProgramOrderLock programOrderLock;
     
     @ApiOperation(value = "生成订单")
-    @PostMapping(value = "/create")
-    public ApiResponse<String> create(@Valid @RequestBody ProgramOrderCreateDto programOrderCreateDto) {
-        return ApiResponse.ok(programOrderService.create(programOrderCreateDto));
+    @PostMapping(value = "/create/v1")
+    public ApiResponse<String> createV1(@Valid @RequestBody ProgramOrderCreateDto programOrderCreateDto) {
+        return ApiResponse.ok(programOrderLock.createV1(programOrderCreateDto));
     }
     
-    @ApiOperation(value = "生成订单(优化版本)")
-    @PostMapping(value = "/create/new")
+    @ApiOperation(value = "生成订单(优化版本v2)")
+    @PostMapping(value = "/create/v2")
+    public ApiResponse<String> createV2(@Valid @RequestBody ProgramOrderCreateDto programOrderCreateDto) {
+        return ApiResponse.ok(programOrderLock.createV2(programOrderCreateDto));
+    }
+    
+    @ApiOperation(value = "生成订单(优化版本v3)")
+    @PostMapping(value = "/create/v3")
     public ApiResponse<String> createNew(@Valid @RequestBody ProgramOrderCreateDto programOrderCreateDto) {
-        return ApiResponse.ok(programOrderService.createNew(programOrderCreateDto));
+        return ApiResponse.ok(programOrderLock.createV3(programOrderCreateDto));
     }
 }

@@ -15,7 +15,7 @@ import com.example.redisson.factory.ServiceLockFactory;
 import com.example.servicelock.ServiceLockInfo;
 import com.example.servicelock.aspect.ServiceLockAspect;
 import com.example.util.RBloomFilterUtil;
-import com.example.util.ServiceLockUtil;
+import com.example.util.ServiceLockTool;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -76,8 +76,8 @@ public class DistributedAutoConfiguration {
     }
     
     @Bean
-    public ServiceLockUtil serviceLockUtil(ServiceLockFactory serviceLockFactory, ServiceLockInfo serviceLockInfo){
-        return new ServiceLockUtil(serviceLockFactory,serviceLockInfo);
+    public ServiceLockTool serviceLockUtil(ServiceLockFactory serviceLockFactory, ServiceLockInfo serviceLockInfo){
+        return new ServiceLockTool(serviceLockFactory,serviceLockInfo);
     }
     
     @Bean

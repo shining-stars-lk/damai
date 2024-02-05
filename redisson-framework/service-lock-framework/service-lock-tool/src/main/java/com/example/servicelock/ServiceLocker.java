@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
  * @create: 2023-05-28
  **/
 public interface ServiceLocker {
+    
+    RLock getLock(String lockKey);
 
     RLock lock(String lockKey);
 

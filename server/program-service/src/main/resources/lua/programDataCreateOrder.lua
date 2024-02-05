@@ -161,7 +161,7 @@ redis.call('hdel',seat_no_sold_hash_key,unpack(seat_id_list))
 -- 再将座位数据添加到锁定的座位中
 redis.call('hmset',seat_lock_hash_key,unpack(seat_data_list))
 
-return '{"code": 0, "purchaseSeatList": ' .. cjson.encode(purchase_seat_list) .. '}'
+return string.format('{"%s": %d, "%s": %s}', 'code', 0, 'purchaseSeatList', cjson.encode(purchase_seat_list))
 
 
 

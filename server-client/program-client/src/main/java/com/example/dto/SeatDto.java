@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -43,6 +42,6 @@ public class SeatDto implements Serializable {
     private Integer seatType;
     
     @ApiModelProperty(name ="price", dataType ="BigDecimal", value ="座位价格",required = true)
-    @NotBlank
+    @NotNull
     private BigDecimal price;
 }
