@@ -1,4 +1,4 @@
-package com.example.service;
+package com.example.service.lua;
 
 import com.example.redis.RedisCache;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.util.List;
  **/
 @Slf4j
 @Component
-public class ProgramCacheOperateV2 {
+public class ProgramCacheCreateOrderOperate {
     
     @Autowired
     private RedisCache redisCache;
@@ -30,7 +30,7 @@ public class ProgramCacheOperateV2 {
     public void init(){
         try {
             redisScript = new DefaultRedisScript<>();
-            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/ProgramDataV2.lua")));
+            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/programDataCreateOrder.lua")));
             redisScript.setResultType(String.class);
         } catch (Exception e) {
             log.error("redisScript init lua error",e);
