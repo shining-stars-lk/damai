@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
 
     <name>server</name>
-    <description>测试</description>
+    <description>服务模块</description>
 
     <modules>
         <module>order-service</module>
@@ -26,5 +26,6 @@
         <module>customize-service</module>
         <module>program-service</module>
         <module>pay-service</module>
+        <module>single-service</module>
     </modules>
 </project>

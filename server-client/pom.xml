@@ -18,9 +18,6 @@
 
     <modules>
         <module>order-client</module>
-        <module>product-client</module>
-        <module>department-client</module>
-        <module>employee-client</module>
         <module>base-data-client</module>
         <module>user-client</module>
         <module>job-client</module>
