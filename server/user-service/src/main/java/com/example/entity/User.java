@@ -34,6 +34,11 @@ public class User extends BaseData implements Serializable {
      * 用户真实名字
      */
     private String relName;
+    
+    /**
+     * 手机号
+     * */
+    private String mobile;
 
     /**
      * 1:男 2:女
@@ -48,12 +53,12 @@ public class User extends BaseData implements Serializable {
     /**
      * 是否邮箱认证 1:已验证 0:未验证
      */
-    private Integer mailStatus;
+    private Integer emailStatus;
 
     /**
      * 邮箱地址
      */
-    private String mail;
+    private String email;
 
     /**
      * 是否实名认证 1:已验证 0:未验证

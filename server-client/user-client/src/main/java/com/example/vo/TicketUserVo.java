@@ -1,5 +1,7 @@
 package com.example.vo;
 
+import cn.hutool.core.util.DesensitizedUtil;
+import com.example.core.StringUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -34,4 +36,12 @@ public class TicketUserVo implements Serializable {
     
     @ApiModelProperty(name ="idNumber", dataType ="String", value ="证件号码")
     private String idNumber;
+    
+    public String getIdNumber() {
+        if (StringUtil.isNotEmpty(idNumber)) {
+            return DesensitizedUtil.idCardNum(idNumber, 4, 4);
+        }else {
+            return idNumber;
+        }
+    }
 }

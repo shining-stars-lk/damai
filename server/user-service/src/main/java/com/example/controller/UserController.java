@@ -1,16 +1,18 @@
 package com.example.controller;
 
-import com.anji.captcha.model.common.ResponseModel;
-import com.anji.captcha.model.vo.CaptchaVO;
 import com.example.common.ApiResponse;
+import com.example.dto.UserAuthenticationDto;
 import com.example.dto.UserExistDto;
 import com.example.dto.UserGetAndTicketUserListDto;
 import com.example.dto.UserIdDto;
+import com.example.dto.UserLoginDto;
 import com.example.dto.UserMobileDto;
 import com.example.dto.UserRegisterDto;
 import com.example.dto.UserUpdateDto;
+import com.example.dto.UserUpdateEmailDto;
+import com.example.dto.UserUpdateMobileDto;
+import com.example.dto.UserUpdatePasswordDto;
 import com.example.service.UserService;
-import com.example.vo.CheckVerifyVo;
 import com.example.vo.UserGetAndTicketUserListVo;
 import com.example.vo.UserVo;
 import io.swagger.annotations.Api;
@@ -49,24 +51,6 @@ public class UserController {
         return ApiResponse.ok(userService.getById(userIdDto));
     }
     
-    @ApiOperation(value = "检查是否需要验证码")
-    @PostMapping(value = "/check/need/captcha")
-    public ApiResponse<CheckVerifyVo> checkNeedCaptcha(){
-        return ApiResponse.ok(userService.checkNeedCaptcha());
-    }
-    
-    @ApiOperation(value = "获取验证码")
-    @PostMapping(value = "/get/captcha")
-    public ResponseModel getCaptcha(@RequestBody CaptchaVO captchaVO){
-        return userService.getCaptcha(captchaVO);
-    }
-    
-    @ApiOperation(value = "验证验证码")
-    @PostMapping(value = "/verify/captcha")
-    public ResponseModel verifyCaptcha(@RequestBody CaptchaVO captchaVO){
-        return userService.verifyCaptcha(captchaVO);
-    }
-    
     @ApiOperation(value = "注册")
     @PostMapping(value = "/register")
     public ApiResponse<Void> register(@Valid @RequestBody UserRegisterDto userRegisterDto){
@@ -83,14 +67,14 @@ public class UserController {
     
     @ApiOperation(value = "登录")
     @PostMapping(value = "/login")
-    public ApiResponse<String> login(@Valid @RequestBody UserMobileDto userMobileDto) {
-        return ApiResponse.ok(userService.login(userMobileDto));
+    public ApiResponse<String> login(@Valid @RequestBody UserLoginDto userLoginDto) {
+        return ApiResponse.ok(userService.login(userLoginDto));
     }
     
     @ApiOperation(value = "退出登录")
-    @PostMapping(value = "/logOut")
-    public ApiResponse<Void> logOut(@Valid @RequestBody UserMobileDto userMobileDto) {
-        userService.logOut(userMobileDto);
+    @PostMapping(value = "/logout")
+    public ApiResponse<Void> logout(@Valid @RequestBody UserIdDto userIdDto) {
+        userService.logout(userIdDto);
         return ApiResponse.ok();
     }
     
@@ -101,8 +85,37 @@ public class UserController {
         return ApiResponse.ok();
     }
     
-    @ApiOperation(value = "查询用户和购票人集合")
-    @PostMapping(value = "/getUserAndTicketUserList")
+    @ApiOperation(value = "修改密码")
+    @PostMapping(value = "/update/password")
+    public ApiResponse<Void> updatePassword(@Valid @RequestBody UserUpdatePasswordDto userUpdatePasswordDto) {
+        userService.updatePassword(userUpdatePasswordDto);
+        return ApiResponse.ok();
+    }
+    
+    @ApiOperation(value = "修改邮箱")
+    @PostMapping(value = "/update/email")
+    public ApiResponse<Void> updateEmail(@Valid @RequestBody UserUpdateEmailDto userUpdateEmailDto) {
+        userService.updateEmail(userUpdateEmailDto);
+        return ApiResponse.ok();
+    }
+    
+    @ApiOperation(value = "修改手机号")
+    @PostMapping(value = "/update/mobile")
+    public ApiResponse<Void> updateMobile(@Valid @RequestBody UserUpdateMobileDto userUpdateMobileDto) {
+        userService.updateMobile(userUpdateMobileDto);
+        return ApiResponse.ok();
+    }
+    
+    @ApiOperation(value = "实名认证")
+    @PostMapping(value = "/authentication")
+    public ApiResponse<Void> authentication(@Valid @RequestBody UserAuthenticationDto userAuthenticationDto) {
+        userService.authentication(userAuthenticationDto);
+        return ApiResponse.ok();
+    }
+    
+    
+    @ApiOperation(value = "查询用户和购票人集合(只提供给服务内部调用，不提供给前端)")
+    @PostMapping(value = "/get/user/ticket/list")
     public ApiResponse<UserGetAndTicketUserListVo> getUserAndTicketUserList(@Valid @RequestBody UserGetAndTicketUserListDto userGetAndTicketUserListDto) {
         return ApiResponse.ok(userService.getUserAndTicketUserList(userGetAndTicketUserListDto));
     }

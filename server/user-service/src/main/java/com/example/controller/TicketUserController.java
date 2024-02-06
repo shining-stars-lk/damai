@@ -3,7 +3,7 @@ package com.example.controller;
 import com.example.common.ApiResponse;
 import com.example.dto.TicketUserDto;
 import com.example.dto.TicketUserIdDto;
-import com.example.dto.UserIdDto;
+import com.example.dto.TicketUserListDto;
 import com.example.service.TicketUserService;
 import com.example.vo.TicketUserVo;
 import io.swagger.annotations.Api;
@@ -33,10 +33,10 @@ public class TicketUserController {
     @Autowired
     private TicketUserService ticketUserService;
     
-    @ApiOperation(value = "查询购票人")
+    @ApiOperation(value = "查询购票人列表")
     @PostMapping(value = "/select")
-    public ApiResponse<List<TicketUserVo>> select(@Valid @RequestBody UserIdDto userIdDto){
-        return ApiResponse.ok(ticketUserService.select(userIdDto));
+    public ApiResponse<List<TicketUserVo>> select(@Valid @RequestBody TicketUserListDto ticketUserListDto){
+        return ApiResponse.ok(ticketUserService.select(ticketUserListDto));
     }
     
     @ApiOperation(value = "添加购票人")
