@@ -24,6 +24,7 @@ import com.example.entity.ProgramV2;
 import com.example.entity.Seat;
 import com.example.entity.TicketCategoryAggregate;
 import com.example.enums.BaseCode;
+import com.example.enums.BusinessStatus;
 import com.example.enums.SellStatus;
 import com.example.exception.CookFrameException;
 import com.example.mapper.ProgramCategoryMapper;
@@ -111,6 +112,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         
         //根据区域id和父节目类型id查询节目列表
         LambdaQueryWrapper<Program> programLambdaQueryWrapper = Wrappers.lambdaQuery(Program.class)
+                .eq(Program::getProgramStatus, BusinessStatus.YES.getCode())
                 .eq(Program::getAreaId,programPageListDto.getAreaId())
                 .in(Program::getParentProgramCategoryId, programPageListDto.getParentProgramCategoryIds());
         List<Program> programList = programMapper.selectList(programLambdaQueryWrapper);

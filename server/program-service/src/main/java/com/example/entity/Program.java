@@ -169,4 +169,9 @@ public class Program extends BaseData implements Serializable {
      * 电子发票 1:是 0:不是
      */
     private Integer electronicInvoice;
+    
+    /**
+     * 节目状态 1:上架 0:下架
+     */
+    private Integer programStatus;
 }
