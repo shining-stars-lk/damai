@@ -1,5 +1,7 @@
 package com.example.vo;
 
+import cn.hutool.core.util.DesensitizedUtil;
+import com.example.core.StringUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -30,11 +32,11 @@ public class UserVo {
     @ApiModelProperty(name ="name", dataType ="String", value ="用户手机号")
     private String mobile;
     
-    @ApiModelProperty(name ="mailStatus", dataType ="Integer", value ="是否邮箱认证 1:已验证 0:未验证")
-    private Integer mailStatus;
+    @ApiModelProperty(name ="emailStatus", dataType ="Integer", value ="是否邮箱认证 1:已验证 0:未验证")
+    private Integer emailStatus;
     
-    @ApiModelProperty(name ="mail", dataType ="String", value ="邮箱地址")
-    private String mail;
+    @ApiModelProperty(name ="email", dataType ="String", value ="邮箱地址")
+    private String email;
     
     @ApiModelProperty(name ="relAuthenticationStatus", dataType ="Integer", value ="是否实名认证 1:已验证 0:未验证")
     private Integer relAuthenticationStatus;
@@ -44,4 +46,20 @@ public class UserVo {
     
     @ApiModelProperty(name ="address", dataType ="String", value ="收货地址")
     private String address;
+    
+    public String getIdNumber() {
+        if (StringUtil.isNotEmpty(idNumber)) {
+            return DesensitizedUtil.idCardNum(idNumber, 4, 4);
+        }else {
+            return idNumber;
+        }
+    }
+    
+    public String getMobile() {
+        if (StringUtil.isNotEmpty(mobile)) {
+            return DesensitizedUtil.mobilePhone(mobile);
+        }else {
+            return mobile;    
+        }
+    }
 }

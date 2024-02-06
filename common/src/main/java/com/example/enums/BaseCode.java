@@ -10,24 +10,7 @@ public enum BaseCode {
     
     SUCCESS(0, "OK"),
     SYSTEM_ERROR(-1,"系统异常"),
-    USER_MOBILE_EMPTY(50000,"用户手机号不存在"),
-    USER_EXIST(60000,"用户已存在"),
     
-    USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
-    
-    USER_LOG_IN(60002,"用户已登录"),
-    
-    USER_ID_EMPTY(60003,"用户id为空"),
-    
-    USER_EMPTY(60004,"用户不存在"),
-    
-    TICKET_USER_EXIST(60005,"此购票人已存在"),
-    
-    TICKET_USER_EMPTY(60006,"此购票人不存在"),
-    
-    NOT_FOUND(40004,"not found api %s %s"),
-    
-    GENERATE_RSA_SIGN_ERROR(99900,"生成res签名验证失败"),
     RSA_SIGN_ERROR(10000,"res签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"res解密失败"),
@@ -58,7 +41,14 @@ public enum BaseCode {
     
     API_RULE_TIME_WINDOW_INTERSECT(10057,"已有的时间范围已经包含"),
     
+    USER_AUTHENTICATION(10058,"用户已认证"),
+    
     SUBMIT_FREQUENT(20000,"执行频繁，请稍后再试"),
+    
+    USER_MOBILE_AND_EMAIL_NOT_EXIST(20001,"用户手机和邮箱需要选择一个"),
+    
+    USER_MOBILE_EMPTY(20002,"用户手机号不存在"),
+    USER_EXIST(20003,"用户已存在"),
     
     DEPARTMENT_STRATEGY(30002,"departmentStrategy策略实现未找到"),
     
@@ -138,31 +128,49 @@ public enum BaseCode {
     
     DELAY_QUEUE_MESSAGE_NOT_EXIST(50002,"延迟队列消息不存在"),
     
-    PAY_ERROR(60000,"支付异常"),
+    USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
     
-    PAY_STRATEGY_NOT_EXIST(60001,"此支付策略不存在"),
+    USER_LOG_IN(60002,"用户已登录"),
     
-    PAY_BILL_IS_NOT_NO_PAY(60002,"此账单不是未支付状态"),
+    USER_ID_EMPTY(60003,"用户id为空"),
     
-    ALIPAY_TRADE_STATUS_NOT_EXIST(60003,"支付宝支付状态未知"),
+    USER_EMPTY(60004,"用户不存在"),
     
-    PAY_PRICE_NOT_EQUAL_ORDER_PRICE(60004,"支付金额和订单金额不一致"),
+    TICKET_USER_EXIST(60005,"此购票人已存在"),
     
-    OPERATE_ORDER_STATUS_NOT_PERMIT(60005,"操作订单状态不允许"),
+    TICKET_USER_EMPTY(60006,"此购票人不存在"),
     
-    PAY_CHANNEL_NOT_EXIST(60006,"支付方式不存在"),
+    NOT_FOUND(60007,"not found api %s %s"),
     
-    PAY_BILL_NOT_EXIST(60007,"账单不存在"),
+    GENERATE_RSA_SIGN_ERROR(60008,"生成res签名验证失败"),
     
-    PAY_TRADE_CHECK_ERROR(60008,"支付状态检查错误"),
+    PAY_ERROR(60009,"支付异常"),
     
-    UPDATE_TICKET_CATEGORY_COUNT_NOT_CORRECT(60009,"更新票档数量不正确"),
+    PAY_STRATEGY_NOT_EXIST(60010,"此支付策略不存在"),
     
-    GET_USER_AND_TICKET_USER_ERROR(60010,"获取用户和购票人信息错误"),
+    PAY_BILL_IS_NOT_NO_PAY(60011,"此账单不是未支付状态"),
+    
+    ALIPAY_TRADE_STATUS_NOT_EXIST(60012,"支付宝支付状态未知"),
+    
+    PAY_PRICE_NOT_EQUAL_ORDER_PRICE(60013,"支付金额和订单金额不一致"),
+    
+    OPERATE_ORDER_STATUS_NOT_PERMIT(60014,"操作订单状态不允许"),
+    
+    PAY_CHANNEL_NOT_EXIST(60015,"支付方式不存在"),
+    
+    PAY_BILL_NOT_EXIST(60016,"账单不存在"),
+    
+    PAY_TRADE_CHECK_ERROR(60017,"支付状态检查错误"),
+    
+    UPDATE_TICKET_CATEGORY_COUNT_NOT_CORRECT(60018,"更新票档数量不正确"),
+    
+    GET_USER_AND_TICKET_USER_ERROR(60019,"获取用户和购票人信息错误"),
     
     ORDER_NUMBER_NOT_EXIST(70000,"order_number的值不存在"),
     
     USER_ID_NOT_EXIST(70001,"user_id的值不存在"),
+    
+    USER_EMAIL_NOT_EXIST(70002,"用户邮箱不存在"),
     ;
     
     private final Integer code;
