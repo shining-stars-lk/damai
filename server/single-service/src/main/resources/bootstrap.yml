@@ -1,0 +1,20 @@
+#服务端口
+server:
+  port: 6070
+# 应用名称
+spring:
+  application:
+    name: single-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
+      config:
+        server-addr: www.cookframe.com:8848
+        file-extension: yaml
+        shared-configs:
+          - data-id: common.yaml
+            refresh: true
+    

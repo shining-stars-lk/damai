@@ -51,11 +51,6 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>product-client</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
             <artifactId>program-client</artifactId>
             <version>${revision}</version>
         </dependency>
