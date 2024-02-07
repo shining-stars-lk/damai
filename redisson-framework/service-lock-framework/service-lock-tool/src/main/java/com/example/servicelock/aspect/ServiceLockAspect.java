@@ -1,11 +1,13 @@
 package com.example.servicelock.aspect;
 
 import com.example.core.StringUtil;
-import com.example.servicelock.ServiceLockInfo;
+import com.example.lockinfo.LockInfoHandle;
+import com.example.lockinfo.LockInfoType;
+import com.example.lockinfo.factory.LockInfoHandleFactory;
+import com.example.servicelock.LockType;
 import com.example.servicelock.ServiceLocker;
 import com.example.servicelock.annotion.ServiceLock;
-import com.example.redisson.LockType;
-import com.example.redisson.factory.ServiceLockFactory;
+import com.example.servicelock.factory.ServiceLockFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -31,14 +33,15 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor
 public class ServiceLockAspect {
     
-    private final ServiceLockFactory serviceLockFactory;
+    private final LockInfoHandleFactory lockInfoHandleFactory;
     
-    private final ServiceLockInfo serviceLockInfo;
+    private final ServiceLockFactory serviceLockFactory;
     
 
     @Around("@annotation(servicelock)")
     public Object around(ProceedingJoinPoint joinPoint, ServiceLock servicelock) throws Throwable {
-        String lockName = serviceLockInfo.getLockName(joinPoint, servicelock.name(),servicelock.keys());
+        LockInfoHandle lockInfoHandle = lockInfoHandleFactory.getLockInfoHandle(LockInfoType.SERVICE_LOCK);
+        String lockName = lockInfoHandle.getLockName(joinPoint, servicelock.name(),servicelock.keys());
         LockType lockType = servicelock.lockType();
         long waitTime = servicelock.waitTime();
         TimeUnit timeUnit = servicelock.timeUnit();

@@ -36,7 +36,7 @@ import com.example.mapper.UserMapper;
 import com.example.mapper.UserMobileMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
-import com.example.redisson.LockType;
+import com.example.servicelock.LockType;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.RBloomFilterUtil;
 import com.example.vo.TicketUserVo;

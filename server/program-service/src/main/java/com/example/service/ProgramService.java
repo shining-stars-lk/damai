@@ -34,7 +34,7 @@ import com.example.mapper.SeatMapper;
 import com.example.mapper.TicketCategoryMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
-import com.example.redisson.LockType;
+import com.example.servicelock.LockType;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.PageUtil;
 import com.example.vo.AreaVo;
