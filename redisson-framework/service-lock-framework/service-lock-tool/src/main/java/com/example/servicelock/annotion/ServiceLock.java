@@ -1,6 +1,6 @@
 package com.example.servicelock.annotion;
 
-import com.example.redisson.LockType;
+import com.example.servicelock.LockType;
 import com.example.servicelock.info.LockTimeOutStrategy;
 
 import java.lang.annotation.ElementType;

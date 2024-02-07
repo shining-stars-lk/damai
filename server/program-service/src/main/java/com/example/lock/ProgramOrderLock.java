@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.example.dto.ProgramOrderCreateDto;
 import com.example.dto.SeatDto;
-import com.example.redisson.LockType;
+import com.example.servicelock.LockType;
 import com.example.service.ProgramOrderService;
 import com.example.service.locallock.LocalLockCache;
 import com.example.servicelock.annotion.ServiceLock;

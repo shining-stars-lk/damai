@@ -15,7 +15,7 @@ import com.example.entity.ProgramCategory;
 import com.example.mapper.ProgramCategoryMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
-import com.example.redisson.LockType;
+import com.example.servicelock.LockType;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.vo.ProgramCategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,19 +1,12 @@
 package com.example.redisson.config;
 
-import com.example.multiplesubmitlimit.aspect.MultipleSubmitLimitAspect;
-import com.example.multiplesubmitlimit.info.MultipleSubmitLimitInfo;
-import com.example.multiplesubmitlimit.info.strategy.generateKey.GenerateKeyHandler;
-import com.example.multiplesubmitlimit.info.strategy.generateKey.impl.ParameterGenerateKeyStrategy;
-import com.example.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitHandler;
-import com.example.multiplesubmitlimit.info.strategy.repeatrejected.MultipleSubmitLimitStrategyFactory;
-import com.example.multiplesubmitlimit.info.strategy.repeatrejected.impl.RejectStrategy;
-import com.example.multiplesubmitlimit.info.strategy.repeatrejected.impl.SameResultStrategy;
-import com.example.operate.Operate;
-import com.example.operate.impl.RedissonOperate;
+import com.example.handle.RedissonDataHandle;
+import com.example.locallock.LocalLockCache;
+import com.example.lockinfo.factory.LockInfoHandleFactory;
 import com.example.redisson.RedissonProperties;
-import com.example.redisson.factory.ServiceLockFactory;
-import com.example.servicelock.ServiceLockInfo;
+import com.example.repeatexecutelimit.aspect.RepeatExecuteLimitAspect;
 import com.example.servicelock.aspect.ServiceLockAspect;
+import com.example.servicelock.factory.ServiceLockFactory;
 import com.example.util.RBloomFilterUtil;
 import com.example.util.ServiceLockTool;
 import org.redisson.api.RedissonClient;
@@ -30,59 +23,39 @@ import org.springframework.context.annotation.Bean;
 public class DistributedAutoConfiguration {
     
     @Bean
+    public RedissonDataHandle redissonDataHandle(RedissonClient redissonClient){
+        return new RedissonDataHandle(redissonClient);
+    }
+    
+    @Bean
+    public LocalLockCache localLockCache(){
+        return new LocalLockCache();
+    }
+    
+    @Bean
+    public LockInfoHandleFactory lockInfoHandleFactory(){
+        return new LockInfoHandleFactory();
+    }
+    
+    @Bean
     public ServiceLockFactory serviceLockFactory(RedissonClient redissonClient){
         return new ServiceLockFactory(redissonClient);
     }
     
     @Bean
-    public ServiceLockInfo serviceLockInfo(){
-        return new ServiceLockInfo();
+    public ServiceLockAspect serviceLockAspect(LockInfoHandleFactory lockInfoHandleFactory,ServiceLockFactory serviceLockFactory){
+        return new ServiceLockAspect(lockInfoHandleFactory,serviceLockFactory);
     }
     
     @Bean
-    public ServiceLockAspect serviceLockAspect(ServiceLockFactory serviceLockFactory, ServiceLockInfo serviceLockInfo){
-        return new ServiceLockAspect(serviceLockFactory,serviceLockInfo);
+    public RepeatExecuteLimitAspect repeatExecuteLimitAspect(LocalLockCache localLockCache,LockInfoHandleFactory lockInfoHandleFactory,
+                                                             ServiceLockFactory serviceLockFactory,RedissonDataHandle redissonDataHandle){
+        return new RepeatExecuteLimitAspect(localLockCache, lockInfoHandleFactory,serviceLockFactory,redissonDataHandle);
     }
     
     @Bean
-    public MultipleSubmitLimitInfo multipleSubmitLimitInfo(){
-        return new MultipleSubmitLimitInfo();
-    }
-    
-    @Bean
-    public MultipleSubmitLimitStrategyFactory multipleSubmitLimitStrategyFactory() {
-        return new MultipleSubmitLimitStrategyFactory();
-    }
-    
-    @Bean
-    public MultipleSubmitLimitAspect multipleSubmitLimitAspect(MultipleSubmitLimitInfo multipleSubmitLimitInfo, ServiceLockFactory serviceLockFactory,
-                                                               MultipleSubmitLimitStrategyFactory multipleSubmitLimitStrategyFactory){
-        return new MultipleSubmitLimitAspect(multipleSubmitLimitInfo, serviceLockFactory,multipleSubmitLimitStrategyFactory);
-    }
-    
-    @Bean
-    public GenerateKeyHandler parameterGenerateKeyStrategy(MultipleSubmitLimitInfo multipleSubmitLimitInfo){
-        return new ParameterGenerateKeyStrategy(multipleSubmitLimitInfo);
-    }
-    
-    @Bean
-    public MultipleSubmitLimitHandler rejectStrategy(){
-        return new RejectStrategy();
-    }
-    
-    @Bean
-    public MultipleSubmitLimitHandler sameResultStrategy(Operate redissonOperate){
-        return new SameResultStrategy(redissonOperate);
-    }
-    
-    @Bean
-    public ServiceLockTool serviceLockUtil(ServiceLockFactory serviceLockFactory, ServiceLockInfo serviceLockInfo){
-        return new ServiceLockTool(serviceLockFactory,serviceLockInfo);
-    }
-    
-    @Bean
-    public Operate redissonOperate(RedissonClient redissonClient){
-        return new RedissonOperate(redissonClient);
+    public ServiceLockTool serviceLockUtil(LockInfoHandleFactory lockInfoHandleFactory,ServiceLockFactory serviceLockFactory){
+        return new ServiceLockTool(lockInfoHandleFactory,serviceLockFactory);
     }
     
     /**

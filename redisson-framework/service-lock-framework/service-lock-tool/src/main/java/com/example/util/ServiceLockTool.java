@@ -1,10 +1,12 @@
 package com.example.util;
 
-import com.example.redisson.LockType;
-import com.example.servicelock.ServiceLockInfo;
+import com.example.lockinfo.LockInfoHandle;
+import com.example.lockinfo.LockInfoType;
+import com.example.lockinfo.factory.LockInfoHandleFactory;
+import com.example.servicelock.LockType;
 import com.example.servicelock.ServiceLocker;
+import com.example.servicelock.factory.ServiceLockFactory;
 import com.example.servicelock.info.LockTimeOutStrategy;
-import com.example.redisson.factory.ServiceLockFactory;
 import lombok.AllArgsConstructor;
 import org.redisson.api.RLock;
 
@@ -19,9 +21,9 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor
 public class ServiceLockTool {
     
+    private final LockInfoHandleFactory lockInfoHandleFactory;
+    
     private final ServiceLockFactory serviceLockFactory;
-
-    private final ServiceLockInfo serviceLockInfo;
     
     /**
      * 没有返回值的加锁执行
@@ -68,7 +70,8 @@ public class ServiceLockTool {
      *
      * */
     public void execute(LockType lockType,TaskRun taskRun,String name,String [] keys,long waitTime) {
-        String lockName = serviceLockInfo.simpleGetLockName(name,keys);
+        LockInfoHandle lockInfoHandle = lockInfoHandleFactory.getLockInfoHandle(LockInfoType.SERVICE_LOCK);
+        String lockName = lockInfoHandle.simpleGetLockName(name,keys);
         ServiceLocker lock = serviceLockFactory.getLock(lockType);
         boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, waitTime);
         if (result) {
@@ -90,7 +93,8 @@ public class ServiceLockTool {
      * @return 要执行的任务的返回值
      * */
     public <T> T submit(TaskCall<T> taskCall,String name,String [] keys){
-        String lockName = serviceLockInfo.simpleGetLockName(name,keys);
+        LockInfoHandle lockInfoHandle = lockInfoHandleFactory.getLockInfoHandle(LockInfoType.SERVICE_LOCK);
+        String lockName = lockInfoHandle.simpleGetLockName(name,keys);
         ServiceLocker lock = serviceLockFactory.getLock(LockType.Reentrant);
         boolean result = lock.tryLock(lockName, TimeUnit.SECONDS, 30);
         if (result) {
@@ -113,7 +117,8 @@ public class ServiceLockTool {
      *
      * */
     public RLock getLock(LockType lockType, String name, String [] keys) {
-        String lockName = serviceLockInfo.simpleGetLockName(name,keys);
+        LockInfoHandle lockInfoHandle = lockInfoHandleFactory.getLockInfoHandle(LockInfoType.SERVICE_LOCK);
+        String lockName = lockInfoHandle.simpleGetLockName(name,keys);
         ServiceLocker lock = serviceLockFactory.getLock(lockType);
         return lock.getLock(lockName);
     }

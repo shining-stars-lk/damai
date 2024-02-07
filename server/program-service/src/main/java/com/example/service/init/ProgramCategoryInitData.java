@@ -10,7 +10,7 @@ import com.example.init.InitData;
 import com.example.mapper.ProgramCategoryMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
-import com.example.redisson.LockType;
+import com.example.servicelock.LockType;
 import com.example.servicelock.annotion.ServiceLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
