@@ -1,5 +1,6 @@
 package com.example.util;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -9,6 +10,7 @@ import com.example.dto.EsGeoPointDto;
 import com.example.dto.EsGeoPointSortDto;
 import com.example.dto.EsQueryDto;
 import com.github.pagehelper.PageInfo;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
@@ -36,11 +38,13 @@ import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @program: cook-frame
@@ -49,20 +53,14 @@ import java.util.Map;
  * @create: 2023-02-23
  **/
 @Slf4j
+@AllArgsConstructor
 public class BusinessEsUtil {
     
-    private RestClient restClient;
+    private final RestClient restClient;
     
-    private Boolean esSwitch;
+    private final Boolean esSwitch;
     
-    private Boolean esTypeSwitch;
-    
-    
-    public BusinessEsUtil(RestClient businessEsRestClient, Boolean esSwitch, Boolean esTypeSwitch){
-        this.restClient = businessEsRestClient;
-        this.esSwitch = esSwitch;
-        this.esTypeSwitch = esTypeSwitch;
-    }
+    private final Boolean esTypeSwitch;
     
     /**
      * 创建索引
@@ -75,7 +73,7 @@ public class BusinessEsUtil {
         if (!esSwitch) {
             return;
         }
-        if (list == null) {
+        if (CollectionUtil.isEmpty(list)) {
             return;
         }
         IndexRequest indexRequest = new IndexRequest();
@@ -99,7 +97,7 @@ public class BusinessEsUtil {
             }
         }
         if (esTypeSwitch) {
-            builder = builder.endObject();
+            builder.endObject();
         }
         builder = builder.endObject().endObject().startObject("settings").field("number_of_shards", 3)
                 .field("number_of_replicas", 1).endObject().endObject();
@@ -221,11 +219,7 @@ public class BusinessEsUtil {
         request.addParameters(Collections.<String, String>emptyMap());
         Response indexResponse = restClient.performRequest(request);
         String reasonPhrase = indexResponse.getStatusLine().getReasonPhrase();
-        if (reasonPhrase.equalsIgnoreCase("created") || reasonPhrase.equalsIgnoreCase("ok")) {
-            return true;
-        } else {
-            return false;
-        }
+        return reasonPhrase.equalsIgnoreCase("created") || reasonPhrase.equalsIgnoreCase("ok");
     }
     
     /**
@@ -324,23 +318,23 @@ public class BusinessEsUtil {
             return new ArrayList<>();
         }
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        if (sortOrder == null) {
+        if (Objects.isNull(sortOrder)) {
             sortOrder = SortOrder.DESC;
         }
         if (sortParam != null) {
-            //		排序
+            // 排序
             FieldSortBuilder sort = SortBuilders.fieldSort(sortParam);
             sort.order(sortOrder);
             sourceBuilder.sort(sort);
         }
-        if (geoPointDtoSortParam != null) {
+        if (Objects.nonNull(geoPointDtoSortParam)) {
             GeoDistanceSortBuilder sort = SortBuilders.geoDistanceSort("geoPoint", geoPointDtoSortParam.getLatitude().doubleValue(), geoPointDtoSortParam.getLongitude().doubleValue());
             sort.unit(DistanceUnit.METERS);
             sort.order(sortOrder);
             sourceBuilder.sort(sort);
         }
         // 经纬度匹配
-        if (esGeoPointDto != null) {
+        if (Objects.nonNull(esGeoPointDto)) {
             QueryBuilder geoQuery = new GeoDistanceQueryBuilder(esGeoPointDto.getParamName()).distance(Long.MAX_VALUE, DistanceUnit.KILOMETERS)
                     .point(esGeoPointDto.getLatitude().doubleValue(), esGeoPointDto.getLongitude().doubleValue()).geoDistance(GeoDistance.PLANE);
             sourceBuilder.query(geoQuery);
@@ -354,16 +348,21 @@ public class BusinessEsUtil {
             Date endTime = esQueryDto.getEndTime();
             boolean analyse = esQueryDto.isAnalyse();
             
-            if (paramValue != null) {
-                if (analyse) {
-                    QueryBuilder builds = QueryBuilders.matchQuery(paramName, paramValue);
+            if (Objects.nonNull(paramValue)) {
+                if (paramValue instanceof Collection) {
+                    QueryBuilder builds = QueryBuilders.termsQuery(paramName, (Collection<?>)paramValue);
                     boolQuery.must(builds);
-                } else {
-                    QueryBuilder builds = QueryBuilders.termQuery(paramName, paramValue);
+                }else {
+                    QueryBuilder builds;
+                    if (analyse) {
+                        builds = QueryBuilders.matchQuery(paramName, paramValue);
+                    } else {
+                        builds = QueryBuilders.termQuery(paramName, paramValue);
+                    }
                     boolQuery.must(builds);
                 }
             }
-            if (startTime != null) {
+            if (Objects.nonNull(startTime)) {
                 QueryBuilder builds = QueryBuilders.rangeQuery(paramName).from(startTime).includeLower(true);
                 boolQuery.must(builds);
             }
@@ -555,7 +554,7 @@ public class BusinessEsUtil {
             return pageInfo;
         }
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        if (sortOrder == null) {
+        if (Objects.isNull(sortOrder)) {
             sortOrder = SortOrder.DESC;
         }
         if (StringUtil.isNotEmpty(sortParam)) {
@@ -565,7 +564,7 @@ public class BusinessEsUtil {
             sourceBuilder.sort(sort);
         }
         // 经纬度匹配
-        if (esGeoPointDto != null) {
+        if (Objects.nonNull(esGeoPointDto)) {
             QueryBuilder geoQuery = new GeoDistanceQueryBuilder(esGeoPointDto.getParamName()).distance(Long.MAX_VALUE, DistanceUnit.KILOMETERS)
                     .point(esGeoPointDto.getLatitude().doubleValue(), esGeoPointDto.getLongitude().doubleValue()).geoDistance(GeoDistance.PLANE);
             sourceBuilder.query(geoQuery);
@@ -579,7 +578,7 @@ public class BusinessEsUtil {
             Date endTime = esQueryDto.getEndTime();
             boolean analyse = esQueryDto.isAnalyse();
             
-            if (paramValue != null) {
+            if (Objects.nonNull(paramValue)) {
                 if (analyse) {
                     QueryBuilder builds = QueryBuilders.matchQuery(paramName, paramValue);
                     boolQuery.must(builds);
@@ -588,11 +587,11 @@ public class BusinessEsUtil {
                     boolQuery.must(builds);
                 }
             }
-            if (startTime != null) {
+            if (Objects.nonNull(startTime)) {
                 QueryBuilder builds = QueryBuilders.rangeQuery(paramName).from(startTime).includeLower(true);
                 boolQuery.must(builds);
             }
-            if (endTime != null) {
+            if (Objects.nonNull(endTime)) {
                 QueryBuilder builds = QueryBuilders.rangeQuery(paramName).to(endTime).includeUpper(true);
                 boolQuery.must(builds);
             }
@@ -619,9 +618,9 @@ public class BusinessEsUtil {
             return null;
         }
         JSONObject parse = (JSONObject) JSONObject.parse(results);
-        if (parse != null) {
+        if (Objects.nonNull(parse)) {
             JSONObject hits = parse.getJSONObject("hits");
-            if (hits != null) {
+            if (Objects.nonNull(hits)) {
                 // 总条数
                 Long value = null;
                 if (esTypeSwitch) {

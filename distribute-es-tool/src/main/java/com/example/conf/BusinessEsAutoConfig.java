@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Objects;
 
 @EnableConfigurationProperties(BusinessEsProperties.class)
-@ConditionalOnProperty(value = "elasticsearch.ip", matchIfMissing = false)
-public class BusinessEsRestClientConf {
-	private static final Logger logger = LoggerFactory.getLogger(BusinessEsRestClientConf.class);
+@ConditionalOnProperty(value = "elasticsearch.ip")
+public class BusinessEsAutoConfig {
+	private static final Logger logger = LoggerFactory.getLogger(BusinessEsAutoConfig.class);
 	private static final int ADDRESS_LENGTH = 2;
 	private static final String HTTP_SCHEME = "http";
 
@@ -77,10 +77,8 @@ public class BusinessEsRestClientConf {
 	}
 
 	/**
-	 * 获取HTTPHOST对象
-	 * 
-	 * @param s
-	 * @return
+	 * 获取HttpHost对象
+	 *
 	 */
 	private HttpHost makeHttpHost(String s) {
 		assert StringUtil.isNotEmpty(s);
