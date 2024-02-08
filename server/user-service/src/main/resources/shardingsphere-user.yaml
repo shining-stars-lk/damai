@@ -117,25 +117,25 @@ rules:
           sharding-count: 2    
       # d_user表分库算法
       databaseUserHashModModel:
-        type: HASH_MOD
+        type: MOD
         props:
           # 分库数量
           sharding-count: 2
       # d_user表分表算法
       tableUserHashModModel:
-        type: HASH_MOD
+        type: MOD
         props:
           # 分表数量
           sharding-count: 2
       # d_ticket_user表分库算法
       databaseTicketUserHashModModel:
-        type: HASH_MOD
+        type: MOD
         props:
           # 分库数量
           sharding-count: 2
       # d_ticket_user表分表算法
       tableTicketUserHashModModel:
-        type: HASH_MOD
+        type: MOD
         props:
           # 分表数量
           sharding-count: 2

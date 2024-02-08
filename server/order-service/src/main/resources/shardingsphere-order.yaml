@@ -51,7 +51,10 @@ rules:
             # 使用order_number,user_id作为分片键
             shardingColumns: order_number,user_id
             # 使用order_number,user_id分表算法
-            shardingAlgorithmName: tableOrderTicketUserComplexGeneArithmetic      
+            shardingAlgorithmName: tableOrderTicketUserComplexGeneArithmetic
+    # 绑定表        
+    bindingTables:
+      - d_order,d_order_ticket_user
     # 具体的算法
     shardingAlgorithms:
       # d_order表分库算法

@@ -1,8 +1,8 @@
 package com.example.controller;
 
-import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.common.ApiResponse;
+import com.example.dto.ProgramAddDto;
 import com.example.dto.ProgramGetDto;
 import com.example.dto.ProgramListDto;
 import com.example.dto.ProgramPageListDto;
@@ -37,29 +37,27 @@ public class ProgramController {
     @Autowired
     private ProgramService programService;
     
-    @Autowired
-    private UidGenerator uidGenerator;
+    @ApiOperation(value = "添加")
+    @PostMapping(value = "/add")
+    public ApiResponse<Long> add(@Valid @RequestBody ProgramAddDto programAddDto) {
+        return ApiResponse.ok(programService.add(programAddDto));
+    }
     
     @ApiOperation(value = "查询主页列表")
-    @PostMapping(value = "/selectHomeList")
+    @PostMapping(value = "/home/list")
     public ApiResponse<Map<String,List<ProgramListVo>>> selectHomeList(@Valid @RequestBody ProgramListDto programPageListDto) {
         return ApiResponse.ok(programService.selectHomeList(programPageListDto));
     }
     
     @ApiOperation(value = "查询分页列表")
-    @PostMapping(value = "/selectPage")
+    @PostMapping(value = "/page")
     public ApiResponse<IPage<ProgramListVo>> selectPage(@Valid @RequestBody ProgramPageListDto programPageListDto) {
         return ApiResponse.ok(programService.selectPage(programPageListDto));
     }
     
     @ApiOperation(value = "查询详情(根据id)")
-    @PostMapping(value = "/get/detail")
+    @PostMapping(value = "/detail")
     public ApiResponse<ProgramVo> getDetail(@Valid @RequestBody ProgramGetDto programGetDto) {
         return ApiResponse.ok(programService.getDetail(programGetDto));
-    }
-    
-    @RequestMapping(value = "/getId")
-    public Long getId(){
-        return uidGenerator.getId();
     }
 }

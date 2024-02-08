@@ -2,13 +2,17 @@ package com.example.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.core.RedisKeyEnum;
+import com.example.dto.SeatAddDto;
 import com.example.entity.Seat;
+import com.example.enums.BaseCode;
 import com.example.enums.SeatType;
 import com.example.enums.SellStatus;
+import com.example.exception.CookFrameException;
 import com.example.mapper.SeatMapper;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
@@ -20,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -37,10 +42,32 @@ import static com.example.service.cache.ExpireTime.EXPIRE_TIME;
 public class SeatService extends ServiceImpl<SeatMapper, Seat> {
     
     @Autowired
+    private UidGenerator uidGenerator;
+    
+    @Autowired
     private RedisCache redisCache;
     
     @Autowired
     private SeatMapper seatMapper;
+    
+    /**
+     * 添加座位
+     * */
+    public Long add(SeatAddDto seatAddDto) {
+        LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = Wrappers.lambdaQuery(Seat.class)
+                .eq(Seat::getProgramId, seatAddDto.getProgramId())
+                .eq(Seat::getRowCode, seatAddDto.getRowCode())
+                .eq(Seat::getColCode, seatAddDto.getColCode());
+        Seat seat = seatMapper.selectOne(seatLambdaQueryWrapper);
+        if (Objects.nonNull(seat)) {
+            throw new CookFrameException(BaseCode.SEAT_IS_EXIST);
+        }
+        seat = new Seat();
+        BeanUtil.copyProperties(seatAddDto,seat);
+        seat.setId(uidGenerator.getUID());
+        seatMapper.insert(seat);
+        return seat.getId();
+    }
     
     /**
      * 查询座位

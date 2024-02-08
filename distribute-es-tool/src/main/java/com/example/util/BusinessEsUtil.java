@@ -579,11 +579,16 @@ public class BusinessEsUtil {
             boolean analyse = esQueryDto.isAnalyse();
             
             if (Objects.nonNull(paramValue)) {
-                if (analyse) {
-                    QueryBuilder builds = QueryBuilders.matchQuery(paramName, paramValue);
+                if (paramValue instanceof Collection) {
+                    QueryBuilder builds = QueryBuilders.termsQuery(paramName, (Collection<?>)paramValue);
                     boolQuery.must(builds);
-                } else {
-                    QueryBuilder builds = QueryBuilders.termQuery(paramName, paramValue);
+                }else {
+                    QueryBuilder builds;
+                    if (analyse) {
+                        builds = QueryBuilders.matchQuery(paramName, paramValue);
+                    } else {
+                        builds = QueryBuilders.termQuery(paramName, paramValue);
+                    }
                     boolQuery.must(builds);
                 }
             }

@@ -3,6 +3,7 @@ package com.example.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
+import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -13,6 +14,7 @@ import com.example.common.ApiResponse;
 import com.example.core.RedisKeyEnum;
 import com.example.dto.AreaGetDto;
 import com.example.dto.AreaSelectDto;
+import com.example.dto.ProgramAddDto;
 import com.example.dto.ProgramGetDto;
 import com.example.dto.ProgramListDto;
 import com.example.dto.ProgramOperateDataDto;
@@ -75,6 +77,9 @@ import static com.example.service.cache.ExpireTime.EXPIRE_TIME;
 public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @Autowired
+    private UidGenerator uidGenerator;
+    
+    @Autowired
     private ProgramMapper programMapper;
     
     @Autowired
@@ -107,6 +112,14 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     @Autowired
     private TicketCategoryService ticketCategoryService;
     
+    public Long add(ProgramAddDto programAddDto){
+        Program program = new Program();
+        BeanUtil.copyProperties(programAddDto,program);
+        //program.setId(uidGenerator.getUID());
+        program.setId(2L);
+        programMapper.insert(program);
+        return program.getId();
+    }
     public Map<String,List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
         Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>();
         

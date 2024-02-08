@@ -1,8 +1,8 @@
 package com.example.controller;
 
 import com.example.common.ApiResponse;
-import com.example.dto.TicketCategoryAddDto;
-import com.example.service.TicketCategoryService;
+import com.example.dto.ProgramShowTimeAddDto;
+import com.example.service.ProgramShowTimeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,24 +15,23 @@ import javax.validation.Valid;
 
 /**
  * <p>
- * 节目票档表 前端控制器
+ * 节目演出表 前端控制器
  * </p>
  *
  * @author k
  * @since 2024-01-08
  */
 @RestController
-@RequestMapping("/ticket/category")
-@Api(tags = "ticket/category", description = "票档")
-public class TicketCategoryController {
+@RequestMapping("/program/show/time")
+@Api(tags = "program/show/time", description = "节目演出时间")
+public class ProgramShowTimeController {
     
     @Autowired
-    private TicketCategoryService ticketCategoryService;
-    
+    private ProgramShowTimeService programShowTimeService;
     
     @ApiOperation(value = "添加")
     @PostMapping(value = "/add")
-    public ApiResponse<Long> add(@Valid @RequestBody TicketCategoryAddDto ticketCategoryAddDto) {
-        return ApiResponse.ok(ticketCategoryService.add(ticketCategoryAddDto));
+    public ApiResponse<Long> add(@Valid @RequestBody ProgramShowTimeAddDto programShowTimeAddDto) {
+        return ApiResponse.ok(programShowTimeService.add(programShowTimeAddDto));
     }
 }

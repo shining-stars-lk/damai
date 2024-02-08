@@ -1,10 +1,13 @@
 package com.example.service;
 
 
+import cn.hutool.core.bean.BeanUtil;
+import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.core.RedisKeyEnum;
+import com.example.dto.ProgramShowTimeAddDto;
 import com.example.entity.ProgramShowTime;
 import com.example.enums.BaseCode;
 import com.example.exception.CookFrameException;
@@ -35,10 +38,26 @@ import static com.example.service.cache.ExpireTime.EXPIRE_TIME;
 public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, ProgramShowTime> {
     
     @Autowired
+    private UidGenerator uidGenerator;
+    
+    @Autowired
     private RedisCache redisCache;
     
     @Autowired
     private ProgramShowTimeMapper programShowTimeMapper;
+    
+    
+    /**
+     * 添加节目
+     * */
+    @Transactional(rollbackFor = Exception.class)
+    public Long add(ProgramShowTimeAddDto programShowTimeAddDto) {
+        ProgramShowTime programShowTime = new ProgramShowTime();
+        BeanUtil.copyProperties(programShowTimeAddDto,programShowTime);
+        programShowTime.setId(uidGenerator.getUID());
+        programShowTimeMapper.insert(programShowTime);
+        return programShowTime.getId();
+    }
     
     /**
      * 查询节目演出时间
