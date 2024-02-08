@@ -128,6 +128,8 @@ public enum BaseCode {
     
     DELAY_QUEUE_MESSAGE_NOT_EXIST(50002,"延迟队列消息不存在"),
     
+    SEAT_IS_EXIST(50003,"该节目下座位以存在"),
+    
     USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
     
     USER_LOG_IN(60002,"用户已登录"),
