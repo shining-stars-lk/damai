@@ -26,8 +26,8 @@ public class ProgramPageListDto extends BasePageDto{
     @ApiModelProperty(name ="parentProgramCategoryIds", dataType ="Long[]", value ="父节目类型id集合")
     private List<Long> parentProgramCategoryIds;
     
-    @ApiModelProperty(name ="showTime", dataType ="Date", value ="今天/明天/按日历")
-    private Date showTime;
+    @ApiModelProperty(name ="showDayTime", dataType ="Date", value ="今天/明天/按日历")
+    private Date showDayTime;
     
     @ApiModelProperty(name ="timeType", dataType ="int", value ="1:本周内 2:一个月内")
     private int timeType;

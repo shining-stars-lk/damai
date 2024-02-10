@@ -1,11 +1,12 @@
 package com.example.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.common.ApiResponse;
 import com.example.dto.ProgramAddDto;
 import com.example.dto.ProgramGetDto;
 import com.example.dto.ProgramListDto;
 import com.example.dto.ProgramPageListDto;
+import com.example.dto.ProgramSearchDto;
+import com.example.page.PageVo;
 import com.example.service.ProgramService;
 import com.example.vo.ProgramListVo;
 import com.example.vo.ProgramVo;
@@ -43,6 +44,12 @@ public class ProgramController {
         return ApiResponse.ok(programService.add(programAddDto));
     }
     
+    @ApiOperation(value = "搜索")
+    @PostMapping(value = "/search")
+    public ApiResponse<PageVo<ProgramListVo>> search(@Valid @RequestBody ProgramSearchDto programSearchDto) {
+        return ApiResponse.ok(programService.search(programSearchDto));
+    }
+    
     @ApiOperation(value = "查询主页列表")
     @PostMapping(value = "/home/list")
     public ApiResponse<Map<String,List<ProgramListVo>>> selectHomeList(@Valid @RequestBody ProgramListDto programPageListDto) {
@@ -51,7 +58,7 @@ public class ProgramController {
     
     @ApiOperation(value = "查询分页列表")
     @PostMapping(value = "/page")
-    public ApiResponse<IPage<ProgramListVo>> selectPage(@Valid @RequestBody ProgramPageListDto programPageListDto) {
+    public ApiResponse<PageVo<ProgramListVo>> selectPage(@Valid @RequestBody ProgramPageListDto programPageListDto) {
         return ApiResponse.ok(programService.selectPage(programPageListDto));
     }
     
@@ -59,5 +66,15 @@ public class ProgramController {
     @PostMapping(value = "/detail")
     public ApiResponse<ProgramVo> getDetail(@Valid @RequestBody ProgramGetDto programGetDto) {
         return ApiResponse.ok(programService.getDetail(programGetDto));
+    }
+    
+    @PostMapping(value = "/es/index/add")
+    public ApiResponse<Void> indexAdd(@Valid @RequestBody ProgramGetDto programGetDto) {
+        programService.indexAdd(programGetDto);
+        return ApiResponse.ok();
+    }
+    @PostMapping(value = "/es/data/add")
+    public ApiResponse<ProgramVo> dataAdd(@Valid @RequestBody ProgramGetDto programGetDto) {
+        return ApiResponse.ok(programService.dataAdd(programGetDto));
     }
 }

@@ -61,12 +61,12 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>redis-tool</artifactId>
+            <artifactId>redis-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>id-generator-tool</artifactId>
+            <artifactId>id-generator-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>

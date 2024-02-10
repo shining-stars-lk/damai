@@ -19,3 +19,12 @@ spring:
         shared-configs:
           - data-id: common.yaml
             refresh: true
+management:
+  health:
+    elasticsearch:
+      enabled: false
+elasticsearch:
+  ip: 62.234.31.217:9200
+  userName: elastic
+  passWord: 123qwe
+select-page-handle-type: es 
