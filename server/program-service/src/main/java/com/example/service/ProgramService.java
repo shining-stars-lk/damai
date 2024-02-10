@@ -3,7 +3,6 @@ package com.example.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
-import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -14,11 +13,13 @@ import com.example.common.ApiResponse;
 import com.example.core.RedisKeyEnum;
 import com.example.dto.AreaGetDto;
 import com.example.dto.AreaSelectDto;
+import com.example.dto.EsDataQueryDto;
 import com.example.dto.ProgramAddDto;
 import com.example.dto.ProgramGetDto;
 import com.example.dto.ProgramListDto;
 import com.example.dto.ProgramOperateDataDto;
 import com.example.dto.ProgramPageListDto;
+import com.example.dto.ProgramSearchDto;
 import com.example.entity.Program;
 import com.example.entity.ProgramCategory;
 import com.example.entity.ProgramShowTime;
@@ -34,21 +35,28 @@ import com.example.mapper.ProgramMapper;
 import com.example.mapper.ProgramShowTimeMapper;
 import com.example.mapper.SeatMapper;
 import com.example.mapper.TicketCategoryMapper;
+import com.example.page.PageUtil;
+import com.example.page.PageVo;
 import com.example.redis.RedisCache;
 import com.example.redis.RedisKeyWrap;
+import com.example.service.init.ProgramDocumentParamName;
+import com.example.service.pagestrategy.SelectPageWrapper;
 import com.example.servicelock.LockType;
 import com.example.servicelock.annotion.ServiceLock;
-import com.example.util.PageUtil;
+import com.example.util.BusinessEsHandle;
 import com.example.vo.AreaVo;
 import com.example.vo.ProgramListVo;
 import com.example.vo.ProgramVo;
 import com.example.vo.SeatVo;
 import com.example.vo.TicketCategoryVo;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -75,9 +83,6 @@ import static com.example.service.cache.ExpireTime.EXPIRE_TIME;
 @Slf4j
 @Service
 public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
-    
-    @Autowired
-    private UidGenerator uidGenerator;
     
     @Autowired
     private ProgramMapper programMapper;
@@ -112,6 +117,12 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     @Autowired
     private TicketCategoryService ticketCategoryService;
     
+    @Autowired
+    private BusinessEsHandle businessEsHandle;
+    
+    @Autowired
+    private SelectPageWrapper selectPageWrapper;
+    
     public Long add(ProgramAddDto programAddDto){
         Program program = new Program();
         BeanUtil.copyProperties(programAddDto,program);
@@ -119,6 +130,25 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         program.setId(2L);
         programMapper.insert(program);
         return program.getId();
+    }
+    
+    public PageVo<ProgramListVo> search(ProgramSearchDto programSearchDto) {
+        PageVo<ProgramListVo> pageVo = new PageVo<>();
+        try {
+            List<EsDataQueryDto> esDataQueryDtoList = new ArrayList<>();
+            EsDataQueryDto titileQueryDto = new EsDataQueryDto();
+            titileQueryDto.setParamName(ProgramDocumentParamName.TITLE);
+            titileQueryDto.setParamValue(programSearchDto.getTitle());
+            titileQueryDto.setAnalyse(true);
+            esDataQueryDtoList.add(titileQueryDto);
+            PageInfo<ProgramListVo> programListVoPageInfo = businessEsHandle.queryPage(ProgramDocumentParamName.INDEX_NAME, 
+                    ProgramDocumentParamName.INDEX_TYPE, esDataQueryDtoList, programSearchDto.getPageNumber(), 
+                    programSearchDto.getPageSize(), ProgramListVo.class);
+            pageVo = PageUtil.convertPage(programListVoPageInfo,programListVo -> programListVo);
+        }catch (Exception e) {
+            log.error("search error",e);
+        }
+        return pageVo;
     }
     public Map<String,List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
         Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>();
@@ -187,7 +217,11 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         }
         return programListVoMap;
     }
-    public IPage<ProgramListVo> selectPage(ProgramPageListDto programPageListDto) {
+    
+    public PageVo<ProgramListVo> selectPage(ProgramPageListDto programPageListDto) {
+        return selectPageWrapper.selectPage(programPageListDto);
+    }
+    public PageVo<ProgramListVo> doSelectPage(ProgramPageListDto programPageListDto) {
         //需要program和program_show_time连表查询
         IPage<ProgramV2> iPage = programMapper.selectPage(PageUtil.getPageParams(programPageListDto), programPageListDto);
         
@@ -201,20 +235,20 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         //根据节目id统计出票档的最低价和最高价的集合map, key：节目id，value：票档
         Map<Long, TicketCategoryAggregate> ticketCategorieMap = selectTicketCategorieMap(programIdList);
         //查询区域
-        Map<Long,String> areaMap = new HashMap<>();
+        Map<Long,String> tempAreaMap = new HashMap<>();
         AreaSelectDto areaSelectDto = new AreaSelectDto();
         areaSelectDto.setIdList(iPage.getRecords().stream().map(Program::getAreaId).distinct().collect(Collectors.toList()));
         ApiResponse<List<AreaVo>> areaResponse = baseDataClient.selectByIdList(areaSelectDto);
         if (Objects.equals(areaResponse.getCode(), ApiResponse.ok().getCode())) {
             if (CollectionUtil.isNotEmpty(areaResponse.getData())) {
-                areaMap = areaResponse.getData().stream().collect(Collectors.toMap(AreaVo::getId,AreaVo::getName,(v1,v2) -> v2));
+                tempAreaMap = areaResponse.getData().stream().collect(Collectors.toMap(AreaVo::getId,AreaVo::getName,(v1,v2) -> v2));
             }
         }else {
             log.error("base-data selectByIdList rpc error areaResponse:{}", JSON.toJSONString(areaResponse));
         }
-        List<ProgramListVo> programListVoList = new ArrayList<>();
         
-        for (final ProgramV2 programV2 : iPage.getRecords()) {
+        Map<Long,String> areaMap = tempAreaMap;
+        return PageUtil.convertPage(iPage,programV2 -> {
             ProgramListVo programListVo = new ProgramListVo();
             BeanUtil.copyProperties(programV2, programListVo);
             //区域名字
@@ -225,9 +259,8 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             programListVo.setMinPrice(Optional.ofNullable(ticketCategorieMap.get(programV2.getId())).map(TicketCategoryAggregate::getMinPrice).orElse(null));
             //最高价
             programListVo.setMaxPrice(Optional.ofNullable(ticketCategorieMap.get(programV2.getId())).map(TicketCategoryAggregate::getMaxPrice).orElse(null));
-            programListVoList.add(programListVo);
-        }
-        return PageUtil.convertPage(iPage,programListVoList);
+            return programListVo;
+        });
     }
     
     public ProgramVo getDetail(ProgramGetDto programGetDto) {
@@ -339,4 +372,58 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         }
     }
     
+    public List<Long> getAllProgramIdList(){
+        LambdaQueryWrapper<Program> programLambdaQueryWrapper =
+                Wrappers.lambdaQuery(Program.class).eq(Program::getProgramStatus, BusinessStatus.YES.getCode())
+                        .select(Program::getId);
+        List<Program> programs = programMapper.selectList(programLambdaQueryWrapper);
+        return programs.stream().map(Program::getId).collect(Collectors.toList());
+    }
+    
+    public ProgramVo getDetailFromDb(Long programId) {
+        ProgramVo programVo = new ProgramVo();
+        //根据id查询到节目
+        Program program = Optional.ofNullable(programMapper.selectById(programId)).orElseThrow(() -> new CookFrameException(BaseCode.PROGRAM_NOT_EXIST));
+        BeanUtil.copyProperties(program,programVo);
+        
+        //查询区域
+        AreaGetDto areaGetDto = new AreaGetDto();
+        areaGetDto.setId(program.getAreaId());
+        ApiResponse<AreaVo> areaResponse = baseDataClient.getById(areaGetDto);
+        if (Objects.equals(areaResponse.getCode(), ApiResponse.ok().getCode())) {
+            if (Objects.nonNull(areaResponse.getData())) {
+                programVo.setAreaName(areaResponse.getData().getName());
+            }
+        }else {
+            log.error("base-data rpc getById error areaResponse:{}", JSON.toJSONString(areaResponse));
+        }
+        
+        //查询节目类型
+        ProgramCategory programCategory = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_CATEGORY_HASH)
+                ,String.valueOf(programVo.getProgramCategoryId()),ProgramCategory.class);
+        if (Objects.nonNull(programCategory)) {
+            programVo.setProgramCategoryName(programCategory.getName());
+        }
+        
+        //查询节目演出时间
+        LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
+                Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
+        ProgramShowTime programShowTime = Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
+                .orElseThrow(() -> new CookFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
+        
+        
+        programVo.setShowTime(programShowTime.getShowTime());
+        programVo.setShowDayTime(programShowTime.getShowDayTime());
+        programVo.setShowWeekTime(programShowTime.getShowWeekTime());
+        
+        return programVo;
+    }
+    
+    public void indexAdd(@Valid @RequestBody ProgramGetDto programGetDto) {
+        
+    }
+    
+    public ProgramVo dataAdd(@Valid @RequestBody ProgramGetDto programGetDto) {
+        return null;
+    }
 }

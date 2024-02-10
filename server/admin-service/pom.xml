@@ -38,7 +38,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>thread-pool-tool</artifactId>
+            <artifactId>thread-pool-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <!-- nacos start -->

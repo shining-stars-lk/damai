@@ -34,7 +34,7 @@ public class ProgramVo implements Serializable {
     @ApiModelProperty(name ="place", dataType ="String", value ="地点")
     private String place;
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="区域id")
+    @ApiModelProperty(name ="itemPicture", dataType ="String", value ="图片介绍")
     private String itemPicture;
     
     @ApiModelProperty(name ="areaId", dataType ="Long", value ="区域id")

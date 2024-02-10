@@ -30,17 +30,16 @@
 
 	<modules>
 		<module>common</module>
-		<module>redis-tool</module>
-		<module>distribute-es-tool</module>
-		<module>id-generator-tool</module>
+		<module>redis-framework</module>
+		<module>elasticsearch-framework</module>
+		<module>id-generator-framework</module>
 		<module>spring-cloud-framework</module>
-		<module>thread-pool-tool</module>
+		<module>thread-pool-framework</module>
 		<module>redisson-framework</module>
-		<module>arithmetic</module>
 		<module>server</module>
 		<module>server-client</module>
 		<module>api-stat</module>
-		<module>captcha-tool</module>
+		<module>captcha-framework</module>
 	</modules>
 
 	<properties>

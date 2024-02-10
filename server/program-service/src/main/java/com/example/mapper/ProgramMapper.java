@@ -18,7 +18,5 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface ProgramMapper extends BaseMapper<Program> {
     
-//    List<Program> selectHomeList(ProgramListDto programListDto);
-    
     IPage<ProgramV2> selectPage(IPage<ProgramV2> page, @Param("programPageListDto")ProgramPageListDto programPageListDto);
 }
