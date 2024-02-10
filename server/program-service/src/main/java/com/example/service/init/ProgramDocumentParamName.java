@@ -24,6 +24,8 @@ public class ProgramDocumentParamName {
     
     public static final String PROGRAM_CATEGORY_NAME = "programCategoryName";
     
+    public static final String PARENT_PROGRAM_CATEGORY_ID = "parentProgramCategoryId";
+    
     public static final String SHOW_TIME = "showTime";
     
     public static final String SHOW_DAY_TIME = "showDayTime";

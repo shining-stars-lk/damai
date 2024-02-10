@@ -1,5 +1,6 @@
 package com.example.service.pagestrategy.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.example.dto.EsDataQueryDto;
 import com.example.dto.ProgramPageListDto;
 import com.example.page.PageUtil;
@@ -32,6 +33,18 @@ public class SelectPageEsHandle implements SelectPageHandle {
                 areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
                 areaIdQueryDto.setParamValue(programPageListDto.getAreaId());
                 esDataQueryDtoList.add(areaIdQueryDto);
+            }
+            if (CollectionUtil.isNotEmpty(programPageListDto.getProgramCategoryIds())) {
+                EsDataQueryDto programCategoryIdQueryDto = new EsDataQueryDto();
+                programCategoryIdQueryDto.setParamName(ProgramDocumentParamName.PROGRAM_CATEGORY_ID);
+                programCategoryIdQueryDto.setParamValue(programPageListDto.getProgramCategoryIds());
+                esDataQueryDtoList.add(programCategoryIdQueryDto);
+            }
+            if (CollectionUtil.isNotEmpty(programPageListDto.getParentProgramCategoryIds())) {
+                EsDataQueryDto parentProgramCategoryIdQueryDto = new EsDataQueryDto();
+                parentProgramCategoryIdQueryDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID);
+                parentProgramCategoryIdQueryDto.setParamValue(programPageListDto.getParentProgramCategoryIds());
+                esDataQueryDtoList.add(parentProgramCategoryIdQueryDto);
             }
             if (Objects.nonNull(programPageListDto.getShowDayTime())) {
                 EsDataQueryDto showDayTimeQueryDto = new EsDataQueryDto();

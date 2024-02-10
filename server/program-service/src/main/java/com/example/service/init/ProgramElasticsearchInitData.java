@@ -83,6 +83,11 @@ public class ProgramElasticsearchInitData implements InitData {
         programCategoryIdDto.setParamType("long");
         list.add(programCategoryIdDto);
         
+        EsDocumentMappingDto parentProgramCategoryIdDto = new EsDocumentMappingDto();
+        parentProgramCategoryIdDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID);
+        parentProgramCategoryIdDto.setParamType("long");
+        list.add(parentProgramCategoryIdDto);
+        
         EsDocumentMappingDto programCategoryNameDto = new EsDocumentMappingDto();
         programCategoryNameDto.setParamName(ProgramDocumentParamName.PROGRAM_CATEGORY_NAME);
         programCategoryNameDto.setParamType("text");
@@ -142,6 +147,7 @@ public class ProgramElasticsearchInitData implements InitData {
             map.put(ProgramDocumentParamName.AREA_NAME,programVo.getAreaName());
             map.put(ProgramDocumentParamName.PROGRAM_CATEGORY_ID,programVo.getProgramCategoryId());
             map.put(ProgramDocumentParamName.PROGRAM_CATEGORY_NAME,programVo.getProgramCategoryName());
+            map.put(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID,programVo.getParentProgramCategoryId());
             map.put(ProgramDocumentParamName.SHOW_TIME,programVo.getShowTime());
             map.put(ProgramDocumentParamName.SHOW_DAY_TIME,programVo.getShowDayTime());
             map.put(ProgramDocumentParamName.SHOW_WEEK_TIME,programVo.getShowWeekTime());
