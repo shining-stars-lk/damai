@@ -500,8 +500,17 @@ public class BusinessEsHandle {
             
             if (Objects.nonNull(paramValue)) {
                 if (paramValue instanceof Collection) {
-                    QueryBuilder builds = QueryBuilders.termsQuery(paramName, (Collection<?>)paramValue);
-                    boolQuery.must(builds);
+                    if (analyse) {
+                        BoolQueryBuilder builds = QueryBuilders.boolQuery();
+                        Collection<?> collection = (Collection<?>)paramValue;
+                        for (Object value : collection) {
+                            builds.should(QueryBuilders.matchQuery(paramName, value));
+                        }
+                        boolQuery.must(builds);
+                    }else {
+                        QueryBuilder builds = QueryBuilders.termsQuery(paramName, (Collection<?>)paramValue);
+                        boolQuery.must(builds);
+                    }
                 }else {
                     QueryBuilder builds;
                     if (analyse) {
