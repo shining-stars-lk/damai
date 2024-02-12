@@ -23,7 +23,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/program/show/time")
-@Api(tags = "program/show/time", description = "节目演出时间")
+@Api(tags = "program-show-time", description = "节目演出时间")
 public class ProgramShowTimeController {
     
     @Autowired

@@ -26,7 +26,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/program/category")
-@Api(tags = "program/category", description = "节目类型")
+@Api(tags = "program-category", description = "节目类型")
 public class ProgramCategoryController {
     
     @Autowired

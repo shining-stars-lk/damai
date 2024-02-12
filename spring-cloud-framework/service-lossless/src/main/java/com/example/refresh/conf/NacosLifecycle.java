@@ -26,12 +26,7 @@ public class NacosLifecycle implements SmartLifecycle {
 
     private final NacosDiscoveryProperties properties;
     
-
-    @Override
-    public boolean isAutoStartup() {
-        return true;
-    }
-
+    
     @Override
     public void stop(Runnable callback) {
         this.stop();
@@ -40,14 +35,12 @@ public class NacosLifecycle implements SmartLifecycle {
 
     @Override
     public void start(){
-        if (this.running.compareAndSet(false, true)) {
+        if (running.compareAndSet(false, true)) {
             try {
                 NamingService naming = NamingFactory.createNamingService(properties.getNacosProperties());
                 naming.subscribe(properties.getService(),event -> {
-                    new Thread(() -> {
-                        nacosAndRibbonCustom.refreshNacosAndRibbonCache();
-                        log.warn("refreshNacosAndRibbonCache finish ...");
-                    },"service-refresher-thread").start();
+                    //log.warn("refreshNacosAndRibbonCache finish ...");
+                    new Thread(nacosAndRibbonCustom::refreshNacosAndRibbonCache,"service-refresher-thread").start();
                 });
             }catch (Exception e) {
                 log.error("ServiceRefresher subscribe failed, properties:{}", properties, e);
@@ -61,10 +54,8 @@ public class NacosLifecycle implements SmartLifecycle {
             try {
                 NamingService naming = NamingFactory.createNamingService(properties.getNacosProperties());
                 naming.unsubscribe(properties.getService(),event -> {
-                    new Thread(() -> {
-                        nacosAndRibbonCustom.refreshNacosAndRibbonCache();
-                        log.warn("updateNacosAndRibbonCache completed ...");
-                    },"service-refresher-thread").start();
+                    //log.warn("updateNacosAndRibbonCache completed ...");
+                    new Thread(nacosAndRibbonCustom::refreshNacosAndRibbonCache,"service-refresher-thread").start();
                 });
             }catch (Exception e) {
                 log.error("ServiceRefresher unsubscribe failed, properties:{}", properties, e);
