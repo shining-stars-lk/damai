@@ -148,7 +148,7 @@ public class ProgramElasticsearchInitData implements InitData {
             map.put(ProgramDocumentParamName.PROGRAM_CATEGORY_ID,programVo.getProgramCategoryId());
             map.put(ProgramDocumentParamName.PROGRAM_CATEGORY_NAME,programVo.getProgramCategoryName());
             map.put(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID,programVo.getParentProgramCategoryId());
-            map.put(ProgramDocumentParamName.SHOW_TIME,programVo.getShowTime());
+            map.put(ProgramDocumentParamName.SHOW_TIME, programVo.getShowTime());
             map.put(ProgramDocumentParamName.SHOW_DAY_TIME,programVo.getShowDayTime());
             map.put(ProgramDocumentParamName.SHOW_WEEK_TIME,programVo.getShowWeekTime());
             //最低价

@@ -5,10 +5,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.core.StringUtil;
+import com.example.dto.EsDataQueryDto;
 import com.example.dto.EsDocumentMappingDto;
 import com.example.dto.EsGeoPointDto;
 import com.example.dto.EsGeoPointSortDto;
-import com.example.dto.EsDataQueryDto;
 import com.github.pagehelper.PageInfo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -521,12 +521,9 @@ public class BusinessEsHandle {
                     boolQuery.must(builds);
                 }
             }
-            if (Objects.nonNull(startTime)) {
-                QueryBuilder builds = QueryBuilders.rangeQuery(paramName).from(startTime).includeLower(true);
-                boolQuery.must(builds);
-            }
-            if (Objects.nonNull(endTime)) {
-                QueryBuilder builds = QueryBuilders.rangeQuery(paramName).to(endTime).includeUpper(true);
+            if (Objects.nonNull(startTime) || Objects.nonNull(endTime)) {
+                QueryBuilder builds = QueryBuilders.rangeQuery(paramName)
+                        .from(startTime).to(endTime).includeLower(true);
                 boolQuery.must(builds);
             }
         }

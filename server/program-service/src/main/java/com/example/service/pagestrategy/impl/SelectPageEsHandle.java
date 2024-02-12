@@ -3,18 +3,21 @@ package com.example.service.pagestrategy.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import com.example.dto.EsDataQueryDto;
 import com.example.dto.ProgramPageListDto;
+import com.example.enums.TimeType;
 import com.example.page.PageUtil;
 import com.example.page.PageVo;
 import com.example.service.init.ProgramDocumentParamName;
 import com.example.service.pagestrategy.ProgramConstant;
 import com.example.service.pagestrategy.SelectPageHandle;
 import com.example.util.BusinessEsHandle;
+import com.example.util.DateUtils;
 import com.example.vo.ProgramListVo;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,6 +53,19 @@ public class SelectPageEsHandle implements SelectPageHandle {
                 EsDataQueryDto showDayTimeQueryDto = new EsDataQueryDto();
                 showDayTimeQueryDto.setParamName(ProgramDocumentParamName.SHOW_DAY_TIME);
                 showDayTimeQueryDto.setParamValue(programPageListDto.getShowDayTime());
+                esDataQueryDtoList.add(showDayTimeQueryDto);
+            }
+            if (Objects.nonNull(programPageListDto.getTimeType())) {
+                Date time = null;
+                if (programPageListDto.getTimeType().equals(TimeType.WEEK.getCode())) {
+                    time = DateUtils.addWeek(DateUtils.now(),1);
+                }else if (programPageListDto.getTimeType().equals(TimeType.MONTH.getCode())) {
+                    time = DateUtils.addMonth(DateUtils.now(),1);
+                }
+                EsDataQueryDto showDayTimeQueryDto = new EsDataQueryDto();
+                showDayTimeQueryDto.setParamName(ProgramDocumentParamName.SHOW_DAY_TIME);
+                showDayTimeQueryDto.setStartTime(DateUtils.now());
+                showDayTimeQueryDto.setEndTime(time);
                 esDataQueryDtoList.add(showDayTimeQueryDto);
             }
             
