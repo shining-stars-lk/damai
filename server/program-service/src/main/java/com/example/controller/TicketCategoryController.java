@@ -23,7 +23,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/ticket/category")
-@Api(tags = "ticket/category", description = "票档")
+@Api(tags = "ticket-category", description = "票档")
 public class TicketCategoryController {
     
     @Autowired

@@ -23,7 +23,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/channel/data")
-@Api(tags = "channel/data", description = "渠道数据")
+@Api(tags = "channel-data", description = "渠道数据")
 public class ChannelDataController {
     
     @Autowired

@@ -22,7 +22,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/token/data")
-@Api(tags = "token/data", description = "token配置数据")
+@Api(tags = "token-data", description = "token配置数据")
 public class TokenDataController {
     
     @Autowired

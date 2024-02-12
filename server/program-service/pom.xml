@@ -43,7 +43,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>service-lock-tool</artifactId>
+            <artifactId>service-lock-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>

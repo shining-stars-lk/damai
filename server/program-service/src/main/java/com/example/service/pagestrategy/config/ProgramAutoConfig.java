@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 
 public class ProgramAutoConfig {
     
-    @Value("${select-page-handle-type:"+ ProgramConstant.DB_TYPE_NAME +"}")
+    @Value("${selectPageHandleType:"+ ProgramConstant.DB_TYPE_NAME +"}")
     private String selectPageHandleType;
     
     @Bean
