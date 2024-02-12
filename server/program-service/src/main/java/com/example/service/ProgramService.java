@@ -3,6 +3,7 @@ package com.example.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
+import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -29,6 +30,7 @@ import com.example.entity.TicketCategoryAggregate;
 import com.example.enums.BaseCode;
 import com.example.enums.BusinessStatus;
 import com.example.enums.SellStatus;
+import com.example.enums.TimeType;
 import com.example.exception.CookFrameException;
 import com.example.mapper.ProgramCategoryMapper;
 import com.example.mapper.ProgramMapper;
@@ -44,6 +46,7 @@ import com.example.service.pagestrategy.SelectPageWrapper;
 import com.example.servicelock.LockType;
 import com.example.servicelock.annotion.ServiceLock;
 import com.example.util.BusinessEsHandle;
+import com.example.util.DateUtils;
 import com.example.vo.AreaVo;
 import com.example.vo.ProgramListVo;
 import com.example.vo.ProgramVo;
@@ -83,6 +86,9 @@ import static com.example.service.cache.ExpireTime.EXPIRE_TIME;
 @Slf4j
 @Service
 public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
+    
+    @Autowired
+    private UidGenerator uidGenerator;
     
     @Autowired
     private ProgramMapper programMapper;
@@ -126,8 +132,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     public Long add(ProgramAddDto programAddDto){
         Program program = new Program();
         BeanUtil.copyProperties(programAddDto,program);
-        //program.setId(uidGenerator.getUID());
-        program.setId(2L);
+        program.setId(uidGenerator.getUID());
         programMapper.insert(program);
         return program.getId();
     }
@@ -136,11 +141,11 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         PageVo<ProgramListVo> pageVo = new PageVo<>();
         try {
             List<EsDataQueryDto> esDataQueryDtoList = new ArrayList<>();
-            EsDataQueryDto titileQueryDto = new EsDataQueryDto();
-            titileQueryDto.setParamName(ProgramDocumentParamName.TITLE);
-            titileQueryDto.setParamValue(programSearchDto.getTitle());
-            titileQueryDto.setAnalyse(true);
-            esDataQueryDtoList.add(titileQueryDto);
+            EsDataQueryDto titleQueryDto = new EsDataQueryDto();
+            titleQueryDto.setParamName(ProgramDocumentParamName.TITLE);
+            titleQueryDto.setParamValue(programSearchDto.getTitle());
+            titleQueryDto.setAnalyse(true);
+            esDataQueryDtoList.add(titleQueryDto);
             PageInfo<ProgramListVo> programListVoPageInfo = businessEsHandle.queryPage(ProgramDocumentParamName.INDEX_NAME, 
                     ProgramDocumentParamName.INDEX_TYPE, esDataQueryDtoList, programSearchDto.getPageNumber(), 
                     programSearchDto.getPageSize(), ProgramListVo.class);
@@ -223,6 +228,13 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     public PageVo<ProgramListVo> doSelectPage(ProgramPageListDto programPageListDto) {
         //需要program和program_show_time连表查询
+        if (Objects.nonNull(programPageListDto.getTimeType())) {
+            if (programPageListDto.getTimeType().equals(TimeType.WEEK.getCode())) {
+                programPageListDto.setTime(DateUtils.addWeek(DateUtils.now(),1));
+            }else if (programPageListDto.getTimeType().equals(TimeType.MONTH.getCode())) {
+                programPageListDto.setTime(DateUtils.addMonth(DateUtils.now(),1));
+            }
+        }
         IPage<ProgramV2> iPage = programMapper.selectPage(PageUtil.getPageParams(programPageListDto), programPageListDto);
         
         //根据节目列表获得节目类型id列表

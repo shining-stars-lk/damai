@@ -30,7 +30,7 @@ public class ProgramPageListDto extends BasePageDto{
     private Date showDayTime;
     
     @ApiModelProperty(name ="timeType", dataType ="int", value ="1:本周内 2:一个月内")
-    private int timeType;
+    private Integer timeType;
     
     /**
      * 业务字段，后端自己填充

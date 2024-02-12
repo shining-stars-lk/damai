@@ -27,4 +27,4 @@ elasticsearch:
   ip: 62.234.31.217:9200
   userName: elastic
   passWord: 123qwe
-select-page-handle-type: es 
+select-page-handle-type: es
