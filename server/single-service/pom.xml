@@ -28,11 +28,6 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>job-service</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
             <artifactId>order-service</artifactId>
             <version>${revision}</version>
         </dependency>
@@ -50,6 +45,11 @@
             <groupId>com.example</groupId>
             <artifactId>user-service</artifactId>
             <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snakeyaml.version}</version>
         </dependency>
     </dependencies>
 

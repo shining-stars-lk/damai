@@ -33,11 +33,6 @@ public class PayBill extends BaseData implements Serializable {
     private String payNumber;
 
     /**
-     * 订单号
-     */
-    private Long orderNumber;
-
-    /**
      * 商户订单号
      */
     private String outOrderNo;

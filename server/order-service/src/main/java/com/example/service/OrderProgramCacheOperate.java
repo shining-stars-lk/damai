@@ -19,7 +19,7 @@ import java.util.List;
  **/
 @Slf4j
 @Component
-public class ProgramCacheOperate {
+public class OrderProgramCacheOperate {
     
     @Autowired
     private RedisCache redisCache;
@@ -30,7 +30,7 @@ public class ProgramCacheOperate {
     public void init(){
         try {
             redisScript = new DefaultRedisScript<>();
-            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/ProgramData.lua")));
+            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/OrderProgramData.lua")));
             redisScript.setResultType(Integer.class);
         } catch (Exception e) {
             log.error("redisScript init lua error",e);

@@ -1,0 +1,55 @@
+dataSources:    
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://www.cookframe.com:3306/damai_pay_0?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: qaz321qwe!
+
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://www.cookframe.com:3306/damai_pay_1?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: qaz321qwe!
+    
+rules:
+  # 分库分表规则
+  - !SHARDING
+    tables:    
+      # 对d_pay_bill表进行分库分表
+      d_pay_bill:
+        # 库为damai_pay_0 damai_pay_1 表为d_pay_bill_0 至 d_pay_bill_1
+        actualDataNodes: ds_${0..1}.d_pay_bill_${0..1}
+        # 分库策略
+        databaseStrategy:
+          standard:
+            # 使用out_order_no作为分片键
+            shardingColumn: out_order_no
+            # 用out_order_no列使用hash取模作为分库算法
+            shardingAlgorithmName: databasePayHashModModel
+        # 分表策略      
+        tableStrategy:
+          standard:
+            # 使用out_order_no作为分片键
+            shardingColumn: out_order_no
+            # 用out_order_no列使用hash取模作为分表算法
+            shardingAlgorithmName: tablePayHashModModel
+    # 具体的算法        
+    shardingAlgorithms:
+      # d_pay_bill表分库算法
+      databasePayHashModModel:
+        type: HASH_MOD
+        props:
+          # 分库数量
+          sharding-count: 2
+      # d_pay_bill表分表算法
+      tablePayHashModModel:
+        type: HASH_MOD
+        props:
+          # 分表数量
+          sharding-count: 2
+props:
+  # 打印真实sql
+  sql-show: true      
+      
