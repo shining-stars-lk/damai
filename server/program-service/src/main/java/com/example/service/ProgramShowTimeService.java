@@ -4,6 +4,7 @@ package com.example.service;
 import cn.hutool.core.bean.BeanUtil;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.core.RedisKeyEnum;
@@ -84,15 +85,12 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
             Date newShowTime = DateUtils.addMonth(oldShowTime, 1);
             Date newShowDayTime = DateUtils.parseDateTime(DateUtils.formatDate(newShowTime) + " 00:00:00");
             ProgramShowTime updateProgramShowTime = new ProgramShowTime();
-            updateProgramShowTime.setId(programShowTime.getId());
-            updateProgramShowTime.setProgramId(programShowTime.getProgramId());
             updateProgramShowTime.setShowTime(newShowTime);
             updateProgramShowTime.setShowDayTime(newShowDayTime);
             updateProgramShowTime.setShowWeekTime(DateUtils.getWeekStr(newShowTime));
-            updateProgramShowTime.setCreateTime(programShowTime.getCreateTime());
-            updateProgramShowTime.setEditTime(DateUtils.now());
-            updateProgramShowTime.setStatus(programShowTime.getStatus());
-            programShowTimeMapper.updateById(updateProgramShowTime);
+            LambdaUpdateWrapper<ProgramShowTime> programShowTimeLambdaUpdateWrapper =
+                    Wrappers.lambdaUpdate(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programShowTime.getProgramId());
+            programShowTimeMapper.update(updateProgramShowTime,programShowTimeLambdaUpdateWrapper);
             redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME,programShowTime.getProgramId())
                     ,updateProgramShowTime,EXPIRE_TIME, TimeUnit.DAYS);
         }

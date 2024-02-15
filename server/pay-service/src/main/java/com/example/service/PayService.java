@@ -73,7 +73,6 @@ public class PayService {
         if (pay.isSuccess()) {
             payBill = new PayBill();
             payBill.setId(uidGenerator.getUID());
-            payBill.setOrderNumber(Long.parseLong(payDto.getOrderNumber()));
             payBill.setOutOrderNo(String.valueOf(payDto.getOrderNumber()));
             payBill.setPayChannel(payDto.getChannel());
             payBill.setPayScene("生产");
@@ -178,7 +177,10 @@ public class PayService {
             PayBill updatePayBill = new PayBill();
             updatePayBill.setId(payBill.getId());
             updatePayBill.setPayBillStatus(payBillStatus);
-            payBillMapper.updateById(updatePayBill);
+            
+            LambdaUpdateWrapper<PayBill> payBillLambdaUpdateWrapper =
+                    Wrappers.lambdaUpdate(PayBill.class).eq(PayBill::getOutOrderNo, outTradeNo);
+            payBillMapper.update(updatePayBill,payBillLambdaUpdateWrapper);
             return tradeCheckVo;
         }
         return tradeCheckVo;

@@ -45,7 +45,7 @@
 	<properties>
 		<revision>0.0.1-SNAPSHOT</revision>
 		<java.version>1.8</java.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.sourceEncoding>UTF-8</project.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring-boot.version>2.3.12.RELEASE</spring-boot.version>
 		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
@@ -57,6 +57,7 @@
 		<nacos.version>2.0.3</nacos.version>
 		<jasypt.version>3.0.5</jasypt.version>
 		<maven-compiler.version>3.8.1</maven-compiler.version>
+		<maven-resources.version>3.2.0</maven-resources.version>
 		<maven-source.version>3.2.1</maven-source.version>
 		<flatten-maven.version>1.4.1</flatten-maven.version>
 		<fastjson.version>2.0.9</fastjson.version>
@@ -123,10 +124,17 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler.version}</version>
 				<configuration>
-					<encoding>${project.build.sourceEncoding}</encoding>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
-					<encoding>${project.build.sourceEncoding}</encoding>
+					<encoding>${project.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${maven-resources.version}</version>
+				<configuration>
+					<encoding>${project.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
 			<plugin>

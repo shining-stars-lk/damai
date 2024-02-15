@@ -95,7 +95,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     private OrderTicketUserService orderTicketUserService;
     
     @Autowired
-    private ProgramCacheOperate programCacheOperate;
+    private OrderProgramCacheOperate orderProgramCacheOperate;
     
     @Autowired
     private RedisCache redisCache;
@@ -364,7 +364,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             //已售卖座位的key
             keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_SOLD_HASH, programId).getRelKey());
         }
-        programCacheOperate.programCacheReverseOperate(keys,data);
+        orderProgramCacheOperate.programCacheReverseOperate(keys,data);
         
         //如果是支付成功了，发送延迟队列给program服务，将数据库中的票档的余票更新、座位状态更新
         if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
