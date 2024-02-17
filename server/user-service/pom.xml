@@ -135,6 +135,8 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.example.SingleApplication</mainClass>
+                    <!-- 如果以jar包启动需要将此配置去掉 -->
+                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>
