@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 
 /**
@@ -66,7 +67,9 @@ public class SwaggerProvider implements SwaggerResourcesProvider {
         if (CollUtil.isNotEmpty(routeList)) {
             for (RouteDefinition route : routeList) {
                 Map<String,String> map = new HashMap<>(4);
-                map.put("serviceId",route.getId());
+                String serviceId = Optional.ofNullable(route.getMetadata().get("relServiceName"))
+                        .map(String::valueOf).filter(StringUtil::isNotEmpty).orElse(route.getId());
+                map.put("serviceId",serviceId);
                 Map<String, Object> metadata = route.getMetadata();
                 String title = null;
                 if (metadata != null) {
@@ -90,7 +93,7 @@ public class SwaggerProvider implements SwaggerResourcesProvider {
                         }
                     }
                 }
-                serviceMap.put(route.getId(),map);
+                serviceMap.put(serviceId,map);
             }
         }
         return serviceMap;
