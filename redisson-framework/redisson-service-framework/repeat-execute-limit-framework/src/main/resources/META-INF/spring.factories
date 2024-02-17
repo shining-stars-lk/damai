@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.example.config.RepeatExecuteLimitAutoConfiguration
+  com.damai.config.RepeatExecuteLimitAutoConfiguration

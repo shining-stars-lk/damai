@@ -1,0 +1,42 @@
+package com.damai.monitor;
+
+import com.alibaba.fastjson.JSON;
+import com.damai.core.StringUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 服务监控 钉钉配置
+ * @author: 阿宽不是程序员
+ **/
+@RequiredArgsConstructor
+public class DingTalkMessage {
+    
+    private final String token;
+    
+    private RestTemplate restTemplate = new RestTemplate();
+    
+    private HttpEntity<String> createMessage(String message) {
+        Map<String, Object> messageJson = new HashMap<>();
+        Map<String, Object> context = new HashMap<>();
+        context.put("content", message);
+        messageJson.put("text", JSON.toJSONString(context));
+        messageJson.put("msgtype", "text");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        return new HttpEntity<>(JSON.toJSONString(messageJson), headers);
+    }
+    
+    public void sendMessage(String message){
+        if (StringUtil.isNotEmpty(token)) {
+            restTemplate.postForEntity(token, createMessage(message), Void.class);
+        }
+    }
+}

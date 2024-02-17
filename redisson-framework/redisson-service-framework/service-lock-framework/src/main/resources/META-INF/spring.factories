@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.example.config.ServiceLockAutoConfiguration
+  com.damai.config.ServiceLockAutoConfiguration

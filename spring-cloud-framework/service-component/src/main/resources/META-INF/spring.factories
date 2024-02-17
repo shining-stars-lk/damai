@@ -1,6 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.example.feign.ExtraFeignAutoConfiguration,\
-  com.example.balance.ExtraRibbonAutoConfiguration,\
-  com.example.filter.FilterAutoConfiguration
+  com.damai.feign.ExtraFeignAutoConfiguration,\
+  com.damai.balance.ExtraRibbonAutoConfiguration,\
+  com.damai.filter.FilterAutoConfiguration
 org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
-  com.example.registercenter.RegisterCenterAutoConfigurationImportFilter
+  com.damai.registercenter.RegisterCenterAutoConfigurationImportFilter

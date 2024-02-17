@@ -99,7 +99,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.example.ProviderApplication</mainClass>
+                    <mainClass>com.damai.ProviderApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

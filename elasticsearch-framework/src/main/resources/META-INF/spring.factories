@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.example.conf.BusinessEsAutoConfig
+  com.damai.conf.BusinessEsAutoConfig

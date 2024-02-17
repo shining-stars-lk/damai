@@ -18,7 +18,7 @@ package com.alibaba.csp.sentinel.adapter.spring.webmvc;
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.UrlCleaner;
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.config.SentinelWebMvcConfig;
 import com.alibaba.csp.sentinel.util.StringUtil;
-import com.example.core.SpringUtil;
+import com.damai.core.SpringUtil;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,7 +68,7 @@ public class SentinelWebInterceptor extends AbstractSentinelInterceptor {
             resourceName = request.getMethod().toUpperCase() + ":" + resourceName;
         }
         Optional<String> applicationNameOptional = Optional.ofNullable(SpringUtil.getProperty("spring.application.name"))
-                .filter(com.example.core.StringUtil::isNotEmpty);
+                .filter(com.damai.core.StringUtil::isNotEmpty);
         if (applicationNameOptional.isPresent()) {
             String applicationName = applicationNameOptional.get();
             resourceName = applicationName + SPLIT_RESOURCE + resourceName;

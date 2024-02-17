@@ -17,9 +17,9 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.mapper.ProgramMapper">
+<mapper namespace="com.damai.mapper.ProgramMapper">
     
-    <select id="selectPage" parameterType="com.example.dto.ProgramPageListDto" resultType="com.example.entity.ProgramV2">
+    <select id="selectPage" parameterType="com.damai.dto.ProgramPageListDto" resultType="com.damai.entity.ProgramV2">
         select
             dp.id,dp.area_id,dp.program_category_id,dp.parent_program_category_id,dp.title,dp.actor,
             dp.place,dp.item_picture,ds.show_time,ds.show_week_time,ds.show_day_time

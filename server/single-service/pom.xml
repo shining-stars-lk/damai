@@ -60,7 +60,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.example.SingleApplication</mainClass>
+                    <mainClass>com.damai.SingleApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

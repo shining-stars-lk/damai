@@ -15,7 +15,7 @@
         <Property name="FILE_NAME">api-stat-system</Property>
         <Property name="PATTERN">[api-stat-system] %d{yyyy-MM-dd HH:mm:ss} %5p %c{1}:%L - %m%n</Property>
         <Property name="ENCODING">UTF-8</Property>
-        <Property name="CUSTOM_MESSAGE_KEY">com.example</Property>
+        <Property name="CUSTOM_MESSAGE_KEY">com.damai</Property>
     </Properties>
 
     <Appenders>

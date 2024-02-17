@@ -1,4 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.example.conf.swagger.SwaggerConfig,\
-  com.example.hystrixfactory.CustomGateWayConfig,\
-  com.example.kafka.ProducerConfig
+  com.damai.conf.swagger.SwaggerConfig,\
+  com.damai.hystrixfactory.CustomGateWayConfig,\
+  com.damai.kafka.ProducerConfig

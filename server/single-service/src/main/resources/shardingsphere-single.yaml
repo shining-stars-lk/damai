@@ -173,7 +173,7 @@ rules:
           # 分表策略，复合多分片
           strategy: complex
           # 具体的分表逻辑在此自定义类中
-          algorithmClassName: com.example.shardingsphere.TableOrderComplexGeneArithmetic
+          algorithmClassName: com.damai.shardingsphere.TableOrderComplexGeneArithmetic
       # d_order_ticket_user表分表算法
       tableOrderTicketUserComplexGeneArithmetic:
         # 通过自定义实现类实现分表算法
@@ -184,7 +184,7 @@ rules:
           # 分表策略，复合多分片
           strategy: complex
           # 具体的分表逻辑在此自定义类中
-          algorithmClassName: com.example.shardingsphere.TableOrderComplexGeneArithmetic
+          algorithmClassName: com.damai.shardingsphere.TableOrderComplexGeneArithmetic
       # d_program表分表算法
       tableProgramHashModModel:
         type: MOD
