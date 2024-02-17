@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.example.hystrix.ExtraHystrixAutoConfiguration
+  com.damai.hystrix.ExtraHystrixAutoConfiguration

@@ -121,7 +121,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.example.JobApplication</mainClass>
+                    <mainClass>com.damai.JobApplication</mainClass>
                     <!-- 如果以jar包启动需要将此配置去掉 -->
                     <skip>true</skip>
                 </configuration>

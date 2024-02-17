@@ -17,8 +17,8 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.mapper.TicketCategoryMapper">
-    <select id="selectAggregateList" resultType="com.example.entity.TicketCategoryAggregate">
+<mapper namespace="com.damai.mapper.TicketCategoryMapper">
+    <select id="selectAggregateList" resultType="com.damai.entity.TicketCategoryAggregate">
         select
             program_id,min(price) as min_price,max(price) as max_price
         from d_ticket_category

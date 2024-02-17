@@ -16,8 +16,8 @@
 //package com.baidu.fsg.uid.config;
 //
 //import com.baidu.fsg.uid.worker.WorkerIdAssigner;
-//import com.example.entity.WorkerNode;
-//import com.example.mapper.WorkerNodeMapper;
+//import com.damai.entity.WorkerNode;
+//import com.damai.mapper.WorkerNodeMapper;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //import org.springframework.transaction.annotation.Transactional;

@@ -1,0 +1,56 @@
+package com.damai.service.composite;
+
+import com.damai.composite.AbstractComposite;
+import com.damai.core.RedisKeyEnum;
+import com.damai.dto.ProgramOrderCreateDto;
+import com.damai.enums.BaseCode;
+import com.damai.enums.CompositeCheckType;
+import com.damai.exception.DaMaiFrameException;
+import com.damai.redis.RedisCache;
+import com.damai.redis.RedisKeyWrap;
+import com.damai.vo.ProgramVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Objects;
+
+/**
+ * @program: cook-frame
+ * @description:
+ * @author: k
+ * @create: 2024-01-22
+ **/
+@Component
+public class ProgramExistCheckHandler extends AbstractComposite<ProgramOrderCreateDto> {
+    
+    @Autowired
+    private RedisCache redisCache;
+    @Override
+    protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
+        //查询要购买的节目
+        ProgramVo programVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM, programOrderCreateDto.getProgramId()), ProgramVo.class);
+        if (Objects.isNull(programVo)) {
+            throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST);
+        }
+    }
+    
+    @Override
+    public String type() {
+        return CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue();
+    }
+    
+    @Override
+    public Integer executeParentOrder() {
+        return 0;
+    }
+    
+    @Override
+    public Integer executeTier() {
+        return 1;
+    }
+    
+    @Override
+    public Integer executeOrder() {
+        return 3;
+    }
+}

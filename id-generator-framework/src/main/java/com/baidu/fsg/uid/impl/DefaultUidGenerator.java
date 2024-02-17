@@ -20,7 +20,7 @@ import com.baidu.fsg.uid.UidGenerator;
 import com.baidu.fsg.uid.exception.UidGenerateException;
 import com.baidu.fsg.uid.utils.DateUtils;
 import com.baidu.fsg.uid.worker.WorkerIdAssigner;
-import com.example.toolkit.SnowflakeIdGenerator;
+import com.damai.toolkit.SnowflakeIdGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  * <li>worker id: The next 22 bits, represents the worker's id which assigns based on database, max id is about 420W
  * <li>sequence: The next 13 bits, represents a sequence within the same second, max for 8192/s<br><br>
  *
- * The {@link DefaultUidGenerator#parseUID(long)} is a example method to parse the bits
+ * The {@link DefaultUidGenerator#parseUID(long)} is a damai method to parse the bits
  *
  * <pre>{@code
  * +------+----------------------+----------------+-----------+
@@ -66,7 +66,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     protected int workerBits = 22;
     protected int seqBits = 13;
 
-    /** Customer epoch, unit as second. For example 2016-05-20 (ms: 1463673600000)*/
+    /** Customer epoch, unit as second. For damai 2016-05-20 (ms: 1463673600000)*/
     protected String epochStr = "2023-05-16";
     protected long epochSeconds = TimeUnit.MILLISECONDS.toSeconds(1463673600000L);
 

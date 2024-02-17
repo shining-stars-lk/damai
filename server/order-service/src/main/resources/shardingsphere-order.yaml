@@ -69,7 +69,7 @@ rules:
           # 分库策略，复合多分片
           strategy: complex
           # 具体的分库逻辑在此自定义类中
-          algorithmClassName: com.example.shardingsphere.DatabaseOrderComplexGeneArithmetic
+          algorithmClassName: com.damai.shardingsphere.DatabaseOrderComplexGeneArithmetic
       # d_order表分表算法
       tableOrderComplexGeneArithmetic:
         # 通过自定义实现类实现分表算法
@@ -80,7 +80,7 @@ rules:
           # 分表策略，复合多分片
           strategy: complex
           # 具体的分表逻辑在此自定义类中
-          algorithmClassName: com.example.shardingsphere.TableOrderComplexGeneArithmetic
+          algorithmClassName: com.damai.shardingsphere.TableOrderComplexGeneArithmetic
       # d_order_ticket_user表分库算法
       databaseOrderTicketUserComplexGeneArithmetic:
         # 通过自定义实现类实现分库算法
@@ -93,7 +93,7 @@ rules:
           # 分库策略，复合多分片
           strategy: complex
           # 具体的分库逻辑在此自定义类中
-          algorithmClassName: com.example.shardingsphere.DatabaseOrderComplexGeneArithmetic
+          algorithmClassName: com.damai.shardingsphere.DatabaseOrderComplexGeneArithmetic
       # d_order_ticket_user表分表算法
       tableOrderTicketUserComplexGeneArithmetic:
         # 通过自定义实现类实现分表算法
@@ -104,7 +104,7 @@ rules:
           # 分表策略，复合多分片
           strategy: complex
           # 具体的分表逻辑在此自定义类中
-          algorithmClassName: com.example.shardingsphere.TableOrderComplexGeneArithmetic    
+          algorithmClassName: com.damai.shardingsphere.TableOrderComplexGeneArithmetic    
 props:
   # 打印真实sql
   sql-show: true

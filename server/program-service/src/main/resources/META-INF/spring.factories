@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.example.service.pagestrategy.config.ProgramAutoConfig
+  com.damai.service.pagestrategy.config.ProgramAutoConfig

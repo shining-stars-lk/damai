@@ -17,8 +17,8 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.mapper.OrderTicketUserMapper">
-    <select id="selectOrderTicketUserAggregate" resultType="com.example.entity.OrderTicketUserAggregate">
+<mapper namespace="com.damai.mapper.OrderTicketUserMapper">
+    <select id="selectOrderTicketUserAggregate" resultType="com.damai.entity.OrderTicketUserAggregate">
         select
             order_number,count(*) as order_ticket_user_count
         from d_order_ticket_user
