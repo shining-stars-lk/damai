@@ -21,8 +21,8 @@ public class StringUtil {
 	 * @return
 	 */
 	public static boolean isNotEmpty(String str) {
-		return (str != null && !str.equals("") && str.trim().length() > 0 && !str.trim().equalsIgnoreCase("null")
-				&& !str.trim().equalsIgnoreCase("undefined") && !str.trim().equalsIgnoreCase("NULL"));
+		return (str != null && !str.isEmpty() && !str.trim().isEmpty() && !"null".equalsIgnoreCase(str.trim())
+				&& !"undefined".equalsIgnoreCase(str.trim()) && !"NULL".equalsIgnoreCase(str.trim()));
 
 	}
 

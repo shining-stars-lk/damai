@@ -55,8 +55,9 @@ public class Aes {
 		 */
 		public static String decrypt(String key, String initVector, String data){
 			try {
-				if (data == null)
-					return null;
+				if (data == null) {
+                    return null;
+                }
 				byte[] buf = Base64.decode(data);
 				byte[] bt = decrypt(key.getBytes(ENCODE_UTF_8), initVector.getBytes(ENCODE_UTF_8), buf);
 				return new String(bt, ENCODE_UTF_8);

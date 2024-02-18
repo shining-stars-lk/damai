@@ -27,8 +27,12 @@ public class MethodHierarchyTransfer {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MethodHierarchyTransfer)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MethodHierarchyTransfer)) {
+            return false;
+        }
         MethodHierarchyTransfer that = (MethodHierarchyTransfer) o;
         return isExceptionFlag() == that.isExceptionFlag() && getCurrentMethodData().equals(that.getCurrentMethodData()) && getParentMethodData().equals(that.getParentMethodData()) && Arrays.equals(getNames(), that.getNames()) && Arrays.equals(getValues(), that.getValues());
     }

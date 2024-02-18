@@ -52,7 +52,7 @@ public class AllRuleService {
         }
         depthRuleDtoList = depthRuleDtoList.stream().filter(depthRuleDto -> {
             if (depthRuleDto.getStatus() != null) {
-                if (depthRuleDto.getStatus() == RuleStatus.RUN.getCode()) {
+                if (depthRuleDto.getStatus().equals(RuleStatus.RUN.getCode())) {
                     return true;
                 }else {
                     return false;

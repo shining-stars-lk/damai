@@ -33,8 +33,12 @@ public class MethodData {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MethodData)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MethodData)) {
+            return false;
+        }
         MethodData that = (MethodData) o;
         return getId().equals(that.getId()) && getClassName().equals(that.getClassName()) && getMethodName().equals(that.getMethodName()) && Objects.equals(getArgumentCount(), that.getArgumentCount()) && getMethodLevel() == that.getMethodLevel() && Objects.equals(getExecuteTime(), that.getExecuteTime()) && Objects.equals(getApi(), that.getApi());
     }

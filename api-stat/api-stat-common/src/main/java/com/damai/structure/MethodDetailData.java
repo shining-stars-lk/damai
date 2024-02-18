@@ -38,8 +38,12 @@ public class MethodDetailData {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MethodDetailData)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MethodDetailData)) {
+            return false;
+        }
         MethodDetailData that = (MethodDetailData) o;
         return getId().equals(that.getId()) && getClassName().equals(that.getClassName()) && getMethodName().equals(that.getMethodName()) && Objects.equals(getArgumentCount(), that.getArgumentCount()) && getMethodLevel() == that.getMethodLevel() && Objects.equals(getExecuteTime(), that.getExecuteTime()) && Objects.equals(getApi(), that.getApi()) && Objects.equals(getAvgExecuteTime(), that.getAvgExecuteTime()) && Objects.equals(getMaxExecuteTime(), that.getMaxExecuteTime()) && Objects.equals(getMinExecuteTime(), that.getMinExecuteTime()) && Objects.equals(getExceptionCount(), that.getExceptionCount()) && Objects.equals(getChildrenMethodList(), that.getChildrenMethodList());
     }
