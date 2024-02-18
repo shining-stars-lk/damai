@@ -7,10 +7,9 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * @program: cook-frame
- * @description:
- * @author: 星哥
- * @create: 2023-07-05
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: token vo
+ * @author: 阿宽不是程序员
  **/
 @Data
 @ApiModel(value="TokenDataVo", description ="token数据")

@@ -12,10 +12,9 @@ import org.springframework.stereotype.Component;
 import static com.damai.service.constant.ProgramOrderConstant.DELAY_OPERATE_PROGRAM_DATA_TOPIC;
 
 /**
- * @program: cook-frame
- * @description:
- * @author: 星哥
- * @create: 2023-06-21
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 节目缓存操作
+ * @author: 阿宽不是程序员
  **/
 @Slf4j
 @Component

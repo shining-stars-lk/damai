@@ -8,13 +8,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * <p>
- * 节目票档表
- * </p>
- *
- * @author k
- * @since 2024-01-08
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 票档 实体
+ * @author: 阿宽不是程序员
+ **/
 @Data
 @TableName("d_ticket_category")
 public class TicketCategory extends BaseData implements Serializable {

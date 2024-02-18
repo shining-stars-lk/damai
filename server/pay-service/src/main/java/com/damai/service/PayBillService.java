@@ -6,13 +6,10 @@ import com.damai.mapper.PayBillMapper;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>
- * 账单表 服务实现类
- * </p>
- *
- * @author k
- * @since 2024-01-25
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 支付账单 service
+ * @author: 阿宽不是程序员
+ **/
 @Service
 public class PayBillService extends ServiceImpl<PayBillMapper, PayBill> {
 

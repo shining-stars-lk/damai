@@ -14,13 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 /**
- * <p>
- * 节目订单 前端控制器
- * </p>
- *
- * @author k
- * @since 2024-01-08
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 节目订单 控制层
+ * @author: 阿宽不是程序员
+ **/
 @RestController
 @RequestMapping("/program/order")
 @Api(tags = "program-order", description = "节目订单")

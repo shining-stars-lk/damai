@@ -28,11 +28,10 @@ import static com.alibaba.csp.sentinel.constant.SentinelConstant.SPLIT_RESOURCE;
 
 
 /**
- * Spring Web MVC interceptor that integrates with Sentinel.
- *
- * @author kaizi2009
- * @since 1.7.1
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: sentinel web统计
+ * @author: 阿宽不是程序员
+ **/
 public class SentinelWebInterceptor extends AbstractSentinelInterceptor {
 
     private final SentinelWebMvcConfig config;

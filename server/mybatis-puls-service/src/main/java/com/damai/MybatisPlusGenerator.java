@@ -1,4 +1,4 @@
-package com.damai.config;
+package com.damai;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
@@ -8,10 +8,15 @@ import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import java.sql.Types;
 import java.util.Collections;
 
-public class mybatisPlusGenerator {
+/**
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: mybatisPlus 代码生成器
+ * @author: 阿宽不是程序员
+ **/
+public class MybatisPlusGenerator {
     
     public static void main(String[] args) {
-        FastAutoGenerator.create("jdbc:mysql://82.157.255.105:3306/damai_user?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&remarks=true&useInformationSchema=true", "root", "qaz321qwe!")
+        FastAutoGenerator.create("jdbc:mysql://127.0.0.1:3306/damai?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&remarks=true&useInformationSchema=true", "root", "root")
                 .globalConfig(builder -> {
                     builder.author("k") // 设置作者
                             //.enableSwagger() // 开启 swagger 模式

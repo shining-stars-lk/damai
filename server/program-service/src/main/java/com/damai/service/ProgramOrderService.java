@@ -20,9 +20,6 @@ import com.damai.enums.CompositeCheckType;
 import com.damai.enums.OrderStatus;
 import com.damai.enums.SellStatus;
 import com.damai.exception.DaMaiFrameException;
-import com.damai.mapper.ProgramMapper;
-import com.damai.mapper.SeatMapper;
-import com.damai.mapper.TicketCategoryMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyWrap;
 import com.damai.service.delaysend.DelayOrderCancelSend;
@@ -49,23 +46,13 @@ import java.util.stream.Collectors;
 import static com.damai.service.constant.ProgramOrderConstant.ORDER_TABLE_COUNT;
 
 /**
- * @program: cook-frame
- * @description:
- * @author: k
- * @create: 2024-01-11
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 节目订单 service
+ * @author: 阿宽不是程序员
  **/
 @Slf4j
 @Service
 public class ProgramOrderService {
-    
-    @Autowired
-    private ProgramMapper programMapper;
-    
-    @Autowired
-    private SeatMapper seatMapper;
-    
-    @Autowired
-    private TicketCategoryMapper ticketCategoryMapper;
     
     @Autowired
     private OrderClient orderClient;

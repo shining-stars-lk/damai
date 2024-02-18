@@ -8,13 +8,10 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * <p>
- * 购票人订单表 Mapper 接口
- * </p>
- *
- * @author k
- * @since 2024-01-12
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 购票人订单 mapper
+ * @author: 阿宽不是程序员
+ **/
 public interface OrderTicketUserMapper extends BaseMapper<OrderTicketUser> {
     
     List<OrderTicketUserAggregate> selectOrderTicketUserAggregate(@Param("orderNumberList")List<Long> orderNumberList);

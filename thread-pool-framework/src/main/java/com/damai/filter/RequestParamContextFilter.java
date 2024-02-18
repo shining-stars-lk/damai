@@ -14,10 +14,9 @@ import java.io.IOException;
 import static com.damai.constant.Constant.TRACE_ID;
 
 /**
- * @program: cook-frame
- * @description: 
- * @author: 星哥
- * @create: 2022-11-08 16:48
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 链路过滤器
+ * @author: 阿宽不是程序员
  **/
 
 public class RequestParamContextFilter extends OncePerRequestFilter {

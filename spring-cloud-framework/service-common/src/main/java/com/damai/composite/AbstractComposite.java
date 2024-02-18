@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+
 /**
- * 抽象类 AbstractComposite 表示组合接口，用于构建和执行具有层级结构的业务逻辑。
- * @param <T> 泛型参数，表示执行业务时传递的参数类型。
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 抽象类 AbstractComposite 表示组合接口，用于构建和执行具有层级结构的业务逻辑
+ * @param <T> 泛型参数，表示执行业务时传递的参数类型
+ * @author: 阿宽不是程序员
+ **/
 public abstract class AbstractComposite<T> {
     
     /**

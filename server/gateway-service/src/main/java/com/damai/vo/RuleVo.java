@@ -3,10 +3,9 @@ package com.damai.vo;
 import lombok.Data;
 
 /**
- * @program: cook-frame
- * @description:
- * @author: 星哥
- * @create: 2023-06-30
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 普通对象 返回vo
+ * @author: 阿宽不是程序员
  **/
 @Data
 public class RuleVo {

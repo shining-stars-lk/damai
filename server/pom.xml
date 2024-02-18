@@ -27,5 +27,6 @@
         <module>program-service</module>
         <module>pay-service</module>
         <module>single-service</module>
+        <module>mybatis-puls-service</module>
     </modules>
 </project>

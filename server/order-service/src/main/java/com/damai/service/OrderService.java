@@ -71,13 +71,10 @@ import static com.damai.core.DistributedLockConstants.ORDER_CANCEL_LOCK;
 import static com.damai.core.DistributedLockConstants.ORDER_PAY_CHECK;
 
 /**
- * <p>
- * 订单表 服务实现类
- * </p>
- *
- * @author k
- * @since 2024-01-12
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 订单 service
+ * @author: 阿宽不是程序员
+ **/
 @Slf4j
 @Service
 public class OrderService extends ServiceImpl<OrderMapper, Order> {

@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import static com.damai.constant.Constant.CODE;
 import static com.damai.constant.Constant.TRACE_ID;
 
+
 /**
- * @program: cook-frame
- * @description: 将请求头的信息传递到下一个微服务链路中
- * @author: 星哥
- * @create: 2023-04-17
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: feign 参数传递
+ * @author: 阿宽不是程序员
  **/
 
 @Slf4j
