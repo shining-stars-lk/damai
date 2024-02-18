@@ -29,13 +29,10 @@ import java.util.stream.Collectors;
 import static com.damai.core.DistributedLockConstants.PROGRAM_CATEGORY_LOCK;
 
 /**
- * <p>
- *  服务实现类
- * </p>
- *
- * @author k
- * @since 2024-01-07
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 节目类型 service
+ * @author: 阿宽不是程序员
+ **/
 @Service
 public class ProgramCategoryService extends ServiceImpl<ProgramCategoryMapper, ProgramCategory> {
     

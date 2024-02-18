@@ -9,13 +9,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * <p>
- * 座位表
- * </p>
- *
- * @author k
- * @since 2024-01-11
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 座位 dto
+ * @author: 阿宽不是程序员
+ **/
 @Data
 @ApiModel(value="SeatDto", description ="座位")
 public class SeatDto implements Serializable {

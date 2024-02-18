@@ -17,7 +17,6 @@
     <modules>
         <module>sentinel-common-general</module>
         <module>sentinel-web-general</module>
-        <module>sentinel-zuul-general</module>
         <module>sentinel-gateway-general</module>
     </modules>
 

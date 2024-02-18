@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.dto.JobInfoDto;
-import com.damai.dto.JobInfoDtoPage;
+import com.damai.dto.JobInfoPageDto;
 import com.damai.dto.RunJobDto;
 import com.damai.entity.JobInfo;
 import com.damai.mapper.JobInfoMapper;
@@ -18,10 +18,9 @@ import javax.annotation.Resource;
 import java.util.Date;
 
 /**
- * @program: cook-frame
- * @description:
- * @author: 星哥
- * @create: 2023-06-28
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: job service
+ * @author: 阿宽不是程序员
  **/
 @Service
 public class JobInfoService extends ServiceImpl<JobInfoMapper, JobInfo> {
@@ -34,8 +33,8 @@ public class JobInfoService extends ServiceImpl<JobInfoMapper, JobInfo> {
     @Autowired
     private ServiceJobRun serviceJobRun;
     
-    public Page<JobInfo> pageList(JobInfoDtoPage jobInfoDtoPage){
-        Page<JobInfo> page = Page.of(jobInfoDtoPage.getPageNo(), jobInfoDtoPage.getPageSize());
+    public Page<JobInfo> pageList(JobInfoPageDto jobInfoPageDto){
+        Page<JobInfo> page = Page.of(jobInfoPageDto.getPageNo(), jobInfoPageDto.getPageSize());
         LambdaQueryWrapper<JobInfo> queryWrapper = new LambdaQueryWrapper<>();
         Page<JobInfo> jobInfoPage = jobInfoMapper.selectPage(page, queryWrapper);
         return jobInfoPage;

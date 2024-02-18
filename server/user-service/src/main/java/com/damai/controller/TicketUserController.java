@@ -18,13 +18,10 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- * <p>
- * 购票人表 前端控制器
- * </p>
- *
- * @author k
- * @since 2024-01-09
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 购票人 控制层
+ * @author: 阿宽不是程序员
+ **/
 @RestController
 @RequestMapping("/ticket/user")
 @Api(tags = "ticket-user", description = "购票人")

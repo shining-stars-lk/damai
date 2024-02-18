@@ -6,7 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 
 import java.util.Date;
-
+/**
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: mybatisPlus更新填充
+ * @author: 阿宽不是程序员
+ **/
 @Slf4j
 public class MybatisPlusMetaObjectHandler implements MetaObjectHandler {
     

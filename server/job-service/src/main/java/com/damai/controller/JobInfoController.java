@@ -3,7 +3,7 @@ package com.damai.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.damai.common.ApiResponse;
 import com.damai.dto.JobInfoDto;
-import com.damai.dto.JobInfoDtoPage;
+import com.damai.dto.JobInfoPageDto;
 import com.damai.dto.RunJobDto;
 import com.damai.entity.JobInfo;
 import com.damai.service.JobInfoService;
@@ -18,10 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 /**
- * @program: cook-frame
- * @description:
- * @author: 星哥
- * @create: 2023-06-28
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: job 控制层
+ * @author: 阿宽不是程序员
  **/
 @RestController
 @RequestMapping("/jobInfo")
@@ -33,8 +32,8 @@ public class JobInfoController {
     
     @ApiOperation(value = "分页查询")
     @RequestMapping(value = "/pageList",method = RequestMethod.POST)
-    public ApiResponse<Page<JobInfo>> pageList(@Valid @RequestBody JobInfoDtoPage jobInfoDtoPage) {
-        Page<JobInfo> jobInfoPage = jobInfoService.pageList(jobInfoDtoPage);
+    public ApiResponse<Page<JobInfo>> pageList(@Valid @RequestBody JobInfoPageDto jobInfoPageDto) {
+        Page<JobInfo> jobInfoPage = jobInfoService.pageList(jobInfoPageDto);
         return ApiResponse.ok(jobInfoPage);
     }
     

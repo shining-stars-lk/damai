@@ -21,7 +21,6 @@ import com.alibaba.csp.sentinel.constant.SentinelConstant;
 import com.alibaba.csp.sentinel.context.Context;
 import com.alibaba.csp.sentinel.node.DefaultNode;
 import com.alibaba.csp.sentinel.slotchain.AbstractLinkedProcessorSlot;
-import com.alibaba.csp.sentinel.slotchain.ProcessorSlot;
 import com.alibaba.csp.sentinel.slotchain.ResourceWrapper;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.csp.sentinel.slots.block.degrade.circuitbreaker.CircuitBreaker;
@@ -30,11 +29,10 @@ import com.alibaba.csp.sentinel.spi.Spi;
 import java.util.List;
 
 /**
- * A {@link ProcessorSlot} dedicates to circuit breaking.
- *
- * @author Carpenter Lee
- * @author Eric Zhao
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: sentinel熔断统计
+ * @author: 阿宽不是程序员
+ **/
 @Spi(order = Constants.ORDER_DEGRADE_SLOT)
 public class DegradeSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
 

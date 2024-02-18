@@ -28,13 +28,10 @@ import java.util.concurrent.TimeUnit;
 import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
 
 /**
- * <p>
- * 节目演出时间表 服务实现类
- * </p>
- *
- * @author k
- * @since 2024-01-08
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 节目演出时间 service
+ * @author: 阿宽不是程序员
+ **/
 @Service
 public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, ProgramShowTime> {
     
@@ -64,14 +61,12 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
      * 查询节目演出时间
      * */
     public ProgramShowTime selectProgramShowTimeByProgramId(Long programId){
-        ProgramShowTime redisProgramShowTime =
-                redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME,programId),ProgramShowTime.class,() -> {
-                    LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
-                            Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
-                    return Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
-                            .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
-                },EXPIRE_TIME, TimeUnit.DAYS);
-        return redisProgramShowTime;
+        return redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME,programId),ProgramShowTime.class,() -> {
+            LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
+                    Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
+            return Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
+                    .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
+        },EXPIRE_TIME, TimeUnit.DAYS);
     }
     
     @Transactional(rollbackFor = Exception.class)

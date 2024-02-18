@@ -9,13 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
- * 节目票档表 Mapper 接口
- * </p>
- *
- * @author k
- * @since 2024-01-08
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 票档 mapper
+ * @author: 阿宽不是程序员
+ **/
 public interface TicketCategoryMapper extends BaseMapper<TicketCategory> {
 
     List<TicketCategoryAggregate> selectAggregateList(@Param("programIdList")List<Long> programIdList);

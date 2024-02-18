@@ -6,13 +6,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <p>
- * 节目表(连表查询使用)
- * </p>
- *
- * @author k
- * @since 2024-01-08
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 节目 实体 连表使用
+ * @author: 阿宽不是程序员
+ **/
 @Data
 public class ProgramV2 extends Program implements Serializable {
 

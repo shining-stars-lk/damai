@@ -4,13 +4,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.damai.entity.UserEmail;
 
 /**
- * <p>
- * 用户邮箱表 Mapper 接口
- * </p>
- *
- * @author k
- * @since 2024-01-30
- */
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 用户邮箱 mapper
+ * @author: 阿宽不是程序员
+ **/
 public interface UserEmailMapper extends BaseMapper<UserEmail> {
 
 }
