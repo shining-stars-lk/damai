@@ -15,19 +15,20 @@
  */
 package com.baidu.fsg.uid.buffer;
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import com.baidu.fsg.uid.utils.NamingThreadFactory;
+import com.baidu.fsg.uid.utils.PaddedAtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import com.baidu.fsg.uid.utils.NamingThreadFactory;
-import com.baidu.fsg.uid.utils.PaddedAtomicLong;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Represents an executor for padding {@link RingBuffer}<br>
@@ -86,11 +87,13 @@ public class BufferPaddingExecutor {
 
         // initialize thread pool
         int cores = Runtime.getRuntime().availableProcessors();
-        bufferPadExecutors = Executors.newFixedThreadPool(cores * 2, new NamingThreadFactory(WORKER_NAME));
+        
+        bufferPadExecutors = new ThreadPoolExecutor(cores * 2,cores * 2,0L, 
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),new NamingThreadFactory(WORKER_NAME));
 
         // initialize schedule thread
         if (usingSchedule) {
-            bufferPadSchedule = Executors.newSingleThreadScheduledExecutor(new NamingThreadFactory(SCHEDULE_NAME));
+            bufferPadSchedule = new ScheduledThreadPoolExecutor(1, new NamingThreadFactory(SCHEDULE_NAME));
         } else {
             bufferPadSchedule = null;
         }

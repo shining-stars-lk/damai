@@ -24,10 +24,8 @@ public class RefreshController {
     private NacosAndRibbonCustom nacosAndRibbonCustom;
     @Autowired(required = false)
     private NacosCustom nacosCustom;
-
-
-
-
+    
+    
     /**
      * 更新并拉取服务列表
      * */
@@ -56,7 +54,9 @@ public class RefreshController {
      * */
     @RequestMapping(value = "/logoutService", method = RequestMethod.POST)
     public Boolean logoutService(HttpServletRequest request){
-        if (!(request.getServerName().equalsIgnoreCase("localhost") || request.getServerName().equalsIgnoreCase("127.0.0.1"))) {
+        String localhostName = "localhost";
+        String localhostAddress = "127.0.0.1";
+        if (!(localhostName.equalsIgnoreCase(request.getServerName()) || localhostAddress.equalsIgnoreCase(request.getServerName()))) {
             return false;
         }
         if (nacosCustom != null) {

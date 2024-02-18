@@ -132,7 +132,7 @@ public class BusinessEsHandle {
             Request request = new Request("GET", path);
             request.addParameters(Collections.<String, String>emptyMap());
             Response response = restClient.performRequest(request);
-            return response.getStatusLine().getReasonPhrase().equals("OK");
+            return "OK".equals(response.getStatusLine().getReasonPhrase());
         }catch (Exception e) {
             if (e instanceof ResponseException && ((ResponseException)e).getResponse().getStatusLine().getStatusCode() == RestStatus.NOT_FOUND.getStatus()) {
                 log.warn("index not exist ! indexName:{}, indexType:{}", SpringUtil.getPrefixDistinctionName() + "-" + indexName,indexType);
@@ -156,7 +156,7 @@ public class BusinessEsHandle {
             Request request = new Request("DELETE", "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName);
             request.addParameters(Collections.<String, String>emptyMap());
             Response response = restClient.performRequest(request);
-            return response.getStatusLine().getReasonPhrase().equals("OK");
+            return "OK".equals(response.getStatusLine().getReasonPhrase());
         }catch (Exception e) {
             log.error("deleteIndex error",e);
         }
@@ -221,7 +221,7 @@ public class BusinessEsHandle {
             request.addParameters(Collections.<String, String>emptyMap());
             Response indexResponse = restClient.performRequest(request);
             String reasonPhrase = indexResponse.getStatusLine().getReasonPhrase();
-            return reasonPhrase.equalsIgnoreCase("created") || reasonPhrase.equalsIgnoreCase("ok");
+            return "created".equalsIgnoreCase(reasonPhrase) || "ok".equalsIgnoreCase(reasonPhrase);
         }catch (Exception e) {
             log.error("add error",e);
         }
