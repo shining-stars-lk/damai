@@ -2,7 +2,7 @@ server:
   port: 6086
 spring:
   application:
-    name: program-service
+    name: ${prefix.distinction.name:damai}-program-service
   main:
     allow-bean-definition-overriding: true
   cloud:

@@ -4,7 +4,7 @@ server:
 # 应用名称
 spring:
   application:
-    name: single-service
+    name: ${prefix.distinction.name:damai}-single-service
   cloud:
     nacos:
       discovery:

@@ -1,6 +1,7 @@
 package com.damai.lockinfo;
 
 
+import com.damai.core.SpringUtil;
 import com.damai.core.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -36,7 +37,7 @@ public abstract class AbstractLockInfoHandle implements LockInfoHandle {
     protected abstract String getLockPrefixName();
     @Override
     public String getLockName(JoinPoint joinPoint,String name,String[] keys){
-        return getLockPrefixName() + SEPARATOR + name + getRelKey(joinPoint, keys);
+        return SpringUtil.getPrefixDistinctionName() + "-" + getLockPrefixName() + SEPARATOR + name + getRelKey(joinPoint, keys);
     }
     @Override
     public String simpleGetLockName(String name,String[] keys){
@@ -46,7 +47,8 @@ public abstract class AbstractLockInfoHandle implements LockInfoHandle {
                 definitionKeyList.add(key);
             }
         }
-        return LOCK_DISTRIBUTE_ID_NAME_PREFIX + SEPARATOR + name + SEPARATOR + String.join(SEPARATOR, definitionKeyList);
+        return SpringUtil.getPrefixDistinctionName() + "-" + 
+                LOCK_DISTRIBUTE_ID_NAME_PREFIX + SEPARATOR + name + SEPARATOR + String.join(SEPARATOR, definitionKeyList);
     }
 
     /**

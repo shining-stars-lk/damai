@@ -4,7 +4,7 @@ server:
 # 应用名称
 spring:
   application:
-    name: customize-service
+    name: ${prefix.distinction.name:damai}-customize-service
   main:
     allow-bean-definition-overriding: true
   cloud:

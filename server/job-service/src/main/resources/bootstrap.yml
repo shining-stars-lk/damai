@@ -4,7 +4,7 @@ server:
 # 应用名称
 spring:
   application:
-    name: job-service
+    name: ${prefix.distinction.name:damai}-job-service
   main:
     allow-bean-definition-overriding: true
   cloud:

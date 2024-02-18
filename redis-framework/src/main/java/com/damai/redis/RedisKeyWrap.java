@@ -2,6 +2,7 @@ package com.damai.redis;
 
 
 import com.damai.core.RedisKeyEnum;
+import com.damai.core.SpringUtil;
 
 import java.util.Objects;
 
@@ -29,7 +30,7 @@ public final class RedisKeyWrap {
      * */
     public static RedisKeyWrap createRedisKey(RedisKeyEnum RedisKeyEnum, Object... args){
         String redisRelKey = String.format(RedisKeyEnum.getKeyCode(),args);
-        return new RedisKeyWrap(redisRelKey);
+        return new RedisKeyWrap(SpringUtil.getPrefixDistinctionName() + "-" + redisRelKey);
     }
 
     public String getRelKey() {
