@@ -4,7 +4,7 @@ server:
 # 应用名称
 spring:
   application:
-    name: user-service
+    name: ${prefix.distinction.name:damai}-user-service
   cloud:
     nacos:
       discovery:

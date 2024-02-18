@@ -2,16 +2,16 @@ package com.damai.context;
 
 import com.damai.core.DelayProduceQueue;
 import com.damai.core.IsolationRegionSelector;
+import com.damai.core.SpringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @program: cook-frame
- * @description:
- * @author: k
- * @create: 2024-01-24
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 延迟队列 发送者 分片选择
+ * @author: 阿宽不是程序员
  **/
 public class DelayQueueProduceCombine {
     
@@ -23,7 +23,8 @@ public class DelayQueueProduceCombine {
         Integer isolationRegionCount = delayQueueBasePart.getDelayQueueProperties().getIsolationRegionCount();
         isolationRegionSelector =new IsolationRegionSelector(isolationRegionCount);
         for(int i = 0; i < isolationRegionCount; i++) {
-            delayProduceQueueList.add(new DelayProduceQueue(delayQueueBasePart.getRedissonClient(),topic + "-" + i));
+            delayProduceQueueList.add(new DelayProduceQueue(delayQueueBasePart.getRedissonClient(), 
+                    SpringUtil.getPrefixDistinctionName() + "-" + topic + "-" + i));
         }
     }
     

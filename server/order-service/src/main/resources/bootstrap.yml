@@ -4,7 +4,7 @@ server:
 # 应用名称
 spring:
   application:
-    name: order-service
+    name: ${prefix.distinction.name:damai}-order-service
   main:
     allow-bean-definition-overriding: true
   cloud:

@@ -2,11 +2,11 @@ package com.damai.core;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/***
- * 
- * title:隔离区选择器
- *
- */
+/**
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 延迟队列 分片选择器
+ * @author: 阿宽不是程序员
+ **/
 public class IsolationRegionSelector {
 
 	private final AtomicInteger count = new AtomicInteger(0);

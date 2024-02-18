@@ -5,7 +5,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
@@ -14,8 +13,10 @@ import javax.annotation.PostConstruct;
  * @description: spring工具
  * @author: 阿宽不是程序员
  **/
-@Component
+
 public class SpringUtil implements ApplicationContextAware, EnvironmentAware {
+    
+    private final PrefixDistinctionNameProperties prefixDistinctionNameProperties;
     
     private ApplicationContext applicationContext;
     
@@ -23,9 +24,8 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware {
     
     private static SpringUtil springUtil;
     
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    public SpringUtil(PrefixDistinctionNameProperties prefixDistinctionNameProperties){
+        this.prefixDistinctionNameProperties = prefixDistinctionNameProperties;
     }
     
     @PostConstruct
@@ -52,10 +52,17 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware {
         return springUtil.environment.getProperty(key);
     }
     
+    public static String getPrefixDistinctionName(){
+        return springUtil.prefixDistinctionNameProperties.getName();
+    }
+    
     @Override
     public void setEnvironment(final Environment environment) {
         this.environment = environment;
     }
     
-    
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 }

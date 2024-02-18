@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.damai.core.SpringUtil;
 import com.damai.core.StringUtil;
 import com.damai.dto.EsDataQueryDto;
 import com.damai.dto.EsDocumentMappingDto;
@@ -104,7 +105,7 @@ public class BusinessEsHandle {
         indexRequest.source(builder);
         String source = indexRequest.source().utf8ToString();
         HttpEntity entity = new NStringEntity(source, ContentType.APPLICATION_JSON);
-        Request request = new Request("PUT","/"+indexName+"");
+        Request request = new Request("PUT","/"+ SpringUtil.getPrefixDistinctionName() + "-" + indexName);
         request.setEntity(entity);
         request.addParameters(Collections.<String, String>emptyMap());
         Response performRequest = restClient.performRequest(request);
@@ -124,9 +125,9 @@ public class BusinessEsHandle {
         try {
             String path = "";
             if (esTypeSwitch) {
-                path = "/" + indexName + "/" + indexType + "/_mapping?include_type_name";
+                path = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/" + indexType + "/_mapping?include_type_name";
             }else {
-                path = "/" + indexName + "/_mapping";
+                path = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/_mapping";
             }
             Request request = new Request("GET", path);
             request.addParameters(Collections.<String, String>emptyMap());
@@ -134,7 +135,7 @@ public class BusinessEsHandle {
             return response.getStatusLine().getReasonPhrase().equals("OK");
         }catch (Exception e) {
             if (e instanceof ResponseException && ((ResponseException)e).getResponse().getStatusLine().getStatusCode() == RestStatus.NOT_FOUND.getStatus()) {
-                log.warn("index not exist ! indexName:{}, indexType:{}",indexName,indexType);
+                log.warn("index not exist ! indexName:{}, indexType:{}", SpringUtil.getPrefixDistinctionName() + "-" + indexName,indexType);
             }else {
                 log.error("checkIndex error",e);
             }
@@ -152,7 +153,7 @@ public class BusinessEsHandle {
             return false;
         }
         try {
-            Request request = new Request("DELETE", "/" + indexName);
+            Request request = new Request("DELETE", "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName);
             request.addParameters(Collections.<String, String>emptyMap());
             Response response = restClient.performRequest(request);
             return response.getStatusLine().getReasonPhrase().equals("OK");
@@ -207,9 +208,9 @@ public class BusinessEsHandle {
             HttpEntity entity = new NStringEntity(jsonString, ContentType.APPLICATION_JSON);
             String endpoint = "";
             if (esTypeSwitch) {
-                endpoint = "/" + indexName + "/" + indexType;
+                endpoint = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/" + indexType;
             }else {
-                endpoint = "/" + indexName + "/_doc";
+                endpoint = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/_doc";
             }
             if (StringUtil.isNotEmpty(id)) {
                 endpoint = endpoint + "/" + id;
@@ -534,7 +535,7 @@ public class BusinessEsHandle {
     private <T> void executeQuery(String indexName, String indexType,List<T> list,PageInfo<T> pageInfo,Class<T> clazz, SearchSourceBuilder sourceBuilder) throws IOException {
         String string = sourceBuilder.toString();
         HttpEntity entity = new NStringEntity(string, ContentType.APPLICATION_JSON);
-        StringBuilder endpointStringBuilder = new StringBuilder("/" + indexName);
+        StringBuilder endpointStringBuilder = new StringBuilder("/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName);
         if (esTypeSwitch) {
             endpointStringBuilder.append("/").append(indexType).append("/_search");
         }else {
