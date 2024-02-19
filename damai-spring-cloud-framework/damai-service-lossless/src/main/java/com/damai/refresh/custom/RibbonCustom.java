@@ -32,7 +32,7 @@ public class RibbonCustom {
     private static final String UP_SERVER_LIST_FIELD = "upServerList";
 
     private Map<String,ZoneAwareLoadBalancer> zoneAwareLoadBalancerMap(){
-        Map<String,ZoneAwareLoadBalancer> zoneAwareLoadBalancerMap = new HashMap<>();
+        Map<String,ZoneAwareLoadBalancer> zoneAwareLoadBalancerMap = new HashMap<>(256);
         try{
             SpringClientFactory springClientFactory = SpringUtil.getBean(SpringClientFactory.class);
             if (springClientFactory != null) {
@@ -76,7 +76,7 @@ public class RibbonCustom {
     }
 
     public Map getRibbonCache(){
-        Map taotalMap = new HashMap();
+        Map taotalMap = new HashMap(256);
         try {
             Map<String, ZoneAwareLoadBalancer> zoneAwareLoadBalancerMap = zoneAwareLoadBalancerMap();
             for (Map.Entry<String, ZoneAwareLoadBalancer> entry : zoneAwareLoadBalancerMap.entrySet()) {
@@ -89,7 +89,7 @@ public class RibbonCustom {
                 Field upServerListField = aClass1.getSuperclass().getSuperclass().getDeclaredField(UP_SERVER_LIST_FIELD);
                 upServerListField.setAccessible(true);
                 List<Server> upServerList = (List<Server>)upServerListField.get(balancer);
-                Map mapServerList = new HashMap();
+                Map mapServerList = new HashMap(8);
                 mapServerList.put(ALL_SERVER_LIST_FIELD,allServerList);
                 mapServerList.put(UP_SERVER_LIST_FIELD,upServerList);
                 taotalMap.put(serverName,mapServerList);

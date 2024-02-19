@@ -1,6 +1,7 @@
 package com.damai.refresh.custom;
 
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
+import com.alibaba.cloud.nacos.NacosServiceManager;
 import com.alibaba.cloud.nacos.registry.NacosAutoServiceRegistration;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.ServiceInfo;
@@ -37,11 +38,13 @@ public class NacosCustom {
     
     private final NacosAutoServiceRegistration nacosAutoServiceRegistration;
     
+    private final NacosServiceManager nacosServiceManager;
+    
 
-    private Map getNacosCacheMap(){
-        Map map = new HashMap();
+    private Map<String,Object> getNacosCacheMap(){
+        Map<String,Object> map = new HashMap(8);
         try {
-            NamingService namingService = discoveryProperties.namingServiceInstance();
+            NamingService namingService = nacosServiceManager.getNamingService(discoveryProperties.getNacosProperties());
             if (namingService instanceof NacosNamingService) {
                 NacosNamingService nacosNamingService = (NacosNamingService)namingService;
                 Class<? extends NacosNamingService> nacosNamingServiceClass = nacosNamingService.getClass();
@@ -89,7 +92,7 @@ public class NacosCustom {
         return (Map<String, ServiceInfo>)map.get("serviceInfoMap");
     }
     
-    public Boolean LogoutService(){
+    public Boolean logoutService(){
         try {
             log.info("stop service");
             nacosAutoServiceRegistration.stop();

@@ -12,7 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class GatewayProperty {
-    //需要做频率限制的路径
+    /**
+     * 需要做频率限制的路径
+     */
     @Value("${api.limit.paths:#{null}}")
     private String[] apiRestrictPaths;
     

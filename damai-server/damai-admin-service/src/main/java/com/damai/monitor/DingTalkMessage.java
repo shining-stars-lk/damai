@@ -24,13 +24,13 @@ public class DingTalkMessage {
     private RestTemplate restTemplate = new RestTemplate();
     
     private HttpEntity<String> createMessage(String message) {
-        Map<String, Object> messageJson = new HashMap<>();
-        Map<String, Object> context = new HashMap<>();
+        Map<String, Object> messageJson = new HashMap<>(8);
+        Map<String, Object> context = new HashMap<>(8);
         context.put("content", message);
         messageJson.put("text", JSON.toJSONString(context));
         messageJson.put("msgtype", "text");
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity<>(JSON.toJSONString(messageJson), headers);
     }
     

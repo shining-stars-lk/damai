@@ -31,7 +31,7 @@ public class DelayOperateProgramDataConsumer implements ConsumerTask {
             return;
         }
         ProgramOperateDataDto programOperateDataDto = JSON.parseObject(content, ProgramOperateDataDto.class);
-        programService.OperateProgramData(programOperateDataDto);
+        programService.operateProgramData(programOperateDataDto);
     }
     
     @Override

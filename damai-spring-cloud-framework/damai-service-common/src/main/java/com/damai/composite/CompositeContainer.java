@@ -85,7 +85,7 @@ public class CompositeContainer<T> {
         Map<Integer, Map<Integer, AbstractComposite>> groupedByTier = new TreeMap<>();
         
         for (AbstractComposite component : components) {
-            groupedByTier.computeIfAbsent(component.executeTier(), k -> new HashMap<>())
+            groupedByTier.computeIfAbsent(component.executeTier(), k -> new HashMap<>(16))
                     // 使用 executeOrder 作为键
                     .put(component.executeOrder(), component);
         }

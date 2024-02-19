@@ -24,7 +24,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/rule")
-@Api(tags = "rule", description = "规则")
+@Api(tags = "rule", value = "规则")
 public class RuleController {
 
     @Autowired

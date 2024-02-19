@@ -31,7 +31,7 @@ public class TokenDataService {
     public void add(TokenDataDto tokenDataDto){
         TokenData tokenData = new TokenData();
         BeanUtils.copyProperties(tokenDataDto,tokenData);
-        tokenData.setId(uidGenerator.getUID());
+        tokenData.setId(uidGenerator.getUid());
         tokenData.setCreateTime(DateUtils.now());
         tokenDataMapper.insert(tokenData);
     }

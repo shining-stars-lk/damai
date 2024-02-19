@@ -56,7 +56,7 @@ public class MonitorServer extends AbstractStatusChangeNotifier {
         String from = this.getLastStatus(event.getInstance());
         String to = statusChange.getStatusInfo().getStatus();
         
-        Map<String, Object> root = new HashMap<>();
+        Map<String, Object> root = new HashMap<>(16);
         root.put("instance", instance);
         root.put("fromStatus",from);
         root.put("toStatus",to);

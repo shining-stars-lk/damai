@@ -22,9 +22,9 @@ public class RegisterCenterAutoConfigurationImportFilter implements AutoConfigur
     
     private static final String EUREKA = "eureka";
     
-    private static final Map<String,String> eurekaAutoConfigurationBeanNameMap = EurekaAutoConfigurationBean.autoConfigurationBeanNameMap();
+    private static final Map<String,String> EUREKA_AUTO_CONFIGURATION_BEAN_NAME_MAP = EurekaAutoConfigurationBean.autoConfigurationBeanNameMap();
     
-    private static final Map<String,String> nacosAutoConfigurationBeanNameMap = NacosAutoConfigurationBean.autoConfigurationBeanNameMap(); 
+    private static final Map<String,String> NACOS_AUTO_CONFIGURATION_BEAN_NAME_MAP = NacosAutoConfigurationBean.autoConfigurationBeanNameMap(); 
     
     
     @Override
@@ -35,11 +35,11 @@ public class RegisterCenterAutoConfigurationImportFilter implements AutoConfigur
         
         if (NACOS.equals(type)) {
             for (int i = 0; i < autoConfigurationClasses.length; i++) {
-                match[i] = eurekaAutoConfigurationBeanNameMap.get(autoConfigurationClasses[i]) == null;
+                match[i] = EUREKA_AUTO_CONFIGURATION_BEAN_NAME_MAP.get(autoConfigurationClasses[i]) == null;
             }
         }else if (EUREKA.equals(type)) {
             for (int i = 0; i < autoConfigurationClasses.length; i++) {
-                match[i] = nacosAutoConfigurationBeanNameMap.get(autoConfigurationClasses[i]) == null;
+                match[i] = NACOS_AUTO_CONFIGURATION_BEAN_NAME_MAP.get(autoConfigurationClasses[i]) == null;
             }
         }else {
             for (int i = 0; i < autoConfigurationClasses.length; i++) {

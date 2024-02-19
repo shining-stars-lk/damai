@@ -55,10 +55,10 @@ public class CacheUtil {
     /**
      * 检查 redisKeyWrap 中的key是否为空或空的字符串
      *
-     * @param RedisKeyWrap
+     * @param redisKeyWrap key包装
      */
-    public static void checkNotBlank(RedisKeyWrap RedisKeyWrap) {
-        if (StringUtil.isEmpty(RedisKeyWrap.getRelKey())) {
+    public static void checkNotBlank(RedisKeyWrap redisKeyWrap) {
+        if (StringUtil.isEmpty(redisKeyWrap.getRelKey())) {
             throw new RuntimeException("请求参数缺失");
         }
     }
@@ -79,9 +79,9 @@ public class CacheUtil {
     /**
      * 检查 list 是否为空或空的字符串
      *
-     * @param list
+     * @param list key集合
      */
-    public static void checkNotEmpty(Collection list) {
+    public static void checkNotEmpty(Collection<?> list) {
         for (Object o : list) {
             if (o == null) {
                 throw new RuntimeException("请求参数缺失");

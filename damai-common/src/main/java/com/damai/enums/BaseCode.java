@@ -10,6 +10,7 @@ public enum BaseCode {
     SUCCESS(0, "OK"),
     SYSTEM_ERROR(-1,"系统异常"),
     
+    UID_WORK_ID_ERROR(500,"uid_work_id设置失败"),
     RSA_SIGN_ERROR(10000,"res签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"res解密失败"),

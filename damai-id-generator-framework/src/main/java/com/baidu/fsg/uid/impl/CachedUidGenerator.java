@@ -74,7 +74,7 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
     }
     
     @Override
-    public long getUID() {
+    public long getUid() {
         try {
             return ringBuffer.take();
         } catch (Exception e) {
@@ -94,8 +94,8 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
     }
 
     @Override
-    public String parseUID(long uid) {
-        return super.parseUID(uid);
+    public String parseUid(long uid) {
+        return super.parseUid(uid);
     }
     
     @Override

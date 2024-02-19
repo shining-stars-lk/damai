@@ -14,6 +14,11 @@ import java.util.List;
  **/
 public interface OrderTicketUserMapper extends BaseMapper<OrderTicketUser> {
     
+    /**
+     * 查询订单下购票人数量
+     * @param orderNumberList 参数
+     * @return 结果
+     * */
     List<OrderTicketUserAggregate> selectOrderTicketUserAggregate(@Param("orderNumberList")List<Long> orderNumberList);
 
 }

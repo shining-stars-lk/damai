@@ -13,6 +13,7 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.Contact;
 import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
@@ -37,11 +38,7 @@ public class SwaggerConfiguration {
         Predicate<RequestHandler> predicate = (requestHandler) -> {
             boolean controllerStandardDocument = requestHandler.findControllerAnnotation(Api.class).isPresent();
             boolean methodStandardDocument = requestHandler.findAnnotation(ApiOperation.class).isPresent();
-            if (controllerStandardDocument || methodStandardDocument) {
-                return true;
-            }else {
-                return false;
-            }
+            return controllerStandardDocument || methodStandardDocument;
         };
         
         return new Docket(DocumentationType.SWAGGER_2)
@@ -58,7 +55,7 @@ public class SwaggerConfiguration {
                 .title("swagger文档")
                 .description("<div style='font-size:14px;color:red;'>前端开发人员使用</div>")
                 .termsOfServiceUrl("http://www.group.com/")
-                .contact("kuan")
+                .contact(new Contact("阿宽不是程序员", "", ""))
                 .version("1.0")
                 .build();
     }

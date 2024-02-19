@@ -14,10 +14,26 @@ import java.util.Map;
  * @author: 阿宽不是程序员
  **/
 public interface TicketCategoryMapper extends BaseMapper<TicketCategory> {
-
+    
+    /**
+     * 票档统计
+     * @param programIdList 参数
+     * @return 结果
+     * */
     List<TicketCategoryAggregate> selectAggregateList(@Param("programIdList")List<Long> programIdList);
     
+    /**
+     * 更新数量
+     * @param number 数量
+     * @param id id
+     * @return 结果
+     * */
     int updateRemainNumber(@Param("number")Long number,@Param("id")Long id);
     
+    /**
+     * 批量更新数量
+     * @param ticketCategoryCountMap 参数
+     * @return 结果
+     * */
     int batchUpdateRemainNumber(@Param("ticketCategoryCountMap") Map<Long, Long> ticketCategoryCountMap);
 }

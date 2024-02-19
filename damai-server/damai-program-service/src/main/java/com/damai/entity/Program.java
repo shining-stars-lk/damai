@@ -42,12 +42,12 @@ public class Program extends BaseData implements Serializable {
      */
     private String title;
     
-    /*
+    /**
      * 艺人
      * */
     private String actor;
     
-    /*
+    /**
      * 地点
      * */
     private String place;

@@ -19,6 +19,11 @@ import javax.validation.Valid;
 @FeignClient(value = "job-service",fallback = JobClientFallback.class)
 public interface JobClient {
     
+    /**
+     * 上报任务状态
+     * @param dto 参数
+     * @return 结果
+     * */
     @RequestMapping(value = "jobRunRecord/callBack", method = RequestMethod.POST)
     ApiResponse<Boolean> callBack(@Valid @RequestBody JobCallBackDto dto);
 }

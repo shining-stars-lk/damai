@@ -1,6 +1,7 @@
 package com.damai.service.init;
 
 import com.damai.BusinessThreadPool;
+import com.damai.core.SpringUtil;
 import com.damai.dto.EsDocumentMappingDto;
 import com.damai.entity.TicketCategoryAggregate;
 import com.damai.init.InitData;
@@ -42,10 +43,22 @@ public class ProgramElasticsearchInitData implements InitData {
         BusinessThreadPool.execute(this::initElasticsearchData);
     }
     public boolean indexAdd(){
-        boolean result = businessEsHandle.checkIndex(ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE);
+        boolean result = businessEsHandle.checkIndex(SpringUtil.getPrefixDistinctionName() + "-" + 
+                ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE);
         if (result) {
             return false;
         }
+        try {
+            businessEsHandle.createIndex(SpringUtil.getPrefixDistinctionName() + "-" + 
+                    ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE,getEsMapping());
+            return true;
+        }catch (Exception e) {
+            log.error("createIndex error",e);
+        }
+        return false;
+    }
+    
+    public List<EsDocumentMappingDto> getEsMapping(){
         List<EsDocumentMappingDto> list = new ArrayList<>();
         
         EsDocumentMappingDto idDto = new EsDocumentMappingDto();
@@ -123,13 +136,7 @@ public class ProgramElasticsearchInitData implements InitData {
         maxPriceDto.setParamType("integer");
         list.add(maxPriceDto);
         
-        try {
-            businessEsHandle.createIndex(ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE,list);
-            return true;
-        }catch (Exception e) {
-            log.error("createIndex error",e);
-        }
-        return false;
+        return list;
     }
     
     public void initElasticsearchData(){
@@ -142,7 +149,7 @@ public class ProgramElasticsearchInitData implements InitData {
         
         for (Long programId : allProgramIdList) {
             ProgramVo programVo = programService.getDetailFromDb(programId);
-            Map<String,Object> map = new HashMap<>();
+            Map<String,Object> map = new HashMap<>(32);
             map.put(ProgramDocumentParamName.ID,programVo.getId());
             map.put(ProgramDocumentParamName.TITLE,programVo.getTitle());
             map.put(ProgramDocumentParamName.ACTOR,programVo.getActor());
@@ -160,7 +167,8 @@ public class ProgramElasticsearchInitData implements InitData {
             map.put(ProgramDocumentParamName.MIN_PRICE,Optional.ofNullable(ticketCategorieMap.get(programVo.getId())).map(TicketCategoryAggregate::getMinPrice).orElse(null));
             //最高价
             map.put(ProgramDocumentParamName.MAX_PRICE,Optional.ofNullable(ticketCategorieMap.get(programVo.getId())).map(TicketCategoryAggregate::getMaxPrice).orElse(null));
-            businessEsHandle.add(ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE,map);
+            businessEsHandle.add(SpringUtil.getPrefixDistinctionName() + "-" + 
+                    ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE,map);
         }
     }
 }

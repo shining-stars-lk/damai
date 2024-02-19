@@ -6,6 +6,7 @@ import com.damai.namefactory.BusinessNameThreadFactory;
 import com.damai.rejectedexecutionhandler.ThreadPoolRejectedExecutionHandler;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -41,7 +42,7 @@ public class BusinessThreadPool extends BaseThreadPool {
 
     private static Integer maximumPoolSize() {
         return new BigDecimal(Runtime.getRuntime().availableProcessors())
-                .divide(new BigDecimal("0.2"), 0, BigDecimal.ROUND_HALF_UP).intValue();
+                .divide(new BigDecimal("0.2"), 0, RoundingMode.HALF_UP).intValue();
     }
     
    

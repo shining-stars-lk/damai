@@ -193,8 +193,7 @@ public class ProgramOrderService {
         data[0] = JSON.toJSONString(jsonArray);
         data[1] = JSON.toJSONString(seatDtoList);
         //升级后的lua脚本处理票档数量和座位状态的检验，以及扣减票档数量的操作
-        String result = programCacheCreateOrderOperate.programCacheOperate(keys, data);
-        ProgramCacheCreateOrderData programCacheCreateOrderData = JSON.parseObject(result, ProgramCacheCreateOrderData.class);
+        ProgramCacheCreateOrderData programCacheCreateOrderData = programCacheCreateOrderOperate.programCacheOperate(keys, data);
         if (!Objects.equals(programCacheCreateOrderData.getCode(), BaseCode.SUCCESS.getCode())) {
             throw new DaMaiFrameException(Objects.requireNonNull(BaseCode.getRc(programCacheCreateOrderData.getCode())));
         }

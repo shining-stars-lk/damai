@@ -25,21 +25,27 @@ public interface UserClient {
     
     /**
      * 查询用户(通过id)
+     * @param dto 参数
+     * @return 结果
      * */
     @PostMapping(value = "/user/getById")
-    ApiResponse<UserVo> getById(UserIdDto userIdDto);
+    ApiResponse<UserVo> getById(UserIdDto dto);
     
 
     /**
      * 查询购票人(通过userId)
+     * @param dto 参数
+     * @return 结果
      * */
     @PostMapping(value = "/ticket/user/select")
-    ApiResponse<List<TicketUserVo>> select(@Valid @RequestBody UserIdDto userIdDto);
+    ApiResponse<List<TicketUserVo>> select(@Valid @RequestBody UserIdDto dto);
     
     /**
      * 查询用户和购票人集合
+     * @param dto 参数
+     * @return 结果
      */
     @PostMapping(value = "/user/getUserAndTicketUserList")
-    ApiResponse<UserGetAndTicketUserListVo> getUserAndTicketUserList(UserGetAndTicketUserListDto userGetAndTicketUserListDto);
+    ApiResponse<UserGetAndTicketUserListVo> getUserAndTicketUserList(UserGetAndTicketUserListDto dto);
     
 }

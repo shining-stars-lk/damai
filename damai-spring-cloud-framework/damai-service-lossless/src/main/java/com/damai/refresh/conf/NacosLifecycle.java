@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @AllArgsConstructor
 public class NacosLifecycle implements SmartLifecycle {
     
-    private static final AtomicBoolean running = new AtomicBoolean(false);
+    private static final AtomicBoolean RUNNING = new AtomicBoolean(false);
 
     private final NacosAndRibbonCustom nacosAndRibbonCustom;
 
@@ -35,11 +35,10 @@ public class NacosLifecycle implements SmartLifecycle {
 
     @Override
     public void start(){
-        if (running.compareAndSet(false, true)) {
+        if (RUNNING.compareAndSet(false, true)) {
             try {
                 NamingService naming = NamingFactory.createNamingService(properties.getNacosProperties());
                 naming.subscribe(properties.getService(),event -> {
-                    //log.warn("refreshNacosAndRibbonCache finish ...");
                     new Thread(nacosAndRibbonCustom::refreshNacosAndRibbonCache,"service-refresher-thread").start();
                 });
             }catch (Exception e) {
@@ -50,11 +49,10 @@ public class NacosLifecycle implements SmartLifecycle {
 
     @Override
     public void stop() {
-        if (running.compareAndSet(true, false)) {
+        if (RUNNING.compareAndSet(true, false)) {
             try {
                 NamingService naming = NamingFactory.createNamingService(properties.getNacosProperties());
                 naming.unsubscribe(properties.getService(),event -> {
-                    //log.warn("updateNacosAndRibbonCache completed ...");
                     new Thread(nacosAndRibbonCustom::refreshNacosAndRibbonCache,"service-refresher-thread").start();
                 });
             }catch (Exception e) {
@@ -65,7 +63,7 @@ public class NacosLifecycle implements SmartLifecycle {
 
     @Override
     public boolean isRunning() {
-        return running.get();
+        return RUNNING.get();
     }
 
     @Override

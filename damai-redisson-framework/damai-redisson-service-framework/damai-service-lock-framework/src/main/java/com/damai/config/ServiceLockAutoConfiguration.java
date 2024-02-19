@@ -6,7 +6,7 @@ import com.damai.lockinfo.factory.LockInfoHandleFactory;
 import com.damai.lockinfo.impl.ServiceLockInfoHandle;
 import com.damai.servicelock.aspect.ServiceLockAspect;
 import com.damai.servicelock.factory.ServiceLockFactory;
-import com.damai.util.RBloomFilterUtil;
+import com.damai.util.BloomFilterHandler;
 import com.damai.util.ServiceLockTool;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -44,7 +44,7 @@ public class ServiceLockAutoConfiguration {
      * 布隆过滤器
      */
     @Bean
-    public RBloomFilterUtil rBloomFilterUtil(RedissonClient redissonClient, RedissonProperties redissonProperties) {
-        return new RBloomFilterUtil(redissonClient,redissonProperties);
+    public BloomFilterHandler rBloomFilterUtil(RedissonClient redissonClient, RedissonProperties redissonProperties) {
+        return new BloomFilterHandler(redissonClient,redissonProperties);
     }
 }

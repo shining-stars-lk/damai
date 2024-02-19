@@ -29,7 +29,7 @@ import java.util.Map;
  **/
 @RestController
 @RequestMapping("/program")
-@Api(tags = "program", description = "节目")
+@Api(tags = "program", value = "节目")
 public class ProgramController {
     
     @Autowired

@@ -18,7 +18,7 @@ package com.baidu.fsg.uid.impl;
 import com.baidu.fsg.uid.BitsAllocator;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baidu.fsg.uid.exception.UidGenerateException;
-import com.baidu.fsg.uid.utils.DateUtils;
+import com.baidu.fsg.uid.utils.AbstractDateUtils;
 import com.baidu.fsg.uid.worker.WorkerIdAssigner;
 import com.damai.toolkit.SnowflakeIdGenerator;
 import org.apache.commons.lang.StringUtils;
@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  * <li>worker id: The next 22 bits, represents the worker's id which assigns based on database, max id is about 420W
  * <li>sequence: The next 13 bits, represents a sequence within the same second, max for 8192/s<br><br>
  *
- * The {@link DefaultUidGenerator#parseUID(long)} is a damai method to parse the bits
+ * The {@link DefaultUidGenerator#parseUid(long)} is a damai method to parse the bits
  *
  * <pre>{@code
  * +------+----------------------+----------------+-----------+
@@ -101,7 +101,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     }
 
     @Override
-    public long getUID() throws UidGenerateException {
+    public long getUid() throws UidGenerateException {
         try {
             return nextId();
         } catch (Exception e) {
@@ -121,7 +121,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     }
 
     @Override
-    public String parseUID(long uid) {
+    public String parseUid(long uid) {
         long totalBits = BitsAllocator.TOTAL_BITS;
         long signBits = bitsAllocator.getSignBits();
         long timestampBits = bitsAllocator.getTimestampBits();
@@ -134,7 +134,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
         long deltaSeconds = uid >>> (workerIdBits + sequenceBits);
 
         Date thatTime = new Date(TimeUnit.SECONDS.toMillis(epochSeconds + deltaSeconds));
-        String thatTimeStr = DateUtils.formatByDateTimePattern(thatTime);
+        String thatTimeStr = AbstractDateUtils.formatByDateTimePattern(thatTime);
 
         // format as string
         return String.format("{\"UID\":\"%d\",\"timestamp\":\"%s\",\"workerId\":\"%d\",\"sequence\":\"%d\"}",
@@ -227,7 +227,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     public void setEpochStr(String epochStr) {
         if (StringUtils.isNotBlank(epochStr)) {
             this.epochStr = epochStr;
-            this.epochSeconds = TimeUnit.MILLISECONDS.toSeconds(DateUtils.parseByDayPattern(epochStr).getTime());
+            this.epochSeconds = TimeUnit.MILLISECONDS.toSeconds(AbstractDateUtils.parseByDayPattern(epochStr).getTime());
         }
     }
     

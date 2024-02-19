@@ -43,7 +43,7 @@ public class JobInfoService extends ServiceImpl<JobInfoMapper, JobInfo> {
     public void add(final JobInfoDto jobInfoDto) {
         JobInfo jobInfo = new JobInfo();
         BeanUtils.copyProperties(jobInfoDto,jobInfo);
-        jobInfo.setId(uidGenerator.getUID());
+        jobInfo.setId(uidGenerator.getUid());
         jobInfo.setCreateTime(new Date());
         jobInfoMapper.insert(jobInfo);
     }

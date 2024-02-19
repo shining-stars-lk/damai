@@ -32,7 +32,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/user")
-@Api(tags = "user", description = "用户")
+@Api(tags = "user", value = "用户")
 public class UserController {
     
     @Autowired

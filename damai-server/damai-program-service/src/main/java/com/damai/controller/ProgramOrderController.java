@@ -20,7 +20,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/program/order")
-@Api(tags = "program-order", description = "节目订单")
+@Api(tags = "program-order", value = "节目订单")
 public class ProgramOrderController {
     
     @Autowired

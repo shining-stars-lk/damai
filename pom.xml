@@ -38,7 +38,6 @@
 		<module>damai-redisson-framework</module>
 		<module>damai-server</module>
 		<module>damai-server-client</module>
-		<module>api-stat</module>
 		<module>damai-captcha-framework</module>
 	</modules>
 

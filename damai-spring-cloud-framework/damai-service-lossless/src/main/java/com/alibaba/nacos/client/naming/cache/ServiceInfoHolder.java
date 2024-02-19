@@ -164,11 +164,10 @@ public class ServiceInfoHolder implements Closeable {
             serviceInfo.setJsonFromServer(JacksonUtils.toJson(serviceInfo));
         }
         MetricsMonitor.getServiceInfoMapSizeMonitor().set(serviceInfoMap.size());
-        if (changed || (StringUtils.isNotEmpty(notifyService) && "yes".equals(notifyService))) {
-//            NAMING_LOGGER.info("current ips:(" + serviceInfo.ipCount() + ") service: " + serviceInfo.getKey() + " -> "
-//                    + JacksonUtils.toJson(serviceInfo.getHosts()));
-//            System.out.println("current ips:(" + serviceInfo.ipCount() + ") service: " + serviceInfo.getKey() + " -> "
-//                    + JacksonUtils.toJson(serviceInfo.getHosts()));
+        String yes = "yes";
+        if (changed || yes.equals(notifyService)) {
+            NAMING_LOGGER.info("current ips:(" + serviceInfo.ipCount() + ") service: " + serviceInfo.getKey() + " -> "
+                    + JacksonUtils.toJson(serviceInfo.getHosts()));
             NotifyCenter.publishEvent(new InstancesChangeEvent(serviceInfo.getName(), serviceInfo.getGroupName(),
                     serviceInfo.getClusters(), serviceInfo.getHosts()));
             DiskCache.write(serviceInfo, cacheDir);

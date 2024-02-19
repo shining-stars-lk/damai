@@ -62,8 +62,6 @@ public class FineGritHystrixGatewayFilterFactory
 		extends AbstractGatewayFilterFactory<FineGritHystrixGatewayFilterFactory.Config> {
 
 	private final ObjectProvider<DispatcherHandler> dispatcherHandlerProvider;
-
-	// do not use this dispatcherHandler directly, use getDispatcherHandler() instead.
 	private volatile DispatcherHandler dispatcherHandler;
 
 	public FineGritHystrixGatewayFilterFactory(
@@ -195,7 +193,8 @@ public class FineGritHystrixGatewayFilterFactory
 		}
 
 		public void setFallbackUri(URI fallbackUri) {
-			if (fallbackUri != null && !"forward".equals(fallbackUri.getScheme())) {
+			String forward = "forward";
+			if (fallbackUri != null && !forward.equals(fallbackUri.getScheme())) {
 				throw new IllegalArgumentException(
 						"Hystrix Filter currently only supports 'forward' URIs, found "
 								+ fallbackUri);
@@ -226,7 +225,9 @@ public class FineGritHystrixGatewayFilterFactory
 		}
 	}
 
-	// TODO: replace with HystrixMonoCommand that we write
+	/**
+	 * TODO: replace with HystrixMonoCommand that we write
+	 * */
 	private class RouteHystrixCommand extends HystrixObservableCommand<Void> {
 
 		private final URI fallbackUri;

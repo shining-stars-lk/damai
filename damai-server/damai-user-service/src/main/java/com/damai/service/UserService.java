@@ -38,7 +38,7 @@ import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyWrap;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
-import com.damai.util.RBloomFilterUtil;
+import com.damai.util.BloomFilterHandler;
 import com.damai.vo.TicketUserVo;
 import com.damai.vo.UserGetAndTicketUserListVo;
 import com.damai.vo.UserVo;
@@ -87,7 +87,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     private TicketUserMapper ticketUserMapper;
     
     @Autowired
-    private RBloomFilterUtil rBloomFilterUtil;
+    private BloomFilterHandler bloomFilterHandler;
     
     @Autowired
     private CompositeContainer compositeContainer;
@@ -102,15 +102,15 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         //用户表添加
         User user = new User();
         BeanUtils.copyProperties(userRegisterDto,user);
-        user.setId(uidGenerator.getUID());
+        user.setId(uidGenerator.getUid());
         userMapper.insert(user);
         //用户手机表添加
         UserMobile userMobile = new UserMobile();
-        userMobile.setId(uidGenerator.getUID());
+        userMobile.setId(uidGenerator.getUid());
         userMobile.setUserId(user.getId());
         userMobile.setMobile(userRegisterDto.getMobile());
         userMobileMapper.insert(userMobile);
-        rBloomFilterUtil.add(userMobile.getMobile());
+        bloomFilterHandler.add(userMobile.getMobile());
     }
     
     @ServiceLock(lockType= LockType.Read,name = REGISTER_USER_LOCK,keys = {"#mobile"})
@@ -119,7 +119,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
     
     public void doExist(String mobile){
-        boolean contains = rBloomFilterUtil.contains(mobile);
+        boolean contains = bloomFilterHandler.contains(mobile);
         if (contains) {
             LambdaQueryWrapper<UserMobile> queryWrapper = Wrappers.lambdaQuery(UserMobile.class)
                     .eq(UserMobile::getMobile, mobile);
@@ -170,7 +170,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     public String createToken(Long userId){
         Map<String,Object> map = new HashMap<>(4);
         map.put("userId",userId);
-        return TokenUtil.createToken(String.valueOf(uidGenerator.getUID()), JSON.toJSONString(map),tokenExpireTime,TOKEN_SECRET);
+        return TokenUtil.createToken(String.valueOf(uidGenerator.getUid()), JSON.toJSONString(map),tokenExpireTime,TOKEN_SECRET);
     }
     
     public void logout(UserIdDto userIdDto) {
@@ -217,7 +217,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         UserEmail userEmail = userEmailMapper.selectOne(userEmailLambdaQueryWrapper);
         if (Objects.isNull(userEmail)) {
             userEmail = new UserEmail();
-            userEmail.setId(uidGenerator.getUID());
+            userEmail.setId(uidGenerator.getUid());
             userEmail.setUserId(user.getId());
             userEmail.setEmail(userUpdateEmailDto.getEmail());
             userEmailMapper.insert(userEmail);
@@ -231,29 +231,29 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
     
     @Transactional(rollbackFor = Exception.class)
-    public void updateMobile(UserUpdateMobileDto UserUpdateMobileDto){
-        User user = userMapper.selectById(UserUpdateMobileDto.getId());
+    public void updateMobile(UserUpdateMobileDto userUpdateMobileDto){
+        User user = userMapper.selectById(userUpdateMobileDto.getId());
         if (Objects.isNull(user)) {
             throw new DaMaiFrameException(BaseCode.USER_EMPTY);
         }
         String oldMobile = user.getMobile();
         User updateUser = new User();
-        BeanUtil.copyProperties(UserUpdateMobileDto,updateUser);
+        BeanUtil.copyProperties(userUpdateMobileDto,updateUser);
         userMapper.updateById(updateUser);
         LambdaQueryWrapper<UserMobile> userMobileLambdaQueryWrapper = Wrappers.lambdaQuery(UserMobile.class)
-                .eq(UserMobile::getMobile, UserUpdateMobileDto.getMobile());
+                .eq(UserMobile::getMobile, userUpdateMobileDto.getMobile());
         UserMobile userMobile = userMobileMapper.selectOne(userMobileLambdaQueryWrapper);
         if (Objects.isNull(userMobile)) {
             userMobile = new UserMobile();
-            userMobile.setId(uidGenerator.getUID());
+            userMobile.setId(uidGenerator.getUid());
             userMobile.setUserId(user.getId());
-            userMobile.setMobile(UserUpdateMobileDto.getMobile());
+            userMobile.setMobile(userUpdateMobileDto.getMobile());
             userMobileMapper.insert(userMobile);
         }else {
             LambdaUpdateWrapper<UserMobile> userMobileLambdaUpdateWrapper = Wrappers.lambdaUpdate(UserMobile.class)
                     .eq(UserMobile::getMobile, oldMobile);
             UserMobile updateUserMobile = new UserMobile();
-            updateUserMobile.setMobile(UserUpdateMobileDto.getMobile());
+            updateUserMobile.setMobile(userUpdateMobileDto.getMobile());
             userMobileMapper.update(updateUserMobile,userMobileLambdaUpdateWrapper);
         }
     }

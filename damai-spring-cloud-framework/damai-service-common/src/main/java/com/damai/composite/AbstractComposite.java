@@ -26,21 +26,25 @@ public abstract class AbstractComposite<T> {
     protected abstract void execute(T param);
     
     /**
+     * 获取返回组件的类型
      * @return 返回组件的类型。
      */
     public abstract String type();
     
     /**
+     * 返回父级执行顺序，用于建立层级关系.(根节点的话返回值为0)
      * @return 返回父级执行顺序，用于建立层级关系.(根节点的话返回值为0)
      */
     public abstract Integer executeParentOrder();
     
     /**
+     * 返回组件的执行层级。
      * @return 返回组件的执行层级。
      */
     public abstract Integer executeTier();
     
     /**
+     * 返回组件在同一层级中的执行顺序。
      * @return 返回组件在同一层级中的执行顺序。
      */
     public abstract Integer executeOrder();

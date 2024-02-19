@@ -25,11 +25,11 @@ public final class RedisKeyWrap {
 
     /**
      * 构建真实的key
-     * @param RedisKeyEnum key的枚举
+     * @param redisKeyEnum key的枚举
      * @param args 占位符的值
      * */
-    public static RedisKeyWrap createRedisKey(RedisKeyEnum RedisKeyEnum, Object... args){
-        String redisRelKey = String.format(RedisKeyEnum.getKeyCode(),args);
+    public static RedisKeyWrap createRedisKey(RedisKeyEnum redisKeyEnum, Object... args){
+        String redisRelKey = String.format(redisKeyEnum.getKeyCode(),args);
         return new RedisKeyWrap(SpringUtil.getPrefixDistinctionName() + "-" + redisRelKey);
     }
 

@@ -34,6 +34,10 @@ public abstract class AbstractLockInfoHandle implements LockInfoHandle {
 
     private final ExpressionParser parser = new SpelExpressionParser();
     
+    /**
+     * 锁信息前缀
+     * @return 具体前缀
+     * */
     protected abstract String getLockPrefixName();
     @Override
     public String getLockName(JoinPoint joinPoint,String name,String[] keys){
