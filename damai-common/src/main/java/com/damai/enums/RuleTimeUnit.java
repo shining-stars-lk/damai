@@ -6,6 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum RuleTimeUnit {
+    /**
+     * 规则时间单位
+     * */
     SECOND(1,"秒"),
     MINUTE(2,"分钟")
     ;

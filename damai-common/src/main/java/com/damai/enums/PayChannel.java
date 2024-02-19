@@ -6,6 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum PayChannel {
+    /**
+     * 支付渠道
+     * */
     ALIPAY(1,"alipay","支付宝"),
     
     WX(2,"wx","微信"),

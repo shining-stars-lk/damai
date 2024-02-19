@@ -6,7 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum BaseCode {
-    
+    /**
+     * 基础code码
+     * */
     SUCCESS(0, "OK"),
     SYSTEM_ERROR(-1,"系统异常"),
     
