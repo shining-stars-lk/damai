@@ -5,21 +5,15 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>api-stat-example-cloud</artifactId>
+        <artifactId>damai-server</artifactId>
         <version>${revision}</version>
     </parent>
 
 
-    <artifactId>api-stat-example-cloud-consumer-service</artifactId>
+    <artifactId>damai-admin-service</artifactId>
 
-    <name>api-stat-example-cloud-consumer-service</name>
-    <description>消费者服务</description>
-
-    <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
+    <name>admin-service</name>
+    <description>微服务监控服务</description>
 
     <dependencies>
         <dependency>
@@ -39,34 +33,12 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>damai-service-common</artifactId>
+            <artifactId>damai-common</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>api-stat-example-cloud-feign-client</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>api-stat-reported-cloud-service</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-okhttp</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-service-hystrix</artifactId>
+            <artifactId>damai-thread-pool-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <!-- nacos start -->
@@ -86,9 +58,13 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.ulisesbocchio</groupId>
-            <artifactId>jasypt-spring-boot-starter</artifactId>
-            <version>${jasypt.version}</version>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-server</artifactId>
+            <version>${spring-boot-admin-starter-server.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
     </dependencies>
 
@@ -99,7 +75,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.damai.ProviderApplication</mainClass>
+                    <mainClass>com.damai.AdminApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

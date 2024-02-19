@@ -49,12 +49,12 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>service-common</artifactId>
+            <artifactId>damai-service-common</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>redis-framework</artifactId>
+            <artifactId>damai-redis-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
@@ -64,7 +64,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>service-lock-framework</artifactId>
+            <artifactId>damai-service-lock-framework</artifactId>
             <version>${revision}</version>
         </dependency>
     </dependencies>

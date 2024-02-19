@@ -5,20 +5,19 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>damai</artifactId>
+        <artifactId>damai-redisson-framework</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>api-stat</artifactId>
-    <name>api-stat</name>
-    <description>api-stat</description>
+    <artifactId>damai-redisson-service-framework</artifactId>
+    <name>damai-redisson-service-framework</name>
+    <description>分布式服务工具</description>
     <packaging>pom</packaging>
 
     <modules>
-        <module>api-stat-system</module>
-		<module>api-stat-common</module>
-        <module>api-stat-reported</module>
-        <module>api-stat-example</module>
+        <module>damai-redisson-common-framework</module>
+		<module>damai-service-lock-framework</module>
+        <module>damai-repeat-execute-limit-framework</module>
     </modules>
 
 </project>

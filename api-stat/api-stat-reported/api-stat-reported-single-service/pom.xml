@@ -53,7 +53,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>redis-framework</artifactId>
+            <artifactId>damai-redis-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>

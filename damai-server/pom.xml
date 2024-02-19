@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.example</groupId>
+        <artifactId>damai</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+
+    <artifactId>damai-server</artifactId>
+    <packaging>pom</packaging>
+
+    <name>server</name>
+    <description>服务模块</description>
+
+    <modules>
+        <module>damai-order-service</module>
+        <module>damai-gateway-service</module>
+        <module>damai-base-data-service</module>
+        <module>damai-user-service</module>
+        <module>damai-admin-service</module>
+        <module>damai-job-service</module>
+        <module>damai-customize-service</module>
+        <module>damai-program-service</module>
+        <module>damai-pay-service</module>
+        <module>damai-single-service</module>
+        <module>damai-mybatis-puls-service</module>
+    </modules>
+</project>
