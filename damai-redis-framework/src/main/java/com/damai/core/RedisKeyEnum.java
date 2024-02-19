@@ -7,6 +7,9 @@ package com.damai.core;
  * @author: 阿宽不是程序员
  **/
 public enum RedisKeyEnum {
+    /**
+     * redis 缓存 key管理
+     * */
 
     Key("key","键值测试","value为TestCacheDto类型","k"),
     Key2("key:%s","键值占位测试","value为TestCacheDto类型","k"),

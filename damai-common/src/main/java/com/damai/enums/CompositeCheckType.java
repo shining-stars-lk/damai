@@ -6,8 +6,14 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum CompositeCheckType {
+    /**
+     * 组合模式类型
+     * */
     USER_REGISTER_CHECK(1,"user_register_check","用户注册"),
     
+    /**
+     * 订单创建
+     * */
     PROGRAM_ORDER_CREATE_CHECK(2,"program_order_create_check","订单创建"),
     ;
 

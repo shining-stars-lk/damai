@@ -6,7 +6,11 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum UserLogStatus {
+    /**
+     * 用户登录状态
+     * */
     IN(1,"登录"),
+    
     OUT(0,"退出")
     ;
 

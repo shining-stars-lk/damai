@@ -6,6 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum OrderStatus {
+    /**
+     * 订单状态
+     * */
     NO_PAY(1,"未支付"),
     CANCEL(2,"已取消"),
     PAY(3,"已支付"),

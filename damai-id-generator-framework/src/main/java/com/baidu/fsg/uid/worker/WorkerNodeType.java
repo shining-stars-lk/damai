@@ -25,7 +25,9 @@ import com.baidu.fsg.uid.utils.ValuedEnum;
  * @author yutianbao
  */
 public enum WorkerNodeType implements ValuedEnum<Integer> {
-
+    /**
+     * 百度uid
+     * */
     CONTAINER(1), ACTUAL(2);
 
     /**

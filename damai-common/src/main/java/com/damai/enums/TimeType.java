@@ -6,6 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum TimeType {
+    /**
+     * 时间类型
+     * */
     WEEK(1,"本周内"),
     MONTH(2,"一个月内"),
     ;

@@ -6,6 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum SeatType {
+    /**
+     * 座位类型
+     * */
     GENERAL(1,"通用座位"),
     ;
 
