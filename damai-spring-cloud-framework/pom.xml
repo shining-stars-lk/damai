@@ -9,16 +9,18 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>api-stat</artifactId>
-    <name>api-stat</name>
-    <description>api-stat</description>
+    <artifactId>damai-spring-cloud-framework</artifactId>
+    <name>spring-cloud-framework</name>
+    <description>spring-cloud组件</description>
     <packaging>pom</packaging>
 
     <modules>
-        <module>api-stat-system</module>
-		<module>api-stat-common</module>
-        <module>api-stat-reported</module>
-        <module>api-stat-example</module>
+        <module>damai-job-async</module>
+        <module>damai-service-component</module>
+        <module>damai-service-common</module>
+        <module>damai-sentinel-general</module>
+        <module>damai-service-lossless</module>
+        <module>damai-service-hystrix</module>
     </modules>
 
 </project>

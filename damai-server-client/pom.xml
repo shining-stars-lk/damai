@@ -5,21 +5,26 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>api-stat-example-cloud</artifactId>
+        <artifactId>damai</artifactId>
         <version>${revision}</version>
     </parent>
 
 
-    <artifactId>api-stat-example-cloud-feign-client</artifactId>
+    <artifactId>damai-server-client</artifactId>
+    <packaging>pom</packaging>
 
-    <name>api-stat-example-cloud-feign-client</name>
-    <description>rpc</description>
+    <name>server-client</name>
+    <description>服务feign接口</description>
 
-    <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
+    <modules>
+        <module>damai-order-client</module>
+        <module>damai-base-data-client</module>
+        <module>damai-user-client</module>
+        <module>damai-job-client</module>
+        <module>damai-customize-client</module>
+        <module>damai-program-client</module>
+        <module>damai-pay-client</module>
+    </modules>
 
     <dependencies>
         <dependency>

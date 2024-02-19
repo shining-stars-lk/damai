@@ -5,20 +5,14 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>damai</artifactId>
+        <artifactId>damai-server-client</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>api-stat</artifactId>
-    <name>api-stat</name>
-    <description>api-stat</description>
-    <packaging>pom</packaging>
 
-    <modules>
-        <module>api-stat-system</module>
-		<module>api-stat-common</module>
-        <module>api-stat-reported</module>
-        <module>api-stat-example</module>
-    </modules>
+    <artifactId>damai-pay-client</artifactId>
+
+    <name>pay-client</name>
+    <description>rpc</description>
 
 </project>

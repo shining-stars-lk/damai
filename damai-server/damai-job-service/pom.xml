@@ -5,21 +5,16 @@
 
     <parent>
         <groupId>com.example</groupId>
-        <artifactId>api-stat-example-cloud</artifactId>
+        <artifactId>damai-server</artifactId>
         <version>${revision}</version>
     </parent>
 
 
-    <artifactId>api-stat-example-cloud-consumer-service</artifactId>
+    <artifactId>damai-job-service</artifactId>
 
-    <name>api-stat-example-cloud-consumer-service</name>
-    <description>消费者服务</description>
-
-    <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
+    <name>job-service</name>
+    <description>任务服务</description>
+    
 
     <dependencies>
         <dependency>
@@ -39,18 +34,42 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
+            <artifactId>damai-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
             <artifactId>damai-service-common</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>api-stat-example-cloud-feign-client</artifactId>
+            <artifactId>damai-job-client</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>api-stat-reported-cloud-service</artifactId>
+            <artifactId>damai-thread-pool-framework</artifactId>
             <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-id-generator-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis-plus.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -69,21 +88,24 @@
             <artifactId>damai-service-hystrix</artifactId>
             <version>${revision}</version>
         </dependency>
-        <!-- nacos start -->
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-service-lossless</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
-        <!-- spring-cloud-starter-alibaba-nacos-discovery源码中nacos-common optional为true,所以这里要将common引入 -->
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-common</artifactId>
-            <version>${nacos.version}</version>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
         <!-- nacos end -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+            <version>${spring-boot-admin-starter-client.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
@@ -99,7 +121,9 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.damai.ProviderApplication</mainClass>
+                    <mainClass>com.damai.JobApplication</mainClass>
+                    <!-- 如果以jar包启动需要将此配置去掉 -->
+                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>

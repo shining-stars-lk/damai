@@ -21,25 +21,25 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>cook-frame</artifactId>
+	<artifactId>damai</artifactId>
 	<version>${revision}</version>
 	<packaging>pom</packaging>
 
 	<name>${project.artifactId}</name>
-	<description>微服务高度定制化</description>
+	<description>大麦网</description>
 
 	<modules>
-		<module>common</module>
-		<module>redis-framework</module>
-		<module>elasticsearch-framework</module>
-		<module>id-generator-framework</module>
-		<module>spring-cloud-framework</module>
-		<module>thread-pool-framework</module>
-		<module>redisson-framework</module>
-		<module>server</module>
-		<module>server-client</module>
+		<module>damai-common</module>
+		<module>damai-redis-framework</module>
+		<module>damai-elasticsearch-framework</module>
+		<module>damai-id-generator-framework</module>
+		<module>damai-spring-cloud-framework</module>
+		<module>damai-thread-pool-framework</module>
+		<module>damai-redisson-framework</module>
+		<module>damai-server</module>
+		<module>damai-server-client</module>
 		<module>api-stat</module>
-		<module>captcha-framework</module>
+		<module>damai-captcha-framework</module>
 	</modules>
 
 	<properties>
