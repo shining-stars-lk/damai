@@ -61,7 +61,7 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
         }
         seat = new Seat();
         BeanUtil.copyProperties(seatAddDto,seat);
-        seat.setId(uidGenerator.getUID());
+        seat.setId(uidGenerator.getUid());
         seatMapper.insert(seat);
         return seat.getId();
     }

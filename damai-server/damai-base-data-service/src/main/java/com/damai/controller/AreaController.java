@@ -23,7 +23,7 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/area")
-@Api(tags = "area", description = "区域")
+@Api(tags = "area", value = "区域")
 public class AreaController {
     
     @Autowired

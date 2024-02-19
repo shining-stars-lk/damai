@@ -15,7 +15,7 @@ import com.damai.service.ApiRestrictService;
 import com.damai.service.ChannelDataService;
 import com.damai.service.TokenService;
 import com.damai.threadlocal.BaseParameterHolder;
-import com.damai.util.RSATool;
+import com.damai.util.RsaTool;
 import com.damai.util.RsaSignTool;
 import com.damai.vo.GetChannelDataVo;
 import com.damai.vo.UserVo;
@@ -59,6 +59,7 @@ import static com.damai.constant.GatewayConstant.NO_VERIFY;
 import static com.damai.constant.GatewayConstant.REQUEST_BODY;
 import static com.damai.constant.GatewayConstant.TOKEN;
 import static com.damai.constant.GatewayConstant.USER_ID;
+import static com.damai.constant.GatewayConstant.V2;
 import static com.damai.constant.GatewayConstant.VERIFY_VALUE;
 
 /**
@@ -99,10 +100,10 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         String mark = request.getHeaders().getFirst(MARK_PARAMETER);
         String noVerify = request.getHeaders().getFirst(NO_VERIFY);
         if (StringUtil.isEmpty(traceId)) {
-            traceId = String.valueOf(uidGenerator.getUID());
+            traceId = String.valueOf(uidGenerator.getUid());
         }
         MDC.put(TRACE_ID,traceId);
-        Map<String,String> headMap = new HashMap<>();
+        Map<String,String> headMap = new HashMap<>(8);
         headMap.put(TRACE_ID,traceId);
         headMap.put(MARK_PARAMETER,mark);
         if (StringUtil.isNotEmpty(noVerify)) {
@@ -162,7 +163,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         log.info("current thread verify: {}",Thread.currentThread().getName());
         ServerHttpRequest request = exchange.getRequest();
         String requestBody = originalBody;
-        Map<String, String> bodyContent = new HashMap<>();
+        Map<String, String> bodyContent = new HashMap<>(32);
         if (StringUtil.isNotEmpty(originalBody)) {
             bodyContent = JSON.parseObject(originalBody, Map.class);
         }
@@ -183,8 +184,8 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             
             GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
             
-            if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
-                String decrypt = RSATool.decrypt(bodyContent.get(BUSINESS_BODY),channelDataVo.getDataSecretKey());
+            if (StringUtil.isNotEmpty(encrypt) && V2.equals(encrypt)) {
+                String decrypt = RsaTool.decrypt(bodyContent.get(BUSINESS_BODY),channelDataVo.getDataSecretKey());
                 bodyContent.put(BUSINESS_BODY,decrypt);
             }
             boolean checkFlag = RsaSignTool.verifyRsaSign256(bodyContent, channelDataVo.getSignPublicKey());
@@ -220,7 +221,9 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         }
         return map;
     }
-    //将网关层request请求头中的重要参数传递给后续的微服务中
+    /**
+     * 将网关层request请求头中的重要参数传递给后续的微服务中
+     */
     private ServerHttpRequestDecorator decorateHead(ServerWebExchange exchange, HttpHeaders headers, CachedBodyOutputMessage outputMessage, RequestTemporaryWrapper requestTemporaryWrapper, Map<String,String> headMap){
         return new ServerHttpRequestDecorator(exchange.getRequest()){
             @Override

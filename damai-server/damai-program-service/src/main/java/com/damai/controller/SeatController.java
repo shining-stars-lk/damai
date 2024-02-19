@@ -20,7 +20,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/seat")
-@Api(tags = "seat", description = "座位")
+@Api(tags = "seat", value = "座位")
 public class SeatController {
     
     @Autowired

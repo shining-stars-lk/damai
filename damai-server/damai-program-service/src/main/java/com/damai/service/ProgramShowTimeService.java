@@ -52,7 +52,7 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
     public Long add(ProgramShowTimeAddDto programShowTimeAddDto) {
         ProgramShowTime programShowTime = new ProgramShowTime();
         BeanUtil.copyProperties(programShowTimeAddDto,programShowTime);
-        programShowTime.setId(uidGenerator.getUID());
+        programShowTime.setId(uidGenerator.getUid());
         programShowTimeMapper.insert(programShowTime);
         return programShowTime.getId();
     }

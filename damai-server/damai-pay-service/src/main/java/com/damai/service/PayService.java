@@ -71,7 +71,7 @@ public class PayService {
                 payDto.getSubject(),payDto.getNotifyUrl(),payDto.getReturnUrl());
         if (pay.isSuccess()) {
             payBill = new PayBill();
-            payBill.setId(uidGenerator.getUID());
+            payBill.setId(uidGenerator.getUid());
             payBill.setOutOrderNo(String.valueOf(payDto.getOrderNumber()));
             payBill.setPayChannel(payDto.getChannel());
             payBill.setPayScene("生产");

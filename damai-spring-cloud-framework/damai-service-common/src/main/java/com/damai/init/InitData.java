@@ -6,6 +6,8 @@ package com.damai.init;
  * @author: 阿宽不是程序员
  **/
 public interface InitData {
-    
+    /**
+     * 初始化操作
+     * */
     void init();
 }

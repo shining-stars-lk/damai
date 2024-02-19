@@ -18,13 +18,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Component
 @FeignClient(value = "pay-service",fallback = PayClientFallback.class)
 public interface PayClient {
-    
+    /**
+     * 支付
+     * @param dto 参数
+     * @return 结果
+     * */
     @PostMapping(value = "/pay/common/pay")
-    ApiResponse<String> commonPay(PayDto payDto);
-    
+    ApiResponse<String> commonPay(PayDto dto);
+    /**
+     * 回调
+     * @param dto 参数
+     * @return 结果
+     * */
     @PostMapping(value = "/pay/notify")
-    ApiResponse<NotifyVo> notify(NotifyDto notifyDto);
-    
+    ApiResponse<NotifyVo> notify(NotifyDto dto);
+    /**
+     * 查询支付状态
+     * @param dto 参数
+     * @return 结果
+     * */
     @PostMapping(value = "/pay/trade/check")
-    ApiResponse<TradeCheckVo> tradeCheck(TradeCheckDto tradeCheckDto);
+    ApiResponse<TradeCheckVo> tradeCheck(TradeCheckDto dto);
 }

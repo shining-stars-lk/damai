@@ -63,7 +63,7 @@ public class TicketUserService extends ServiceImpl<TicketUserMapper, TicketUser>
         }
         TicketUser addTicketUser = new TicketUser();
         BeanUtil.copyProperties(ticketUserDto,addTicketUser);
-        addTicketUser.setId(uidGenerator.getUID());
+        addTicketUser.setId(uidGenerator.getUid());
         ticketUserMapper.insert(addTicketUser);
     }
     @Transactional(rollbackFor = Exception.class)

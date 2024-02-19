@@ -17,7 +17,9 @@ public interface OrderClient {
     
     /**
      * 创建订单
+     * @param dto 参数
+     * @return 结果
      * */
     @PostMapping("/order/create")
-    ApiResponse<String> create(OrderCreateDto orderCreateDto);
+    ApiResponse<String> create(OrderCreateDto dto);
 }

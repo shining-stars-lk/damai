@@ -75,7 +75,7 @@ public class DepthRuleService {
     public void add(DepthRuleDto depthRuleDto) {
         DepthRule depthRule = new DepthRule();
         BeanUtils.copyProperties(depthRuleDto,depthRule);
-        depthRule.setId(uidGenerator.getUID());
+        depthRule.setId(uidGenerator.getUid());
         depthRule.setCreateTime(DateUtils.now());
         depthRuleMapper.insert(depthRule);
     }

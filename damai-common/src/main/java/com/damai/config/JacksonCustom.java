@@ -4,6 +4,8 @@ package com.damai.config;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -89,10 +91,10 @@ public class JacksonCustom implements Jackson2ObjectMapperBuilderCustomizer, Ord
         //允许有未知的属性
         builder.featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         //允许包含不带引号的控制字符
-        builder.featuresToEnable(Feature.ALLOW_UNQUOTED_CONTROL_CHARS);
+        builder.featuresToEnable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS);
 
         //数字转换为字符串
-        builder.featuresToEnable(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS);
+        builder.featuresToEnable(JsonWriteFeature.WRITE_NUMBERS_AS_STRINGS );
     }
 
     @Override

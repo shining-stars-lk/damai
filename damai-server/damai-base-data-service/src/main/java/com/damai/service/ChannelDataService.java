@@ -54,7 +54,7 @@ public class ChannelDataService {
     public void add(ChannelDataAddDto channelDataAddDto) {
         ChannelData channelData = new ChannelData();
         BeanUtils.copyProperties(channelDataAddDto,channelData);
-        channelData.setId(uidGenerator.getUID());
+        channelData.setId(uidGenerator.getUid());
         channelData.setCreateTime(DateUtils.now());
         channelDataMapper.insert(channelData);
         addRedisChannelData(channelData);

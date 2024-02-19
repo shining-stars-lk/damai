@@ -24,7 +24,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/jobInfo")
-@Api(tags = "jobInfo", description = "任务")
+@Api(tags = "jobInfo", value = "任务")
 public class JobInfoController {
     
     @Autowired

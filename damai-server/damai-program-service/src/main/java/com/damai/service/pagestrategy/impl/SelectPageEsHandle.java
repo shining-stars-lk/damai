@@ -1,6 +1,7 @@
 package com.damai.service.pagestrategy.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.damai.core.SpringUtil;
 import com.damai.dto.EsDataQueryDto;
 import com.damai.dto.ProgramPageListDto;
 import com.damai.enums.TimeType;
@@ -73,7 +74,8 @@ public class SelectPageEsHandle implements SelectPageHandle {
                 esDataQueryDtoList.add(showDayTimeQueryDto);
             }
             
-            PageInfo<ProgramListVo> programListVoPageInfo = businessEsHandle.queryPage(ProgramDocumentParamName.INDEX_NAME,
+            PageInfo<ProgramListVo> programListVoPageInfo = businessEsHandle.queryPage(
+                    SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
                     ProgramDocumentParamName.INDEX_TYPE, esDataQueryDtoList, programPageListDto.getPageNumber(),
                     programPageListDto.getPageSize(), ProgramListVo.class);
             pageVo = PageUtil.convertPage(programListVoPageInfo, programListVo -> programListVo);

@@ -60,7 +60,7 @@ public class RuleService {
         delAll();
         Rule rule = new Rule();
         BeanUtils.copyProperties(ruleDto,rule);
-        rule.setId(uidGenerator.getUID());
+        rule.setId(uidGenerator.getUid());
         rule.setCreateTime(DateUtil.date());
         ruleMapper.insert(rule);
         return rule.getId();

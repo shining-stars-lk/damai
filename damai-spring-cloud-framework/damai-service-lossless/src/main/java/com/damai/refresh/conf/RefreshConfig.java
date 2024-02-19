@@ -1,6 +1,7 @@
 package com.damai.refresh.conf;
 
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
+import com.alibaba.cloud.nacos.NacosServiceManager;
 import com.alibaba.cloud.nacos.registry.NacosAutoServiceRegistration;
 import com.damai.refresh.custom.NacosAndRibbonCustom;
 import com.damai.refresh.custom.NacosCustom;
@@ -19,8 +20,10 @@ import org.springframework.context.annotation.Bean;
 public class RefreshConfig {
 
     @Bean
-    public NacosCustom nacosCustom(NacosDiscoveryProperties discoveryProperties, NacosAutoServiceRegistration nacosAutoServiceRegistration){
-        return new NacosCustom(discoveryProperties,nacosAutoServiceRegistration);
+    public NacosCustom nacosCustom(NacosDiscoveryProperties discoveryProperties, 
+                                   NacosAutoServiceRegistration nacosAutoServiceRegistration,
+                                   NacosServiceManager nacosServiceManager){
+        return new NacosCustom(discoveryProperties,nacosAutoServiceRegistration,nacosServiceManager);
     }
 
     @Bean

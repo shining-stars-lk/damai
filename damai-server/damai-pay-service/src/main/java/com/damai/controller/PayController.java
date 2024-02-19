@@ -24,7 +24,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/pay")
-@Api(tags = "pay", description = "支付")
+@Api(tags = "pay", value = "支付")
 public class PayController {
     
     @Autowired

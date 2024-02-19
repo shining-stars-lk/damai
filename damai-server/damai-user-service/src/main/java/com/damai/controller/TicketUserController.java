@@ -24,7 +24,7 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/ticket/user")
-@Api(tags = "ticket-user", description = "购票人")
+@Api(tags = "ticket-user", value = "购票人")
 public class TicketUserController {
     
     @Autowired

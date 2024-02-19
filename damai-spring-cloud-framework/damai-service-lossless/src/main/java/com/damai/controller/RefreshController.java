@@ -44,9 +44,9 @@ public class RefreshController {
     @RequestMapping(value = "/getNacosAndRibbonCacheList", method = RequestMethod.POST)
     public Map getNacosAndRibbonCacheList() {
         if (nacosAndRibbonCustom != null) {
-            nacosAndRibbonCustom.getNacosAndRibbonCacheList();
+            return nacosAndRibbonCustom.getNacosAndRibbonCacheList();
         }
-        return new HashMap();
+        return new HashMap(2);
     }
 
     /**
@@ -60,7 +60,7 @@ public class RefreshController {
             return false;
         }
         if (nacosCustom != null) {
-            return nacosCustom.LogoutService();
+            return nacosCustom.logoutService();
         }
         return false;
     }

@@ -450,15 +450,16 @@ public class DateUtils {
      * @return -1（时间为空），其他数字（今年的第几周）
      */
     public static int getWeekOfYearIgnoreLastYear(Date date) {
+        int seven = 7;
         if (Objects.isNull(date)) {
             return -1;
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int days = calendar.get(Calendar.DAY_OF_YEAR);
-        int weeks = days / 7;
+        int weeks = days / seven;
         // 如果是 7 的倍数，则表示恰好是多少周
-        if (days % 7 == 0) {
+        if (days % seven == 0) {
             return weeks;
         }
         // 如果有余数，则需要再加 1
@@ -849,7 +850,9 @@ public class DateUtils {
      * @return
      */
     public static String getFormatedDateString(float timeZoneOffset, String pattern) {
-        if (timeZoneOffset > 13 || timeZoneOffset < -12) {
+        int thirteen = 13;
+        int minusTwelve = -12;
+        if (timeZoneOffset > thirteen || timeZoneOffset < minusTwelve) {
             timeZoneOffset = 0;
         }
         

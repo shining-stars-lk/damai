@@ -22,7 +22,7 @@ import java.util.Map;
 public class ProducerConfig {
     
     public Map<String, Object> producerConfigs(ProducerProperty producerProperty) {
-        Map<String, Object> props = new HashMap<>();
+        Map<String, Object> props = new HashMap<>(16);
         props.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, producerProperty.getServers());
         props.put(org.apache.kafka.clients.producer.ProducerConfig.RETRIES_CONFIG, producerProperty.getRetries());
         props.put(org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);

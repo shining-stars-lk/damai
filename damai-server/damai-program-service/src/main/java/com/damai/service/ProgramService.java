@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.client.BaseDataClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyEnum;
+import com.damai.core.SpringUtil;
 import com.damai.dto.AreaGetDto;
 import com.damai.dto.AreaSelectDto;
 import com.damai.dto.EsDataQueryDto;
@@ -129,7 +130,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     public Long add(ProgramAddDto programAddDto){
         Program program = new Program();
         BeanUtil.copyProperties(programAddDto,program);
-        program.setId(uidGenerator.getUID());
+        program.setId(uidGenerator.getUid());
         programMapper.insert(program);
         return program.getId();
     }
@@ -143,7 +144,8 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             titleQueryDto.setParamValue(programSearchDto.getTitle());
             titleQueryDto.setAnalyse(true);
             esDataQueryDtoList.add(titleQueryDto);
-            PageInfo<ProgramListVo> programListVoPageInfo = businessEsHandle.queryPage(ProgramDocumentParamName.INDEX_NAME, 
+            PageInfo<ProgramListVo> programListVoPageInfo = 
+                    businessEsHandle.queryPage(SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME, 
                     ProgramDocumentParamName.INDEX_TYPE, esDataQueryDtoList, programSearchDto.getPageNumber(), 
                     programSearchDto.getPageSize(), ProgramListVo.class);
             pageVo = PageUtil.convertPage(programListVoPageInfo,programListVo -> programListVo);
@@ -153,7 +155,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         return pageVo;
     }
     public Map<String,List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
-        Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>();
+        Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>(256);
         
         //根据区域id和父节目类型id查询节目列表
         LambdaQueryWrapper<Program> programLambdaQueryWrapper = Wrappers.lambdaQuery(Program.class)
@@ -168,7 +170,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 .in(ProgramShowTime::getProgramId, programIdList);
         List<ProgramShowTime> programShowTimeList = programShowTimeMapper.selectList(programShowTimeLambdaQueryWrapper);
         //将节目演出集合根据节目id进行分组成map，key：节目id，value：节目演出时间集合
-        Map<Long, List<ProgramShowTime>> ProgramShowTimeMap = programShowTimeList.stream().collect(Collectors.groupingBy(ProgramShowTime::getProgramId));
+        Map<Long, List<ProgramShowTime>> programShowTimeMap = programShowTimeList.stream().collect(Collectors.groupingBy(ProgramShowTime::getProgramId));
         
         //根据获得的节目列表中的父节目类型id来查询节目类型map，key：节目类型id，value：节目类型名
         Map<Long, String> programCategoryMap = selectProgramCategoryMap(programList.stream().map(Program::getParentProgramCategoryId).collect(Collectors.toList()));
@@ -191,19 +193,19 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 ProgramListVo programListVo = new ProgramListVo();
                 BeanUtil.copyProperties(program,programListVo);
                 //演出时间
-                programListVo.setShowTime(Optional.ofNullable(ProgramShowTimeMap.get(program.getId()))
+                programListVo.setShowTime(Optional.ofNullable(programShowTimeMap.get(program.getId()))
                         .filter(list -> !list.isEmpty())
                         .map(list -> list.get(0))
                         .map(ProgramShowTime::getShowTime)
                         .orElse(null));
                 //演出时间(精确到天)
-                programListVo.setShowDayTime(Optional.ofNullable(ProgramShowTimeMap.get(program.getId()))
+                programListVo.setShowDayTime(Optional.ofNullable(programShowTimeMap.get(program.getId()))
                         .filter(list -> !list.isEmpty())
                         .map(list -> list.get(0))
                         .map(ProgramShowTime::getShowDayTime)
                         .orElse(null));
                 //演出时间所在的星期
-                programListVo.setShowWeekTime(Optional.ofNullable(ProgramShowTimeMap.get(program.getId()))
+                programListVo.setShowWeekTime(Optional.ofNullable(programShowTimeMap.get(program.getId()))
                         .filter(list -> !list.isEmpty())
                         .map(list -> list.get(0))
                         .map(ProgramShowTime::getShowWeekTime)
@@ -244,7 +246,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         //根据节目id统计出票档的最低价和最高价的集合map, key：节目id，value：票档
         Map<Long, TicketCategoryAggregate> ticketCategorieMap = selectTicketCategorieMap(programIdList);
         //查询区域
-        Map<Long,String> tempAreaMap = new HashMap<>();
+        Map<Long,String> tempAreaMap = new HashMap<>(64);
         AreaSelectDto areaSelectDto = new AreaSelectDto();
         areaSelectDto.setIdList(iPage.getRecords().stream().map(Program::getAreaId).distinct().collect(Collectors.toList()));
         ApiResponse<List<AreaVo>> areaResponse = baseDataClient.selectByIdList(areaSelectDto);
@@ -349,7 +351,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     @Transactional(rollbackFor = Exception.class)
-    public void OperateProgramData(ProgramOperateDataDto programOperateDataDto){
+    public void operateProgramData(ProgramOperateDataDto programOperateDataDto){
         Map<Long, Long> ticketCategoryCountMap = programOperateDataDto.getTicketCategoryCountMap();
         //从库中查询座位集合
         List<Long> seatIdList = programOperateDataDto.getSeatIdList();

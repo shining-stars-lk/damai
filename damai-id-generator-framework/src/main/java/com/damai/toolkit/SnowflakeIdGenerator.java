@@ -22,7 +22,7 @@ public class SnowflakeIdGenerator {
     /**
      * 时间起始标记点，作为基准，一般取系统的最近时间（一旦确定不能变动）
      */
-    private static final long twepoch = 1288834974657L;
+    private static final long BASIS_TIME = 1288834974657L;
     /**
      * 机器标识位数
      */
@@ -145,11 +145,12 @@ public class SnowflakeIdGenerator {
     }
     
     public long getBase(){
+        int five = 5;
         long timestamp = timeGen();
         //闰秒
         if (timestamp < lastTimestamp) {
             long offset = lastTimestamp - timestamp;
-            if (offset <= 5) {
+            if (offset <= five) {
                 try {
                     wait(offset << 1);
                     timestamp = timeGen();
@@ -190,7 +191,7 @@ public class SnowflakeIdGenerator {
         long timestamp = getBase();
 
         // 时间戳部分 | 数据中心部分 | 机器标识部分 | 序列号部分
-        return ((timestamp - twepoch) << timestampLeftShift)
+        return ((timestamp - BASIS_TIME) << timestampLeftShift)
             | (datacenterId << datacenterIdShift)
             | (workerId << workerIdShift)
             | sequence;
@@ -205,7 +206,7 @@ public class SnowflakeIdGenerator {
         long timestamp = getBase();
         long sequenceShift = log2N(tableCount);
         // 时间戳部分 | 数据中心部分 | 机器标识部分 | 序列号部分 | 用户id基因
-        return ((timestamp - twepoch) << timestampLeftShift)
+        return ((timestamp - BASIS_TIME) << timestampLeftShift)
                 | (datacenterId << datacenterIdShift)
                 | (workerId << workerIdShift)
                 | (sequence << (sequenceBits - sequenceShift))
@@ -228,14 +229,14 @@ public class SnowflakeIdGenerator {
      * 反解id的时间戳部分
      */
     public static long parseIdTimestamp(long id) {
-        return (id>>22)+twepoch;
+        return (id>>22)+ BASIS_TIME;
     }
     
-    /*
+    /**
     * 求log2(N)
     * */
-    public long log2N(long N) {
-        return (long)(Math.log(N)/ Math.log(2));
+    public long log2N(long count) {
+        return (long)(Math.log(count)/ Math.log(2));
     }
     
     public long getMaxWorkerId() {

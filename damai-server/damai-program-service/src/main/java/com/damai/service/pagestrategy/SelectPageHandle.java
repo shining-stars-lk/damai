@@ -9,8 +9,16 @@ import com.damai.vo.ProgramListVo;
  * @author: 阿宽不是程序员
  **/
 public interface SelectPageHandle {
+    /**
+     * 分页查询
+     * @param dto 参数
+     * @return 结果
+     * */
+    PageVo<ProgramListVo> selectPage(ProgramPageListDto dto);
     
-    PageVo<ProgramListVo> selectPage(ProgramPageListDto programPageListDto);
-    
+    /**
+     * 获取分页查询类型
+     * @return 结果
+     * */
     String getType();
 }

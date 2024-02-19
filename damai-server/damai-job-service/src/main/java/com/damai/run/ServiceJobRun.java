@@ -61,7 +61,7 @@ public class ServiceJobRun {
         Integer method = jobInfo.getMethod();
         String params = jobInfo.getParams();
         
-        String traceId = String.valueOf(uidGenerator.getUID());
+        String traceId = String.valueOf(uidGenerator.getUid());
         
         JSONObject jsonObjectHeaders = new JSONObject();
         if (StringUtil.isNotEmpty(headers)) {
@@ -71,7 +71,7 @@ public class ServiceJobRun {
         jsonObjectHeaders.put(TRACE_ID,traceId);
         
         JobRunRecord jobRunRecord = new JobRunRecord();
-        jobRunRecord.setId(uidGenerator.getUID());
+        jobRunRecord.setId(uidGenerator.getUid());
         jobRunRecord.setJobId(id);
         jobRunRecord.setCreateTime(new Date());
         jobRunRecord.setTraceId(traceId);
@@ -120,7 +120,7 @@ public class ServiceJobRun {
         HttpEntity<JSONObject> requestEntity = new HttpEntity<JSONObject>(header);
         if (StringUtil.isNotEmpty(params)) {
             JSONObject jsonObjectParams = JSONObject.parseObject(params);
-            url = splicingURL(url, jsonObjectParams);
+            url = splicingUrl(url, jsonObjectParams);
         }
         ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
         
@@ -130,21 +130,22 @@ public class ServiceJobRun {
     /**
      * get请求拼接url
      *
-     * @param url
-     * @param params
-     * @return
+     * @param url 请求
+     * @param params 参数
+     * @return 结果
      */
-    private String splicingURL(String url, JSONObject params) {
+    private String splicingUrl(String url, JSONObject params) {
+        String questionMark = "?";
         if (null == params) {
             return url;
         }
         StringBuilder sb = new StringBuilder(url);
-        if (url.contains("?")) {
-            if (!url.endsWith("?")) {
+        if (url.contains(questionMark)) {
+            if (!url.endsWith(questionMark)) {
                 sb.append("&");
             }
         } else {
-            sb.append("?");
+            sb.append(questionMark);
         }
         for (String str : params.keySet()) {
             sb.append(str).append("=").append(params.getString(str)).append("&");
@@ -175,7 +176,7 @@ public class ServiceJobRun {
         }
         String result = null;
         if (isApplication) {
-            Map<String, Object> paramMap = new HashMap<>();
+            Map<String, Object> paramMap = new HashMap<>(8);
             if (StringUtil.isNotEmpty(params)) {
                 JSONObject jsonObjectParams =  JSONObject.parseObject(params);
                 for (String jsonObjectParam : jsonObjectParams.keySet()) {

@@ -64,7 +64,7 @@ public class ProgramCategoryService extends ServiceImpl<ProgramCategoryMapper, P
         List<ProgramCategory> programCategoryList = programCategoryAddDtoList.stream().map((programCategoryAddDto) -> {
             ProgramCategory programCategory = new ProgramCategory();
             BeanUtil.copyProperties(programCategoryAddDto, programCategory);
-            programCategory.setId(uidGenerator.getUID());
+            programCategory.setId(uidGenerator.getUid());
             return programCategory;
         }).collect(Collectors.toList());
         

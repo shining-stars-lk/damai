@@ -26,9 +26,9 @@ public class NacosAndRibbonCustom {
     }
 
     public Map getNacosAndRibbonCacheList() {
-        Map nacosCache = nacosCustom.getNacosCache();
-        Map ribbonCache = ribbonCustom.getRibbonCache();
-        Map map = new HashMap();
+        Map<String,?> nacosCache = nacosCustom.getNacosCache();
+        Map<String,?> ribbonCache = ribbonCustom.getRibbonCache();
+        Map<String,Map<String,?>> map = new HashMap(8);
         map.put("nacosCache",nacosCache);
         map.put("ribbonCache",ribbonCache);
         return map;

@@ -34,13 +34,14 @@ public class BusinessEsAutoConfig {
 
 	@Bean
 	public RestClient businessEsRestClient(BusinessEsProperties businessEsProperties) {
+		String defaultValue = "default";
 		HttpHost[] hosts = Arrays.stream(businessEsProperties.getIp()).map(this::makeHttpHost).filter(Objects::nonNull)
 				.toArray(HttpHost[]::new);
 		
 		RestClientBuilder builder = RestClient.builder(hosts);
 		String userName = businessEsProperties.getUserName();
 		String passWord = businessEsProperties.getPassWord();
-		if (StringUtil.isNotEmpty(userName) && !"default".equals(userName) && StringUtil.isNotEmpty(passWord) && !"default".equals(passWord)) {
+		if (StringUtil.isNotEmpty(userName) && !defaultValue.equals(userName) && StringUtil.isNotEmpty(passWord) && !defaultValue.equals(passWord)) {
 			//开始设置用户名和密码
 			CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 			credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, passWord));

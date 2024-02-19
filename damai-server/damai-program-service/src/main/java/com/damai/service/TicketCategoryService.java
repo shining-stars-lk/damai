@@ -45,7 +45,7 @@ public class TicketCategoryService extends ServiceImpl<TicketCategoryMapper, Tic
     public Long add(TicketCategoryAddDto ticketCategoryAddDto) {
         TicketCategory ticketCategory = new TicketCategory();
         BeanUtil.copyProperties(ticketCategoryAddDto,ticketCategory);
-        ticketCategory.setId(uidGenerator.getUID());
+        ticketCategory.setId(uidGenerator.getUid());
         ticketCategoryMapper.insert(ticketCategory);
         return ticketCategory.getId();
     }

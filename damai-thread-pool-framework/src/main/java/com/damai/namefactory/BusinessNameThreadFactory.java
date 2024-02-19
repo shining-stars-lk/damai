@@ -14,6 +14,6 @@ public class BusinessNameThreadFactory extends AbstractNameThreadFactory {
      */
     @Override
     public String getNamePrefix() {
-        return "task-pool" + "--" + poolNum.getAndIncrement();
+        return "task-pool" + "--" + POOL_NUM.getAndIncrement();
     }
 }

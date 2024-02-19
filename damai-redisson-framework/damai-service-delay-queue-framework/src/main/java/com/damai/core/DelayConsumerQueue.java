@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,8 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DelayConsumerQueue extends DelayBaseQueue{
     
     private final AtomicInteger threadCount = new AtomicInteger(1);
+    private final ThreadPoolExecutor listenStartThreadPool;
+    private final ThreadPoolExecutor executeTaskThreadPool;
     
-    private final ExecutorService executorService;
     
     private final AtomicBoolean runFlag = new AtomicBoolean(false);
     
@@ -28,7 +30,10 @@ public class DelayConsumerQueue extends DelayBaseQueue{
     
     public DelayConsumerQueue(DelayQueuePart delayQueuePart, String relTopic){
         super(delayQueuePart.getRedissonClient(),relTopic);
-        this.executorService = new ThreadPoolExecutor(
+        this.listenStartThreadPool = new ThreadPoolExecutor(1,1,60, 
+                TimeUnit.SECONDS,new LinkedBlockingQueue<>(),r -> new Thread(Thread.currentThread().getThreadGroup(), r,
+                "listen-start-thread-" + threadCount.getAndIncrement()));
+        this.executeTaskThreadPool = new ThreadPoolExecutor(
                 delayQueuePart.getDelayQueueProperties().getCorePoolSize(),
                 delayQueuePart.getDelayQueueProperties().getMaximumPoolSize(),
                 delayQueuePart.getDelayQueueProperties().getKeepAliveTime(),
@@ -42,12 +47,12 @@ public class DelayConsumerQueue extends DelayBaseQueue{
     public synchronized void listenStart(){
         if (!runFlag.get()) {
             runFlag.set(true);
-            new Thread(Thread.currentThread().getThreadGroup(), () -> {
+            listenStartThreadPool.execute(() -> {
                 while (!Thread.interrupted()) {
                     try {
                         assert blockingQueue != null;
                         String content = blockingQueue.take();
-                        executorService.execute(() -> {
+                        executeTaskThreadPool.execute(() -> {
                             try {
                                 consumerTask.execute(content);
                             }catch (Exception e) {
@@ -55,12 +60,12 @@ public class DelayConsumerQueue extends DelayBaseQueue{
                             }
                         });
                     } catch (InterruptedException e) {
-                        destroy(executorService);
+                        destroy(executeTaskThreadPool);
                     } catch (Throwable e) {
                         log.error("blockingQueue take error",e);
                     }
                 }
-            }, "listen-thread").start();
+            });
         }
     }
     

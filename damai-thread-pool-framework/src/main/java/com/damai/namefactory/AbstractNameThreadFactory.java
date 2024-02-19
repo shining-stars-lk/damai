@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 public abstract class AbstractNameThreadFactory implements ThreadFactory {
 
-    protected static final AtomicLong poolNum = new AtomicLong(1);
+    protected static final AtomicLong POOL_NUM = new AtomicLong(1);
     private final ThreadGroup group;
     private final AtomicLong threadNum = new AtomicLong(1);
     private String namePrefix = "";

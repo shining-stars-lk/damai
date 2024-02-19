@@ -12,6 +12,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -20,23 +21,26 @@ import static com.damai.constant.Constant.MARK_FLAG_TRUE;
 import static com.damai.constant.Constant.MARK_PARAMETER;
 
 /**
- * @program: cook-frame
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
  * @description: 灰度版本选择负载均衡选择器
- * @author: 星哥
- * @create: 2023-04-17
+ * @author: 阿宽不是程序员
  **/
 @Slf4j
 public class CustomAwarePredicate extends AbstractServerPredicate{
 	
 	
-	private String mark;
+	private final String mark;
 	
 	private CustomEnabledRule customEnabledRule;
+	
+	private final Map<String,String> map = new HashMap<>();
 	
 	public CustomAwarePredicate(String mark, CustomEnabledRule customEnabledRule){
 		super(customEnabledRule);
 		this.mark = mark;
 		this.customEnabledRule = customEnabledRule;
+		this.map.put(MARK_FLAG_FALSE,MARK_FLAG_FALSE);
+		this.map.put(MARK_FLAG_TRUE,MARK_FLAG_TRUE);
 	}
 	
 	@Override
@@ -64,11 +68,11 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 				markFromMetaData = metadata.get(MARK_PARAMETER);
 			}
 			
-			if(Objects.isNull(markFromMetaData) || !(markFromMetaData.equalsIgnoreCase(MARK_FLAG_FALSE) || markFromMetaData.equalsIgnoreCase(MARK_FLAG_TRUE))) {
+			if(Objects.isNull(markFromMetaData) || Objects.isNull(map.get(markFromMetaData.toLowerCase()))) {
 				markFromMetaData = MARK_FLAG_FALSE;
 			}
 			
-			if(Objects.isNull(markFromRequest) || !(markFromRequest.equalsIgnoreCase(MARK_FLAG_FALSE) || markFromRequest.equalsIgnoreCase(MARK_FLAG_FALSE))) {
+			if(Objects.isNull(markFromRequest) || Objects.isNull(map.get(markFromRequest.toLowerCase()))) {
 				markFromRequest = MARK_FLAG_FALSE;
 			}
 			result = markFromMetaData.equalsIgnoreCase(markFromRequest);

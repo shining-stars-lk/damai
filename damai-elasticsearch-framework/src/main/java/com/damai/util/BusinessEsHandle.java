@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.damai.core.SpringUtil;
 import com.damai.core.StringUtil;
 import com.damai.dto.EsDataQueryDto;
 import com.damai.dto.EsDocumentMappingDto;
@@ -86,8 +85,8 @@ public class BusinessEsHandle {
             String paramName = esDocumentMappingDto.getParamName();
             String paramType = esDocumentMappingDto.getParamType();
             if ("text".equals(paramType)) {
-                Map<String,Map<String,Object>> map1 = new HashMap<>();
-                Map<String,Object> map2 = new HashMap<>();
+                Map<String,Map<String,Object>> map1 = new HashMap<>(8);
+                Map<String,Object> map2 = new HashMap<>(8);
                 map2.put("type","keyword");
                 map2.put("ignore_above",256);
                 map1.put("keyword",map2);
@@ -105,7 +104,7 @@ public class BusinessEsHandle {
         indexRequest.source(builder);
         String source = indexRequest.source().utf8ToString();
         HttpEntity entity = new NStringEntity(source, ContentType.APPLICATION_JSON);
-        Request request = new Request("PUT","/"+ SpringUtil.getPrefixDistinctionName() + "-" + indexName);
+        Request request = new Request("PUT","/"+ indexName);
         request.setEntity(entity);
         request.addParameters(Collections.<String, String>emptyMap());
         Response performRequest = restClient.performRequest(request);
@@ -125,9 +124,9 @@ public class BusinessEsHandle {
         try {
             String path = "";
             if (esTypeSwitch) {
-                path = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/" + indexType + "/_mapping?include_type_name";
+                path = "/" + indexName + "/" + indexType + "/_mapping?include_type_name";
             }else {
-                path = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/_mapping";
+                path = "/" + indexName + "/_mapping";
             }
             Request request = new Request("GET", path);
             request.addParameters(Collections.<String, String>emptyMap());
@@ -135,7 +134,7 @@ public class BusinessEsHandle {
             return "OK".equals(response.getStatusLine().getReasonPhrase());
         }catch (Exception e) {
             if (e instanceof ResponseException && ((ResponseException)e).getResponse().getStatusLine().getStatusCode() == RestStatus.NOT_FOUND.getStatus()) {
-                log.warn("index not exist ! indexName:{}, indexType:{}", SpringUtil.getPrefixDistinctionName() + "-" + indexName,indexType);
+                log.warn("index not exist ! indexName:{}, indexType:{}", indexName,indexType);
             }else {
                 log.error("checkIndex error",e);
             }
@@ -153,7 +152,7 @@ public class BusinessEsHandle {
             return false;
         }
         try {
-            Request request = new Request("DELETE", "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName);
+            Request request = new Request("DELETE", "/" + indexName);
             request.addParameters(Collections.<String, String>emptyMap());
             Response response = restClient.performRequest(request);
             return "OK".equals(response.getStatusLine().getReasonPhrase());
@@ -208,9 +207,9 @@ public class BusinessEsHandle {
             HttpEntity entity = new NStringEntity(jsonString, ContentType.APPLICATION_JSON);
             String endpoint = "";
             if (esTypeSwitch) {
-                endpoint = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/" + indexType;
+                endpoint = "/" + indexName + "/" + indexType;
             }else {
-                endpoint = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/_doc";
+                endpoint = "/" + indexName + "/_doc";
             }
             if (StringUtil.isNotEmpty(id)) {
                 endpoint = endpoint + "/" + id;
@@ -535,7 +534,7 @@ public class BusinessEsHandle {
     private <T> void executeQuery(String indexName, String indexType,List<T> list,PageInfo<T> pageInfo,Class<T> clazz, SearchSourceBuilder sourceBuilder) throws IOException {
         String string = sourceBuilder.toString();
         HttpEntity entity = new NStringEntity(string, ContentType.APPLICATION_JSON);
-        StringBuilder endpointStringBuilder = new StringBuilder("/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName);
+        StringBuilder endpointStringBuilder = new StringBuilder("/" + indexName);
         if (esTypeSwitch) {
             endpointStringBuilder.append("/").append(indexType).append("/_search");
         }else {
@@ -560,9 +559,9 @@ public class BusinessEsHandle {
                 if (esTypeSwitch) {
                     value = hits.getLong("total");
                 }else {
-                    JSONObject totalJSONObject = hits.getJSONObject("total");
-                    if (totalJSONObject != null) {
-                        value = totalJSONObject.getLong("value");
+                    JSONObject totalJsonObject = hits.getJSONObject("total");
+                    if (totalJsonObject != null) {
+                        value = totalJsonObject.getLong("value");
                     }
                 }
                 if (Objects.nonNull(pageInfo)) {

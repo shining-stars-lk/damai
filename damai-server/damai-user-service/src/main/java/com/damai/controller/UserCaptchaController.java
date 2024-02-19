@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  **/
 @RestController
 @RequestMapping("/user/captcha")
-@Api(tags = "captcha", description = "验证码")
+@Api(tags = "captcha", value = "验证码")
 public class UserCaptchaController {
     
     @Autowired

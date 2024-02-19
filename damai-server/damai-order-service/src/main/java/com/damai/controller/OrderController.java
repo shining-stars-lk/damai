@@ -31,7 +31,7 @@ import java.util.Map;
  **/
 @RestController
 @RequestMapping("/order")
-@Api(tags = "order", description = "订单")
+@Api(tags = "order", value = "订单")
 public class OrderController {
     
     @Autowired

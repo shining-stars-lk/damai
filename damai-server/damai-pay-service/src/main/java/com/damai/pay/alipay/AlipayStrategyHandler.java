@@ -106,7 +106,7 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
         }
         //在支付宝的业务通知中，只有交易通知状态为 TRADE_SUCCESS时，支付宝才会认定为买家付款成功
         String tradeStatus = params.get("trade_status");
-        if(!"TRADE_SUCCESS".equals(tradeStatus)){
+        if(!AlipayTradeStatus.TRADE_SUCCESS.getValue().equals(tradeStatus)){
             log.error("支付未成功 tradeStatus : {}",tradeStatus);
             return false;
         }
@@ -115,6 +115,8 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
     
     @Override
     public TradeResult queryTrade(String outTradeNo) {
+        String successCode = "10000";
+        String successMsg = "Success";
         TradeResult tradeResult = new TradeResult();
         tradeResult.setSuccess(false);
         try {
@@ -128,7 +130,7 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
                 JSONObject alipayTradeQueryResponse = jsonResponse.getJSONObject("alipay_trade_query_response");
                 String code = alipayTradeQueryResponse.getString("code");
                 String msg = alipayTradeQueryResponse.getString("msg");
-                if ("10000".equals(code) && "Success".equals(msg)) {
+                if (successCode.equals(code) && successMsg.equals(msg)) {
                     tradeResult.setSuccess(true);
                     tradeResult.setOutTradeNo(alipayTradeQueryResponse.getString("out_trade_no"));
                     tradeResult.setTotalAmount(new BigDecimal(alipayTradeQueryResponse.getString("total_amount")));

@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateTime;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
@@ -33,8 +34,8 @@ public class JsonCustomSerializer extends BeanSerializerModifier {
 	}
 
 	public com.fasterxml.jackson.databind.JsonSerializer<Object> judgeType(BeanPropertyWriter writer) {
-		Class<?> clazz = writer.getPropertyType();
-
+		JavaType javaType = writer.getType();
+		Class<?> clazz = javaType.getRawClass();
 		if (String.class.isAssignableFrom(clazz)) {
 			return new com.fasterxml.jackson.databind.JsonSerializer<Object>() {
 

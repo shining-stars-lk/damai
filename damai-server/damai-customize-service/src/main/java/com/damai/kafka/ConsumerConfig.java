@@ -25,7 +25,7 @@ import java.util.Map;
 public class ConsumerConfig {
     
     public Map<String, Object> consumerConfigs(ConsumerProperty consumerProperty) {
-        Map<String, Object> propsMap = new HashMap<>();
+        Map<String, Object> propsMap = new HashMap<>(16);
         propsMap.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, consumerProperty.getServers());
         propsMap.put(org.apache.kafka.clients.consumer.ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, consumerProperty.isAutoCommit());
         propsMap.put(org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, consumerProperty.getAutoCommitIntervalMs());
