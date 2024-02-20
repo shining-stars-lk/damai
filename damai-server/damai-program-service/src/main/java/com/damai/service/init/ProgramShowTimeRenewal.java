@@ -23,4 +23,9 @@ public class ProgramShowTimeRenewal implements InitData {
     public void init() {
         programShowTimeService.renewal();
     }
+    
+    @Override
+    public int executeOrder() {
+        return 2;
+    }
 }

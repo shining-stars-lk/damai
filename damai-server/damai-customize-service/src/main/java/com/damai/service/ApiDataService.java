@@ -1,15 +1,19 @@
 package com.damai.service;
 
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.damai.core.RepeatExecuteLimitConstants;
 import com.damai.core.StringUtil;
 import com.damai.dto.ApiDataDto;
 import com.damai.entity.ApiData;
 import com.damai.mapper.ApiDataMapper;
+import com.damai.repeatexecutelimit.annotion.RepeatExecuteLimit;
 import com.damai.vo.ApiDataVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,12 +28,18 @@ import java.util.stream.Collectors;
  * @description: api调用记录 service
  * @author: 阿宽不是程序员
  **/
-
+@Slf4j
 @Service
 public class ApiDataService extends ServiceImpl<ApiDataMapper,ApiData> {
 
     @Autowired
     private ApiDataMapper apiDataMapper;
+    
+    @RepeatExecuteLimit(name = RepeatExecuteLimitConstants.CONSUMER_API_DATA_MESSAGE,keys = {"#apiData.id"})
+    public void saveApiData(ApiData apiData){
+        log.info("saveApiData apiData:{}", JSON.toJSONString(apiData));
+        apiDataMapper.insert(apiData);
+    }
     
     public Page<ApiDataVo> pageList(final ApiDataDto dto) {
         Page<ApiData> page = Page.of(dto.getPageNo(), dto.getPageSize());

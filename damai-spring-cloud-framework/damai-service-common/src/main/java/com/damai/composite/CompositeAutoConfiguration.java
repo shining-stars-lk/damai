@@ -12,12 +12,17 @@ import org.springframework.context.annotation.Bean;
 public class CompositeAutoConfiguration {
     
     @Bean
-    public ApplicationStartedEventHandler applicationStartedEventHandler(CompositeContainer compositeContainer, InitDataContainer initDataContainer){
-        return new ApplicationStartedEventHandler(compositeContainer,initDataContainer);
+    public CompositeContainer compositeContainer(){
+        return new CompositeContainer();
     }
     
     @Bean
-    public CompositeContainer compositeContainer(){
-        return new CompositeContainer();
+    public InitDataContainer initDataContainer(){
+        return new InitDataContainer();
+    }
+    
+    @Bean
+    public ApplicationStartedEventHandler applicationStartedEventHandler(CompositeContainer compositeContainer, InitDataContainer initDataContainer){
+        return new ApplicationStartedEventHandler(compositeContainer,initDataContainer);
     }
 }

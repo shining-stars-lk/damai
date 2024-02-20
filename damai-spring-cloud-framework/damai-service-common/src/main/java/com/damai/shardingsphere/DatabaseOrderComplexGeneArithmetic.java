@@ -24,7 +24,7 @@ public class DatabaseOrderComplexGeneArithmetic implements ComplexKeysShardingAl
     private static final String SHARDING_COUNT_KEY_NAME = "sharding-count";
     
     /**
-     * 属性分库名
+     * 属性分表名
      * */
     private static final String TABLE_SHARDING_COUNT_KEY_NAME = "table-sharding-count";
     
