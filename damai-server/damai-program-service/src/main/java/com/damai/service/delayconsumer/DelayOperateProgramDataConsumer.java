@@ -2,6 +2,7 @@ package com.damai.service.delayconsumer;
 
 import com.alibaba.fastjson.JSON;
 import com.damai.core.ConsumerTask;
+import com.damai.core.SpringUtil;
 import com.damai.core.StringUtil;
 import com.damai.dto.ProgramOperateDataDto;
 import com.damai.service.ProgramService;
@@ -36,6 +37,6 @@ public class DelayOperateProgramDataConsumer implements ConsumerTask {
     
     @Override
     public String topic() {
-        return DELAY_OPERATE_PROGRAM_DATA_TOPIC;
+        return SpringUtil.getPrefixDistinctionName() + "-" + DELAY_OPERATE_PROGRAM_DATA_TOPIC;
     }
 }

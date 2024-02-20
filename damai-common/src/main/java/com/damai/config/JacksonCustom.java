@@ -37,12 +37,10 @@ import java.util.TimeZone;
  **/
 public class JacksonCustom implements Jackson2ObjectMapperBuilderCustomizer, Ordered {
 
-    /** 默认日期时间格式 */
+    /**
+     * 默认日期时间格式 
+     * */
     private final String dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
-    /** 默认日期格式 */
-    private final String dateFormat = "yyyy-MM-dd";
-    /** 默认时间格式 */
-    private final String timeFormat = "HH:mm:ss";
     
     @Override
     public void customize(Jackson2ObjectMapperBuilder builder) {
@@ -76,10 +74,14 @@ public class JacksonCustom implements Jackson2ObjectMapperBuilderCustomizer, Ord
         simpleModules[3] = new SimpleModule().addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
         simpleModules[4] = new SimpleModule().addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
         //将LocalDate进行格式化和序列化
+        //默认日期格式
+        String dateFormat = "yyyy-MM-dd";
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
         simpleModules[5] = new SimpleModule().addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
         simpleModules[6] = new SimpleModule().addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
         //将LocalTime进行格式化和序列化
+        //默认时间格式
+        String timeFormat = "HH:mm:ss";
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
         simpleModules[7] = new SimpleModule().addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));
         simpleModules[8] = new SimpleModule().addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
@@ -91,10 +93,9 @@ public class JacksonCustom implements Jackson2ObjectMapperBuilderCustomizer, Ord
         //允许有未知的属性
         builder.featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         //允许包含不带引号的控制字符
-        builder.featuresToEnable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS);
-
+        builder.featuresToEnable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS.mappedFeature());
         //数字转换为字符串
-        builder.featuresToEnable(JsonWriteFeature.WRITE_NUMBERS_AS_STRINGS );
+        builder.featuresToEnable(JsonWriteFeature.WRITE_NUMBERS_AS_STRINGS.mappedFeature());
     }
 
     @Override

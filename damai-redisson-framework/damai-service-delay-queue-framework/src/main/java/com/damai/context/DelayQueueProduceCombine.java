@@ -2,7 +2,6 @@ package com.damai.context;
 
 import com.damai.core.DelayProduceQueue;
 import com.damai.core.IsolationRegionSelector;
-import com.damai.core.SpringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +22,7 @@ public class DelayQueueProduceCombine {
         Integer isolationRegionCount = delayQueueBasePart.getDelayQueueProperties().getIsolationRegionCount();
         isolationRegionSelector =new IsolationRegionSelector(isolationRegionCount);
         for(int i = 0; i < isolationRegionCount; i++) {
-            delayProduceQueueList.add(new DelayProduceQueue(delayQueueBasePart.getRedissonClient(), 
-                    SpringUtil.getPrefixDistinctionName() + "-" + topic + "-" + i));
+            delayProduceQueueList.add(new DelayProduceQueue(delayQueueBasePart.getRedissonClient(),topic + "-" + i));
         }
     }
     

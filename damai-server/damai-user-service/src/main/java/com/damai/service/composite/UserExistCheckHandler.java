@@ -38,7 +38,7 @@ public class UserExistCheckHandler extends AbstractComposite<UserRegisterDto> {
     
     @Override
     public Integer executeTier() {
-        return 2;
+        return 3;
     }
 
     @Override

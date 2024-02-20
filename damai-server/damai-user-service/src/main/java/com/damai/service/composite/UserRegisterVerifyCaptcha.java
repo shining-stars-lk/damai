@@ -51,7 +51,7 @@ public class UserRegisterVerifyCaptcha extends AbstractComposite<UserRegisterDto
     
     @Override
     public Integer executeTier() {
-        return 3;
+        return 2;
     }
     
     @Override

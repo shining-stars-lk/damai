@@ -40,16 +40,16 @@ public class ProgramExistCheckHandler extends AbstractComposite<ProgramOrderCrea
     
     @Override
     public Integer executeParentOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Integer executeTier() {
         return 1;
     }
     
     @Override
-    public Integer executeOrder() {
+    public Integer executeTier() {
         return 3;
+    }
+    
+    @Override
+    public Integer executeOrder() {
+        return 1;
     }
 }

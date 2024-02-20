@@ -34,7 +34,7 @@ public class UserExistCheckHandler extends AbstractComposite<ProgramOrderCreateD
     private UserClient userClient;
     
     @Override
-    protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
+    protected void execute(ProgramOrderCreateDto programOrderCreateDto) {
         //验证用户和购票人信息正确性
         UserVo userVo = new UserVo();
         List<TicketUserVo> ticketUserVoList = new ArrayList<>();
@@ -67,16 +67,16 @@ public class UserExistCheckHandler extends AbstractComposite<ProgramOrderCreateD
     
     @Override
     public Integer executeParentOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Integer executeTier() {
         return 1;
     }
     
     @Override
-    public Integer executeOrder() {
+    public Integer executeTier() {
         return 5;
+    }
+    
+    @Override
+    public Integer executeOrder() {
+        return 1;
     }
 }
