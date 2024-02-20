@@ -64,7 +64,7 @@ public class DatabaseOrderComplexGeneArithmetic implements ComplexKeysShardingAl
             value = orderNumberValues.stream().findFirst().orElseThrow(() -> new DaMaiFrameException(BaseCode.ORDER_NUMBER_NOT_EXIST));
             //如果是user_id查询
         } else if (CollectionUtil.isNotEmpty(userIdValues)) {
-            value = orderNumberValues.stream().findFirst().orElseThrow(() -> new DaMaiFrameException(BaseCode.USER_ID_NOT_EXIST));
+            value = userIdValues.stream().findFirst().orElseThrow(() -> new DaMaiFrameException(BaseCode.USER_ID_NOT_EXIST));
         }
         //如果order_number或者user_id的值存在
         if (Objects.nonNull(value)) {
