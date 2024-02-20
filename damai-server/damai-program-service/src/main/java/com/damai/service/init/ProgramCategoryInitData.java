@@ -45,6 +45,11 @@ public class ProgramCategoryInitData implements InitData {
         });
     }
     
+    @Override
+    public int executeOrder() {
+        return 1;
+    }
+    
     @ServiceLock(lockType= LockType.Write,name = PROGRAM_CATEGORY_LOCK,keys = {"#all"})
     public void programCategoryRedisDataInit(){
         QueryWrapper<ProgramCategory> lambdaQueryWrapper = Wrappers.emptyWrapper();

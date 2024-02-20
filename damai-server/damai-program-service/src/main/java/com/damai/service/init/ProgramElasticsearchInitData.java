@@ -42,6 +42,12 @@ public class ProgramElasticsearchInitData implements InitData {
     public void init() {
         BusinessThreadPool.execute(this::initElasticsearchData);
     }
+    
+    @Override
+    public int executeOrder() {
+        return 3;
+    }
+    
     public boolean indexAdd(){
         boolean result = businessEsHandle.checkIndex(SpringUtil.getPrefixDistinctionName() + "-" + 
                 ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE);

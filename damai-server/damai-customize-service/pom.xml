@@ -67,6 +67,11 @@
             <version>${revision}</version>
         </dependency>
         <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-repeat-execute-limit-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
