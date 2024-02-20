@@ -18,6 +18,7 @@ public class ProgramDetailCheckHandler extends AbstractComposite<ProgramOrderCre
     
     @Autowired
     private ProgramService programService;
+    
     @Override
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
         //避免节目不存在，再次缓存
@@ -33,16 +34,16 @@ public class ProgramDetailCheckHandler extends AbstractComposite<ProgramOrderCre
     
     @Override
     public Integer executeParentOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Integer executeTier() {
         return 1;
     }
     
     @Override
-    public Integer executeOrder() {
+    public Integer executeTier() {
         return 2;
+    }
+    
+    @Override
+    public Integer executeOrder() {
+        return 1;
     }
 }

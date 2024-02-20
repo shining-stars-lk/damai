@@ -5,7 +5,6 @@ import com.damai.config.DelayQueueProperties;
 import com.damai.context.DelayQueuePart;
 import com.damai.core.ConsumerTask;
 import com.damai.core.DelayConsumerQueue;
-import com.damai.core.SpringUtil;
 import lombok.AllArgsConstructor;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -36,7 +35,7 @@ public class DelayQueueInitHandler implements ApplicationListener<ApplicationSta
             Integer isolationRegionCount = delayQueuePart.getDelayQueueProperties().getIsolationRegionCount();
             for(int i = 0; i < isolationRegionCount; i++) {
                 DelayConsumerQueue delayConsumerQueue = new DelayConsumerQueue(delayQueuePart, 
-                        SpringUtil.getPrefixDistinctionName() + "-" + delayQueuePart.getConsumerTask().topic() + "-" + i);
+                        delayQueuePart.getConsumerTask().topic() + "-" + i);
                 delayConsumerQueue.listenStart();
             }
         }

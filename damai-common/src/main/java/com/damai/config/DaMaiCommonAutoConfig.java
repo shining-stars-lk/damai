@@ -3,7 +3,6 @@ package com.damai.config;
 import com.damai.core.PrefixDistinctionNameProperties;
 import com.damai.core.SpringUtil;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -11,8 +10,13 @@ import org.springframework.context.annotation.Bean;
  * @description: 通用配置
  * @author: 阿宽不是程序员
  **/
-@EnableConfigurationProperties(PrefixDistinctionNameProperties.class)
+
 public class DaMaiCommonAutoConfig {
+    
+    @Bean
+    public PrefixDistinctionNameProperties prefixDistinctionNameProperties(){
+        return new PrefixDistinctionNameProperties();
+    }
     
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jacksonCustom(){

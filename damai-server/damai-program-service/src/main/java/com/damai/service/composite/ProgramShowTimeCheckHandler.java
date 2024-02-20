@@ -41,16 +41,16 @@ public class ProgramShowTimeCheckHandler extends AbstractComposite<ProgramOrderC
     
     @Override
     public Integer executeParentOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Integer executeTier() {
         return 1;
     }
     
     @Override
-    public Integer executeOrder() {
+    public Integer executeTier() {
         return 4;
+    }
+    
+    @Override
+    public Integer executeOrder() {
+        return 1;
     }
 }
