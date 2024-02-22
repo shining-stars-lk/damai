@@ -10,10 +10,15 @@ public enum BaseCode {
      * 基础code码
      * */
     SUCCESS(0, "OK"),
+    
     SYSTEM_ERROR(-1,"系统异常"),
     
     UID_WORK_ID_ERROR(500,"uid_work_id设置失败"),
+    
     NAME_PASSWORD_ERROR(501,"账号名或登录密码不正确"),
+    
+    INITIALIZE_HANDLER_STRATEGY_NOT_EXIST(502,"初始化操作策略不存在"),
+    
     RSA_SIGN_ERROR(10000,"res签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"res解密失败"),
