@@ -1,14 +1,14 @@
 package com.damai.service.composite;
 
 import com.damai.composite.AbstractComposite;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.ProgramOrderCreateDto;
 import com.damai.entity.ProgramShowTime;
 import com.damai.enums.BaseCode;
 import com.damai.enums.CompositeCheckType;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +27,7 @@ public class ProgramShowTimeCheckHandler extends AbstractComposite<ProgramOrderC
     @Override
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
         //查询节目演出时间
-        ProgramShowTime programShowTime = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME
+        ProgramShowTime programShowTime = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME
                 ,programOrderCreateDto.getProgramId()),ProgramShowTime.class);
         if (Objects.isNull(programShowTime)) {
             throw new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST);

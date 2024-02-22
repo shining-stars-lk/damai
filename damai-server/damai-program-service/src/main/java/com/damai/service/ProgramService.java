@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.client.BaseDataClient;
 import com.damai.common.ApiResponse;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.core.SpringUtil;
 import com.damai.dto.AreaGetDto;
 import com.damai.dto.AreaSelectDto;
@@ -41,7 +41,7 @@ import com.damai.mapper.TicketCategoryMapper;
 import com.damai.page.PageUtil;
 import com.damai.page.PageVo;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.service.init.ProgramDocumentParamName;
 import com.damai.service.pagestrategy.SelectPageWrapper;
 import com.damai.servicelock.LockType;
@@ -58,9 +58,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -278,7 +276,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         ProgramVo redisProgramVo = programService.getById(programGetDto.getId());
         
         //查询节目类型
-        ProgramCategory programCategory = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_CATEGORY_HASH)
+        ProgramCategory programCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
                 ,String.valueOf(redisProgramVo.getProgramCategoryId()),ProgramCategory.class);
         if (Objects.nonNull(programCategory)) {
             redisProgramVo.setProgramCategoryName(programCategory.getName());
@@ -307,7 +305,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @ServiceLock(lockType= LockType.Read,name = PROGRAM_LOCK,keys = {"#programId"})
     public ProgramVo getById(Long programId) {
-        return redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM,programId),ProgramVo.class,() -> {
+        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId),ProgramVo.class,() -> {
             ProgramVo programVo = new ProgramVo();
             //根据id查询到节目
             Program program = Optional.ofNullable(programMapper.selectById(programId)).orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST));
@@ -410,7 +408,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         }
         
         //查询节目类型
-        ProgramCategory programCategory = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_CATEGORY_HASH)
+        ProgramCategory programCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
                 ,String.valueOf(programVo.getProgramCategoryId()),ProgramCategory.class);
         if (Objects.nonNull(programCategory)) {
             programVo.setProgramCategoryName(programCategory.getName());
@@ -428,13 +426,5 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         programVo.setShowWeekTime(programShowTime.getShowWeekTime());
         
         return programVo;
-    }
-    
-    public void indexAdd(@Valid @RequestBody ProgramGetDto programGetDto) {
-        
-    }
-    
-    public ProgramVo dataAdd(@Valid @RequestBody ProgramGetDto programGetDto) {
-        return null;
     }
 }

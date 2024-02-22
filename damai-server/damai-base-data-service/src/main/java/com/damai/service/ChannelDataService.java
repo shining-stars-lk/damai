@@ -3,13 +3,13 @@ package com.damai.service;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.ChannelDataAddDto;
 import com.damai.dto.GetChannelDataByCodeDto;
 import com.damai.entity.ChannelData;
 import com.damai.enums.Status;
 import com.damai.mapper.ChannelDataMapper;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.util.DateUtils;
 import com.damai.vo.GetChannelDataVo;
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +63,6 @@ public class ChannelDataService {
     private void addRedisChannelData(ChannelData channelData){
         GetChannelDataVo getChannelDataVo = new GetChannelDataVo();
         BeanUtils.copyProperties(channelData,getChannelDataVo);
-        redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.CHANNEL_DATA,getChannelDataVo.getCode()),getChannelDataVo);
+        redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.CHANNEL_DATA,getChannelDataVo.getCode()),getChannelDataVo);
     }
 }

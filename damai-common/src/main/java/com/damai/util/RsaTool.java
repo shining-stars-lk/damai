@@ -148,8 +148,7 @@ public class RsaTool {
 	public static String decrypt(String data, String privateKeyStr) {
 		try {
 			PrivateKey privateKey2 = RsaTool.getPrivateKey(privateKeyStr);
-			String decryptstr = RsaTool.decrypt(data, privateKey2);
-			return decryptstr;
+			return RsaTool.decrypt(data, privateKey2);
 		}catch (Exception e) {
 			log.error("decrypt error",e);
 			throw new DaMaiFrameException(BaseCode.RSA_DECRYPT_ERROR);

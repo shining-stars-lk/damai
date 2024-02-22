@@ -4,12 +4,12 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.damai.BusinessThreadPool;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.entity.ProgramCategory;
 import com.damai.init.InitData;
 import com.damai.mapper.ProgramCategoryMapper;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +57,7 @@ public class ProgramCategoryInitData implements InitData {
         if (CollectionUtil.isNotEmpty(programCategoryList)) {
             Map<String, ProgramCategory> programCategoryMap = programCategoryList.stream().collect(
                     Collectors.toMap(p -> String.valueOf(p.getId()), p -> p, (v1, v2) -> v2));
-            redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_CATEGORY_HASH),programCategoryMap);
+            redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH),programCategoryMap);
         }
     }
 }

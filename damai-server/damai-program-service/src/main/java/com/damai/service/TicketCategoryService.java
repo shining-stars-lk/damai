@@ -6,12 +6,12 @@ import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.TicketCategoryAddDto;
 import com.damai.entity.TicketCategory;
 import com.damai.mapper.TicketCategoryMapper;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.vo.TicketCategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ public class TicketCategoryService extends ServiceImpl<TicketCategoryMapper, Tic
     }
     
     public List<TicketCategoryVo> selectTicketCategoryListByProgramId(Long programId){
-        return redisCache.getValueIsList(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_CATEGORY_LIST, programId), TicketCategoryVo.class, () -> {
+        return redisCache.getValueIsList(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_CATEGORY_LIST, programId), TicketCategoryVo.class, () -> {
                     LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
                             .eq(TicketCategory::getProgramId, programId);
                     List<TicketCategory> ticketCategoryList = ticketCategoryMapper.selectList(ticketCategoryLambdaQueryWrapper);
@@ -68,14 +68,14 @@ public class TicketCategoryService extends ServiceImpl<TicketCategoryMapper, Tic
      * 设置余票数量
      * */
     public void setRedisRemainNumber(Long programId){
-        Boolean exist = redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId));
+        Boolean exist = redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId));
         if (!exist) {
             LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
                     .eq(TicketCategory::getProgramId, programId);
             List<TicketCategory> ticketCategoryList = ticketCategoryMapper.selectList(ticketCategoryLambdaQueryWrapper);
             Map<String, Long> map = ticketCategoryList.stream().collect(Collectors.toMap(t -> String.valueOf(t.getId()),
                     TicketCategory::getRemainNumber, (v1, v2) -> v2));
-            redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId),map);
+            redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId),map);
         }
     }
 }

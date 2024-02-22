@@ -46,4 +46,7 @@ public class GetChannelDataVo {
     
     @ApiModelProperty(name ="dataSecretKey", dataType ="String", value ="rsa参数私钥", required =true)
     private String dataSecretKey;
+    
+    @ApiModelProperty(name ="tokenSecret", dataType ="String", value ="token秘钥", required =true)
+    private String tokenSecret;
 }

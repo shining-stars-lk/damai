@@ -5,7 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baidu.fsg.uid.UidGenerator;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.core.StringUtil;
 import com.damai.dto.ApiDataDto;
 import com.damai.enums.ApiRuleType;
@@ -15,7 +15,7 @@ import com.damai.exception.DaMaiFrameException;
 import com.damai.kafka.ApiDataMessageSend;
 import com.damai.property.GatewayProperty;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.service.lua.ApiRestrictCacheOperate;
 import com.damai.util.DateUtils;
 import com.damai.vo.DepthRuleVo;
@@ -91,9 +91,9 @@ public class ApiRestrictService {
             try {
                 List<DepthRuleVo> depthRuleVoList = new ArrayList<>();
           
-                RuleVo ruleVo = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH),RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE).getRelKey(),RuleVo.class);
+                RuleVo ruleVo = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.ALL_RULE_HASH), RedisKeyBuild.createRedisKey(RedisKeyManage.RULE).getRelKey(),RuleVo.class);
   
-                String depthRuleStr = redisCache.getForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH),RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE).getRelKey(),String.class);
+                String depthRuleStr = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.ALL_RULE_HASH), RedisKeyBuild.createRedisKey(RedisKeyManage.DEPTH_RULE).getRelKey(),String.class);
                 if (StringUtil.isNotEmpty(depthRuleStr)) {
                     depthRuleVoList = JSON.parseArray(depthRuleStr,DepthRuleVo.class);
                 }
@@ -165,9 +165,9 @@ public class ApiRestrictService {
         
         parameter.put("effectiveTime",String.valueOf(Objects.equals(ruleVo.getEffectiveTimeType(), RuleTimeUnit.SECOND.getCode()) ? ruleVo.getEffectiveTime() : ruleVo.getEffectiveTime() * 60));
         
-        parameter.put("ruleLimitKey",RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE_LIMIT,commonKey).getRelKey());
+        parameter.put("ruleLimitKey", RedisKeyBuild.createRedisKey(RedisKeyManage.RULE_LIMIT,commonKey).getRelKey());
         
-        parameter.put("zSetRuleStatKey",RedisKeyWrap.createRedisKey(RedisKeyEnum.Z_SET_RULE_STAT,commonKey).getRelKey());
+        parameter.put("zSetRuleStatKey", RedisKeyBuild.createRedisKey(RedisKeyManage.Z_SET_RULE_STAT,commonKey).getRelKey());
         
         return parameter;
     }
@@ -190,7 +190,7 @@ public class ApiRestrictService {
             
             depthRule.put("effectiveTime",String.valueOf(Objects.equals(depthRuleVo.getEffectiveTimeType(), RuleTimeUnit.SECOND.getCode()) ? depthRuleVo.getEffectiveTime() : depthRuleVo.getEffectiveTime() * 60));
             
-            depthRule.put("depthRuleLimit",RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE_LIMIT,i,commonKey).getRelKey());
+            depthRule.put("depthRuleLimit", RedisKeyBuild.createRedisKey(RedisKeyManage.DEPTH_RULE_LIMIT,i,commonKey).getRelKey());
             
             depthRule.put("startTimeWindowTimestamp",depthRuleVo.getStartTimeWindowTimestamp());
             depthRule.put("endTimeWindowTimestamp",depthRuleVo.getEndTimeWindowTimestamp());

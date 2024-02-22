@@ -3,7 +3,6 @@ package com.damai.filter;
 import com.alibaba.fastjson.JSON;
 import com.damai.common.ApiResponse;
 import com.damai.core.StringUtil;
-import com.damai.exception.CheckCodeHandler;
 import com.damai.service.ChannelDataService;
 import com.damai.util.RsaTool;
 import com.damai.vo.GetChannelDataVo;
@@ -55,11 +54,6 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
 
     @Autowired
     private ChannelDataService channelDataService;
-    
-    @Autowired
-    private CheckCodeHandler checkCodeHandler;
-    
-
 
     @Override
     public int getOrder() {
@@ -135,9 +129,6 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
             Object data = apiResponse.getData();
             if (data != null) {
                 String code = request.getHeaders().getFirst(CODE);
-                
-                checkCodeHandler.checkCode(code);
-                
                 GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
                 String rsaEncrypt = RsaTool.encrypt(JSON.toJSONString(data),channelDataVo.getDataPublicKey());
                 apiResponse.setData(rsaEncrypt);
