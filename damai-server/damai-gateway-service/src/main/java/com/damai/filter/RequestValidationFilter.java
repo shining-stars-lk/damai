@@ -1,6 +1,7 @@
 package com.damai.filter;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.damai.conf.RequestTemporaryWrapper;
@@ -8,15 +9,14 @@ import com.damai.core.StringUtil;
 import com.damai.enums.BaseCode;
 import com.damai.exception.ArgumentError;
 import com.damai.exception.ArgumentException;
-import com.damai.exception.CheckCodeHandler;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.property.GatewayProperty;
 import com.damai.service.ApiRestrictService;
 import com.damai.service.ChannelDataService;
 import com.damai.service.TokenService;
 import com.damai.threadlocal.BaseParameterHolder;
-import com.damai.util.RsaTool;
 import com.damai.util.RsaSignTool;
+import com.damai.util.RsaTool;
 import com.damai.vo.GetChannelDataVo;
 import com.damai.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,11 +85,9 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
 
     @Autowired
     private GatewayProperty gatewayProperty;
-    @Resource
-    private UidGenerator uidGenerator;
     
     @Autowired
-    private CheckCodeHandler checkCodeHandler;
+    private UidGenerator uidGenerator;
     
 
     @Override
@@ -180,8 +177,6 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             //token
             token = request.getHeaders().getFirst(TOKEN);
             
-            checkCodeHandler.checkCode(code);
-            
             GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
             
             if (StringUtil.isNotEmpty(encrypt) && V2.equals(encrypt)) {
@@ -204,7 +199,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             }
 
             if (!skipCheckTokenResult) {
-                UserVo userVo = tokenService.getUser(token);
+                UserVo userVo = tokenService.getUser(token,code,channelDataVo.getTokenSecret());
                 userId = userVo.getId();
             }
             
@@ -233,10 +228,10 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 HttpHeaders newHeaders = new HttpHeaders();
                 newHeaders.putAll(headers);
                 Map<String, String> map = requestTemporaryWrapper.getMap();
-                if (map != null) {
+                if (CollectionUtil.isNotEmpty(map)) {
                     newHeaders.setAll(map);
                 }
-                if (headMap != null) {
+                if (CollectionUtil.isNotEmpty(headMap)) {
                     newHeaders.setAll(headMap);
                 }
                 if (contentLength > 0){
@@ -244,7 +239,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 }else {
                     newHeaders.set(HttpHeaders.TRANSFER_ENCODING,"chunked");
                 }
-                if (headMap != null && StringUtil.isNotEmpty(headMap.get(TRACE_ID))) {
+                if (CollectionUtil.isNotEmpty(headMap) && StringUtil.isNotEmpty(headMap.get(TRACE_ID))) {
                     MDC.put(TRACE_ID,headMap.get(TRACE_ID));
                 }
                 return newHeaders;
@@ -263,12 +258,10 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     }
 
     public boolean skipCheckToken(String url){
-        if (gatewayProperty.getSkipCheckTokenPaths() != null) {
-            for (String skipCheckTokenPath : gatewayProperty.getSkipCheckTokenPaths()) {
-                PathMatcher matcher = new AntPathMatcher();
-                if(matcher.match(skipCheckTokenPath, url)){
-                    return true;
-                }
+        for (String skipCheckTokenPath : gatewayProperty.getSkipCheckTokenPaths()) {
+            PathMatcher matcher = new AntPathMatcher();
+            if (matcher.match(skipCheckTokenPath, url)) {
+                return true;
             }
         }
         return false;

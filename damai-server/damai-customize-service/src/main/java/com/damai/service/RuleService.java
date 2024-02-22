@@ -5,7 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.RuleDto;
 import com.damai.dto.RuleGetDto;
 import com.damai.dto.RuleStatusDto;
@@ -16,7 +16,7 @@ import com.damai.enums.RuleStatus;
 import com.damai.mapper.DepthRuleMapper;
 import com.damai.mapper.RuleMapper;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.vo.RuleVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,16 +121,16 @@ public class RuleService {
         LambdaQueryWrapper<Rule> ruleQueryWrapper = Wrappers.lambdaQuery(Rule.class).eq(Rule::getStatus,RuleStatus.RUN.getCode());
         Rule rule = ruleMapper.selectOne(ruleQueryWrapper);
         if (Optional.ofNullable(rule).isPresent()) {
-            map.put(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE).getRelKey(),rule);
+            map.put(RedisKeyBuild.createRedisKey(RedisKeyManage.RULE).getRelKey(),rule);
         }
         LambdaQueryWrapper<DepthRule> depthRuleQueryWrapper = Wrappers.lambdaQuery(DepthRule.class).eq(DepthRule::getStatus,RuleStatus.RUN.getCode());
         List<DepthRule> depthRules = depthRuleMapper.selectList(depthRuleQueryWrapper);
         if (CollUtil.isNotEmpty(depthRules)) {
-            map.put(RedisKeyWrap.createRedisKey(RedisKeyEnum.DEPTH_RULE).getRelKey(),depthRules);
+            map.put(RedisKeyBuild.createRedisKey(RedisKeyManage.DEPTH_RULE).getRelKey(),depthRules);
         }
-        redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH));
-        if (map.size() > 0 && Objects.nonNull(map.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.RULE).getRelKey()))) {
-            redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.ALL_RULE_HASH),map);
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.ALL_RULE_HASH));
+        if (map.size() > 0 && Objects.nonNull(map.get(RedisKeyBuild.createRedisKey(RedisKeyManage.RULE).getRelKey()))) {
+            redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.ALL_RULE_HASH),map);
         }
     }
 }

@@ -53,12 +53,12 @@ public class CacheUtil {
     }
 
     /**
-     * 检查 redisKeyWrap 中的key是否为空或空的字符串
+     * 检查 redisKeyBuild 中的key是否为空或空的字符串
      *
-     * @param redisKeyWrap key包装
+     * @param redisKeyBuild key包装
      */
-    public static void checkNotBlank(RedisKeyWrap redisKeyWrap) {
-        if (StringUtil.isEmpty(redisKeyWrap.getRelKey())) {
+    public static void checkNotBlank(RedisKeyBuild redisKeyBuild) {
+        if (StringUtil.isEmpty(redisKeyBuild.getRelKey())) {
             throw new RuntimeException("请求参数缺失");
         }
     }
@@ -118,8 +118,8 @@ public class CacheUtil {
         return false;
     }
 
-    public static List<String> getBatchKey(Collection<RedisKeyWrap> list){
-        return list.stream().map(RedisKeyWrap::getRelKey).collect(Collectors.toList());
+    public static List<String> getBatchKey(Collection<RedisKeyBuild> list){
+        return list.stream().map(RedisKeyBuild::getRelKey).collect(Collectors.toList());
     }
 
 }

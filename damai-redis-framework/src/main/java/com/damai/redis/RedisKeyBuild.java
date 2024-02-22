@@ -1,7 +1,7 @@
 package com.damai.redis;
 
 
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.core.SpringUtil;
 
 import java.util.Objects;
@@ -11,26 +11,24 @@ import java.util.Objects;
  * @description: redis key包装
  * @author: 阿宽不是程序员
  **/
-public final class RedisKeyWrap {
+public final class RedisKeyBuild {
     /**
      * 实际使用的key
      * */
-    private String relKey;
+    private final String relKey;
 
-    private RedisKeyWrap() {}
-
-    private RedisKeyWrap(String relKey) {
+    private RedisKeyBuild(String relKey) {
         this.relKey = relKey;
     }
 
     /**
      * 构建真实的key
-     * @param redisKeyEnum key的枚举
+     * @param redisKeyManage key的枚举
      * @param args 占位符的值
      * */
-    public static RedisKeyWrap createRedisKey(RedisKeyEnum redisKeyEnum, Object... args){
-        String redisRelKey = String.format(redisKeyEnum.getKeyCode(),args);
-        return new RedisKeyWrap(SpringUtil.getPrefixDistinctionName() + "-" + redisRelKey);
+    public static RedisKeyBuild createRedisKey(RedisKeyManage redisKeyManage, Object... args){
+        String redisRelKey = String.format(redisKeyManage.getKey(),args);
+        return new RedisKeyBuild(SpringUtil.getPrefixDistinctionName() + "-" + redisRelKey);
     }
 
     public String getRelKey() {
@@ -45,7 +43,7 @@ public final class RedisKeyWrap {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        RedisKeyWrap that = (RedisKeyWrap) o;
+        RedisKeyBuild that = (RedisKeyBuild) o;
         return relKey.equals(that.relKey);
     }
 

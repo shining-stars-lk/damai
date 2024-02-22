@@ -43,4 +43,8 @@ public class ChannelDataAddDto {
     @ApiModelProperty(name ="dataSecretKey", dataType ="String", value ="rsa参数私钥")
     private String dataSecretKey;
     
+    @ApiModelProperty(name ="tokenSecret", dataType ="String", value ="token秘钥", required =true)
+    @NotBlank
+    private String tokenSecret;;
+    
 }

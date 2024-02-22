@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
  * @description: 配置属性
  * @author: 阿宽不是程序员
  **/
-@Component
 @Data
+@Component
 public class GatewayProperty {
     /**
      * 需要做频率限制的路径
@@ -18,6 +18,6 @@ public class GatewayProperty {
     @Value("${api.limit.paths:#{null}}")
     private String[] apiRestrictPaths;
     
-    @Value("${skip.check.token.paths:/**/test/test,/**/user/login,/**/token/data/add}")
+    @Value("${skip.check.token.paths:/**/user/register,/**/user/exist,/**/user/login,/**/token/data/add}")
     private String[] skipCheckTokenPaths;
 }

@@ -7,14 +7,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.ProgramShowTimeAddDto;
 import com.damai.entity.ProgramShowTime;
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.ProgramShowTimeMapper;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +61,7 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
      * 查询节目演出时间
      * */
     public ProgramShowTime selectProgramShowTimeByProgramId(Long programId){
-        return redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME,programId),ProgramShowTime.class,() -> {
+        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programId),ProgramShowTime.class,() -> {
             LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
                     Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
             return Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
@@ -86,7 +86,7 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
             LambdaUpdateWrapper<ProgramShowTime> programShowTimeLambdaUpdateWrapper =
                     Wrappers.lambdaUpdate(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programShowTime.getProgramId());
             programShowTimeMapper.update(updateProgramShowTime,programShowTimeLambdaUpdateWrapper);
-            redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME,programShowTime.getProgramId())
+            redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programShowTime.getProgramId())
                     ,updateProgramShowTime,EXPIRE_TIME, TimeUnit.DAYS);
         }
     }

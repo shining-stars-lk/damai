@@ -56,4 +56,9 @@ public class ChannelData extends BaseData implements Serializable {
      * */
     private String dataSecretKey;
     
+    /**
+     * token秘钥
+     * */
+    private String tokenSecret;
+    
 }

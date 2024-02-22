@@ -64,14 +64,4 @@ public class ProgramController {
     public ApiResponse<ProgramVo> getDetail(@Valid @RequestBody ProgramGetDto programGetDto) {
         return ApiResponse.ok(programService.getDetail(programGetDto));
     }
-    
-    @PostMapping(value = "/es/index/add")
-    public ApiResponse<Void> indexAdd(@Valid @RequestBody ProgramGetDto programGetDto) {
-        programService.indexAdd(programGetDto);
-        return ApiResponse.ok();
-    }
-    @PostMapping(value = "/es/data/add")
-    public ApiResponse<ProgramVo> dataAdd(@Valid @RequestBody ProgramGetDto programGetDto) {
-        return ApiResponse.ok(programService.dataAdd(programGetDto));
-    }
 }

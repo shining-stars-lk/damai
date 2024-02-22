@@ -6,6 +6,7 @@ import com.damai.dto.UserExistDto;
 import com.damai.dto.UserGetAndTicketUserListDto;
 import com.damai.dto.UserIdDto;
 import com.damai.dto.UserLoginDto;
+import com.damai.dto.UserLogoutDto;
 import com.damai.dto.UserMobileDto;
 import com.damai.dto.UserRegisterDto;
 import com.damai.dto.UserUpdateDto;
@@ -72,8 +73,8 @@ public class UserController {
     
     @ApiOperation(value = "退出登录")
     @PostMapping(value = "/logout")
-    public ApiResponse<Void> logout(@Valid @RequestBody UserIdDto userIdDto) {
-        userService.logout(userIdDto);
+    public ApiResponse<Void> logout(@Valid @RequestBody UserLogoutDto userLogoutDto) {
+        userService.logout(userLogoutDto);
         return ApiResponse.ok();
     }
     

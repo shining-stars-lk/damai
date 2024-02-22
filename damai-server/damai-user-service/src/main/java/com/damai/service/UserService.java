@@ -7,14 +7,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.damai.client.BaseDataClient;
+import com.damai.common.ApiResponse;
 import com.damai.composite.CompositeContainer;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.core.StringUtil;
+import com.damai.dto.GetChannelDataByCodeDto;
 import com.damai.dto.UserAuthenticationDto;
 import com.damai.dto.UserExistDto;
 import com.damai.dto.UserGetAndTicketUserListDto;
 import com.damai.dto.UserIdDto;
 import com.damai.dto.UserLoginDto;
+import com.damai.dto.UserLogoutDto;
 import com.damai.dto.UserMobileDto;
 import com.damai.dto.UserRegisterDto;
 import com.damai.dto.UserUpdateDto;
@@ -35,10 +39,11 @@ import com.damai.mapper.UserEmailMapper;
 import com.damai.mapper.UserMapper;
 import com.damai.mapper.UserMobileMapper;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.util.BloomFilterHandler;
+import com.damai.vo.GetChannelDataVo;
 import com.damai.vo.TicketUserVo;
 import com.damai.vo.UserGetAndTicketUserListVo;
 import com.damai.vo.UserVo;
@@ -66,8 +71,6 @@ import static com.damai.core.DistributedLockConstants.REGISTER_USER_LOCK;
 @Service
 public class UserService extends ServiceImpl<UserMapper, User> {
     
-    private static final String TOKEN_SECRET = "CSYZWECHAT";
-    
     @Autowired
     private UserMapper userMapper;
     
@@ -92,7 +95,10 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     @Autowired
     private CompositeContainer compositeContainer;
     
-    @Value("${token.expire.time:86400000}")
+    @Autowired
+    private BaseDataClient baseDataClient;
+    
+    @Value("${token.expire.time:20}")
     private Long tokenExpireTime;
     
     @Transactional(rollbackFor = Exception.class)
@@ -131,8 +137,10 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
     
     public String login(UserLoginDto userLoginDto) {
+        String code = userLoginDto.getCode();
         String mobile = userLoginDto.getMobile();
         String email = userLoginDto.getEmail();
+        String password = userLoginDto.getPassword();
         if (StringUtil.isEmpty(mobile) && StringUtil.isEmpty(email)) {
             throw new DaMaiFrameException(BaseCode.USER_MOBILE_AND_EMAIL_NOT_EXIST);
         }
@@ -155,30 +163,54 @@ public class UserService extends ServiceImpl<UserMapper, User> {
             userId = userEmail.getUserId();
         }
         
-        Boolean loginResult = redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,userId));
+        Boolean loginResult = redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN,code,userId));
         if (loginResult) {
             throw new DaMaiFrameException(BaseCode.USER_LOG_IN);
         }
-        User user = userMapper.selectById(userId);
+        LambdaQueryWrapper<User> queryUserWrapper = Wrappers.lambdaQuery(User.class)
+                .eq(User::getId, userId).eq(User::getPassword, password);
+        User user = userMapper.selectOne(queryUserWrapper);
         if (Objects.isNull(user)) {
-            throw new DaMaiFrameException(BaseCode.USER_EMPTY);
+            throw new DaMaiFrameException(BaseCode.NAME_PASSWORD_ERROR);
         }
-        redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()),user,tokenExpireTime + 1000,TimeUnit.MILLISECONDS);
-        return createToken(user.getId());
+        redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN,code,user.getId()),user,
+                tokenExpireTime,TimeUnit.MINUTES);
+        return createToken(user.getId(),getChannelDataByCode(code).getTokenSecret());
+    }
+    private GetChannelDataVo getChannelDataByCode(String code){
+        GetChannelDataVo channelDataVo = getChannelDataByRedis(code);
+        if (Objects.isNull(channelDataVo)) {
+            channelDataVo = getChannelDataByClient(code);
+        }
+        return channelDataVo;
     }
     
-    public String createToken(Long userId){
+    private GetChannelDataVo getChannelDataByRedis(String code){
+        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.CHANNEL_DATA,code),GetChannelDataVo.class);
+    }
+    
+    private GetChannelDataVo getChannelDataByClient(String code){
+        GetChannelDataByCodeDto getChannelDataByCodeDto = new GetChannelDataByCodeDto();
+        getChannelDataByCodeDto.setCode(code);
+        ApiResponse<GetChannelDataVo> getChannelDataApiResponse = baseDataClient.getByCode(getChannelDataByCodeDto);
+        if (Objects.equals(getChannelDataApiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+            return getChannelDataApiResponse.getData();
+        }
+        throw new DaMaiFrameException("没有找到ChannelData");
+    }
+    
+    public String createToken(Long userId,String tokenSecret){
         Map<String,Object> map = new HashMap<>(4);
         map.put("userId",userId);
-        return TokenUtil.createToken(String.valueOf(uidGenerator.getUid()), JSON.toJSONString(map),tokenExpireTime,TOKEN_SECRET);
+        return TokenUtil.createToken(String.valueOf(uidGenerator.getUid()), JSON.toJSONString(map),tokenExpireTime * 60 * 1000,tokenSecret);
     }
     
-    public void logout(UserIdDto userIdDto) {
-        User user = userMapper.selectById(userIdDto.getId());
+    public void logout(UserLogoutDto userLogoutDto) {
+        User user = userMapper.selectById(userLogoutDto.getId());
         if (Objects.isNull(user)) {
             throw new DaMaiFrameException(BaseCode.USER_EMPTY);
         }
-        redisCache.del(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID,user.getId()));
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN,userLogoutDto.getCode(),user.getId()));
     }
     @Transactional(rollbackFor = Exception.class)
     public void update(UserUpdateDto userUpdateDto){

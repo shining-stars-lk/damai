@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.client.PayClient;
 import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.NotifyDto;
 import com.damai.dto.OrderCancelDto;
 import com.damai.dto.OrderCreateDto;
@@ -38,7 +38,7 @@ import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.OrderMapper;
 import com.damai.mapper.OrderTicketUserMapper;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.service.delaysend.DelayOperateProgramDataSend;
 import com.damai.service.properties.OrderProperties;
 import com.damai.servicelock.annotion.ServiceLock;
@@ -318,7 +318,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     
     public void updateProgramRelatedData(Long programId,List<String> seatIdList,OrderStatus orderStatus){
         //从redis中查询锁定中的座位
-        List<SeatVo> seatVoList = redisCache.multiGetForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId), seatIdList, SeatVo.class);
+        List<SeatVo> seatVoList = redisCache.multiGetForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId), seatIdList, SeatVo.class);
         if (CollectionUtil.isEmpty(seatVoList)) {
             throw new DaMaiFrameException(BaseCode.LOCK_SEAT_LIST_EMPTY);
         }
@@ -341,7 +341,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         //操作类型
         keys.add(String.valueOf(orderStatus.getCode()));
         //锁定座位的key
-        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
         
         Object[] data = new String[3];
         //扣除锁定的座位数据
@@ -362,14 +362,14 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         
         if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
             //没有售卖座位的key
-            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
+            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
             //恢复库存的key
-            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
+            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
             //恢复库存数据
             data[2] = JSON.toJSONString(jsonArray);
         }else if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
             //已售卖座位的key
-            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_SOLD_HASH, programId).getRelKey());
+            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId).getRelKey());
         }
         orderProgramCacheOperate.programCacheReverseOperate(keys,data);
         

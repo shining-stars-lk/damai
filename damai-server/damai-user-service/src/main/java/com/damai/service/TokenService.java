@@ -1,13 +1,13 @@
 package com.damai.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.core.StringUtil;
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.jwt.TokenUtil;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,7 +40,7 @@ public class TokenService {
         UserVo userVo = null;
         String userId = parseToken(token);
         if (StringUtil.isNotEmpty(userId)) {
-            userVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.USER_ID, userId), UserVo.class);
+            userVo = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, userId), UserVo.class);
         }
         return Optional.ofNullable(userVo).orElseThrow(() -> new DaMaiFrameException(BaseCode.USER_EMPTY));
     }

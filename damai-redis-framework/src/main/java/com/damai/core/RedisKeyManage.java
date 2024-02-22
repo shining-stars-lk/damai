@@ -6,7 +6,7 @@ package com.damai.core;
  * @description: redis key管理
  * @author: 阿宽不是程序员
  **/
-public enum RedisKeyEnum {
+public enum RedisKeyManage {
     /**
      * redis 缓存 key管理
      * */
@@ -14,7 +14,7 @@ public enum RedisKeyEnum {
     Key("key","键值测试","value为TestCacheDto类型","k"),
     Key2("key:%s","键值占位测试","value为TestCacheDto类型","k"),
     
-    USER_ID("user_id:%s","userId","value为UserVo类型","k"),
+    USER_LOGIN("user_login_%s_%s","user_login","value为UserVo类型","k"),
     
     PRODUCT_STOCK("product_stock:%S","商品库存id","value为库存","k"),
     
@@ -73,61 +73,61 @@ public enum RedisKeyEnum {
     /**
      * key值
      * */
-    private String keyCode;
+    private String key;
 
     /**
      * key的说明
      * */
-    private String keyMsg;
+    private String keyIntroduce;
 
     /**
      * value的说明
      * */
-    private String valueMsg;
+    private String valueIntroduce;
 
     /**
      * 作者
      * */
     private String author;
 
-    RedisKeyEnum(String keyCode, String keyMsg, String valueMsg, String author){
-        this.keyCode = keyCode;
-        this.keyMsg = keyMsg;
-        this.valueMsg = valueMsg;
+    RedisKeyManage(String key, String keyIntroduce, String valueIntroduce, String author){
+        this.key = key;
+        this.keyIntroduce = keyIntroduce;
+        this.valueIntroduce = valueIntroduce;
         this.author = author;
     }
 
-    public static RedisKeyEnum getRc(String keyCode) {
-        for (RedisKeyEnum re : RedisKeyEnum.values()) {
-            if (re.keyCode.equals(keyCode)) {
+    public static RedisKeyManage getRc(String keyCode) {
+        for (RedisKeyManage re : RedisKeyManage.values()) {
+            if (re.key.equals(keyCode)) {
                 return re;
             }
         }
         return null;
     }
 
-    public String getKeyCode() {
-        return keyCode;
+    public String getKey() {
+        return key;
     }
 
-    public void setKeyCode(String keyCode) {
-        this.keyCode = keyCode;
+    public void setKey(String key) {
+        this.key = key;
     }
 
-    public String getKeyMsg() {
-        return keyMsg;
+    public String getKeyIntroduce() {
+        return keyIntroduce;
     }
 
-    public void setKeyMsg(String keyMsg) {
-        this.keyMsg = keyMsg;
+    public void setKeyIntroduce(String keyIntroduce) {
+        this.keyIntroduce = keyIntroduce;
     }
 
-    public String getValueMsg() {
-        return valueMsg;
+    public String getValueIntroduce() {
+        return valueIntroduce;
     }
 
-    public void setValueMsg(String valueMsg) {
-        this.valueMsg = valueMsg;
+    public void setValueIntroduce(String valueIntroduce) {
+        this.valueIntroduce = valueIntroduce;
     }
 
     public String getAuthor() {

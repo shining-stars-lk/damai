@@ -8,7 +8,7 @@ import com.baidu.fsg.uid.UidGenerator;
 import com.damai.client.OrderClient;
 import com.damai.common.ApiResponse;
 import com.damai.composite.CompositeContainer;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.DelayOrderCancelDto;
 import com.damai.dto.OrderCreateDto;
 import com.damai.dto.OrderTicketUserCreateDto;
@@ -21,7 +21,7 @@ import com.damai.enums.OrderStatus;
 import com.damai.enums.SellStatus;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.service.delaysend.DelayOrderCancelSend;
 import com.damai.service.lua.ProgramCacheCreateOrderData;
 import com.damai.service.lua.ProgramCacheCreateOrderOperate;
@@ -88,9 +88,9 @@ public class ProgramOrderService {
         List<SeatVo> purchaseSeatList = new ArrayList<>();
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
         //该节目下所有未售卖的座位
-        List<SeatVo> seatVoList = redisCache.getAllForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programOrderCreateDto.getProgramId()), SeatVo.class);
+        List<SeatVo> seatVoList = redisCache.getAllForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programOrderCreateDto.getProgramId()), SeatVo.class);
         //该节目下的余票数量
-        Map<String, Long> ticketCategoryRemainNumber = redisCache.getAllMapForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programOrderCreateDto.getProgramId()), Long.class);
+        Map<String, Long> ticketCategoryRemainNumber = redisCache.getAllMapForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programOrderCreateDto.getProgramId()), Long.class);
         //入参座位存在
         if (CollectionUtil.isNotEmpty(seatDtoList)) {
             //余票数量检测
@@ -158,11 +158,11 @@ public class ProgramOrderService {
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
         List<String> keys = new ArrayList<>();
         //票档数量的key
-        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
         //没有售卖的座位key
-        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
         //锁定的座位key
-        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
         String[] data = new String[2];
         //入参座位存在
         JSONArray jsonArray = new JSONArray();
@@ -205,9 +205,9 @@ public class ProgramOrderService {
     private String doCreate(ProgramOrderCreateDto programOrderCreateDto,List<SeatVo> purchaseSeatList){
         Long programId = programOrderCreateDto.getProgramId();
         //获取要购买的节目信息
-        ProgramVo programVo = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM, programId), ProgramVo.class);
+        ProgramVo programVo = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId), ProgramVo.class);
         //查询节目演出时间
-        ProgramShowTime programShowTime = redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME
+        ProgramShowTime programShowTime = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME
                 ,programId),ProgramShowTime.class);
         //主订单参数构建
         OrderCreateDto orderCreateDto = new OrderCreateDto();
@@ -283,7 +283,7 @@ public class ProgramOrderService {
         });
         List<String> keys = new ArrayList<>();
         //票档数量的key
-        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
         
         String[] data = new String[3];
         //根据座位集合统计出对应的票档数量
@@ -312,14 +312,14 @@ public class ProgramOrderService {
         data[2] = JSON.toJSONString(seatDataList);
         if (Objects.equals(orderStatus.getCode(), OrderStatus.NO_PAY.getCode())) {
             //没有售卖座位的key
-            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
+            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
             //锁定座位的key
-            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
+            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
         } else if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
             //锁定座位的key
-            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
+            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
             //没有售卖座位的key
-            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
+            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
         }
         
         programCacheOperate.programCacheOperate(keys,data);
