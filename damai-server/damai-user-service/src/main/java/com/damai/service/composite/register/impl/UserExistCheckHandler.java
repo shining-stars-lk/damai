@@ -1,9 +1,8 @@
-package com.damai.service.composite;
+package com.damai.service.composite.register.impl;
 
-import com.damai.composite.AbstractComposite;
 import com.damai.dto.UserRegisterDto;
-import com.damai.enums.CompositeCheckType;
 import com.damai.service.UserService;
+import com.damai.service.composite.register.AbstractUserRegisterCheckHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @author: 阿宽不是程序员
  **/
 @Component
-public class UserExistCheckHandler extends AbstractComposite<UserRegisterDto> {
+public class UserExistCheckHandler extends AbstractUserRegisterCheckHandler {
 
     @Autowired
     private UserService userService;
@@ -24,11 +23,6 @@ public class UserExistCheckHandler extends AbstractComposite<UserRegisterDto> {
     @Override
     public void execute(final UserRegisterDto userRegisterDto) {
         userService.doExist(userRegisterDto.getMobile());
-    }
-
-    @Override
-    public String type() {
-        return CompositeCheckType.USER_REGISTER_CHECK.getValue();
     }
     
     @Override

@@ -1,10 +1,9 @@
-package com.damai.service.composite;
+package com.damai.service.composite.register.impl;
 
-import com.damai.composite.AbstractComposite;
 import com.damai.dto.UserRegisterDto;
 import com.damai.enums.BaseCode;
-import com.damai.enums.CompositeCheckType;
 import com.damai.exception.DaMaiFrameException;
+import com.damai.service.composite.register.AbstractUserRegisterCheckHandler;
 import com.damai.service.tool.RequestCounter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @author: 阿宽不是程序员
  **/
 @Component
-public class UserRegisterCountCheckHandler extends AbstractComposite<UserRegisterDto> {
+public class UserRegisterCountCheckHandler extends AbstractUserRegisterCheckHandler {
     
     @Autowired
     private RequestCounter requestCounter;
@@ -29,11 +28,6 @@ public class UserRegisterCountCheckHandler extends AbstractComposite<UserRegiste
         if (result) {
             throw new DaMaiFrameException(BaseCode.USER_REGISTER_FREQUENCY);
         }
-    }
-    
-    @Override
-    public String type() {
-        return CompositeCheckType.USER_REGISTER_CHECK.getValue();
     }
     
     @Override

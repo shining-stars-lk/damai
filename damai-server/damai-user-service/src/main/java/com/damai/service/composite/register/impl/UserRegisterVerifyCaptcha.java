@@ -1,13 +1,12 @@
-package com.damai.service.composite;
+package com.damai.service.composite.register.impl;
 
 import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
-import com.damai.composite.AbstractComposite;
 import com.damai.core.StringUtil;
 import com.damai.dto.UserRegisterDto;
-import com.damai.enums.CompositeCheckType;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.service.CaptchaHandle;
+import com.damai.service.composite.register.AbstractUserRegisterCheckHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Component;
  * @author: 阿宽不是程序员
  **/
 @Component
-public class UserRegisterVerifyCaptcha extends AbstractComposite<UserRegisterDto> {
+public class UserRegisterVerifyCaptcha extends AbstractUserRegisterCheckHandler {
     
     @Autowired
     private CaptchaHandle captchaHandle;
@@ -37,11 +36,6 @@ public class UserRegisterVerifyCaptcha extends AbstractComposite<UserRegisterDto
                 throw new DaMaiFrameException(responseModel.getRepCode(),responseModel.getRepMsg());
             }
         }
-    }
-    
-    @Override
-    public String type() {
-        return CompositeCheckType.USER_REGISTER_CHECK.getValue();
     }
     
     @Override
