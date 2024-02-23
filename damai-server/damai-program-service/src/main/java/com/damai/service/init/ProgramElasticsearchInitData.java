@@ -4,12 +4,13 @@ import com.damai.BusinessThreadPool;
 import com.damai.core.SpringUtil;
 import com.damai.dto.EsDocumentMappingDto;
 import com.damai.entity.TicketCategoryAggregate;
-import com.damai.init.InitData;
+import com.damai.initialize.base.AbstractApplicationPostConstructInitializeHandler;
 import com.damai.service.ProgramService;
 import com.damai.util.BusinessEsHandle;
 import com.damai.vo.ProgramVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import java.util.Optional;
  **/
 @Slf4j
 @Component
-public class ProgramElasticsearchInitData implements InitData {
+public class ProgramElasticsearchInitData extends AbstractApplicationPostConstructInitializeHandler {
     
     @Autowired
     private BusinessEsHandle businessEsHandle;
@@ -34,18 +35,18 @@ public class ProgramElasticsearchInitData implements InitData {
     private ProgramService programService;
     
     
+    @Override
+    public Integer executeOrder() {
+        return 3;
+    }
+    
     /**
      * 项目启动后，异步将program的数据更新到Elasticsearch中，当数据量特别大时，生产环境绝对不会这么做
      * 会每个一个节目到数据库后，就会添加到Elasticsearch中，以及用定时任务来更新到Elasticsearch中
      * */
     @Override
-    public void init() {
+    public void executeInit(final ConfigurableApplicationContext context) {
         BusinessThreadPool.execute(this::initElasticsearchData);
-    }
-    
-    @Override
-    public int executeOrder() {
-        return 3;
     }
     
     public boolean indexAdd(){

@@ -11,7 +11,7 @@ import java.util.Date;
  * @author: 阿宽不是程序员
  **/
 @Data
-public class BaseData {
+public class BaseTableData {
 
     /**
      * 创建时间

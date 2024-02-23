@@ -21,6 +21,7 @@
         <module>damai-sentinel-general</module>
         <module>damai-service-lossless</module>
         <module>damai-service-hystrix</module>
+        <module>damai-service-initialize</module>
     </modules>
 
 </project>

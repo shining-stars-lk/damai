@@ -1,4 +1,4 @@
-package com.damai.composite;
+package com.damai.initialize.composite;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
