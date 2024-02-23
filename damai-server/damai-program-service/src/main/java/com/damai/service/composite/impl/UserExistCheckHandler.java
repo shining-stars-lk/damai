@@ -1,14 +1,13 @@
-package com.damai.service.composite;
+package com.damai.service.composite.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
-import com.damai.composite.AbstractComposite;
 import com.damai.dto.ProgramOrderCreateDto;
 import com.damai.dto.UserGetAndTicketUserListDto;
 import com.damai.enums.BaseCode;
-import com.damai.enums.CompositeCheckType;
 import com.damai.exception.DaMaiFrameException;
+import com.damai.service.composite.AbstractProgramCheckHandler;
 import com.damai.vo.TicketUserVo;
 import com.damai.vo.UserGetAndTicketUserListVo;
 import com.damai.vo.UserVo;
@@ -28,7 +27,7 @@ import java.util.Optional;
  **/
 @Slf4j
 @Component
-public class UserExistCheckHandler extends AbstractComposite<ProgramOrderCreateDto> {
+public class UserExistCheckHandler extends AbstractProgramCheckHandler {
     
     @Autowired
     private UserClient userClient;
@@ -58,11 +57,6 @@ public class UserExistCheckHandler extends AbstractComposite<ProgramOrderCreateD
             log.error("user client rpc getUserAndTicketUserList error response : {}", JSON.toJSONString(userGetAndTicketUserApiResponse));
             throw new DaMaiFrameException(userGetAndTicketUserApiResponse);
         }
-    }
-    
-    @Override
-    public String type() {
-        return CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue();
     }
     
     @Override

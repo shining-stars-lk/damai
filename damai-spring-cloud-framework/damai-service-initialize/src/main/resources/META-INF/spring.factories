@@ -1,5 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.damai.initialize.config.InitializeAutoConfig,\
-  com.damai.initialize.composite.CompositeAutoConfiguration
-org.springframework.context.ApplicationContextInitializer=\
-  com.damai.initialize.context.InitializeContext
+  com.damai.initialize.impl.composite.CompositeAutoConfiguration
