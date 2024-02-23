@@ -1,6 +1,6 @@
 package com.damai.initialize.impl.composite.init;
 
-import com.damai.initialize.base.AbstractApplicationStartEventListenerInitializeHandler;
+import com.damai.initialize.base.AbstractApplicationStartEventListenerHandler;
 import com.damai.initialize.impl.composite.CompositeContainer;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -11,7 +11,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author: 阿宽不是程序员
  **/
 @AllArgsConstructor
-public class CompositeInit extends AbstractApplicationStartEventListenerInitializeHandler {
+public class CompositeInit extends AbstractApplicationStartEventListenerHandler {
     
     private final CompositeContainer compositeContainer;
     

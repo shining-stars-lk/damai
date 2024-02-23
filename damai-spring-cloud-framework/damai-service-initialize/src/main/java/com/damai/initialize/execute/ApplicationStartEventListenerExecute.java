@@ -5,7 +5,7 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import static com.damai.initialize.constant.InitializeHandlerType.APPLICATION_START_EVENT_LISTENER;
+import static com.damai.initialize.constant.InitializeHandlerType.APPLICATION_EVENT_LISTENER;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
@@ -25,6 +25,6 @@ public class ApplicationStartEventListenerExecute extends AbstractApplicationExe
     
     @Override
     public String type() {
-        return APPLICATION_START_EVENT_LISTENER;
+        return APPLICATION_EVENT_LISTENER;
     }
 }

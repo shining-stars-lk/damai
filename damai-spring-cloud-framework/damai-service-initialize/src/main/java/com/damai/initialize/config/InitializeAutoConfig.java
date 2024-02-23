@@ -1,5 +1,6 @@
 package com.damai.initialize.config;
 
+import com.damai.initialize.execute.ApplicationCommandLineRunnerExecute;
 import com.damai.initialize.execute.ApplicationInitializingBeanExecute;
 import com.damai.initialize.execute.ApplicationPostConstructExecute;
 import com.damai.initialize.execute.ApplicationStartEventListenerExecute;
@@ -29,5 +30,11 @@ public class InitializeAutoConfig {
     public ApplicationStartEventListenerExecute applicationStartEventListenerExecute(
             ConfigurableApplicationContext applicationContext){
         return new ApplicationStartEventListenerExecute(applicationContext);
+    }
+    
+    @Bean
+    public ApplicationCommandLineRunnerExecute applicationCommandLineRunnerExecute(
+            ConfigurableApplicationContext applicationContext){
+        return new ApplicationCommandLineRunnerExecute(applicationContext);
     }
 }

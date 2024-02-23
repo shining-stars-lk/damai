@@ -4,7 +4,7 @@ import com.damai.BusinessThreadPool;
 import com.damai.core.SpringUtil;
 import com.damai.dto.EsDocumentMappingDto;
 import com.damai.entity.TicketCategoryAggregate;
-import com.damai.initialize.base.AbstractApplicationPostConstructInitializeHandler;
+import com.damai.initialize.base.AbstractApplicationPostConstructHandler;
 import com.damai.service.ProgramService;
 import com.damai.util.BusinessEsHandle;
 import com.damai.vo.ProgramVo;
@@ -26,7 +26,7 @@ import java.util.Optional;
  **/
 @Slf4j
 @Component
-public class ProgramElasticsearchInitData extends AbstractApplicationPostConstructInitializeHandler {
+public class ProgramElasticsearchInitData extends AbstractApplicationPostConstructHandler {
     
     @Autowired
     private BusinessEsHandle businessEsHandle;
