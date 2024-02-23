@@ -38,47 +38,46 @@ public abstract class AbstractComposite<T> {
     public abstract Integer executeParentOrder();
     
     /**
-     * 返回组件的执行层级。
-     * @return 返回组件的执行层级。
+     * 返回组件的执行层级
+     * @return 返回组件的执行层级
      */
     public abstract Integer executeTier();
     
     /**
-     * 返回组件在同一层级中的执行顺序。
-     * @return 返回组件在同一层级中的执行顺序。
+     * 返回组件在同一层级中的执行顺序
+     * @return 返回组件在同一层级中的执行顺序
      */
     public abstract Integer executeOrder();
     
     /**
-     * 将子组件添加到当前组件的子列表中。
-     * @param abstractComposite 子组件实例。
+     * 将子组件添加到当前组件的子列表中
+     * @param abstractComposite 子组件实例
      */
     public void add(AbstractComposite<T> abstractComposite) {
         list.add(abstractComposite);
     }
     
     /**
-     * 按层次结构执行每个组件的业务逻辑。
-     * @param param 泛型参数，用于业务执行。
+     * 按层次结构执行每个组件的业务逻辑
+     * @param param 泛型参数，用于业务执行
      */
     public void allExecute(T param) {
         Queue<AbstractComposite<T>> queue = new LinkedList<>();
-        // 将当前对象加入队列
+        
         queue.add(this); 
         
         while (!queue.isEmpty()) {
-            // 当前层的大小
+           
             int levelSize = queue.size(); 
             
             for (int i = 0; i < levelSize; i++) {
-                // 从队列中取出一个元素
+               
                 AbstractComposite<T> current = queue.poll(); 
                 
-                // 执行当前元素的业务逻辑
+                
                 assert current != null;
                 current.execute(param);
                 
-                // 将当前元素的子元素加入队列，以便在下一次迭代中处理
                 queue.addAll(current.list);
             }
         }
