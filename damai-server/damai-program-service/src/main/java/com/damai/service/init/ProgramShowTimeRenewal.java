@@ -1,8 +1,9 @@
 package com.damai.service.init;
 
-import com.damai.init.InitData;
+import com.damai.initialize.base.AbstractApplicationPostConstructInitializeHandler;
 import com.damai.service.ProgramShowTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,21 +12,21 @@ import org.springframework.stereotype.Component;
  * @author: 阿宽不是程序员
  **/
 @Component
-public class ProgramShowTimeRenewal implements InitData {
+public class ProgramShowTimeRenewal extends AbstractApplicationPostConstructInitializeHandler {
     
     @Autowired
     private ProgramShowTimeService programShowTimeService;
+    
+    @Override
+    public Integer executeOrder() {
+        return 2;
+    }
     
     /**
      * 项目启动将库中的节目演出时间进行更新，真实生产环境不会这么做的
      * */
     @Override
-    public void init() {
+    public void executeInit(final ConfigurableApplicationContext context) {
         programShowTimeService.renewal();
-    }
-    
-    @Override
-    public int executeOrder() {
-        return 2;
     }
 }

@@ -6,13 +6,14 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.damai.BusinessThreadPool;
 import com.damai.core.RedisKeyManage;
 import com.damai.entity.ProgramCategory;
-import com.damai.init.InitData;
+import com.damai.initialize.base.AbstractApplicationPostConstructInitializeHandler;
 import com.damai.mapper.ProgramCategoryMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -26,7 +27,7 @@ import static com.damai.core.DistributedLockConstants.PROGRAM_CATEGORY_LOCK;
  * @author: 阿宽不是程序员
  **/
 @Component
-public class ProgramCategoryInitData implements InitData {
+public class ProgramCategoryInitData extends AbstractApplicationPostConstructInitializeHandler {
     
     @Autowired
     private ProgramCategoryMapper programCategoryMapper;
@@ -39,15 +40,15 @@ public class ProgramCategoryInitData implements InitData {
     
     
     @Override
-    public void init() {
-        BusinessThreadPool.execute(() -> {
-            programCategoryInitDataProxy.programCategoryRedisDataInit();
-        });
+    public Integer executeOrder() {
+        return 1;
     }
     
     @Override
-    public int executeOrder() {
-        return 1;
+    public void executeInit(final ConfigurableApplicationContext context) {
+        BusinessThreadPool.execute(() -> {
+            programCategoryInitDataProxy.programCategoryRedisDataInit();
+        });
     }
     
     @ServiceLock(lockType= LockType.Write,name = PROGRAM_CATEGORY_LOCK,keys = {"#all"})

@@ -1,7 +1,7 @@
 package com.damai.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.damai.data.BaseData;
+import com.damai.data.BaseTableData;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,7 +15,7 @@ import java.util.Date;
  **/
 @Data
 @TableName("d_pay_bill")
-public class PayBill extends BaseData implements Serializable {
+public class PayBill extends BaseTableData implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

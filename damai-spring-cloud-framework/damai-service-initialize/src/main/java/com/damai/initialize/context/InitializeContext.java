@@ -1,5 +1,6 @@
 package com.damai.initialize.context;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.initialize.base.InitializeHandler;
@@ -23,7 +24,8 @@ public class InitializeContext implements ApplicationContextInitializer<Configur
     
     
     public List<InitializeHandler> get(String type){
-        return Optional.ofNullable(map.get(type)).orElseThrow(() -> new DaMaiFrameException(BaseCode.INITIALIZE_HANDLER_STRATEGY_NOT_EXIST));
+        return Optional.ofNullable(map.get(type)).filter(CollectionUtil::isNotEmpty)
+                .orElseThrow(() -> new DaMaiFrameException(BaseCode.INITIALIZE_HANDLER_STRATEGY_NOT_EXIST));
     }
     
     @Override

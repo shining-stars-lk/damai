@@ -1,4 +1,4 @@
-package com.damai.composite;
+package com.damai.initialize.composite;
 
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
