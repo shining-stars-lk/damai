@@ -1,10 +1,10 @@
-package com.damai.service.composite;
+package com.damai.service.composite.impl;
 
-import com.damai.composite.AbstractComposite;
+
 import com.damai.dto.ProgramGetDto;
 import com.damai.dto.ProgramOrderCreateDto;
-import com.damai.enums.CompositeCheckType;
 import com.damai.service.ProgramService;
+import com.damai.service.composite.AbstractProgramCheckHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @author: 阿宽不是程序员
  **/
 @Component
-public class ProgramDetailCheckHandler extends AbstractComposite<ProgramOrderCreateDto> {
+public class ProgramDetailCheckHandler extends AbstractProgramCheckHandler {
     
     @Autowired
     private ProgramService programService;
@@ -25,11 +25,6 @@ public class ProgramDetailCheckHandler extends AbstractComposite<ProgramOrderCre
         ProgramGetDto programGetDto = new ProgramGetDto();
         programGetDto.setId(programOrderCreateDto.getProgramId());
         programService.getDetail(programGetDto);
-    }
-    
-    @Override
-    public String type() {
-        return CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue();
     }
     
     @Override

@@ -1,12 +1,11 @@
-package com.damai.service.composite;
+package com.damai.service.composite.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.damai.composite.AbstractComposite;
 import com.damai.dto.ProgramOrderCreateDto;
 import com.damai.dto.SeatDto;
 import com.damai.enums.BaseCode;
-import com.damai.enums.CompositeCheckType;
 import com.damai.exception.DaMaiFrameException;
+import com.damai.service.composite.AbstractProgramCheckHandler;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.Objects;
  * @author: 阿宽不是程序员
  **/
 @Component
-public class ProgramOrderCreateParamCheckHandler extends AbstractComposite<ProgramOrderCreateDto> {
+public class ProgramOrderCreateParamCheckHandler extends AbstractProgramCheckHandler {
     @Override
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
         //验证手动选择座位和自动分配座位的参数是否正确
@@ -52,11 +51,6 @@ public class ProgramOrderCreateParamCheckHandler extends AbstractComposite<Progr
                 throw new DaMaiFrameException(BaseCode.TICKET_COUNT_ERROR);
             }
         }
-    }
-    
-    @Override
-    public String type() {
-        return CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue();
     }
     
     @Override
