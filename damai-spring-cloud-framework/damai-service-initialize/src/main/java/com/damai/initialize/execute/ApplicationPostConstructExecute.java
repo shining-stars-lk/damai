@@ -5,7 +5,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.annotation.PostConstruct;
 
-import static com.damai.initialize.constant.InitializeHandlerType.APPLICATION_START_POST_CONSTRUCT;
+import static com.damai.initialize.constant.InitializeHandlerType.APPLICATION_POST_CONSTRUCT;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
@@ -25,6 +25,6 @@ public class ApplicationPostConstructExecute extends AbstractApplicationExecute 
     
     @Override
     public String type() {
-        return APPLICATION_START_POST_CONSTRUCT;
+        return APPLICATION_POST_CONSTRUCT;
     }
 }

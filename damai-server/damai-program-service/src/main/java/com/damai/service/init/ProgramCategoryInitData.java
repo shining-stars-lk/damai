@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.damai.BusinessThreadPool;
 import com.damai.core.RedisKeyManage;
 import com.damai.entity.ProgramCategory;
-import com.damai.initialize.base.AbstractApplicationPostConstructInitializeHandler;
+import com.damai.initialize.base.AbstractApplicationPostConstructHandler;
 import com.damai.mapper.ProgramCategoryMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
@@ -27,7 +27,7 @@ import static com.damai.core.DistributedLockConstants.PROGRAM_CATEGORY_LOCK;
  * @author: 阿宽不是程序员
  **/
 @Component
-public class ProgramCategoryInitData extends AbstractApplicationPostConstructInitializeHandler {
+public class ProgramCategoryInitData extends AbstractApplicationPostConstructHandler {
     
     @Autowired
     private ProgramCategoryMapper programCategoryMapper;
