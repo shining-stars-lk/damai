@@ -31,9 +31,9 @@ if count > maxRequestsPerSecond then
     redis.call('set', countKey, count)
     redis.call('set', timeKey, currentTime)
     redis.call('hset',verifyCaptchaKey,id,'yes')
-    return true
+    return string.format('{"verifyCaptcha": %d, "id": %d}',1,id)
 end
 -- 未超过限制，更新计数
 redis.call('set', countKey, count)
 redis.call('hset',verifyCaptchaKey,id,'no')
-return false
+return string.format('{"verifyCaptcha": %d, "id": %d}',0,id)

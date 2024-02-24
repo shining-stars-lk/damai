@@ -2,11 +2,14 @@ package com.damai.service;
 
 import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
+import com.baidu.fsg.uid.UidGenerator;
 import com.damai.core.RedisKeyManage;
 import com.damai.service.lua.CheckNeedCaptchaOperate;
 import com.damai.service.tool.RequestCounter;
+import com.damai.vo.CheckNeedCaptchaDataVo;
 import com.damai.vo.CheckVerifyVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +23,9 @@ import java.util.List;
 @Service
 public class UserCaptchaService {
     
+    @Value("${verify_captcha_threshold:10}")
+    private int verifyCaptchaThreshold;
+    
     @Autowired
     private CaptchaHandle captchaHandle;
     
@@ -27,23 +33,23 @@ public class UserCaptchaService {
     private RequestCounter requestCounter;
     
     @Autowired
+    private UidGenerator uidGenerator;
+    
+    @Autowired
     private CheckNeedCaptchaOperate checkNeedCaptchaOperate;
     
-    public CheckVerifyVo checkNeedCaptcha() {
+    public CheckNeedCaptchaDataVo checkNeedCaptcha() {
         CheckVerifyVo checkVerifyVo = new CheckVerifyVo();
         checkVerifyVo.setType(0);
-//        boolean result = requestCounter.onRequest();
-//        if (result) {
-//            checkVerifyVo.setType(1);
-//        }
         List<String> keys = new ArrayList<>();
-        keys.add(RedisKeyManage.COUNTER.getKey());
-//        keys.add();
-//        keys.add();
-//        keys.add();
-//        keys.add();
-        checkNeedCaptchaOperate.checkNeedCaptchaOperate(keys,null);
-        return checkVerifyVo;
+        keys.add(RedisKeyManage.COUNTER_COUNT.getKey());
+        keys.add(RedisKeyManage.COUNTER_TIMESTAMP.getKey());
+        keys.add(RedisKeyManage.VERIFY_CAPTCHA_HASH.getKey());
+        String[] data = new String[3];
+        data[0] = String.valueOf(verifyCaptchaThreshold);
+        data[1] = String.valueOf(System.currentTimeMillis());
+        data[2] = String.valueOf(uidGenerator.getUid());
+        return checkNeedCaptchaOperate.checkNeedCaptchaOperate(keys, data);
     }
     
     public ResponseModel getCaptcha(CaptchaVO captchaVO) {
