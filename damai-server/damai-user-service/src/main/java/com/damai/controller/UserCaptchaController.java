@@ -4,6 +4,7 @@ import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.damai.common.ApiResponse;
 import com.damai.service.UserCaptchaService;
+import com.damai.vo.CheckNeedCaptchaDataVo;
 import com.damai.vo.CheckVerifyVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,7 +29,7 @@ public class UserCaptchaController {
     
     @ApiOperation(value = "检查是否需要验证码")
     @PostMapping(value = "/check/need")
-    public ApiResponse<CheckVerifyVo> checkNeedCaptcha(){
+    public ApiResponse<CheckNeedCaptchaDataVo> checkNeedCaptcha(){
         return ApiResponse.ok(userCaptchaService.checkNeedCaptcha());
     }
     
