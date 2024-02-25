@@ -1,8 +1,6 @@
 package com.damai.service.lua;
 
-import com.alibaba.fastjson2.JSON;
 import com.damai.redis.RedisCache;
-import com.damai.vo.CheckNeedCaptchaDataVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -38,8 +36,8 @@ public class CheckNeedCaptchaOperate {
         }
     }
     
-    public CheckNeedCaptchaDataVo checkNeedCaptchaOperate(List<String> keys, String[] args){
+    public String checkNeedCaptchaOperate(List<String> keys, String[] args){
         Object object = redisCache.getInstance().execute(redisScript, keys, args);
-        return JSON.parseObject((String)object,CheckNeedCaptchaDataVo.class);
+        return (String)object;
     }
 }

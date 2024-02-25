@@ -68,11 +68,13 @@ public enum RedisKeyManage {
     
     PROGRAM_CATEGORY_HASH("d_mai_program_category_hash","节目类型hash集合","节目类型hash集合","k"),
     
-    COUNTER_COUNT("d_mai_counter_count_%S","计数器的值的key","计数器的值","k"),
+    COUNTER_COUNT("d_mai_counter_count","计数器的值的key","计数器的值","k"),
     
-    COUNTER_TIMESTAMP("d_mai_counter_timestamp_%S","计数器的时间戳的key","计数器的时间戳","k"),
+    COUNTER_TIMESTAMP("d_mai_counter_timestamp","计数器的时间戳的key","计数器的时间戳","k"),
     
     VERIFY_CAPTCHA_HASH("d_mai_verify_captcha_hash","是否需要校验验证码hash集合的key","是否需要校验验证码hash集合","k"),
+    
+    VERIFY_CAPTCHA_ID("d_mai_verify_captcha_id_%S","校验验证码id的key","校验验证码id","k"),
     ;
 
     /**

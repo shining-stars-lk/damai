@@ -19,6 +19,14 @@ public enum BaseCode {
     
     INITIALIZE_HANDLER_STRATEGY_NOT_EXIST(502,"初始化操作策略不存在"),
     
+    VERIFY_CAPTCHA_ID_NOT_EXIST(503,"校验验证码id不存在"),
+    
+    CAPTCHA_TYPE_EMPTY(504,"验证码类型为空"),
+    
+    POINT_JSON_EMPTY(505,"点坐标为空"),
+    
+    CAPTCHA_TOKEN_JSON_EMPTY(506,"验证码token为空"),
+    
     RSA_SIGN_ERROR(10000,"res签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"res解密失败"),
