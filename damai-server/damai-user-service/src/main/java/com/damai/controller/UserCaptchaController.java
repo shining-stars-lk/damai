@@ -5,7 +5,6 @@ import com.anji.captcha.model.vo.CaptchaVO;
 import com.damai.common.ApiResponse;
 import com.damai.service.UserCaptchaService;
 import com.damai.vo.CheckNeedCaptchaDataVo;
-import com.damai.vo.CheckVerifyVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

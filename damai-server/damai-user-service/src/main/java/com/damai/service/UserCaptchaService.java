@@ -4,10 +4,10 @@ import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.baidu.fsg.uid.UidGenerator;
 import com.damai.core.RedisKeyManage;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.service.lua.CheckNeedCaptchaOperate;
 import com.damai.service.tool.RequestCounter;
 import com.damai.vo.CheckNeedCaptchaDataVo;
-import com.damai.vo.CheckVerifyVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -39,17 +39,22 @@ public class UserCaptchaService {
     private CheckNeedCaptchaOperate checkNeedCaptchaOperate;
     
     public CheckNeedCaptchaDataVo checkNeedCaptcha() {
-        CheckVerifyVo checkVerifyVo = new CheckVerifyVo();
-        checkVerifyVo.setType(0);
+        long currentTimeMillis = System.currentTimeMillis();
+        long id = uidGenerator.getUid();
         List<String> keys = new ArrayList<>();
-        keys.add(RedisKeyManage.COUNTER_COUNT.getKey());
-        keys.add(RedisKeyManage.COUNTER_TIMESTAMP.getKey());
-        keys.add(RedisKeyManage.VERIFY_CAPTCHA_HASH.getKey());
-        String[] data = new String[3];
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.COUNTER_COUNT).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.COUNTER_TIMESTAMP).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.VERIFY_CAPTCHA_HASH).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.VERIFY_CAPTCHA_ID,id).getRelKey());
+        String[] data = new String[2];
         data[0] = String.valueOf(verifyCaptchaThreshold);
-        data[1] = String.valueOf(System.currentTimeMillis());
-        data[2] = String.valueOf(uidGenerator.getUid());
-        return checkNeedCaptchaOperate.checkNeedCaptchaOperate(keys, data);
+        data[1] = String.valueOf(currentTimeMillis);
+        String resultStr = checkNeedCaptchaOperate.checkNeedCaptchaOperate(keys, data);
+        boolean result = Boolean.parseBoolean(resultStr);
+        CheckNeedCaptchaDataVo checkNeedCaptchaDataVo = new CheckNeedCaptchaDataVo();
+        checkNeedCaptchaDataVo.setCaptchaId(id);
+        checkNeedCaptchaDataVo.setVerifyCaptcha(result);
+        return checkNeedCaptchaDataVo;
     }
     
     public ResponseModel getCaptcha(CaptchaVO captchaVO) {
