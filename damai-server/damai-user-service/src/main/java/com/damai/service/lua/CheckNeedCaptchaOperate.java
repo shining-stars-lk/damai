@@ -36,8 +36,8 @@ public class CheckNeedCaptchaOperate {
         }
     }
     
-    public String checkNeedCaptchaOperate(List<String> keys, String[] args){
+    public Boolean checkNeedCaptchaOperate(List<String> keys, String[] args){
         Object object = redisCache.getInstance().execute(redisScript, keys, args);
-        return (String)object;
+        return Boolean.parseBoolean((String)object);
     }
 }

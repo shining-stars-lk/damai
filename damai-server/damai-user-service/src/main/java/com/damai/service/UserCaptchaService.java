@@ -49,8 +49,7 @@ public class UserCaptchaService {
         String[] data = new String[2];
         data[0] = String.valueOf(verifyCaptchaThreshold);
         data[1] = String.valueOf(currentTimeMillis);
-        String resultStr = checkNeedCaptchaOperate.checkNeedCaptchaOperate(keys, data);
-        boolean result = Boolean.parseBoolean(resultStr);
+        Boolean result = checkNeedCaptchaOperate.checkNeedCaptchaOperate(keys, data);
         CheckNeedCaptchaDataVo checkNeedCaptchaDataVo = new CheckNeedCaptchaDataVo();
         checkNeedCaptchaDataVo.setCaptchaId(id);
         checkNeedCaptchaDataVo.setVerifyCaptcha(result);

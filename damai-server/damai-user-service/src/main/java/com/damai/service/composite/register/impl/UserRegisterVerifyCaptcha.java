@@ -62,12 +62,12 @@ public class UserRegisterVerifyCaptcha extends AbstractUserRegisterCheckHandler 
     
     @Override
     public Integer executeParentOrder() {
-        return 1;
+        return 0;
     }
     
     @Override
     public Integer executeTier() {
-        return 2;
+        return 1;
     }
     
     @Override
