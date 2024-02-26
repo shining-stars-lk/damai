@@ -29,12 +29,12 @@ public class UserRegisterCountCheckHandler extends AbstractUserRegisterCheckHand
     
     @Override
     public Integer executeParentOrder() {
-        return 0;
+        return 1;
     }
     
     @Override
     public Integer executeTier() {
-        return 1;
+        return 2;
     }
     
     @Override
