@@ -28,6 +28,9 @@ public class UserCaptchaService {
     @Value("${verify_captcha_id_expire_time:60}")
     private int verifyCaptchaIdExpireTime;
     
+    @Value("${always_verify_captcha:0}")
+    private int alwaysVerifyCaptcha;
+    
     @Autowired
     private CaptchaHandle captchaHandle;
     
@@ -44,10 +47,11 @@ public class UserCaptchaService {
         keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.COUNTER_COUNT).getRelKey());
         keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.COUNTER_TIMESTAMP).getRelKey());
         keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.VERIFY_CAPTCHA_ID,id).getRelKey());
-        String[] data = new String[3];
+        String[] data = new String[4];
         data[0] = String.valueOf(verifyCaptchaThreshold);
         data[1] = String.valueOf(currentTimeMillis);
         data[2] = String.valueOf(verifyCaptchaIdExpireTime);
+        data[3] = String.valueOf(alwaysVerifyCaptcha);
         Boolean result = checkNeedCaptchaOperate.checkNeedCaptchaOperate(keys, data);
         CheckNeedCaptchaDataVo checkNeedCaptchaDataVo = new CheckNeedCaptchaDataVo();
         checkNeedCaptchaDataVo.setCaptchaId(id);
