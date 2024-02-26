@@ -34,8 +34,7 @@ public class UserRegisterVerifyCaptcha extends AbstractUserRegisterCheckHandler 
      * */
     @Override
     protected void execute(UserRegisterDto param) {
-        String verifyCaptcha = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.VERIFY_CAPTCHA_HASH),
-                RedisKeyBuild.createRedisKey(RedisKeyManage.VERIFY_CAPTCHA_ID,param.getCaptchaId()).getRelKey(), String.class);
+        String verifyCaptcha = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.VERIFY_CAPTCHA_ID,param.getCaptchaId()), String.class);
         if (StringUtil.isEmpty(verifyCaptcha)) {
             throw new DaMaiFrameException(BaseCode.VERIFY_CAPTCHA_ID_NOT_EXIST);
         }

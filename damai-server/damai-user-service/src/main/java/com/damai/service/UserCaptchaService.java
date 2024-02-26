@@ -6,7 +6,6 @@ import com.baidu.fsg.uid.UidGenerator;
 import com.damai.core.RedisKeyManage;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.service.lua.CheckNeedCaptchaOperate;
-import com.damai.service.tool.RequestCounter;
 import com.damai.vo.CheckNeedCaptchaDataVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,11 +25,11 @@ public class UserCaptchaService {
     @Value("${verify_captcha_threshold:10}")
     private int verifyCaptchaThreshold;
     
-    @Autowired
-    private CaptchaHandle captchaHandle;
+    @Value("${verify_captcha_id_expire_time:60}")
+    private int verifyCaptchaIdExpireTime;
     
     @Autowired
-    private RequestCounter requestCounter;
+    private CaptchaHandle captchaHandle;
     
     @Autowired
     private UidGenerator uidGenerator;
@@ -44,11 +43,11 @@ public class UserCaptchaService {
         List<String> keys = new ArrayList<>();
         keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.COUNTER_COUNT).getRelKey());
         keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.COUNTER_TIMESTAMP).getRelKey());
-        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.VERIFY_CAPTCHA_HASH).getRelKey());
         keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.VERIFY_CAPTCHA_ID,id).getRelKey());
-        String[] data = new String[2];
+        String[] data = new String[3];
         data[0] = String.valueOf(verifyCaptchaThreshold);
         data[1] = String.valueOf(currentTimeMillis);
+        data[2] = String.valueOf(verifyCaptchaIdExpireTime);
         Boolean result = checkNeedCaptchaOperate.checkNeedCaptchaOperate(keys, data);
         CheckNeedCaptchaDataVo checkNeedCaptchaDataVo = new CheckNeedCaptchaDataVo();
         checkNeedCaptchaDataVo.setCaptchaId(id);

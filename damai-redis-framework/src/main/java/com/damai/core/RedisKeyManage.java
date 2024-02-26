@@ -72,8 +72,6 @@ public enum RedisKeyManage {
     
     COUNTER_TIMESTAMP("d_mai_counter_timestamp","计数器的时间戳的key","计数器的时间戳","k"),
     
-    VERIFY_CAPTCHA_HASH("d_mai_verify_captcha_hash","是否需要校验验证码hash集合的key","是否需要校验验证码hash集合","k"),
-    
     VERIFY_CAPTCHA_ID("d_mai_verify_captcha_id_%S","校验验证码id的key","校验验证码id","k"),
     ;
 
