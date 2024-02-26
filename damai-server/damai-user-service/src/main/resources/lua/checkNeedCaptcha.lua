@@ -2,14 +2,14 @@
 local counter_count_key = KEYS[1]
 -- 时间戳的键
 local counter_timestamp_key = KEYS[2]
--- 是否需要校验验证码的键
-local verify_captcha_hash_key = KEYS[3]
 -- 校验验证码id的键
-local verify_captcha_id = KEYS[4]
+local verify_captcha_id = KEYS[3]
 -- 每秒最大请求次数
 local verify_captcha_threshold = tonumber(ARGV[1])
 -- 当前时间戳
 local current_time_millis = tonumber(ARGV[2])
+-- 校验验证码id过期时间
+local verify_captcha_id_expire_time = tonumber(ARGV[3])
 -- 时间窗口大小，1000毫秒，即1秒
 local differenceValue = 1000
 -- 获取当前计数和上次重置时间
@@ -30,10 +30,12 @@ if count > verify_captcha_threshold then
     count = 0
     redis.call('set', counter_count_key, count)
     redis.call('set', counter_timestamp_key, current_time_millis)
-    redis.call('hset', verify_captcha_hash_key,verify_captcha_id,'yes')
+    redis.call('set', verify_captcha_id,'yes')
+    redis.call('expire',verify_captcha_id,verify_captcha_id_expire_time)
     return 'true'
 end
 -- 未超过限制，更新计数
 redis.call('set', counter_count_key, count)
-redis.call('hset', verify_captcha_hash_key,verify_captcha_id,'no')
+redis.call('set',verify_captcha_id,'no')
+redis.call('expire',verify_captcha_id,verify_captcha_id_expire_time)
 return 'false'
