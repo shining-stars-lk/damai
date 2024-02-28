@@ -98,16 +98,13 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     @Autowired
     private BaseDataClient baseDataClient;
     
-    @Value("${token.expire.time:20}")
+    @Value("${token.expire.time:40}")
     private Long tokenExpireTime;
     
     @Transactional(rollbackFor = Exception.class)
     @ServiceLock(lockType= LockType.Write,name = REGISTER_USER_LOCK,keys = {"#userRegisterDto.mobile"})
     public void register(UserRegisterDto userRegisterDto) {
         compositeContainer.execute(CompositeCheckType.USER_REGISTER_CHECK.getValue(),userRegisterDto);
-        if (1 == 1) {
-            return;
-        }
         //用户表添加
         User user = new User();
         BeanUtils.copyProperties(userRegisterDto,user);
