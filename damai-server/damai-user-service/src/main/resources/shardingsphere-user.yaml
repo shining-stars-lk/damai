@@ -1,11 +1,10 @@
-dataSources:    
+dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
     jdbcUrl: jdbc:mysql://www.cookframe.com:3306/damai_user_0?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
     username: root
     password: qaz321qwe!
-
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -14,172 +13,103 @@ dataSources:
     password: qaz321qwe!
     
 rules:
-  # 分库分表规则
   - !SHARDING
     tables:
-      # 对d_user_mobile表进行分库分表
       d_user_mobile:
-        # 库为damai_user_0 damai_user_1 表为d_user_mobile_0 至 d_user_mobile_1
         actualDataNodes: ds_${0..1}.d_user_mobile_${0..1}
-        # 分库策略
         databaseStrategy:
           standard:
-            # 使用user_mobile作为分片键
             shardingColumn: mobile
-            # 用user_mobile列使用hash取模作为分库算法
-            shardingAlgorithmName: databaseUserMobileHashModModel
-        # 分表策略      
+            shardingAlgorithmName: databaseUserMobileHashModModel     
         tableStrategy:
           standard:
-            # 使用user_mobile作为分片键
             shardingColumn: mobile
-            # 用user_mobile列使用hash取模作为分表算法
             shardingAlgorithmName: tableUserMobileHashMod
-      # 对d_user_email表进行分库分表
       d_user_email:
-        # 库为damai_user_0 damai_user_1 表为d_user_email_0 至 d_user_email_1
         actualDataNodes: ds_${0..1}.d_user_email_${0..1}
-        # 分库策略
         databaseStrategy:
           standard:
-            # 使用email作为分片键
             shardingColumn: email
-            # 用user_mobile列使用hash取模作为分库算法
-            shardingAlgorithmName: databaseUserEmailHashModModel
-        # 分表策略      
+            shardingAlgorithmName: databaseUserEmailHashModModel     
         tableStrategy:
           standard:
-            # 使用email作为分片键
             shardingColumn: email
-            # 用user_mobile列使用hash取模作为分表算法
             shardingAlgorithmName: tableUserEmailHashMod      
-      # 对d_user表进行分库分表
       d_user:
-        # 库为damai_user_0 damai_user_1 表为d_user_0 至 d_user_1
         actualDataNodes: ds_${0..1}.d_user_${0..1}
-        # 分库策略
         databaseStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: id
-            # 用user_mobile列使用hash取模作为分库算法
-            shardingAlgorithmName: databaseUserHashModModel
-        # 分表策略      
+            shardingAlgorithmName: databaseUserHashModModel 
         tableStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: id
-            # 用user_mobile列使用hash取模作为分表算法
             shardingAlgorithmName: tableUserHashModModel
-      # 对d_ticket_user表进行分库分表
       d_ticket_user:
-        # 库为damai_user_0 damai_user_1 表为d_ticket_user_0 至 d_ticket_user_1
         actualDataNodes: ds_${0..1}.d_ticket_user_${0..1}
-        # 分库策略
         databaseStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: id
-            # 用user_mobile列使用hash取模作为分库算法
-            shardingAlgorithmName: databaseTicketUserHashModModel
-        # 分表策略      
+            shardingAlgorithmName: databaseTicketUserHashModModel    
         tableStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: id
-            # 用user_mobile列使用hash取模作为分表算法
-            shardingAlgorithmName: tableTicketUserHashModModel      
-    # 具体的算法        
+            shardingAlgorithmName: tableTicketUserHashModModel            
     shardingAlgorithms:
-      # d_user_mobile表分库算法
       databaseUserMobileHashModModel:
         type: HASH_MOD
         props:
-          # 分库数量
           sharding-count: 2
-      # d_user_mobile表分表算法
       tableUserMobileHashMod:
         type: HASH_MOD
         props:
-          # 分表数量
           sharding-count: 2
-      # d_user_email表分库算法
       databaseUserEmailHashModModel:
         type: HASH_MOD
         props:
-          # 分库数量
           sharding-count: 2
-      # d_user_email表分表算法
       tableUserEmailHashMod:
         type: HASH_MOD
         props:
-          # 分表数量
           sharding-count: 2    
-      # d_user表分库算法
       databaseUserHashModModel:
         type: MOD
         props:
-          # 分库数量
           sharding-count: 2
-      # d_user表分表算法
       tableUserHashModModel:
         type: MOD
         props:
-          # 分表数量
           sharding-count: 2
-      # d_ticket_user表分库算法
       databaseTicketUserHashModModel:
         type: MOD
         props:
-          # 分库数量
           sharding-count: 2
-      # d_ticket_user表分表算法
       tableTicketUserHashModModel:
         type: MOD
         props:
-          # 分表数量
           sharding-count: 2
-  # 加密规则
   - !ENCRYPT
     tables:
-      # d_user表
       d_user:
         columns:
-          # 对mobile列进行加密
           mobile:
-            # 密文列mobile
             cipherColumn: mobile
-            # 自定义的加密算法
             encryptorName: user_encryption_algorithm
-          # 对password列进行加密
           password:
-            # 密文列password
             cipherColumn: password
-            # 自定义的加密算法
             encryptorName: user_encryption_algorithm
-          # 对id_number列进行加密
           id_number:
-            # 密文列id_number
             cipherColumn: id_number
-            # 自定义的加密算法
             encryptorName: user_encryption_algorithm  
-      # d_user_mobile表
       d_user_mobile:
         columns:
-          # 对mobile列进行加密
           mobile:
-            # 密文列id_number
             cipherColumn: mobile
-            # 自定义的加密算法
             encryptorName: user_encryption_algorithm
-      # d_ticket_user表
       d_ticket_user:
         columns:
-          # 对id_number列进行加密
           id_number:
-            # 密文列id_number
             cipherColumn: id_number
-            # 自定义的加密算法
             encryptorName: user_encryption_algorithm      
     encryptors:
       user_encryption_algorithm:
@@ -190,6 +120,5 @@ rules:
           sm4-iv: 1afc7fdce9ebc393f693cd3d23e35ed2
           sm4-padding: PKCS7Padding
 props:
-  # 打印真实sql
   sql-show: true      
       
