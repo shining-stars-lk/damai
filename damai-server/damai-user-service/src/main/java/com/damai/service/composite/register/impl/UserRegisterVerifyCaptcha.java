@@ -29,9 +29,6 @@ public class UserRegisterVerifyCaptcha extends AbstractUserRegisterCheckHandler 
     @Autowired
     private RedisCache redisCache;
     
-    /**
-     * 验证验证码是否正确
-     * */
     @Override
     protected void execute(UserRegisterDto param) {
         String verifyCaptcha = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.VERIFY_CAPTCHA_ID,param.getCaptchaId()), String.class);

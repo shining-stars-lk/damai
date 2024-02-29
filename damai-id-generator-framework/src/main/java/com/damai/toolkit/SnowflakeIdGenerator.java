@@ -209,7 +209,7 @@ public class SnowflakeIdGenerator {
         return ((timestamp - BASIS_TIME) << timestampLeftShift)
                 | (datacenterId << datacenterIdShift)
                 | (workerId << workerIdShift)
-                | (sequence << (sequenceBits - sequenceShift))
+                | (sequence << sequenceShift)
                 | (userId % tableCount);
     }
 
