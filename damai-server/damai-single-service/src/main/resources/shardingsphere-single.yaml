@@ -41,8 +41,8 @@ rules:
           standard:
             # 使用id作为分片键
             shardingColumn: id
-            # 用user_mobile列使用hash取模作为分表算法
-            shardingAlgorithmName: tableUserHashModModel
+            # 用user_mobile列使用取模作为分表算法
+            shardingAlgorithmName: tableUserModModel
       # 对d_ticket_user表进行分表
       d_ticket_user:
         # 库为damai 表为d_ticket_user_0 至 d_ticket_user_1
@@ -50,10 +50,10 @@ rules:
         # 分表策略      
         tableStrategy:
           standard:
-            # 使用id作为分片键
-            shardingColumn: id
-            # 用user_mobile列使用hash取模作为分表算法
-            shardingAlgorithmName: tableTicketUserHashModModel
+            # 使用user_id作为分片键
+            shardingColumn: user_id
+            # 用user_id列使用取模作为分表算法
+            shardingAlgorithmName: tableTicketUserModModel
       # 对d_order表进行分表
       d_order:
         # 库为damai 表为d_order_0 至 d_user_order_3
@@ -152,13 +152,13 @@ rules:
           # 分表数量
           sharding-count: 2    
       # d_user表分表算法
-      tableUserHashModModel:
+      tableUserModModel:
         type: MOD
         props:
           # 分表数量
           sharding-count: 2
       # d_ticket_user表分表算法
-      tableTicketUserHashModModel:
+      tableTicketUserModModel:
         type: MOD
         props:
           # 分表数量

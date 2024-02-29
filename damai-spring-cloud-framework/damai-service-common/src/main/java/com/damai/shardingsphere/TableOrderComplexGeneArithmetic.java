@@ -44,11 +44,12 @@ public class TableOrderComplexGeneArithmetic implements ComplexKeysShardingAlgor
         if (CollectionUtil.isEmpty(columnNameAndShardingValuesMap)) {
             return actualTableNames;
         }
-        
+        //order_number条件的值
         Collection<Long> orderNumberValues = columnNameAndShardingValuesMap.get("order_number");
-        
+        //user_id条件的值
         Collection<Long> userIdValues = columnNameAndShardingValuesMap.get("user_id");
         
+        //分片键的值
         Long value = null;
         //如果是order_number查询
         if (CollectionUtil.isNotEmpty(orderNumberValues)) {
@@ -59,6 +60,7 @@ public class TableOrderComplexGeneArithmetic implements ComplexKeysShardingAlgor
         }
         //如果order_number或者user_id的值存在
         if (Objects.nonNull(value)) {
+            //逻辑表名_分片键的值%分表数量
             actualTableNames.add(logicTableName + "_" + value % shardingCount);
         }
         return actualTableNames;

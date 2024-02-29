@@ -40,21 +40,21 @@ rules:
         databaseStrategy:
           standard:
             shardingColumn: id
-            shardingAlgorithmName: databaseUserHashModModel 
+            shardingAlgorithmName: databaseUserModModel 
         tableStrategy:
           standard:
             shardingColumn: id
-            shardingAlgorithmName: tableUserHashModModel
+            shardingAlgorithmName: tableUserModModel
       d_ticket_user:
         actualDataNodes: ds_${0..1}.d_ticket_user_${0..1}
         databaseStrategy:
           standard:
-            shardingColumn: id
-            shardingAlgorithmName: databaseTicketUserHashModModel    
+            shardingColumn: user_id
+            shardingAlgorithmName: databaseTicketUserModModel    
         tableStrategy:
           standard:
-            shardingColumn: id
-            shardingAlgorithmName: tableTicketUserHashModModel            
+            shardingColumn: user_id
+            shardingAlgorithmName: tableTicketUserModModel            
     shardingAlgorithms:
       databaseUserMobileHashModModel:
         type: HASH_MOD
@@ -72,19 +72,19 @@ rules:
         type: HASH_MOD
         props:
           sharding-count: 2    
-      databaseUserHashModModel:
+      databaseUserModModel:
         type: MOD
         props:
           sharding-count: 2
-      tableUserHashModModel:
+      tableUserModModel:
         type: MOD
         props:
           sharding-count: 2
-      databaseTicketUserHashModModel:
+      databaseTicketUserModModel:
         type: MOD
         props:
           sharding-count: 2
-      tableTicketUserHashModModel:
+      tableTicketUserModModel:
         type: MOD
         props:
           sharding-count: 2

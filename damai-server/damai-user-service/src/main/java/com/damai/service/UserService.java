@@ -340,7 +340,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         UserVo userVo = getById(userIdDto);
         
         LambdaQueryWrapper<TicketUser> ticketUserLambdaQueryWrapper = Wrappers.lambdaQuery(TicketUser.class)
-                .in(TicketUser::getId, userGetAndTicketUserListDto.getTicketUserIdList());
+                .eq(TicketUser::getUserId, userGetAndTicketUserListDto.getUserId());
         List<TicketUser> ticketUserList = ticketUserMapper.selectList(ticketUserLambdaQueryWrapper);
         List<TicketUserVo> ticketUserVoList = BeanUtil.copyToList(ticketUserList, TicketUserVo.class);
         

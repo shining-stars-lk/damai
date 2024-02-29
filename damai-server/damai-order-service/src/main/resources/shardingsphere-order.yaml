@@ -1,110 +1,68 @@
-dataSources: 
+dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
     jdbcUrl: jdbc:mysql://www.cookframe.com:3306/damai_order_0?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
     username: root
     password: qaz321qwe!
-
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
     jdbcUrl: jdbc:mysql://www.cookframe.com:3306/damai_order_1?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
     username: root
     password: qaz321qwe!
-    
+
 rules:
   - !SHARDING
     tables:
-      # 对d_order表进行分库分表
       d_order:
-        # 库为damai_order_0 damai_order_1 表为d_order_0 至 d_user_order_3
         actualDataNodes: ds_${0..1}.d_order_${0..3}
-        # 分库策略
         databaseStrategy:
           complex:
-            # 使用order_number,user_id作为分片键
             shardingColumns: order_number,user_id
-            # 使用order_number,user_id分库算法
             shardingAlgorithmName: databaseOrderComplexGeneArithmetic
-        # 分表策略
         tableStrategy:
           complex:
-            # 使用order_number,user_id作为分片键
             shardingColumns: order_number,user_id
-            # 使用order_number,user_id分表算法
             shardingAlgorithmName: tableOrderComplexGeneArithmetic
-      # 对d_order_ticket_user表进行分库分表
       d_order_ticket_user:
-        # 库为damai_order_0 damai_order_1 表为d_order_ticket_user_0 至 d_order_ticket_user_3
         actualDataNodes: ds_${0..1}.d_order_ticket_user_${0..3}
-        # 分库策略
         databaseStrategy:
           complex:
-            # 使用order_number,user_id作为分片键
             shardingColumns: order_number,user_id
-            # 使用order_number,user_id分库算法
             shardingAlgorithmName: databaseOrderTicketUserComplexGeneArithmetic
-        # 分表策略
         tableStrategy:
           complex:
-            # 使用order_number,user_id作为分片键
             shardingColumns: order_number,user_id
-            # 使用order_number,user_id分表算法
             shardingAlgorithmName: tableOrderTicketUserComplexGeneArithmetic
-    # 绑定表        
     bindingTables:
       - d_order,d_order_ticket_user
-    # 具体的算法
     shardingAlgorithms:
-      # d_order表分库算法
       databaseOrderComplexGeneArithmetic:
-        # 通过自定义实现类实现分库算法
         type: CLASS_BASED
         props:
-          # 分库数量
           sharding-count: 2
-          # 分表数量
           table-sharding-count: 4
-          # 分库策略，复合多分片
           strategy: complex
-          # 具体的分库逻辑在此自定义类中
           algorithmClassName: com.damai.shardingsphere.DatabaseOrderComplexGeneArithmetic
-      # d_order表分表算法
       tableOrderComplexGeneArithmetic:
-        # 通过自定义实现类实现分表算法
         type: CLASS_BASED
         props:
-          # 分表数量
           sharding-count: 4
-          # 分表策略，复合多分片
           strategy: complex
-          # 具体的分表逻辑在此自定义类中
           algorithmClassName: com.damai.shardingsphere.TableOrderComplexGeneArithmetic
-      # d_order_ticket_user表分库算法
       databaseOrderTicketUserComplexGeneArithmetic:
-        # 通过自定义实现类实现分库算法
         type: CLASS_BASED
         props:
-          # 分库数量
           sharding-count: 2
-          # 分表数量
           table-sharding-count: 4
-          # 分库策略，复合多分片
           strategy: complex
-          # 具体的分库逻辑在此自定义类中
           algorithmClassName: com.damai.shardingsphere.DatabaseOrderComplexGeneArithmetic
-      # d_order_ticket_user表分表算法
       tableOrderTicketUserComplexGeneArithmetic:
-        # 通过自定义实现类实现分表算法
         type: CLASS_BASED
         props:
-          # 分表数量
           sharding-count: 4
-          # 分表策略，复合多分片
           strategy: complex
-          # 具体的分表逻辑在此自定义类中
-          algorithmClassName: com.damai.shardingsphere.TableOrderComplexGeneArithmetic    
+          algorithmClassName: com.damai.shardingsphere.TableOrderComplexGeneArithmetic
 props:
-  # 打印真实sql
   sql-show: true

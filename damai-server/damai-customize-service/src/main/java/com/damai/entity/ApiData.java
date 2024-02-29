@@ -1,8 +1,10 @@
 package com.damai.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.damai.data.BaseTableData;
 import lombok.Data;
 
-import java.util.Date;
+import java.io.Serializable;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
@@ -10,7 +12,8 @@ import java.util.Date;
  * @author: 阿宽不是程序员
  **/
 @Data
-public class ApiData {
+@TableName("d_api_data")
+public class ApiData extends BaseTableData implements Serializable {
     
     private Long id;
     
@@ -25,10 +28,6 @@ public class ApiData {
     private String apiParams;
     
     private String apiUrl;
-    
-    private Date createTime;
-    
-    private Integer status;
     
     private String callDayTime;
     

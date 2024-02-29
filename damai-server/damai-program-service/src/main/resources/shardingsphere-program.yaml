@@ -16,131 +16,80 @@ dataSources:
 rules:
   - !SHARDING
     tables:
-      # 对d_program表进行分库分表
       d_program:
-        # 库为damai_program_0 damai_program_1 表为d_program_0 至 d_program_1
         actualDataNodes: ds_${0..1}.d_program_${0..1}
-        # 分库策略
         databaseStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: id
-            # 使用id分库算法
-            shardingAlgorithmName: databaseProgramHashModModel
-        # 分表策略
+            shardingAlgorithmName: databaseProgramModModel
         tableStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: id
-            # 使用id分表算法
-            shardingAlgorithmName: tableProgramHashModModel
-      # 对d_program_show_time表进行分库分表
+            shardingAlgorithmName: tableProgramModModel
       d_program_show_time:
-        # 库为damai_program_0 damai_program_1 表为d_program_show_time_0 至 d_program_show_time_1
         actualDataNodes: ds_${0..1}.d_program_show_time_${0..1}
-        # 分库策略
         databaseStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: program_id
-            # 使用id分库算法
-            shardingAlgorithmName: databaseProgramShowTimeHashModModel
-        # 分表策略
+            shardingAlgorithmName: databaseProgramShowTimeModModel
         tableStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: program_id
-            # 使用id分表算法
-            shardingAlgorithmName: tableProgramShowTimeHashModModel
-      # 对d_seat表进行分库分表
+            shardingAlgorithmName: tableProgramShowTimeModModel
       d_seat:
-        # 库为damai_program_0 damai_program_1 表为d_seat_0 至 d_seat_1
         actualDataNodes: ds_${0..1}.d_seat_${0..1}
-        # 分库策略
         databaseStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: program_id
-            # 使用id分库算法
-            shardingAlgorithmName: databaseSeatHashModModel
-        # 分表策略
+            shardingAlgorithmName: databaseSeatModModel
         tableStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: program_id
-            # 使用id分表算法
-            shardingAlgorithmName: tableSeatHashModModel
-      # 对d_ticket_category表进行分库分表
+            shardingAlgorithmName: tableSeatModModel
       d_ticket_category:
-        # 库为damai_program_0 damai_program_1 表为d_ticket_category_0 至 d_ticket_category_1
         actualDataNodes: ds_${0..1}.d_ticket_category_${0..1}
-        # 分库策略
         databaseStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: program_id
-            # 使用id分库算法
-            shardingAlgorithmName: databaseTicketCategoryHashModModel
-        # 分表策略
+            shardingAlgorithmName: databaseTicketCategoryModModel
         tableStrategy:
           standard:
-            # 使用id作为分片键
             shardingColumn: program_id
-            # 使用id分表算法
-            shardingAlgorithmName: tableTicketCategoryHashModModel      
-    # 广播表
+            shardingAlgorithmName: tableTicketCategoryModModel      
     broadcastTables:
       - d_program_category
-    # 具体的算法
     shardingAlgorithms:
-      # d_program表分库算法
-      databaseProgramHashModModel:
+      databaseProgramModModel:
         type: MOD
         props:
-          # 分库数量
           sharding-count: 2
-      # d_program表分表算法
-      tableProgramHashModModel:
+      tableProgramModModel:
         type: MOD
         props:
-          # 分表数量
           sharding-count: 2
-      # d_program_show_time表分库算法
-      databaseProgramShowTimeHashModModel:
+      databaseProgramShowTimeModModel:
         type: MOD
         props:
-          # 分库数量
           sharding-count: 2
-      # d_program_show_time表分表算法
-      tableProgramShowTimeHashModModel:
+      tableProgramShowTimeModModel:
         type: MOD
         props:
-          # 分表数量
           sharding-count: 2
-      # d_seat表分库算法
-      databaseSeatHashModModel:
+      databaseSeatModModel:
         type: MOD
         props:
-          # 分库数量
           sharding-count: 2
-      # d_seat表分表算法
-      tableSeatHashModModel:
+      tableSeatModModel:
         type: MOD
         props:
-          # 分表数量
           sharding-count: 2
-      # d_ticket_category表分库算法
-      databaseTicketCategoryHashModModel:
+      databaseTicketCategoryModModel:
         type: MOD
         props:
-          # 分库数量
           sharding-count: 2
-      # d_ticket_category表分表算法
-      tableTicketCategoryHashModModel:
+      tableTicketCategoryModModel:
         type: MOD
         props:
-          # 分表数量
           sharding-count: 2    
 props:
-  # 打印真实sql
   sql-show: true

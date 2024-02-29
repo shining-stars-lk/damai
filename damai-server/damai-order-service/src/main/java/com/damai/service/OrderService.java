@@ -50,6 +50,7 @@ import com.damai.vo.OrderPayCheckVo;
 import com.damai.vo.OrderTicketUserVo;
 import com.damai.vo.SeatVo;
 import com.damai.vo.TicketUserInfoVo;
+import com.damai.vo.TicketUserVo;
 import com.damai.vo.TradeCheckVo;
 import com.damai.vo.UserAndTicketUserInfoVo;
 import com.damai.vo.UserGetAndTicketUserListVo;
@@ -212,10 +213,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
                 orderPayCheckVo.setOrderStatus(payBillStatus);
                 if (Objects.equals(payBillStatus, PayBillStatus.PAY.getCode())) {
                     orderPayCheckVo.setPayOrderTime(DateUtils.now());
-                    updateOrderRelatedData(order.getId(),OrderStatus.PAY);
+                    orderService.updateOrderRelatedData(order.getId(),OrderStatus.PAY);
                 }else if (Objects.equals(payBillStatus, PayBillStatus.CANCEL.getCode())) {
                     orderPayCheckVo.setCancelOrderTime(DateUtils.now());
-                    updateOrderRelatedData(order.getId(),OrderStatus.CANCEL);
+                    orderService.updateOrderRelatedData(order.getId(),OrderStatus.CANCEL);
                 }
             }
         }else {
@@ -429,8 +430,6 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         //查询用户和购票人信息
         UserGetAndTicketUserListDto userGetAndTicketUserListDto = new UserGetAndTicketUserListDto();
         userGetAndTicketUserListDto.setUserId(order.getUserId());
-        userGetAndTicketUserListDto.setTicketUserIdList(orderTicketUserList.stream()
-                .map(OrderTicketUser::getTicketUserId).collect(Collectors.toList()));
         ApiResponse<UserGetAndTicketUserListVo> userGetAndTicketUserApiResponse = 
                 userClient.getUserAndTicketUserList(userGetAndTicketUserListDto);
         
@@ -448,11 +447,18 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (CollectionUtil.isEmpty(userAndTicketUserListVo.getTicketUserVoList())) {
             throw new DaMaiFrameException(BaseCode.TICKET_USER_EMPTY);
         }
+        List<TicketUserVo> filterTicketUserVoList = new ArrayList<>();
+        Map<Long, TicketUserVo> ticketUserVoMap = userAndTicketUserListVo.getTicketUserVoList()
+                .stream().collect(Collectors.toMap(TicketUserVo::getId, ticketUserVo -> ticketUserVo, (v1, v2) -> v2));
+        for (OrderTicketUser orderTicketUser : orderTicketUserList) {
+            filterTicketUserVoList.add(ticketUserVoMap.get(orderTicketUser.getTicketUserId()));
+        }
+                
         UserInfoVo userInfoVo = new UserInfoVo();
         BeanUtil.copyProperties(userAndTicketUserListVo.getUserVo(),userInfoVo);
         UserAndTicketUserInfoVo userAndTicketUserInfoVo = new UserAndTicketUserInfoVo();
         userAndTicketUserInfoVo.setUserInfoVo(userInfoVo);
-        userAndTicketUserInfoVo.setTicketUserInfoVoList(BeanUtil.copyToList(userAndTicketUserListVo.getTicketUserVoList(), TicketUserInfoVo.class));
+        userAndTicketUserInfoVo.setTicketUserInfoVoList(BeanUtil.copyToList(filterTicketUserVoList, TicketUserInfoVo.class));
         orderGetVo.setUserAndTicketUserInfoVo(userAndTicketUserInfoVo);
         
         return orderGetVo;
