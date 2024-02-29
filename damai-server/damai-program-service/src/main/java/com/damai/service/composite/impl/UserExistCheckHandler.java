@@ -15,10 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
@@ -36,10 +37,9 @@ public class UserExistCheckHandler extends AbstractProgramCheckHandler {
     protected void execute(ProgramOrderCreateDto programOrderCreateDto) {
         //验证用户和购票人信息正确性
         UserVo userVo = new UserVo();
-        List<TicketUserVo> ticketUserVoList = new ArrayList<>();
+        List<TicketUserVo> ticketUserVoList;
         UserGetAndTicketUserListDto userGetAndTicketUserListDto = new UserGetAndTicketUserListDto();
         userGetAndTicketUserListDto.setUserId(programOrderCreateDto.getUserId());
-        userGetAndTicketUserListDto.setTicketUserIdList(programOrderCreateDto.getTicketUserIdList());
         ApiResponse<UserGetAndTicketUserListVo> userGetAndTicketUserApiResponse =
                 userClient.getUserAndTicketUserList(userGetAndTicketUserListDto);
         if (Objects.equals(userGetAndTicketUserApiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
@@ -56,6 +56,14 @@ public class UserExistCheckHandler extends AbstractProgramCheckHandler {
         }else {
             log.error("user client rpc getUserAndTicketUserList error response : {}", JSON.toJSONString(userGetAndTicketUserApiResponse));
             throw new DaMaiFrameException(userGetAndTicketUserApiResponse);
+        }
+        Map<Long, TicketUserVo> ticketUserVoMap = ticketUserVoList.stream()
+                .collect(Collectors.toMap(TicketUserVo::getId, ticketUserVo -> ticketUserVo, (v1, v2) -> v2));
+        
+        for (Long ticketUserId : programOrderCreateDto.getTicketUserIdList()) {
+            if (Objects.isNull(ticketUserVoMap.get(ticketUserId))) {
+                throw new DaMaiFrameException(BaseCode.TICKET_USER_EMPTY);
+            }
         }
     }
     
