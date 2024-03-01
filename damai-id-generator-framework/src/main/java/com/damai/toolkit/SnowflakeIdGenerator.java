@@ -19,46 +19,28 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class SnowflakeIdGenerator {
     
-    /**
-     * 时间起始标记点，作为基准，一般取系统的最近时间（一旦确定不能变动）
-     */
     private static final long BASIS_TIME = 1288834974657L;
-    /**
-     * 机器标识位数
-     */
     private final long workerIdBits = 5L;
     private final long datacenterIdBits = 5L;
     private final long maxWorkerId = -1L ^ (-1L << workerIdBits);
     private final long maxDatacenterId = -1L ^ (-1L << datacenterIdBits);
-    /**
-     * 毫秒内自增位
-     */
+    
     private final long sequenceBits = 12L;
     private final long workerIdShift = sequenceBits;
     private final long datacenterIdShift = sequenceBits + workerIdBits;
-    /**
-     * 时间戳左移动位
-     */
+    
     private final long timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits;
     private final long sequenceMask = -1L ^ (-1L << sequenceBits);
     
     private final long workerId;
     
-    /**
-     * 数据标识 ID 部分
-     */
+    
     private final long datacenterId;
-    /**
-     * 并发控制
-     */
+   
     private long sequence = 0L;
-    /**
-     * 上次生产 ID 时间戳
-     */
+   
     private long lastTimestamp = -1L;
-    /**
-     * IP 地址
-     */
+    
     private InetAddress inetAddress;
     
     public SnowflakeIdGenerator(WorkDataCenterId workDataCenterId) {
@@ -83,13 +65,7 @@ public class SnowflakeIdGenerator {
             log.debug("Initialization SnowflakeIdGenerator datacenterId:" + this.datacenterId + " workerId:" + this.workerId);
         }
     }
-
-    /**
-     * 有参构造器
-     *
-     * @param workerId     工作机器 ID
-     * @param datacenterId 序列号
-     */
+    
     public SnowflakeIdGenerator(long workerId, long datacenterId) {
         Assert.isFalse(workerId > maxWorkerId || workerId < 0,
             String.format("worker Id can't be greater than %d or less than 0", maxWorkerId));
@@ -99,29 +75,17 @@ public class SnowflakeIdGenerator {
         this.datacenterId = datacenterId;
         initLog();
     }
-
-    /**
-     * 获取 maxWorkerId
-     */
+    
     protected long getMaxWorkerId(long datacenterId, long maxWorkerId) {
         StringBuilder mpid = new StringBuilder();
         mpid.append(datacenterId);
         String name = ManagementFactory.getRuntimeMXBean().getName();
         if (StringUtils.isNotBlank(name)) {
-            /*
-             * GET jvmPid
-             */
             mpid.append(name.split("@")[0]);
         }
-        /*
-         * MAC + PID 的 hashcode 获取16个低位
-         */
         return (mpid.toString().hashCode() & 0xffff) % (maxWorkerId + 1);
     }
-
-    /**
-     * 数据标识id部分
-     */
+    
     protected long getDatacenterId(long maxDatacenterId) {
         long id = 0L;
         try {
@@ -181,31 +145,19 @@ public class SnowflakeIdGenerator {
         
         return timestamp;
     }
-
-    /**
-     * 获取分布式id
-     *
-     * @return id
-     */
+    
     public synchronized long nextId() {
         long timestamp = getBase();
-
-        // 时间戳部分 | 数据中心部分 | 机器标识部分 | 序列号部分
+        
         return ((timestamp - BASIS_TIME) << timestampLeftShift)
             | (datacenterId << datacenterIdShift)
             | (workerId << workerIdShift)
             | sequence;
     }
     
-    /**
-     * 获取订单编号
-     *
-     * @return orderNumber
-     */
     public synchronized long getOrderNumber(long userId,long tableCount) {
         long timestamp = getBase();
         long sequenceShift = log2N(tableCount);
-        // 时间戳部分 | 数据中心部分 | 机器标识部分 | 序列号部分 | 用户id基因
         return ((timestamp - BASIS_TIME) << timestampLeftShift)
                 | (datacenterId << datacenterIdShift)
                 | (workerId << workerIdShift)
@@ -224,17 +176,11 @@ public class SnowflakeIdGenerator {
     protected long timeGen() {
         return SystemClock.now();
     }
-
-    /**
-     * 反解id的时间戳部分
-     */
+    
     public static long parseIdTimestamp(long id) {
         return (id>>22)+ BASIS_TIME;
     }
     
-    /**
-    * 求log2(N)
-    * */
     public long log2N(long count) {
         return (long)(Math.log(count)/ Math.log(2));
     }

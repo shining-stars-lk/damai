@@ -2,7 +2,6 @@ package com.damai.config;
 
 import cn.hutool.core.date.DateTime;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -38,76 +37,59 @@ public class JsonCustomSerializer extends BeanSerializerModifier {
 		Class<?> clazz = javaType.getRawClass();
 		if (String.class.isAssignableFrom(clazz)) {
 			return new com.fasterxml.jackson.databind.JsonSerializer<Object>() {
-
 				@Override
-				public void serialize(Object value, JsonGenerator jgen, SerializerProvider serializers)
-						throws IOException, JsonProcessingException {
-					jgen.writeString("");
+				public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers)
+						throws IOException {
+					gen.writeString("");
 				}
-
 			};
 		}
-
 		if (Number.class.isAssignableFrom(clazz)) {
 			return new com.fasterxml.jackson.databind.JsonSerializer<Object>() {
-
 				@Override
-				public void serialize(Object value, JsonGenerator jgen, SerializerProvider serializers)
+				public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers)
 						throws IOException {
-					jgen.writeString("");
+					gen.writeString("");
 				}
-
 			};
 		}
-
 		if (Boolean.class.isAssignableFrom(clazz)) {
 			return new com.fasterxml.jackson.databind.JsonSerializer<Object>() {
-
 				@Override
-				public void serialize(Object value, JsonGenerator jgen, SerializerProvider serializers)
-						throws IOException, JsonProcessingException {
-					jgen.writeBoolean(false);
+				public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers)
+						throws IOException {
+					gen.writeBoolean(false);
 				}
-
 			};
 		}
-		
 		if (java.util.Date.class.isAssignableFrom(clazz)) {
 			return new com.fasterxml.jackson.databind.JsonSerializer<Object>() {
-
 				@Override
-				public void serialize(Object value, JsonGenerator jgen, SerializerProvider serializers)
-						throws IOException, JsonProcessingException {
-					jgen.writeString("");
+				public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers)
+						throws IOException {
+					gen.writeString("");
 				}
-
 			};
 		}
 		if (clazz.equals(DateTime.class)) {
 			return new com.fasterxml.jackson.databind.JsonSerializer<Object>() {
-
 				@Override
-				public void serialize(Object value, JsonGenerator jgen, SerializerProvider serializers)
-						throws IOException, JsonProcessingException {
-					jgen.writeString("");
+				public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers)
+						throws IOException {
+					gen.writeString("");
 				}
-
 			};
 		}
 		if (clazz.isArray() || clazz.equals(List.class) || clazz.equals(Set.class)) {
 			return new com.fasterxml.jackson.databind.JsonSerializer<Object>() {
-
 				@Override
-				public void serialize(Object value, JsonGenerator jgen, SerializerProvider serializers)
+				public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers)
 						throws IOException {
-					jgen.writeStartArray();
-					jgen.writeEndArray();
+					gen.writeStartArray();
+					gen.writeEndArray();
 				}
-
 			};
 		}
-
 		return null;
 	}
-
 }
