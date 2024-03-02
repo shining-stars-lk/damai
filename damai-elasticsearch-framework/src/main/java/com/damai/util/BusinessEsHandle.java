@@ -103,6 +103,7 @@ public class BusinessEsHandle {
     
         indexRequest.source(builder);
         String source = indexRequest.source().utf8ToString();
+        log.info("create index execute dsl : {}",source);
         HttpEntity entity = new NStringEntity(source, ContentType.APPLICATION_JSON);
         Request request = new Request("PUT","/"+ indexName);
         request.setEntity(entity);
