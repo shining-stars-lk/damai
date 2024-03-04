@@ -1,7 +1,7 @@
 package com.damai.redis;
 
 import com.alibaba.fastjson.util.ParameterizedTypeImpl;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;

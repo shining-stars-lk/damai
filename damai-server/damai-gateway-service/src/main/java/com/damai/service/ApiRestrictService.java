@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baidu.fsg.uid.UidGenerator;
 import com.damai.core.RedisKeyManage;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.dto.ApiDataDto;
 import com.damai.enums.ApiRuleType;
 import com.damai.enums.BaseCode;

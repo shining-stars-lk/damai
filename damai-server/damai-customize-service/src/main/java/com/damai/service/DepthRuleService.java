@@ -4,7 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.dto.DepthRuleDto;
 import com.damai.dto.DepthRuleStatusDto;
 import com.damai.dto.DepthRuleUpdateDto;

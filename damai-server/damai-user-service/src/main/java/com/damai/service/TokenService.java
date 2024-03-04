@@ -2,7 +2,7 @@ package com.damai.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.damai.core.RedisKeyManage;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.jwt.TokenUtil;

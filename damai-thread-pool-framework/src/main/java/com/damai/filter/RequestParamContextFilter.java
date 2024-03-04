@@ -1,7 +1,7 @@
 package com.damai.filter;
 
 
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import org.slf4j.MDC;
 import org.springframework.web.filter.OncePerRequestFilter;
 

@@ -1,6 +1,6 @@
 package com.damai.registercenter;
 
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
 import org.springframework.context.EnvironmentAware;

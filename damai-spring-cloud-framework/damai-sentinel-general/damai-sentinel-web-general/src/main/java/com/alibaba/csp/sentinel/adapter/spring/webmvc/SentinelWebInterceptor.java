@@ -67,7 +67,7 @@ public class SentinelWebInterceptor extends AbstractSentinelInterceptor {
             resourceName = request.getMethod().toUpperCase() + ":" + resourceName;
         }
         Optional<String> applicationNameOptional = Optional.ofNullable(SpringUtil.getProperty("spring.application.name"))
-                .filter(com.damai.core.StringUtil::isNotEmpty);
+                .filter(com.damai.util.StringUtil::isNotEmpty);
         if (applicationNameOptional.isPresent()) {
             String applicationName = applicationNameOptional.get();
             resourceName = applicationName + SPLIT_RESOURCE + resourceName;

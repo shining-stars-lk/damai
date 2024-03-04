@@ -2,7 +2,7 @@ package com.damai.redis;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.Cursor;

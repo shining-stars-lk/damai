@@ -1,7 +1,7 @@
 package com.damai.conf;
 
 
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.util.BusinessEsHandle;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
