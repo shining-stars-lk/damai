@@ -5,7 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.damai.conf.RequestTemporaryWrapper;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.enums.BaseCode;
 import com.damai.exception.ArgumentError;
 import com.damai.exception.ArgumentException;

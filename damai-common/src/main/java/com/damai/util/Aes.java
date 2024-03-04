@@ -1,6 +1,5 @@
 package com.damai.util;
 
-import com.damai.core.StringUtil;
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
 import lombok.extern.slf4j.Slf4j;

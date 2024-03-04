@@ -3,7 +3,7 @@ package com.damai.service;
 import com.damai.client.BaseDataClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyManage;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.dto.GetChannelDataByCodeDto;
 import com.damai.enums.BaseCode;
 import com.damai.exception.ArgumentError;

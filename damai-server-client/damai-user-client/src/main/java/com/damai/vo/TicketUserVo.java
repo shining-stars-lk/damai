@@ -1,7 +1,7 @@
 package com.damai.vo;
 
 import cn.hutool.core.util.DesensitizedUtil;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

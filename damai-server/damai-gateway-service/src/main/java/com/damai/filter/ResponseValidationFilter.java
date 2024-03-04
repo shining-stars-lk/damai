@@ -2,7 +2,7 @@ package com.damai.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.damai.common.ApiResponse;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.service.ChannelDataService;
 import com.damai.util.RsaTool;
 import com.damai.vo.GetChannelDataVo;

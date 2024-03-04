@@ -2,7 +2,7 @@ package com.damai.lockinfo;
 
 
 import com.damai.core.SpringUtil;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;

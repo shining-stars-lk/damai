@@ -2,7 +2,7 @@ package com.damai.run;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baidu.fsg.uid.UidGenerator;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.entity.JobInfo;
 import com.damai.entity.JobRunRecord;
 import com.damai.enums.BaseCode;

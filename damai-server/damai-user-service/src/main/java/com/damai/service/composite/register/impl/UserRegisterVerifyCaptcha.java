@@ -3,7 +3,7 @@ package com.damai.service.composite.register.impl;
 import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.damai.core.RedisKeyManage;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.dto.UserRegisterDto;
 import com.damai.enums.BaseCode;
 import com.damai.enums.VerifyCaptcha;

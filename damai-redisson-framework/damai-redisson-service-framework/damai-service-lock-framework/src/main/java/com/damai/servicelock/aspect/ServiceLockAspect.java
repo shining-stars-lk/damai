@@ -1,7 +1,7 @@
 package com.damai.servicelock.aspect;
 
 import com.damai.constant.LockInfoType;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.lockinfo.LockInfoHandle;
 import com.damai.lockinfo.factory.LockInfoHandleFactory;
 import com.damai.servicelock.LockType;

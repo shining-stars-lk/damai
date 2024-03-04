@@ -2,7 +2,7 @@ package com.damai.conf.swagger;
 
 
 import cn.hutool.core.collection.CollUtil;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
