@@ -33,32 +33,20 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(value="UserVo", description ="用户数据")
+@ApiModel(value="UserVo", description ="分页返回数据")
 public class PageVo<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * 页码
-     */
+    
     @ApiModelProperty(name ="pageNum", dataType ="String", value ="页码")
     private long pageNum;
-
-    /**
-     * 页大小
-     */
+    
     @ApiModelProperty(name ="pageSize", dataType ="String", value ="页大小")
     private long pageSize;
-
-    /**
-     * 记录总数
-     */
+    
     @ApiModelProperty(name ="totalSize", dataType ="String", value ="记录总数")
     private long totalSize;
-
-    /**
-     * 数据
-     */
+    
     @ApiModelProperty(name ="list", dataType ="List", value ="数据")
     private List<T> list;
 }
