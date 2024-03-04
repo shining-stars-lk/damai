@@ -1,13 +1,11 @@
 package com.damai.swagger;
 
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
-import springfox.documentation.RequestHandler;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -35,18 +33,16 @@ public class SwaggerConfiguration {
     @Order(value = 1)
     public Docket groupRestApi() {
         
-        Predicate<RequestHandler> predicate = (requestHandler) -> {
-            boolean controllerStandardDocument = requestHandler.findControllerAnnotation(Api.class).isPresent();
-            boolean methodStandardDocument = requestHandler.findAnnotation(ApiOperation.class).isPresent();
-            return controllerStandardDocument || methodStandardDocument;
-        };
-        
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(groupApiInfo())
                 .useDefaultResponseMessages(false)
                 .forCodeGeneration(true)
                 .select()
-                .apis(predicate)
+                .apis((requestHandler) -> {
+                    boolean controllerStandardDocument = requestHandler.findControllerAnnotation(Api.class).isPresent();
+                    boolean methodStandardDocument = requestHandler.findAnnotation(ApiOperation.class).isPresent();
+                    return controllerStandardDocument || methodStandardDocument;
+                })
                 .build();
     }
 
