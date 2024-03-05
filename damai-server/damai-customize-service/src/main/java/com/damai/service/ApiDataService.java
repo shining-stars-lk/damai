@@ -37,8 +37,11 @@ public class ApiDataService extends ServiceImpl<ApiDataMapper,ApiData> {
     
     @RepeatExecuteLimit(name = RepeatExecuteLimitConstants.CONSUMER_API_DATA_MESSAGE,keys = {"#apiData.id"})
     public void saveApiData(ApiData apiData){
-        log.info("saveApiData apiData:{}", JSON.toJSONString(apiData));
-        apiDataMapper.insert(apiData);
+        ApiData dbApiData = apiDataMapper.selectById(apiData.getId());
+        if (Objects.isNull(dbApiData)) {
+            log.info("saveApiData apiData:{}", JSON.toJSONString(apiData));
+            apiDataMapper.insert(apiData);
+        }
     }
     
     public Page<ApiDataVo> pageList(final ApiDataDto dto) {
