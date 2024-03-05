@@ -1,6 +1,7 @@
 package com.damai.config;
 
 
+import com.damai.context.DelayQueueBasePart;
 import com.damai.context.DelayQueueContext;
 import com.damai.event.DelayQueueInitHandler;
 import org.redisson.api.RedissonClient;
@@ -19,9 +20,14 @@ public class DelayQueueAutoConfig {
     public DelayQueueInitHandler delayQueueInitHandler(DelayQueueProperties delayQueueProperties, RedissonClient redissonClient){
         return new DelayQueueInitHandler(delayQueueProperties, redissonClient);
     }
-    
+   
     @Bean
-    public DelayQueueContext delayQueueContext(DelayQueueProperties delayQueueProperties, RedissonClient redissonClient){
-        return new DelayQueueContext(delayQueueProperties,redissonClient);
+    public DelayQueueBasePart delayQueueBasePart(RedissonClient redissonClient,DelayQueueProperties delayQueueProperties){
+        return new DelayQueueBasePart(redissonClient,delayQueueProperties);
+    }
+  
+    @Bean
+    public DelayQueueContext delayQueueContext(DelayQueueBasePart delayQueueBasePart){
+        return new DelayQueueContext(delayQueueBasePart);
     }
 }
