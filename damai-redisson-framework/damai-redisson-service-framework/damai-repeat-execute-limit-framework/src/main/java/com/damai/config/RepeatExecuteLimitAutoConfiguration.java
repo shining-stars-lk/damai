@@ -23,8 +23,10 @@ public class RepeatExecuteLimitAutoConfiguration {
     }
     
     @Bean
-    public RepeatExecuteLimitAspect repeatExecuteLimitAspect(LocalLockCache localLockCache,LockInfoHandleFactory lockInfoHandleFactory,
-                                                             ServiceLockFactory serviceLockFactory,RedissonDataHandle redissonDataHandle){
+    public RepeatExecuteLimitAspect repeatExecuteLimitAspect(LocalLockCache localLockCache,
+                                                             LockInfoHandleFactory lockInfoHandleFactory,
+                                                             ServiceLockFactory serviceLockFactory,
+                                                             RedissonDataHandle redissonDataHandle){
         return new RepeatExecuteLimitAspect(localLockCache, lockInfoHandleFactory,serviceLockFactory,redissonDataHandle);
     }
 }
