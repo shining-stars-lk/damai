@@ -29,16 +29,16 @@ public class DelayConsumerQueue extends DelayBaseQueue{
     private final ConsumerTask consumerTask;
     
     public DelayConsumerQueue(DelayQueuePart delayQueuePart, String relTopic){
-        super(delayQueuePart.getRedissonClient(),relTopic);
+        super(delayQueuePart.getDelayQueueBasePart().getRedissonClient(),relTopic);
         this.listenStartThreadPool = new ThreadPoolExecutor(1,1,60, 
                 TimeUnit.SECONDS,new LinkedBlockingQueue<>(),r -> new Thread(Thread.currentThread().getThreadGroup(), r,
                 "listen-start-thread-" + threadCount.getAndIncrement()));
         this.executeTaskThreadPool = new ThreadPoolExecutor(
-                delayQueuePart.getDelayQueueProperties().getCorePoolSize(),
-                delayQueuePart.getDelayQueueProperties().getMaximumPoolSize(),
-                delayQueuePart.getDelayQueueProperties().getKeepAliveTime(),
-                delayQueuePart.getDelayQueueProperties().getUnit(),
-                new LinkedBlockingQueue<>(delayQueuePart.getDelayQueueProperties().getWorkQueueSize()),
+                delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getCorePoolSize(),
+                delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getMaximumPoolSize(),
+                delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getKeepAliveTime(),
+                delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getUnit(),
+                new LinkedBlockingQueue<>(delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getWorkQueueSize()),
                 r -> new Thread(Thread.currentThread().getThreadGroup(), r, 
                         "delay-queue-consume-thread-" + threadCount.getAndIncrement()));
         this.consumerTask = delayQueuePart.getConsumerTask();
