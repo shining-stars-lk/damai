@@ -30,3 +30,4 @@ public class RepeatExecuteLimitAutoConfiguration {
         return new RepeatExecuteLimitAspect(localLockCache, lockInfoHandleFactory,serviceLockFactory,redissonDataHandle);
     }
 }
+    
