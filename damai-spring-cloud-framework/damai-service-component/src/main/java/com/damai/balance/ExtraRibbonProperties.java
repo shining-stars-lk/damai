@@ -12,5 +12,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class ExtraRibbonProperties {
     
-    private String mark;
+    private String gray = "false";
 }

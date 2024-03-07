@@ -16,21 +16,21 @@ public class CustomEnabledRule extends PredicateBasedRule {
     /**
      * 这里为静态的原因是ribbon在定时任务执行时是直接调用DiscoveryEnabledRule的无参构造方法，而不是从spring中获得
      * */
-    private static String mark;
+    private static String gray;
     
     private CompositePredicate predicate = null;
     
     public CustomEnabledRule(ExtraRibbonProperties extraRibbonProperties){
         super();
-        mark = extraRibbonProperties.getMark();
-        CustomAwarePredicate metadataAwarePredicate = new CustomAwarePredicate(mark, this);
+        gray = extraRibbonProperties.getGray();
+        CustomAwarePredicate metadataAwarePredicate = new CustomAwarePredicate(gray, this);
         Assert.notNull(metadataAwarePredicate, "参数 'abstractServerPredicate' 不能为 null");
         predicate = createCompositePredicate(metadataAwarePredicate, new AvailabilityPredicate(this, null));
     }
     
     public CustomEnabledRule(){
         super();
-        CustomAwarePredicate metadataAwarePredicate = new CustomAwarePredicate(mark, this);
+        CustomAwarePredicate metadataAwarePredicate = new CustomAwarePredicate(gray, this);
         Assert.notNull(metadataAwarePredicate, "参数 'abstractServerPredicate' 不能为 null");
         predicate = createCompositePredicate(metadataAwarePredicate, new AvailabilityPredicate(this, null));
     }

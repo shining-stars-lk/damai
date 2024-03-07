@@ -47,9 +47,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
-import static com.damai.constant.Constant.MARK_PARAMETER;
+import static com.damai.constant.Constant.GRAY_PARAMETER;
 import static com.damai.constant.Constant.TRACE_ID;
 import static com.damai.constant.GatewayConstant.BUSINESS_BODY;
 import static com.damai.constant.GatewayConstant.CODE;
@@ -94,7 +95,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String traceId = request.getHeaders().getFirst(TRACE_ID);
-        String mark = request.getHeaders().getFirst(MARK_PARAMETER);
+        String gray = request.getHeaders().getFirst(GRAY_PARAMETER);
         String noVerify = request.getHeaders().getFirst(NO_VERIFY);
         if (StringUtil.isEmpty(traceId)) {
             traceId = String.valueOf(uidGenerator.getUid());
@@ -102,15 +103,15 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         MDC.put(TRACE_ID,traceId);
         Map<String,String> headMap = new HashMap<>(8);
         headMap.put(TRACE_ID,traceId);
-        headMap.put(MARK_PARAMETER,mark);
+        headMap.put(GRAY_PARAMETER,gray);
         if (StringUtil.isNotEmpty(noVerify)) {
             headMap.put(NO_VERIFY,noVerify);
         }
         BaseParameterHolder.setParameter(TRACE_ID,traceId);
-        BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
+        BaseParameterHolder.setParameter(GRAY_PARAMETER,gray);
         MediaType contentType = request.getHeaders().getContentType();
         //application json请求
-        if (contentType != null && contentType.toString().toLowerCase().contains(MediaType.APPLICATION_JSON_VALUE.toLowerCase())) {
+        if (Objects.nonNull(contentType) && contentType.toString().toLowerCase().contains(MediaType.APPLICATION_JSON_VALUE.toLowerCase())) {
             return readBody(exchange,chain,headMap);
         }else {
             Map<String, String> map = doExecute("", exchange);

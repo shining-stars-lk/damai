@@ -12,11 +12,11 @@ public class Constant {
      * */
     public static final String TRACE_ID = "traceId";
     
-    public static final String MARK_FLAG_TRUE = "true";
+    public static final String GRAY_FLAG_TRUE = "true";
     
-    public static final String MARK_FLAG_FALSE = "false";
+    public static final String GRAY_FLAG_FALSE = "false";
     
-    public static final String MARK_PARAMETER = "mark";
+    public static final String GRAY_PARAMETER = "gray";
     
     public static final String CODE = "code";
     
