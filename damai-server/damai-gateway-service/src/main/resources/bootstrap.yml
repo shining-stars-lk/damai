@@ -4,8 +4,8 @@ server:
 # 应用名称
 spring:
   application:
-    #name: ${prefix.distinction.name:damai}-gateway-service
-    name: ${prefix.distinction.name:damai}-gateway-single-service
+    name: ${prefix.distinction.name:damai}-gateway-service
+    #name: ${prefix.distinction.name:damai}-gateway-single-service
   cloud:
     nacos:
       discovery:

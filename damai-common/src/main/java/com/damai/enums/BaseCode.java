@@ -27,6 +27,10 @@ public enum BaseCode {
     
     CAPTCHA_TOKEN_JSON_EMPTY(506,"验证码token为空"),
     
+    LOAD_BALANCER_NOT_EXIST(507,"负载均衡器不存在"),
+    
+    SERVER_LIST_NOT_EXIST(508,"服务列表不存在"),
+    
     RSA_SIGN_ERROR(10000,"res签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"res解密失败"),
