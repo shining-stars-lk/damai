@@ -52,8 +52,7 @@ public class RepeatExecuteLimitAspect {
         LockInfoHandle lockInfoHandle = lockInfoHandleFactory.getLockInfoHandle(LockInfoType.REPEAT_EXECUTE_LIMIT);
         String lockName = lockInfoHandle.getLockName(joinPoint,repeatLimit.name(), repeatLimit.keys());
         String repeatFlagName = PREFIX_NAME + lockName;
-        Object flagObject;
-        flagObject = redissonDataHandle.get(repeatFlagName);
+        String flagObject = redissonDataHandle.get(repeatFlagName);
         if (SUCCESS_FLAG.equals(flagObject)) {
             throw new DaMaiFrameException(message);
         }

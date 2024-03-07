@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Bean;
 public class RepeatExecuteLimitAutoConfiguration {
     
     @Bean(LockInfoType.REPEAT_EXECUTE_LIMIT)
-    public LockInfoHandle serviceLockInfoHandle(){
+    public LockInfoHandle repeatExecuteLimitHandle(){
         return new RepeatExecuteLimitLockInfoHandle();
     }
     
