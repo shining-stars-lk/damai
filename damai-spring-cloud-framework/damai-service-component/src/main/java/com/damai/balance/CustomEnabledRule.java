@@ -18,7 +18,7 @@ public class CustomEnabledRule extends PredicateBasedRule {
      * */
     private static String gray;
     
-    private CompositePredicate predicate = null;
+    private final CompositePredicate predicate;
     
     public CustomEnabledRule(ExtraRibbonProperties extraRibbonProperties){
         super();
@@ -28,13 +28,18 @@ public class CustomEnabledRule extends PredicateBasedRule {
         predicate = createCompositePredicate(metadataAwarePredicate, new AvailabilityPredicate(this, null));
     }
     
+    /**
+     * 保留此构造方法的原因是Ribbon在定时任务中，会创建此适配器，而创建的方法是使用反射来构建
+     * */
     public CustomEnabledRule(){
         super();
         CustomAwarePredicate metadataAwarePredicate = new CustomAwarePredicate(gray, this);
         Assert.notNull(metadataAwarePredicate, "参数 'abstractServerPredicate' 不能为 null");
         predicate = createCompositePredicate(metadataAwarePredicate, new AvailabilityPredicate(this, null));
     }
-    
+    /**
+     * 当请求执行到Ribbon时，会执行到 过滤器适配器的获得过滤器方法 {@link PredicateBasedRule#choose(Object)}
+     * */
     @Override
     public AbstractServerPredicate getPredicate() {
         return predicate;

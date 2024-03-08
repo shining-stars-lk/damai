@@ -48,26 +48,6 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 		this.map.put(GRAY_FLAG_TRUE, GRAY_FLAG_TRUE);
 	}
 	
-	/**
-	 * 灰度调用服务的说明：
-	 *
-	 * 请求服务中请求头中的参数 gray=false:请求生产的服务。 gray=true:请求灰度的服务
-	 *
-	 * 被调用服务的配置:
-	 *   spring.cloud.nacos.discovery.metadata.gray=false:代表生产的服务
-	 *   spring.cloud.nacos.discovery.metadata.gray=true:代表灰度的服务
-	 *
-	 * 如果请求服务中请求头没有gray参数，或者该参数中的值不是true或false字符串(不区分大小写)则认为gray=false
-	 *
-	 * 如果被调用服务的 spring.cloud.nacos.discovery.metadata.gray 配置项没有配置，或者为空，或者该配置项中的值不是true或false字符串(不区分大小写)则认为gray=false
-	 * 判断逻辑:
-	 *   如果所有被调用服务端的配置项 --spring.cloud.nacos.discovery.metadata.gray=true，并且请求中的Header参数 gray=true，则在该请求的n次调用中apply()函数都返回true，走负载均衡
-	 *   否则被调用服务端的配置项 --spring.cloud.nacos.discovery.metadata.gray 必须与请求中的Header参数 gray 值相等 apply()函数才会返回true
-	 *
-	 * 总结:
-	 *   生产的请求必须走生产的服务(没有部署生产服务就熔断)，灰度的请求在有灰度服务部署的情况下必须走灰度的，没有灰度服务的情况下则调用生产的服务
-	 */
-	
 	@Override
     public boolean apply(PredicateKey input) {
 		boolean result;
@@ -85,18 +65,10 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 					.map(metadata -> metadata.get(GRAY_PARAMETER))
 					.filter(StringUtil::isNotEmpty)
 					.orElse(GRAY_FLAG_FALSE);
-			//判断如果被调用端没有灰度配置则默认配置为生产环境
 			grayFromMetaData = Optional.ofNullable(map.get(grayFromMetaData.toLowerCase())).orElse(GRAY_FLAG_FALSE);
-			//判断如果请求端没有灰度标识则默认配置为生产环境
 			grayFromRequest = Optional.ofNullable(map.get(grayFromRequest.toLowerCase())).orElse(GRAY_FLAG_FALSE);
 			result = grayFromMetaData.equalsIgnoreCase(grayFromRequest);
 			
-			/*假如最后得到的结果为false，再做一次匹配
-			 *
-			 * 如果所有服务端的配置均为spring.cloud.nacos.discovery.metadata.gray=true,而调用请求端的请求头中的 gray 为true，则也允许结果返回true做负载均衡
-			 *
-			 * 反之如果所有服务端的配置为spring.cloud.nacos.discovery.metadata.gray=true,而调用请求端的请求头中的 gray 为false，则结果返回false,不允许做负载均衡
-			 */
 			if (!result && grayFromRequest.equalsIgnoreCase(GRAY_FLAG_TRUE)) {
 				List<Server> servers = Optional.ofNullable(customEnabledRule)
 						.map(CustomEnabledRule::getLoadBalancer)
@@ -107,7 +79,6 @@ public class CustomAwarePredicate extends AbstractServerPredicate{
 				for (Server server : servers) {
 					NacosServer nacosServerInstance = (NacosServer) server;
 					String balanceGray = nacosServerInstance.getInstance().getMetadata().get(GRAY_PARAMETER);
-					//判断如果被调用端没有灰度配置则默认配置为生产环境
 					if (StringUtil.isEmpty(balanceGray) || Objects.isNull(map.get(balanceGray.toLowerCase()))) {
 						balanceGray = GRAY_FLAG_FALSE;
 					}
