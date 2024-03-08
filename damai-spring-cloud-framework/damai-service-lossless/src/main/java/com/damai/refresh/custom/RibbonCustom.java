@@ -75,8 +75,8 @@ public class RibbonCustom {
 
     }
 
-    public Map getRibbonCache(){
-        Map taotalMap = new HashMap(256);
+    public Map<String,Map<String,List<Server>>> getRibbonCache(){
+        Map<String,Map<String,List<Server>>> taotalMap = new HashMap(256);
         try {
             Map<String, ZoneAwareLoadBalancer> zoneAwareLoadBalancerMap = zoneAwareLoadBalancerMap();
             for (Map.Entry<String, ZoneAwareLoadBalancer> entry : zoneAwareLoadBalancerMap.entrySet()) {
@@ -89,7 +89,7 @@ public class RibbonCustom {
                 Field upServerListField = aClass1.getSuperclass().getSuperclass().getDeclaredField(UP_SERVER_LIST_FIELD);
                 upServerListField.setAccessible(true);
                 List<Server> upServerList = (List<Server>)upServerListField.get(balancer);
-                Map mapServerList = new HashMap(8);
+                Map<String,List<Server>> mapServerList = new HashMap(8);
                 mapServerList.put(ALL_SERVER_LIST_FIELD,allServerList);
                 mapServerList.put(UP_SERVER_LIST_FIELD,upServerList);
                 taotalMap.put(serverName,mapServerList);

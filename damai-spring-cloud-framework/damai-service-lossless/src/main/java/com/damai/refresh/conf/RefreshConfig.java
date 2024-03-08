@@ -37,7 +37,7 @@ public class RefreshConfig {
     }
 
     @Bean
-    public NacosLifecycle nacosLifecycle(NacosAndRibbonCustom nacosAndRibbonCustom, NacosDiscoveryProperties properties){
-        return new NacosLifecycle(nacosAndRibbonCustom,properties);
+    public NacosLifecycle nacosLifecycle(RibbonCustom ribbonCustom, NacosDiscoveryProperties properties){
+        return new NacosLifecycle(ribbonCustom,properties);
     }
 }

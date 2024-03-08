@@ -42,7 +42,7 @@ public class NacosCustom {
     
 
     private Map<String,Object> getNacosCacheMap(){
-        Map<String,Object> map = new HashMap(8);
+        Map<String,Object> map = new HashMap<>(8);
         try {
             NamingService namingService = nacosServiceManager.getNamingService(discoveryProperties.getNacosProperties());
             if (namingService instanceof NacosNamingService) {
@@ -79,7 +79,7 @@ public class NacosCustom {
     }
     
     public void clearNacosCache(){
-        Map map = getNacosCacheMap();
+        Map<String,Object> map = getNacosCacheMap();
         Map<String, ScheduledFuture<?>> futureMap = (Map<String, ScheduledFuture<?>>)map.get(FUTURE_MAP_FIELD);
         Map<String, ServiceInfo> serviceInfoMap = (Map<String, ServiceInfo>)map.get("serviceInfoMap");
         synchronized (futureMap) {
@@ -87,8 +87,8 @@ public class NacosCustom {
         }
     }
     
-    public Map getNacosCache(){
-        Map map = getNacosCacheMap();
+    public Map<String, ServiceInfo> getNacosCache(){
+        Map<String,Object> map = getNacosCacheMap();
         return (Map<String, ServiceInfo>)map.get("serviceInfoMap");
     }
     
