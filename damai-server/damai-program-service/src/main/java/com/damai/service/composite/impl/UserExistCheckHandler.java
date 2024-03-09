@@ -1,16 +1,18 @@
 package com.damai.service.composite.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.ProgramOrderCreateDto;
-import com.damai.dto.UserGetAndTicketUserListDto;
+import com.damai.dto.UserIdDto;
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
+import com.damai.redis.RedisCache;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.service.composite.AbstractProgramCheckHandler;
 import com.damai.vo.TicketUserVo;
-import com.damai.vo.UserGetAndTicketUserListVo;
-import com.damai.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,7 +20,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,29 +34,28 @@ public class UserExistCheckHandler extends AbstractProgramCheckHandler {
     @Autowired
     private UserClient userClient;
     
+    @Autowired
+    private RedisCache redisCache;
+    
     @Override
     protected void execute(ProgramOrderCreateDto programOrderCreateDto) {
         //验证用户和购票人信息正确性
-        UserVo userVo = new UserVo();
-        List<TicketUserVo> ticketUserVoList;
-        UserGetAndTicketUserListDto userGetAndTicketUserListDto = new UserGetAndTicketUserListDto();
-        userGetAndTicketUserListDto.setUserId(programOrderCreateDto.getUserId());
-        ApiResponse<UserGetAndTicketUserListVo> userGetAndTicketUserApiResponse =
-                userClient.getUserAndTicketUserList(userGetAndTicketUserListDto);
-        if (Objects.equals(userGetAndTicketUserApiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
-            UserGetAndTicketUserListVo userAndTicketUserListVo =
-                    Optional.ofNullable(userGetAndTicketUserApiResponse.getData())
-                            .orElseThrow(() -> new DaMaiFrameException(BaseCode.RPC_RESULT_DATA_EMPTY));
-            if (Objects.isNull(userAndTicketUserListVo.getUserVo())) {
-                throw new DaMaiFrameException(BaseCode.USER_EMPTY);
+        //先从缓存中查询
+        List<TicketUserVo> ticketUserVoList = redisCache.getValueIsList(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.TICKET_USER_LIST, programOrderCreateDto.getUserId()), TicketUserVo.class);
+        if (CollectionUtil.isEmpty(ticketUserVoList)) {
+            UserIdDto userIdDto = new UserIdDto();
+            userIdDto.setId(programOrderCreateDto.getProgramId());
+            ApiResponse<List<TicketUserVo>> apiResponse = userClient.select(userIdDto);
+            if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+                ticketUserVoList = apiResponse.getData();
+            }else {
+                log.error("user client rpc getUserAndTicketUserList select response : {}", JSON.toJSONString(apiResponse));
+                throw new DaMaiFrameException(apiResponse);
             }
-            ticketUserVoList =
-                    Optional.ofNullable(userAndTicketUserListVo.getTicketUserVoList()).filter(list -> !list.isEmpty())
-                            .orElseThrow(() -> new DaMaiFrameException(BaseCode.TICKET_USER_EMPTY));
-            log.info("userVo : {}, ticketUserVoList : {}",JSON.toJSONString(userVo),JSON.toJSONString(ticketUserVoList));
-        }else {
-            log.error("user client rpc getUserAndTicketUserList error response : {}", JSON.toJSONString(userGetAndTicketUserApiResponse));
-            throw new DaMaiFrameException(userGetAndTicketUserApiResponse);
+        }
+        if (CollectionUtil.isEmpty(ticketUserVoList)) {
+            throw new DaMaiFrameException(BaseCode.TICKET_USER_EMPTY);
         }
         Map<Long, TicketUserVo> ticketUserVoMap = ticketUserVoList.stream()
                 .collect(Collectors.toMap(TicketUserVo::getId, ticketUserVo -> ticketUserVo, (v1, v2) -> v2));
