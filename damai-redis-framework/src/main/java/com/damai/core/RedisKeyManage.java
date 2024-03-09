@@ -73,6 +73,8 @@ public enum RedisKeyManage {
     COUNTER_TIMESTAMP("d_mai_counter_timestamp","计数器的时间戳的key","计数器的时间戳","k"),
     
     VERIFY_CAPTCHA_ID("d_mai_verify_captcha_id_%S","校验验证码id的key","校验验证码id","k"),
+    
+    TICKET_USER_LIST("d_mai_ticket_user_list_%S","购票人列表的key","购票人列表","k"),
     ;
 
     /**

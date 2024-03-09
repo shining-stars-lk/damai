@@ -168,6 +168,11 @@ public class Program extends BaseTableData implements Serializable {
     private Integer electronicInvoice;
     
     /**
+     * 高热度节目 0:否 1:是
+     * */
+    private Integer highHeat;
+    
+    /**
      * 节目状态 1:上架 0:下架
      */
     private Integer programStatus;

@@ -127,6 +127,12 @@ public class ProgramVo implements Serializable {
     @ApiModelProperty(name ="electronicInvoice", dataType ="Integer", value ="电子发票 1:是 0:不是")
     private Integer electronicInvoice;
     
+    /**
+     * 高热度节目 0:否 1:是
+     * */
+    @ApiModelProperty(name ="highHeat", dataType ="Integer", value ="高热度节目 0:否 1:是")
+    private Integer highHeat;
+    
     @ApiModelProperty(name ="programStatus", dataType ="Integer", value ="节目状态 1:上架 0:下架")
     private Integer programStatus;
     

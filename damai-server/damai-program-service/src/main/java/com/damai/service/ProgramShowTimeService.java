@@ -78,6 +78,10 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
         for (ProgramShowTime programShowTime : programShowTimes) {
             Date oldShowTime = programShowTime.getShowTime();
             Date newShowTime = DateUtils.addMonth(oldShowTime, 1);
+            Date nowDateTime = DateUtils.now();
+            while (newShowTime.before(nowDateTime)) {
+                newShowTime = DateUtils.addMonth(newShowTime, 1);
+            }
             Date newShowDayTime = DateUtils.parseDateTime(DateUtils.formatDate(newShowTime) + " 00:00:00");
             ProgramShowTime updateProgramShowTime = new ProgramShowTime();
             updateProgramShowTime.setShowTime(newShowTime);
