@@ -9,7 +9,9 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.damai.BusinessThreadPool;
 import com.damai.client.BaseDataClient;
+import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyManage;
 import com.damai.core.SpringUtil;
@@ -22,6 +24,7 @@ import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramOperateDataDto;
 import com.damai.dto.ProgramPageListDto;
 import com.damai.dto.ProgramSearchDto;
+import com.damai.dto.UserIdDto;
 import com.damai.entity.Program;
 import com.damai.entity.ProgramCategory;
 import com.damai.entity.ProgramShowTime;
@@ -46,13 +49,16 @@ import com.damai.service.init.ProgramDocumentParamName;
 import com.damai.service.pagestrategy.SelectPageWrapper;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
+import com.damai.threadlocal.BaseParameterHolder;
 import com.damai.util.BusinessEsHandle;
 import com.damai.util.DateUtils;
+import com.damai.util.StringUtil;
 import com.damai.vo.AreaVo;
 import com.damai.vo.ProgramListVo;
 import com.damai.vo.ProgramVo;
 import com.damai.vo.SeatVo;
 import com.damai.vo.TicketCategoryVo;
+import com.damai.vo.TicketUserVo;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +77,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.damai.constant.Constant.CODE;
+import static com.damai.constant.Constant.USER_ID;
 import static com.damai.core.DistributedLockConstants.PROGRAM_LOCK;
 import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
 
@@ -103,6 +111,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @Autowired
     private BaseDataClient baseDataClient;
+    
+    @Autowired
+    private UserClient userClient;
     
     @Autowired
     private RedisCache redisCache;
@@ -272,8 +283,12 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         });
     }
     
+    
     public ProgramVo getDetail(ProgramGetDto programGetDto) {
         ProgramVo redisProgramVo = programService.getById(programGetDto.getId());
+        
+        //预先加载用户购票人
+        preloadTicketUserList(redisProgramVo.getHighHeat());
         
         //查询节目类型
         ProgramCategory programCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
@@ -291,7 +306,10 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         
         //查询座位
         List<SeatVo> redisSeatVoList = seatService.selectSeatByProgramId(redisProgramVo.getId());
-        redisProgramVo.setSeatVoList(redisSeatVoList);
+        //如果节目允许选择座位才把座位给前端展示
+        if (Objects.equals(redisProgramVo.getPermitChooseSeat(), BusinessStatus.YES.getCode())) {
+            redisProgramVo.setSeatVoList(redisSeatVoList);
+        }
         
         //查询节目票档
         List<TicketCategoryVo> ticketCategoryVoList = ticketCategoryService.selectTicketCategoryListByProgramId(redisProgramVo.getId());
@@ -426,5 +444,48 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         programVo.setShowWeekTime(programShowTime.getShowWeekTime());
         
         return programVo;
+    }
+    
+    /***
+     * 预先加载用户下的购票人
+     */
+    private void preloadTicketUserList(Integer highHeat){
+        //如果节目是热度不高的，那么不用预先加载了
+        if (Objects.equals(highHeat, BusinessStatus.NO.getCode())) {
+            return;
+        }
+        
+        String userId = BaseParameterHolder.getParameter(USER_ID);
+        String code = BaseParameterHolder.getParameter(CODE);
+        //如果用户id或者code有一个为空，那么判断不了用户登录状态，也不用预先加载了
+        if (StringUtil.isEmpty(userId) && StringUtil.isEmpty(code)) {
+            return;
+        }
+        //异步加载购票人信息，别耽误查询节目详情的主线程
+        BusinessThreadPool.execute(() -> {
+            try {
+                Boolean userLogin = redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
+                //如果用户没有登录，也不用预先加载了
+                if (!userLogin) {
+                    return;
+                }
+                //如果已经预热加载了，就不用再执行了
+                if (redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.TICKET_USER_LIST,userId))) {
+                    return;
+                }
+                UserIdDto userIdDto = new UserIdDto();
+                userIdDto.setId(Long.parseLong(userId));
+                ApiResponse<List<TicketUserVo>> apiResponse = userClient.select(userIdDto);
+                if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+                    Optional.ofNullable(apiResponse.getData()).filter(CollectionUtil::isNotEmpty)
+                            .ifPresent(ticketUserVoList -> redisCache.set(RedisKeyBuild.createRedisKey(
+                                    RedisKeyManage.TICKET_USER_LIST,userId),ticketUserVoList));
+                }else {
+                    log.warn("userClient.select 调用失败 apiResponse : {}",JSON.toJSONString(apiResponse));
+                }
+            }catch (Exception e) {
+                log.error("预热加载投票人列表失败",e);
+            }
+        });
     }
 }
