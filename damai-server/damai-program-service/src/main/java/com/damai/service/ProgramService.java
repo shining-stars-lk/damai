@@ -166,12 +166,20 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     public Map<String,List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
         Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>(256);
         
-        //根据区域id和父节目类型id查询节目列表
-        LambdaQueryWrapper<Program> programLambdaQueryWrapper = Wrappers.lambdaQuery(Program.class)
-                .eq(Program::getProgramStatus, BusinessStatus.YES.getCode())
-                .eq(Program::getAreaId,programPageListDto.getAreaId())
-                .in(Program::getParentProgramCategoryId, programPageListDto.getParentProgramCategoryIds());
-        List<Program> programList = programMapper.selectList(programLambdaQueryWrapper);
+        //根据父节目类型id来查询节目类型map，key：节目类型id，value：节目类型名
+        Map<Long, String> programCategoryMap = selectProgramCategoryMap(programPageListDto.getParentProgramCategoryIds());
+        
+        List<Program> programList = new ArrayList<>(64);
+        for (Long parentProgramCategoryId : programPageListDto.getParentProgramCategoryIds()) {
+            //根据区域id和父节目类型id查询节目列表
+            LambdaQueryWrapper<Program> programLambdaQueryWrapper = Wrappers.lambdaQuery(Program.class)
+                    .eq(Program::getProgramStatus, BusinessStatus.YES.getCode())
+                    .eq(Program::getAreaId,programPageListDto.getAreaId())
+                    .eq(Program::getParentProgramCategoryId, parentProgramCategoryId)
+                    .last("limit 7");
+            programList.addAll(programMapper.selectList(programLambdaQueryWrapper));
+        }
+        
         //节目id集合
         List<Long> programIdList = programList.stream().map(Program::getId).collect(Collectors.toList());
         //根据节目id集合查询节目演出时间集合
@@ -181,8 +189,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         //将节目演出集合根据节目id进行分组成map，key：节目id，value：节目演出时间集合
         Map<Long, List<ProgramShowTime>> programShowTimeMap = programShowTimeList.stream().collect(Collectors.groupingBy(ProgramShowTime::getProgramId));
         
-        //根据获得的节目列表中的父节目类型id来查询节目类型map，key：节目类型id，value：节目类型名
-        Map<Long, String> programCategoryMap = selectProgramCategoryMap(programList.stream().map(Program::getParentProgramCategoryId).collect(Collectors.toList()));
+        
         
         //根据节目id统计出票档的最低价和最高价的集合map, key：节目id，value：票档
         Map<Long, TicketCategoryAggregate> ticketCategorieMap = selectTicketCategorieMap(programIdList);
@@ -293,6 +300,12 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 ,String.valueOf(redisProgramVo.getProgramCategoryId()),ProgramCategory.class);
         if (Objects.nonNull(programCategory)) {
             redisProgramVo.setProgramCategoryName(programCategory.getName());
+        }
+        
+        ProgramCategory parentProgramCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
+                ,String.valueOf(redisProgramVo.getParentProgramCategoryId()),ProgramCategory.class);
+        if (Objects.nonNull(parentProgramCategory)) {
+            redisProgramVo.setParentProgramCategoryName(parentProgramCategory.getName());
         }
         
         ProgramShowTime redisProgramShowTime = programShowTimeService.selectProgramShowTimeByProgramId(redisProgramVo.getId());
@@ -420,6 +433,12 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 ,String.valueOf(programVo.getProgramCategoryId()),ProgramCategory.class);
         if (Objects.nonNull(programCategory)) {
             programVo.setProgramCategoryName(programCategory.getName());
+        }
+        //查询父节目类型
+        ProgramCategory parentProgramCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
+                ,String.valueOf(programVo.getParentProgramCategoryId()),ProgramCategory.class);
+        if (Objects.nonNull(parentProgramCategory)) {
+            programVo.setParentProgramCategoryName(parentProgramCategory.getName());
         }
         
         //查询节目演出时间
