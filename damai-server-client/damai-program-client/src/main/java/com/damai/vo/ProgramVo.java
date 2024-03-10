@@ -49,6 +49,9 @@ public class ProgramVo implements Serializable {
     @ApiModelProperty(name ="parentProgramCategoryId", dataType ="Long", value ="父节目类型表id")
     private Long parentProgramCategoryId;
     
+    @ApiModelProperty(name ="parentProgramCategoryName", dataType ="String", value ="父节目类型名字")
+    private String parentProgramCategoryName;
+    
     @ApiModelProperty(name ="detail", dataType ="String", value ="项目详情")
     private String detail;
     

@@ -108,15 +108,20 @@ public class ProgramElasticsearchInitData extends AbstractApplicationPostConstru
         programCategoryIdDto.setParamType("long");
         list.add(programCategoryIdDto);
         
+        EsDocumentMappingDto programCategoryNameDto = new EsDocumentMappingDto();
+        programCategoryNameDto.setParamName(ProgramDocumentParamName.PROGRAM_CATEGORY_NAME);
+        programCategoryNameDto.setParamType("text");
+        list.add(programCategoryNameDto);
+        
         EsDocumentMappingDto parentProgramCategoryIdDto = new EsDocumentMappingDto();
         parentProgramCategoryIdDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID);
         parentProgramCategoryIdDto.setParamType("long");
         list.add(parentProgramCategoryIdDto);
         
-        EsDocumentMappingDto programCategoryNameDto = new EsDocumentMappingDto();
-        programCategoryNameDto.setParamName(ProgramDocumentParamName.PROGRAM_CATEGORY_NAME);
-        programCategoryNameDto.setParamType("text");
-        list.add(programCategoryNameDto);
+        EsDocumentMappingDto parentProgramCategoryNameDto = new EsDocumentMappingDto();
+        parentProgramCategoryNameDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_NAME);
+        parentProgramCategoryNameDto.setParamType("text");
+        list.add(parentProgramCategoryNameDto);
         
         EsDocumentMappingDto showTimeDto = new EsDocumentMappingDto();
         showTimeDto.setParamName(ProgramDocumentParamName.SHOW_TIME);
@@ -167,6 +172,7 @@ public class ProgramElasticsearchInitData extends AbstractApplicationPostConstru
             map.put(ProgramDocumentParamName.PROGRAM_CATEGORY_ID,programVo.getProgramCategoryId());
             map.put(ProgramDocumentParamName.PROGRAM_CATEGORY_NAME,programVo.getProgramCategoryName());
             map.put(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID,programVo.getParentProgramCategoryId());
+            map.put(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_NAME,programVo.getParentProgramCategoryName());
             map.put(ProgramDocumentParamName.SHOW_TIME, programVo.getShowTime());
             map.put(ProgramDocumentParamName.SHOW_DAY_TIME,programVo.getShowDayTime());
             map.put(ProgramDocumentParamName.SHOW_WEEK_TIME,programVo.getShowWeekTime());
