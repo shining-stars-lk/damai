@@ -287,35 +287,27 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     public ProgramVo getDetail(ProgramGetDto programGetDto) {
         ProgramVo redisProgramVo = programService.getById(programGetDto.getId());
         
-        //预先加载用户购票人
         preloadTicketUserList(redisProgramVo.getHighHeat());
         
-        //查询节目类型
         ProgramCategory programCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
                 ,String.valueOf(redisProgramVo.getProgramCategoryId()),ProgramCategory.class);
         if (Objects.nonNull(programCategory)) {
             redisProgramVo.setProgramCategoryName(programCategory.getName());
         }
         
-        //查询节目演出时间
         ProgramShowTime redisProgramShowTime = programShowTimeService.selectProgramShowTimeByProgramId(redisProgramVo.getId());
         redisProgramVo.setShowTime(redisProgramShowTime.getShowTime());
         redisProgramVo.setShowDayTime(redisProgramShowTime.getShowDayTime());
         redisProgramVo.setShowWeekTime(redisProgramShowTime.getShowWeekTime());
         
-        
-        //查询座位
         List<SeatVo> redisSeatVoList = seatService.selectSeatByProgramId(redisProgramVo.getId());
-        //如果节目允许选择座位才把座位给前端展示
         if (Objects.equals(redisProgramVo.getPermitChooseSeat(), BusinessStatus.YES.getCode())) {
             redisProgramVo.setSeatVoList(redisSeatVoList);
         }
         
-        //查询节目票档
         List<TicketCategoryVo> ticketCategoryVoList = ticketCategoryService.selectTicketCategoryListByProgramId(redisProgramVo.getId());
         redisProgramVo.setTicketCategoryVoList(ticketCategoryVoList);
         
-        //余票数量
         ticketCategoryService.setRedisRemainNumber(redisProgramVo.getId());
         
         return redisProgramVo;
@@ -325,11 +317,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     public ProgramVo getById(Long programId) {
         return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId),ProgramVo.class,() -> {
             ProgramVo programVo = new ProgramVo();
-            //根据id查询到节目
             Program program = Optional.ofNullable(programMapper.selectById(programId)).orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST));
             BeanUtil.copyProperties(program,programVo);
             
-            //查询区域
             AreaGetDto areaGetDto = new AreaGetDto();
             areaGetDto.setId(program.getAreaId());
             ApiResponse<AreaVo> areaResponse = baseDataClient.getById(areaGetDto);

@@ -51,10 +51,13 @@ public class TicketCategoryService extends ServiceImpl<TicketCategoryMapper, Tic
     }
     
     public List<TicketCategoryVo> selectTicketCategoryListByProgramId(Long programId){
-        return redisCache.getValueIsList(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_CATEGORY_LIST, programId), TicketCategoryVo.class, () -> {
-                    LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
-                            .eq(TicketCategory::getProgramId, programId);
-                    List<TicketCategory> ticketCategoryList = ticketCategoryMapper.selectList(ticketCategoryLambdaQueryWrapper);
+        return redisCache.getValueIsList(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_CATEGORY_LIST, programId), 
+                TicketCategoryVo.class, 
+                () -> {
+                    LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = 
+                            Wrappers.lambdaQuery(TicketCategory.class).eq(TicketCategory::getProgramId, programId);
+                    List<TicketCategory> ticketCategoryList = 
+                            ticketCategoryMapper.selectList(ticketCategoryLambdaQueryWrapper);
                     return ticketCategoryList.stream().map(ticketCategory -> {
                         ticketCategory.setRemainNumber(null);
                         TicketCategoryVo ticketCategoryVo = new TicketCategoryVo();
@@ -64,11 +67,9 @@ public class TicketCategoryService extends ServiceImpl<TicketCategoryMapper, Tic
                 }, EXPIRE_TIME, TimeUnit.DAYS);
     }
     
-    /**
-     * 设置余票数量
-     * */
     public void setRedisRemainNumber(Long programId){
-        Boolean exist = redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId));
+        Boolean exist = 
+                redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId));
         if (!exist) {
             LambdaQueryWrapper<TicketCategory> ticketCategoryLambdaQueryWrapper = Wrappers.lambdaQuery(TicketCategory.class)
                     .eq(TicketCategory::getProgramId, programId);
