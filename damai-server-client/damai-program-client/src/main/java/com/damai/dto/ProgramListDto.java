@@ -25,8 +25,5 @@ public class ProgramListDto {
     @NotNull
     private List<Long> parentProgramCategoryIds;
     
-    /**
-     * 业务字段，后端自己填充
-     * */
     private Date time;
 }

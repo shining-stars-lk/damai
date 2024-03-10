@@ -20,7 +20,6 @@ import com.damai.vo.SeatVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -70,11 +69,16 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
      * 查询座位
      * */
     public List<SeatVo> selectSeatByProgramId(Long programId) {
-        List<SeatVo> seatVoList = new ArrayList<>();
-        if ((!redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId))) &&
-                (!redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId))) &&
-                (!redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId)))) {
-            LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, programId);
+        List<SeatVo> seatVoList = redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId),SeatVo.class);
+        seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId),SeatVo.class));
+        seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId),SeatVo.class));
+        
+        if (CollectionUtil.isEmpty(seatVoList)) {
+            LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = 
+                    Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, programId);
             List<Seat> seats = seatMapper.selectList(seatLambdaQueryWrapper);
             for (Seat seat : seats) {
                 SeatVo seatVo = new SeatVo();
@@ -88,26 +92,25 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
             List<SeatVo> soldSeatVoList = seatMap.get(SellStatus.SOLD.getCode());
             if (CollectionUtil.isNotEmpty(noSoldSeatVoList)) {
                 redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId)
-                        ,noSoldSeatVoList.stream().collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
+                        ,noSoldSeatVoList.stream()
+                                .collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
                         ,EXPIRE_TIME, TimeUnit.DAYS);
             }
             if (CollectionUtil.isNotEmpty(lockSeatVoList)) {
                 redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId)
-                        ,lockSeatVoList.stream().collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
+                        ,lockSeatVoList.stream()
+                                .collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
                         ,EXPIRE_TIME, TimeUnit.DAYS);
             }
             if (CollectionUtil.isNotEmpty(soldSeatVoList)) {
                 redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId)
-                        ,soldSeatVoList.stream().collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
+                        ,soldSeatVoList.stream()
+                                .collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
                         ,EXPIRE_TIME, TimeUnit.DAYS);
             }
-        }else {
-            seatVoList = redisCache.getAllForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId),SeatVo.class);
-            seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId),SeatVo.class));
-            seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId),SeatVo.class));
-            seatVoList = seatVoList.stream().sorted(Comparator.comparingInt(SeatVo::getRowCode)
-                    .thenComparingInt(SeatVo::getColCode)).collect(Collectors.toList());
         }
+        seatVoList = seatVoList.stream().sorted(Comparator.comparingInt(SeatVo::getRowCode)
+                .thenComparingInt(SeatVo::getColCode)).collect(Collectors.toList());
         return seatVoList;
     }
 }
