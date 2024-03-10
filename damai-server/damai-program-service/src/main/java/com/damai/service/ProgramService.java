@@ -450,26 +450,20 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
      * 预先加载用户下的购票人
      */
     private void preloadTicketUserList(Integer highHeat){
-        //如果节目是热度不高的，那么不用预先加载了
         if (Objects.equals(highHeat, BusinessStatus.NO.getCode())) {
             return;
         }
-        
         String userId = BaseParameterHolder.getParameter(USER_ID);
         String code = BaseParameterHolder.getParameter(CODE);
-        //如果用户id或者code有一个为空，那么判断不了用户登录状态，也不用预先加载了
-        if (StringUtil.isEmpty(userId) && StringUtil.isEmpty(code)) {
+        if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(code)) {
             return;
         }
-        //异步加载购票人信息，别耽误查询节目详情的主线程
         BusinessThreadPool.execute(() -> {
             try {
                 Boolean userLogin = redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
-                //如果用户没有登录，也不用预先加载了
                 if (!userLogin) {
                     return;
                 }
-                //如果已经预热加载了，就不用再执行了
                 if (redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.TICKET_USER_LIST,userId))) {
                     return;
                 }
