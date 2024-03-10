@@ -49,10 +49,10 @@ public class TicketUserService extends ServiceImpl<TicketUserMapper, TicketUser>
     
     public List<TicketUserVo> select(TicketUserListDto ticketUserListDto) {
         //先从缓存中查询
-        List<TicketUserVo> valueIsList = redisCache.getValueIsList(RedisKeyBuild.createRedisKey(
+        List<TicketUserVo> ticketUserVoList = redisCache.getValueIsList(RedisKeyBuild.createRedisKey(
                 RedisKeyManage.TICKET_USER_LIST, ticketUserListDto.getUserId()), TicketUserVo.class);
-        if (CollectionUtil.isNotEmpty(valueIsList)) {
-            return valueIsList;
+        if (CollectionUtil.isNotEmpty(ticketUserVoList)) {
+            return ticketUserVoList;
         }
         LambdaQueryWrapper<TicketUser> ticketUserLambdaQueryWrapper = Wrappers.lambdaQuery(TicketUser.class)
                 .eq(TicketUser::getUserId, ticketUserListDto.getUserId());
