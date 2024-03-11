@@ -17,10 +17,12 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,16 +140,32 @@ public class ProgramEs {
             searchSourceBuilder.trackTotalHits(true);
             searchSourceBuilder.from((programSearchDto.getPageNumber() - 1) * programSearchDto.getPageSize());
             searchSourceBuilder.size(programSearchDto.getPageSize());
+            searchSourceBuilder.highlighter(getHighlightBuilder(Arrays.asList(ProgramDocumentParamName.TITLE,
+                    ProgramDocumentParamName.ACTOR)));
             List<ProgramListVo> list = new ArrayList<>();
             PageInfo<ProgramListVo> pageInfo = new PageInfo<>(list);
             pageInfo.setPageNum(programSearchDto.getPageNumber());
             pageInfo.setPageSize(programSearchDto.getPageSize());
             businessEsHandle.executeQuery(SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
-                    ProgramDocumentParamName.INDEX_TYPE,list,pageInfo,ProgramListVo.class,searchSourceBuilder);
+                    ProgramDocumentParamName.INDEX_TYPE,list,pageInfo,ProgramListVo.class,
+                    searchSourceBuilder,Arrays.asList(ProgramDocumentParamName.TITLE,ProgramDocumentParamName.ACTOR));
             pageVo = PageUtil.convertPage(pageInfo,programListVo -> programListVo);
         }catch (Exception e) {
             log.error("search error",e);
         }
         return pageVo;
+    }
+    
+    public HighlightBuilder getHighlightBuilder(List<String> fieldNameList){
+        // 创建一个HighlightBuilder
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        for (String fieldName : fieldNameList) {
+            // 为特定字段添加高亮设置
+            HighlightBuilder.Field highlightTitle = new HighlightBuilder.Field(fieldName);
+            highlightTitle.preTags("<em>");
+            highlightTitle.postTags("</em>");
+            highlightBuilder.field(highlightTitle);
+        }
+        return highlightBuilder;
     }
 }

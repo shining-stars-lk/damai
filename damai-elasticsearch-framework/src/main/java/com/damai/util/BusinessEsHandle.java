@@ -319,7 +319,7 @@ public class BusinessEsHandle {
             return list;
         }
         SearchSourceBuilder sourceBuilder = getSearchSourceBuilder(esGeoPointDto,esDataQueryDtoList,sortParam,geoPointDtoSortParam,sortOrder);
-        executeQuery(indexName,indexType,list,null,clazz,sourceBuilder);
+        executeQuery(indexName,indexType,list,null,clazz,sourceBuilder,null);
         return list;
     }
     
@@ -461,7 +461,7 @@ public class BusinessEsHandle {
         SearchSourceBuilder sourceBuilder = getSearchSourceBuilder(esGeoPointDto,esDataQueryDtoList,sortParam,geoPointDtoSortParam,sortOrder);
         sourceBuilder.from((pageNo - 1) * pageSize);
         sourceBuilder.size(pageSize);
-        executeQuery(indexName,indexType,list,pageInfo,clazz,sourceBuilder);
+        executeQuery(indexName,indexType,list,pageInfo,clazz,sourceBuilder,null);
         return pageInfo;
     }
     
@@ -532,7 +532,7 @@ public class BusinessEsHandle {
     }
     
     public <T> void executeQuery(String indexName, String indexType,List<T> list,PageInfo<T> pageInfo,Class<T> clazz, 
-                                 SearchSourceBuilder sourceBuilder) throws IOException {
+                                 SearchSourceBuilder sourceBuilder,List<String> highLightFieldNameList) throws IOException {
         String string = sourceBuilder.toString();
         HttpEntity entity = new NStringEntity(string, ContentType.APPLICATION_JSON);
         StringBuilder endpointStringBuilder = new StringBuilder("/" + indexName);
@@ -573,13 +573,23 @@ public class BusinessEsHandle {
                 if (null != hitsArr && !hitsArr.isEmpty()) {
                     for (int i = 0, size = hitsArr.size(); i < size; i++) {
                         JSONObject data = hitsArr.getJSONObject(i);
-                        if (null != data) {
+                        if (Objects.nonNull(data)) {
                             JSONObject jsonObject = data.getJSONObject("_source");
                             
                             JSONArray jsonArray = data.getJSONArray("sort");
                             if (null != jsonArray && !jsonArray.isEmpty()) {
                                 Long sort = jsonArray.getLong(0);
                                 jsonObject.put("sort",sort);
+                            }
+                            
+                            JSONObject highlight = data.getJSONObject("highlight");
+                            if (Objects.nonNull(highlight) && Objects.nonNull(highLightFieldNameList)) {
+                                for (String highLightFieldName : highLightFieldNameList) {
+                                    JSONArray highLightFieldValue = highlight.getJSONArray(highLightFieldName);
+                                    if (Objects.nonNull(highLightFieldValue) && !highLightFieldValue.isEmpty()) {
+                                        jsonObject.put(highLightFieldName,highLightFieldValue.get(0));
+                                    }
+                                }
                             }
                             list.add(JSONObject.parseObject(jsonObject.toJSONString(),clazz));
                         }
