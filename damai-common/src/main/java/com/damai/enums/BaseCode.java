@@ -150,6 +150,10 @@ public enum BaseCode {
     
     SEAT_IS_EXIST(50003,"该节目下座位以存在"),
     
+    START_DATE_TIME_NOT_EXIST(50004,"开始时间为空"),
+    
+    END_DATE_TIME_NOT_EXIST(50005,"结束时间为空"),
+    
     USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
     
     USER_LOG_IN(60002,"用户已登录"),

@@ -4,8 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
  * @description: 节目搜索 dto
@@ -13,9 +11,8 @@ import javax.validation.constraints.NotBlank;
  **/
 @Data
 @ApiModel(value="ProgramSearchDto", description ="节目搜索")
-public class ProgramSearchDto extends BasePageDto{
+public class ProgramSearchDto extends ProgramPageListDto{
     
-    @ApiModelProperty(name ="title", dataType ="String", value ="标题")
-    @NotBlank
-    private String title;
+    @ApiModelProperty(name ="content", dataType ="String", value ="搜索内容")
+    private String content;
 }

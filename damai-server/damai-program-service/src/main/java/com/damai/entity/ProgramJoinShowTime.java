@@ -11,7 +11,7 @@ import java.util.Date;
  * @author: 阿宽不是程序员
  **/
 @Data
-public class ProgramV2 extends Program implements Serializable {
+public class ProgramJoinShowTime extends Program implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

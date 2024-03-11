@@ -39,7 +39,7 @@
         </if>
     </select>
     
-    <select id="selectPage" parameterType="com.damai.dto.ProgramPageListDto" resultType="com.damai.entity.ProgramV2">
+    <select id="selectPage" parameterType="com.damai.dto.ProgramPageListDto" resultType="com.damai.entity.ProgramJoinShowTime">
         select
             dp.id,dp.area_id,dp.program_category_id,dp.parent_program_category_id,dp.title,dp.actor,
             dp.place,dp.item_picture,ds.show_time,ds.show_week_time,ds.show_day_time
@@ -51,20 +51,17 @@
             <if test ='programPageListDto.areaId != null'>
              and dp.area_id = #{programPageListDto.areaId,jdbcType=BIGINT} 
             </if>
-        <if test = 'programPageListDto.programCategoryIds != null and programPageListDto.programCategoryIds.size>0'>
-            and dp.program_category_id in
-            <foreach collection='programPageListDto.programCategoryIds' item='programCategoryId' index='index' open='(' close=')' separator=','>
-                #{programCategoryId,jdbcType=BIGINT}
-            </foreach>
+        <if test = 'programPageListDto.programCategoryId != null'>
+            and dp.program_category_id = #{programPageListDto.programCategoryId,jdbcType=BIGINT}
         </if>
-        <if test = 'programPageListDto.parentProgramCategoryIds != null and programPageListDto.parentProgramCategoryIds.size>0'>
-            and dp.parent_program_category_id in
-            <foreach collection='programPageListDto.parentProgramCategoryIds' item='parentProgramCategoryId' index='index' open='(' close=')' separator=','>
-                #{parentProgramCategoryId,jdbcType=BIGINT}
-            </foreach>
+        <if test = 'programPageListDto.parentProgramCategoryId != null'>
+            and dp.parent_program_category_id = #{programPageListDto.parentProgramCategoryId,jdbcType=BIGINT}
         </if>
-        <if test = 'programPageListDto.showDayTime != null'> and ds.show_day_time = #{programPageListDto.showDayTime}</if>
-        <if test = 'programPageListDto.time != null'> and ds.show_day_time <![CDATA[ <= ]]> #{programPageListDto.time}</if>
-            
+        <if test = 'programPageListDto.startDateTime != null'>
+          and ds.show_day_time &gt;= #{programPageListDto.startDateTime}
+        </if>
+        <if test = 'programPageListDto.endDateTime != null'>
+          and ds.show_day_time &lt;= #{programPageListDto.endDateTime}
+        </if>
     </select>
 </mapper>
