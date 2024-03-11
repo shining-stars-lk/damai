@@ -26,13 +26,12 @@ import com.damai.dto.UserIdDto;
 import com.damai.entity.Program;
 import com.damai.entity.ProgramCategory;
 import com.damai.entity.ProgramShowTime;
-import com.damai.entity.ProgramV2;
+import com.damai.entity.ProgramJoinShowTime;
 import com.damai.entity.Seat;
 import com.damai.entity.TicketCategoryAggregate;
 import com.damai.enums.BaseCode;
 import com.damai.enums.BusinessStatus;
 import com.damai.enums.SellStatus;
-import com.damai.enums.TimeType;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.ProgramCategoryMapper;
 import com.damai.mapper.ProgramMapper;
@@ -43,6 +42,7 @@ import com.damai.page.PageUtil;
 import com.damai.page.PageVo;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
+import com.damai.service.constant.ProgramTimeType;
 import com.damai.service.es.ProgramEs;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
@@ -76,6 +76,7 @@ import static com.damai.constant.Constant.CODE;
 import static com.damai.constant.Constant.USER_ID;
 import static com.damai.core.DistributedLockConstants.PROGRAM_LOCK;
 import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
+import static com.damai.util.DateUtils.FORMAT_DATE;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
@@ -137,6 +138,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     public PageVo<ProgramListVo> search(ProgramSearchDto programSearchDto) {
+        setQueryTime(programSearchDto);
         return programEs.search(programSearchDto);
     }
     public Map<String,List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
@@ -151,7 +153,12 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     private Map<String,List<ProgramListVo>> dbSelectHomeList(ProgramListDto programPageListDto){
         Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>(256);
         Map<Long, String> programCategoryMap = selectProgramCategoryMap(programPageListDto.getParentProgramCategoryIds());
+        
         List<Program> programList = programMapper.selectHomeList(programPageListDto);
+        if (CollectionUtil.isEmpty(programList)) {
+            return programListVoMap;
+        }
+        
         List<Long> programIdList = programList.stream().map(Program::getId).collect(Collectors.toList());
         LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper = Wrappers.lambdaQuery(ProgramShowTime.class)
                 .in(ProgramShowTime::getProgramId, programIdList);
@@ -163,6 +170,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         
         Map<Long, List<Program>> programMap = programList.stream()
                 .collect(Collectors.groupingBy(Program::getParentProgramCategoryId));
+        
         for (Entry<Long, List<Program>> programEntry : programMap.entrySet()) {
             Long key = programEntry.getKey();
             List<Program> value = programEntry.getValue();
@@ -170,6 +178,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             for (Program program : value) {
                 ProgramListVo programListVo = new ProgramListVo();
                 BeanUtil.copyProperties(program,programListVo);
+                
                 programListVo.setShowTime(Optional.ofNullable(programShowTimeMap.get(program.getId()))
                         .filter(list -> !list.isEmpty())
                         .map(list -> list.get(0))
@@ -185,6 +194,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                         .map(list -> list.get(0))
                         .map(ProgramShowTime::getShowWeekTime)
                         .orElse(null));
+                
                 programListVo.setMaxPrice(Optional.ofNullable(ticketCategorieMap.get(program.getId()))
                         .map(TicketCategoryAggregate::getMaxPrice).orElse(null));
                 programListVo.setMinPrice(Optional.ofNullable(ticketCategorieMap.get(program.getId()))
@@ -196,7 +206,40 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         return programListVoMap;
     }
     
+    public void setQueryTime(ProgramPageListDto programPageListDto){
+        switch (programPageListDto.getTimeType()) {
+            case ProgramTimeType.TODAY:
+                programPageListDto.setStartDateTime(DateUtils.now(FORMAT_DATE));
+                programPageListDto.setEndDateTime(DateUtils.now(FORMAT_DATE));
+                break;
+            case ProgramTimeType.TOMORROW:
+                programPageListDto.setStartDateTime(DateUtils.now(FORMAT_DATE));
+                programPageListDto.setEndDateTime(DateUtils.addDay(DateUtils.now(FORMAT_DATE),1));
+                break;
+            case ProgramTimeType.WEEK:
+                programPageListDto.setStartDateTime(DateUtils.now(FORMAT_DATE));
+                programPageListDto.setEndDateTime(DateUtils.addWeek(DateUtils.now(FORMAT_DATE),1));
+                break;
+            case ProgramTimeType.MONTH:
+                programPageListDto.setStartDateTime(DateUtils.now(FORMAT_DATE));
+                programPageListDto.setEndDateTime(DateUtils.addMonth(DateUtils.now(FORMAT_DATE),1));
+                break;
+            case ProgramTimeType.CALENDAR:
+                if (Objects.isNull(programPageListDto.getStartDateTime())) {
+                    throw new DaMaiFrameException(BaseCode.START_DATE_TIME_NOT_EXIST);
+                }
+                if (Objects.isNull(programPageListDto.getEndDateTime())) {
+                    throw new DaMaiFrameException(BaseCode.END_DATE_TIME_NOT_EXIST);
+                }
+                break;
+            default:
+                programPageListDto.setStartDateTime(null);
+                programPageListDto.setEndDateTime(null);
+                break;
+        }
+    }
     public PageVo<ProgramListVo> selectPage(ProgramPageListDto programPageListDto) {
+        setQueryTime(programPageListDto);
         PageVo<ProgramListVo> pageVo = programEs.selectPage(programPageListDto);
         if (CollectionUtil.isNotEmpty(pageVo.getList())) {
             return pageVo;
@@ -204,50 +247,42 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         return dbSelectPage(programPageListDto);
     }
     public PageVo<ProgramListVo> dbSelectPage(ProgramPageListDto programPageListDto) {
-        //需要program和program_show_time连表查询
-        if (Objects.nonNull(programPageListDto.getTimeType())) {
-            if (programPageListDto.getTimeType().equals(TimeType.WEEK.getCode())) {
-                programPageListDto.setTime(DateUtils.addWeek(DateUtils.now(),1));
-            }else if (programPageListDto.getTimeType().equals(TimeType.MONTH.getCode())) {
-                programPageListDto.setTime(DateUtils.addMonth(DateUtils.now(),1));
-            }
+        IPage<ProgramJoinShowTime> iPage = 
+                programMapper.selectPage(PageUtil.getPageParams(programPageListDto), programPageListDto);
+        if (CollectionUtil.isEmpty(iPage.getRecords())) {
+            return new PageVo<>(iPage.getCurrent(), iPage.getSize(), iPage.getTotal(), new ArrayList<>());
         }
-        IPage<ProgramV2> iPage = programMapper.selectPage(PageUtil.getPageParams(programPageListDto), programPageListDto);
-        
-        //根据节目列表获得节目类型id列表
-        Set<Long> programCategoryIdList = iPage.getRecords().stream().map(Program::getProgramCategoryId).collect(Collectors.toSet());
-        //根据id来查询节目类型列表map，key：节目类型id，value：节目类型名
+        Set<Long> programCategoryIdList = 
+                iPage.getRecords().stream().map(Program::getProgramCategoryId).collect(Collectors.toSet());
         Map<Long, String> programCategoryMap = selectProgramCategoryMap(programCategoryIdList);
         
-        //节目id集合
         List<Long> programIdList = iPage.getRecords().stream().map(Program::getId).collect(Collectors.toList());
-        //根据节目id统计出票档的最低价和最高价的集合map, key：节目id，value：票档
         Map<Long, TicketCategoryAggregate> ticketCategorieMap = selectTicketCategorieMap(programIdList);
-        //查询区域
+        
         Map<Long,String> tempAreaMap = new HashMap<>(64);
         AreaSelectDto areaSelectDto = new AreaSelectDto();
         areaSelectDto.setIdList(iPage.getRecords().stream().map(Program::getAreaId).distinct().collect(Collectors.toList()));
         ApiResponse<List<AreaVo>> areaResponse = baseDataClient.selectByIdList(areaSelectDto);
         if (Objects.equals(areaResponse.getCode(), ApiResponse.ok().getCode())) {
             if (CollectionUtil.isNotEmpty(areaResponse.getData())) {
-                tempAreaMap = areaResponse.getData().stream().collect(Collectors.toMap(AreaVo::getId,AreaVo::getName,(v1,v2) -> v2));
+                tempAreaMap = areaResponse.getData().stream()
+                        .collect(Collectors.toMap(AreaVo::getId,AreaVo::getName,(v1,v2) -> v2));
             }
         }else {
             log.error("base-data selectByIdList rpc error areaResponse:{}", JSON.toJSONString(areaResponse));
         }
-        
         Map<Long,String> areaMap = tempAreaMap;
-        return PageUtil.convertPage(iPage,programV2 -> {
+        
+        return PageUtil.convertPage(iPage, programJoinShowTime -> {
             ProgramListVo programListVo = new ProgramListVo();
-            BeanUtil.copyProperties(programV2, programListVo);
-            //区域名字
-            programListVo.setAreaName(areaMap.get(programV2.getAreaId()));
-            //节目名字
-            programListVo.setProgramCategoryName(programCategoryMap.get(programV2.getProgramCategoryId()));
-            //最低价
-            programListVo.setMinPrice(Optional.ofNullable(ticketCategorieMap.get(programV2.getId())).map(TicketCategoryAggregate::getMinPrice).orElse(null));
-            //最高价
-            programListVo.setMaxPrice(Optional.ofNullable(ticketCategorieMap.get(programV2.getId())).map(TicketCategoryAggregate::getMaxPrice).orElse(null));
+            BeanUtil.copyProperties(programJoinShowTime, programListVo);
+            
+            programListVo.setAreaName(areaMap.get(programJoinShowTime.getAreaId()));
+            programListVo.setProgramCategoryName(programCategoryMap.get(programJoinShowTime.getProgramCategoryId()));
+            programListVo.setMinPrice(Optional.ofNullable(ticketCategorieMap.get(programJoinShowTime.getId()))
+                    .map(TicketCategoryAggregate::getMinPrice).orElse(null));
+            programListVo.setMaxPrice(Optional.ofNullable(ticketCategorieMap.get(programJoinShowTime.getId()))
+                    .map(TicketCategoryAggregate::getMaxPrice).orElse(null));
             return programListVo;
         });
     }
@@ -309,9 +344,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     public Map<Long, TicketCategoryAggregate> selectTicketCategorieMap(List<Long> programIdList){
-        //根据节目id统计出票档的最低价和最高价的集合
         List<TicketCategoryAggregate> ticketCategorieList = ticketCategoryMapper.selectAggregateList(programIdList);
-        //将集合转换为map，key：节目id，value：票档
         return ticketCategorieList
                 .stream()
                 .collect(Collectors.toMap(TicketCategoryAggregate::getProgramId, ticketCategory -> ticketCategory, (v1, v2) -> v2));
@@ -393,9 +426,6 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         return programVo;
     }
     
-    /***
-     * 预先加载用户下的购票人
-     */
     private void preloadTicketUserList(Integer highHeat){
         if (Objects.equals(highHeat, BusinessStatus.NO.getCode())) {
             return;

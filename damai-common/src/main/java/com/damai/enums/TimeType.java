@@ -9,8 +9,12 @@ public enum TimeType {
     /**
      * 时间类型
      * */
-    WEEK(1,"本周内"),
-    MONTH(2,"一个月内"),
+    ALL(0,"全部"),
+    TODAY(1,"今天"),
+    TOMORROW(2,"明天"),
+    WEEK(3,"本周内"),
+    MONTH(4,"一个月内"),
+    CALENDAR(5,"按日历"),
     ;
 
     private Integer code;

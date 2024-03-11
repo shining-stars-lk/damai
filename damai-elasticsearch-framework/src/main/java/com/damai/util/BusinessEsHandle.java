@@ -531,7 +531,7 @@ public class BusinessEsHandle {
         return sourceBuilder;
     }
     
-    private <T> void executeQuery(String indexName, String indexType,List<T> list,PageInfo<T> pageInfo,Class<T> clazz, SearchSourceBuilder sourceBuilder) throws IOException {
+    public <T> void executeQuery(String indexName, String indexType,List<T> list,PageInfo<T> pageInfo,Class<T> clazz, SearchSourceBuilder sourceBuilder) throws IOException {
         String string = sourceBuilder.toString();
         HttpEntity entity = new NStringEntity(string, ContentType.APPLICATION_JSON);
         StringBuilder endpointStringBuilder = new StringBuilder("/" + indexName);

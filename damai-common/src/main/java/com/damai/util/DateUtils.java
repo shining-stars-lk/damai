@@ -112,6 +112,13 @@ public class DateUtils {
         return parseDateTime(getFormatedDateString(8,FORMAT_SECOND));
     }
     
+    /**
+     * 获取北京当前时间
+     * */
+    public static Date now(String format){
+        return parseDateTime(getFormatedDateString(8,format),format);
+    }
+    
     public static String nowStr(){
         return getFormatedDateString(8, FORMAT_SECOND);
     }
@@ -204,6 +211,17 @@ public class DateUtils {
      */
     public static Date parseDateTime(String dateTimeStr) {
         return parse(dateTimeStr, FORMAT_SECOND);
+    }
+    
+    /**
+     * 按照format 格式时间转化为 Date 格式时间
+     *
+     * @param dateTimeStr yyyy-MM-dd HH:mm:ss 格式时间（如：2022-06-17 16:06:17）
+     * @param format 格式
+     * @return Date 格式时间
+     */
+    public static Date parseDateTime(String dateTimeStr,String format) {
+        return parse(dateTimeStr, format);
     }
  
     /**

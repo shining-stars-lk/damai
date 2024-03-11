@@ -1,25 +1,26 @@
 package com.damai.service.es;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.damai.core.SpringUtil;
 import com.damai.dto.EsDataQueryDto;
 import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramPageListDto;
 import com.damai.dto.ProgramSearchDto;
-import com.damai.enums.TimeType;
 import com.damai.page.PageUtil;
 import com.damai.page.PageVo;
 import com.damai.service.init.ProgramDocumentParamName;
 import com.damai.util.BusinessEsHandle;
-import com.damai.util.DateUtils;
+import com.damai.util.StringUtil;
 import com.damai.vo.ProgramListVo;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,35 +76,24 @@ public class ProgramEs {
                 areaIdQueryDto.setParamValue(programPageListDto.getAreaId());
                 esDataQueryDtoList.add(areaIdQueryDto);
             }
-            if (CollectionUtil.isNotEmpty(programPageListDto.getProgramCategoryIds())) {
-                EsDataQueryDto programCategoryIdQueryDto = new EsDataQueryDto();
-                programCategoryIdQueryDto.setParamName(ProgramDocumentParamName.PROGRAM_CATEGORY_ID);
-                programCategoryIdQueryDto.setParamValue(programPageListDto.getProgramCategoryIds());
-                esDataQueryDtoList.add(programCategoryIdQueryDto);
-            }
-            if (CollectionUtil.isNotEmpty(programPageListDto.getParentProgramCategoryIds())) {
+            if (Objects.nonNull(programPageListDto.getParentProgramCategoryId())) {
                 EsDataQueryDto parentProgramCategoryIdQueryDto = new EsDataQueryDto();
                 parentProgramCategoryIdQueryDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID);
-                parentProgramCategoryIdQueryDto.setParamValue(programPageListDto.getParentProgramCategoryIds());
+                parentProgramCategoryIdQueryDto.setParamValue(programPageListDto.getParentProgramCategoryId());
                 esDataQueryDtoList.add(parentProgramCategoryIdQueryDto);
             }
-            if (Objects.nonNull(programPageListDto.getShowDayTime())) {
-                EsDataQueryDto showDayTimeQueryDto = new EsDataQueryDto();
-                showDayTimeQueryDto.setParamName(ProgramDocumentParamName.SHOW_DAY_TIME);
-                showDayTimeQueryDto.setParamValue(programPageListDto.getShowDayTime());
-                esDataQueryDtoList.add(showDayTimeQueryDto);
+            if (Objects.nonNull(programPageListDto.getProgramCategoryId())) {
+                EsDataQueryDto programCategoryIdQueryDto = new EsDataQueryDto();
+                programCategoryIdQueryDto.setParamName(ProgramDocumentParamName.PROGRAM_CATEGORY_ID);
+                programCategoryIdQueryDto.setParamValue(programPageListDto.getProgramCategoryId());
+                esDataQueryDtoList.add(programCategoryIdQueryDto);
             }
-            if (Objects.nonNull(programPageListDto.getTimeType())) {
-                Date time = null;
-                if (programPageListDto.getTimeType().equals(TimeType.WEEK.getCode())) {
-                    time = DateUtils.addWeek(DateUtils.now(),1);
-                }else if (programPageListDto.getTimeType().equals(TimeType.MONTH.getCode())) {
-                    time = DateUtils.addMonth(DateUtils.now(),1);
-                }
+            if (Objects.nonNull(programPageListDto.getStartDateTime()) && 
+                    Objects.nonNull(programPageListDto.getEndDateTime())) {
                 EsDataQueryDto showDayTimeQueryDto = new EsDataQueryDto();
                 showDayTimeQueryDto.setParamName(ProgramDocumentParamName.SHOW_DAY_TIME);
-                showDayTimeQueryDto.setStartTime(DateUtils.now());
-                showDayTimeQueryDto.setEndTime(time);
+                showDayTimeQueryDto.setStartTime(programPageListDto.getStartDateTime());
+                showDayTimeQueryDto.setEndTime(programPageListDto.getEndDateTime());
                 esDataQueryDtoList.add(showDayTimeQueryDto);
             }
             
@@ -121,17 +111,40 @@ public class ProgramEs {
     public PageVo<ProgramListVo> search(ProgramSearchDto programSearchDto) {
         PageVo<ProgramListVo> pageVo = new PageVo<>();
         try {
-            List<EsDataQueryDto> esDataQueryDtoList = new ArrayList<>();
-            EsDataQueryDto titleQueryDto = new EsDataQueryDto();
-            titleQueryDto.setParamName(ProgramDocumentParamName.TITLE);
-            titleQueryDto.setParamValue(programSearchDto.getTitle());
-            titleQueryDto.setAnalyse(true);
-            esDataQueryDtoList.add(titleQueryDto);
-            PageInfo<ProgramListVo> programListVoPageInfo =
-                    businessEsHandle.queryPage(SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
-                            ProgramDocumentParamName.INDEX_TYPE, esDataQueryDtoList, programSearchDto.getPageNumber(),
-                            programSearchDto.getPageSize(), ProgramListVo.class);
-            pageVo = PageUtil.convertPage(programListVoPageInfo,programListVo -> programListVo);
+            BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+            if (Objects.nonNull(programSearchDto.getAreaId())) {
+                QueryBuilder builds = QueryBuilders.termQuery(ProgramDocumentParamName.AREA_ID, programSearchDto.getAreaId());
+                boolQuery.must(builds);
+            }
+            if (Objects.nonNull(programSearchDto.getParentProgramCategoryId())) {
+                QueryBuilder builds = QueryBuilders.termQuery(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID, programSearchDto.getParentProgramCategoryId());
+                boolQuery.must(builds);
+            }
+            if (Objects.nonNull(programSearchDto.getStartDateTime()) &&
+                    Objects.nonNull(programSearchDto.getEndDateTime())) {
+                QueryBuilder builds = QueryBuilders.rangeQuery(ProgramDocumentParamName.SHOW_DAY_TIME)
+                        .from(programSearchDto.getStartDateTime()).to(programSearchDto.getEndDateTime()).includeLower(true);
+                boolQuery.must(builds);
+            }
+            if (StringUtil.isNotEmpty(programSearchDto.getContent())) {
+                BoolQueryBuilder innerBoolQuery = QueryBuilders.boolQuery();
+                innerBoolQuery.should(QueryBuilders.matchQuery(ProgramDocumentParamName.TITLE, programSearchDto.getContent()));
+                innerBoolQuery.should(QueryBuilders.matchQuery(ProgramDocumentParamName.ACTOR, programSearchDto.getContent()));
+                innerBoolQuery.minimumShouldMatch(1);
+                boolQuery.must(innerBoolQuery);
+            }
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            searchSourceBuilder.query(boolQuery);
+            searchSourceBuilder.trackTotalHits(true);
+            searchSourceBuilder.from((programSearchDto.getPageNumber() - 1) * programSearchDto.getPageSize());
+            searchSourceBuilder.size(programSearchDto.getPageSize());
+            List<ProgramListVo> list = new ArrayList<>();
+            PageInfo<ProgramListVo> pageInfo = new PageInfo<>(list);
+            pageInfo.setPageNum(programSearchDto.getPageNumber());
+            pageInfo.setPageSize(programSearchDto.getPageSize());
+            businessEsHandle.executeQuery(SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
+                    ProgramDocumentParamName.INDEX_TYPE,list,pageInfo,ProgramListVo.class,searchSourceBuilder);
+            pageVo = PageUtil.convertPage(pageInfo,programListVo -> programListVo);
         }catch (Exception e) {
             log.error("search error",e);
         }

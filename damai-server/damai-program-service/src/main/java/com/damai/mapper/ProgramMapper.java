@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramPageListDto;
 import com.damai.entity.Program;
-import com.damai.entity.ProgramV2;
+import com.damai.entity.ProgramJoinShowTime;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -31,5 +31,6 @@ public interface ProgramMapper extends BaseMapper<Program> {
      * @param programPageListDto 参数
      * @return 结果
      * */
-    IPage<ProgramV2> selectPage(IPage<ProgramV2> page, @Param("programPageListDto")ProgramPageListDto programPageListDto);
+    IPage<ProgramJoinShowTime> selectPage(IPage<ProgramJoinShowTime> page, 
+                                          @Param("programPageListDto")ProgramPageListDto programPageListDto);
 }
