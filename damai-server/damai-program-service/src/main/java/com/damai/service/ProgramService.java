@@ -14,10 +14,8 @@ import com.damai.client.BaseDataClient;
 import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyManage;
-import com.damai.core.SpringUtil;
 import com.damai.dto.AreaGetDto;
 import com.damai.dto.AreaSelectDto;
-import com.damai.dto.EsDataQueryDto;
 import com.damai.dto.ProgramAddDto;
 import com.damai.dto.ProgramGetDto;
 import com.damai.dto.ProgramListDto;
@@ -45,13 +43,10 @@ import com.damai.page.PageUtil;
 import com.damai.page.PageVo;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
-import com.damai.service.es.SelectHomeListEs;
-import com.damai.service.init.ProgramDocumentParamName;
-import com.damai.service.pagestrategy.SelectPageWrapper;
+import com.damai.service.es.ProgramEs;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.threadlocal.BaseParameterHolder;
-import com.damai.util.BusinessEsHandle;
 import com.damai.util.DateUtils;
 import com.damai.util.StringUtil;
 import com.damai.vo.AreaVo;
@@ -60,7 +55,6 @@ import com.damai.vo.ProgramVo;
 import com.damai.vo.SeatVo;
 import com.damai.vo.TicketCategoryVo;
 import com.damai.vo.TicketUserVo;
-import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -132,13 +126,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     private TicketCategoryService ticketCategoryService;
     
     @Autowired
-    private BusinessEsHandle businessEsHandle;
-    
-    @Autowired
-    private SelectPageWrapper selectPageWrapper;
-    
-    @Autowired
-    private SelectHomeListEs selectHomeListEs;
+    private ProgramEs programEs;
     
     public Long add(ProgramAddDto programAddDto){
         Program program = new Program();
@@ -149,27 +137,11 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     public PageVo<ProgramListVo> search(ProgramSearchDto programSearchDto) {
-        PageVo<ProgramListVo> pageVo = new PageVo<>();
-        try {
-            List<EsDataQueryDto> esDataQueryDtoList = new ArrayList<>();
-            EsDataQueryDto titleQueryDto = new EsDataQueryDto();
-            titleQueryDto.setParamName(ProgramDocumentParamName.TITLE);
-            titleQueryDto.setParamValue(programSearchDto.getTitle());
-            titleQueryDto.setAnalyse(true);
-            esDataQueryDtoList.add(titleQueryDto);
-            PageInfo<ProgramListVo> programListVoPageInfo = 
-                    businessEsHandle.queryPage(SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME, 
-                    ProgramDocumentParamName.INDEX_TYPE, esDataQueryDtoList, programSearchDto.getPageNumber(), 
-                    programSearchDto.getPageSize(), ProgramListVo.class);
-            pageVo = PageUtil.convertPage(programListVoPageInfo,programListVo -> programListVo);
-        }catch (Exception e) {
-            log.error("search error",e);
-        }
-        return pageVo;
+        return programEs.search(programSearchDto);
     }
     public Map<String,List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
         
-        Map<String, List<ProgramListVo>> programListVoMap = selectHomeListEs.selectHomeList(programPageListDto);
+        Map<String, List<ProgramListVo>> programListVoMap = programEs.selectHomeList(programPageListDto);
         if (CollectionUtil.isNotEmpty(programListVoMap)) {
             return programListVoMap;
         }
@@ -225,9 +197,13 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     public PageVo<ProgramListVo> selectPage(ProgramPageListDto programPageListDto) {
-        return selectPageWrapper.selectPage(programPageListDto);
+        PageVo<ProgramListVo> pageVo = programEs.selectPage(programPageListDto);
+        if (CollectionUtil.isNotEmpty(pageVo.getList())) {
+            return pageVo;
+        }
+        return dbSelectPage(programPageListDto);
     }
-    public PageVo<ProgramListVo> doSelectPage(ProgramPageListDto programPageListDto) {
+    public PageVo<ProgramListVo> dbSelectPage(ProgramPageListDto programPageListDto) {
         //需要program和program_show_time连表查询
         if (Objects.nonNull(programPageListDto.getTimeType())) {
             if (programPageListDto.getTimeType().equals(TimeType.WEEK.getCode())) {
