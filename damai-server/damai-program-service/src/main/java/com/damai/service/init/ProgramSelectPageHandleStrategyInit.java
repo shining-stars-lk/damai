@@ -1,10 +1,10 @@
-package com.damai.service.pagestrategy.event;
+package com.damai.service.init;
 
+import com.damai.initialize.base.AbstractApplicationPostConstructHandler;
 import com.damai.service.pagestrategy.SelectPageHandle;
 import com.damai.service.pagestrategy.SelectPageStrategyContext;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,13 +15,19 @@ import java.util.Map.Entry;
  * @author: 阿宽不是程序员
  **/
 @AllArgsConstructor
-public class SelectPageHandleStrategyInit implements ApplicationListener<ApplicationStartedEvent> {
+public class ProgramSelectPageHandleStrategyInit extends AbstractApplicationPostConstructHandler {
     
     private final SelectPageStrategyContext selectPageStrategyContext;
     
+    
     @Override
-    public void onApplicationEvent(ApplicationStartedEvent event) {
-        Map<String, SelectPageHandle> selectPageHandleMap = event.getApplicationContext().getBeansOfType(SelectPageHandle.class);
+    public Integer executeOrder() {
+        return 4;
+    }
+    
+    @Override
+    public void executeInit(ConfigurableApplicationContext context) {
+        Map<String, SelectPageHandle> selectPageHandleMap = context.getBeansOfType(SelectPageHandle.class);
         for (Entry<String, SelectPageHandle> entry : selectPageHandleMap.entrySet()) {
             SelectPageHandle selectPageHandle = entry.getValue();
             selectPageStrategyContext.put(selectPageHandle.getType(),selectPageHandle);
