@@ -55,7 +55,7 @@ public class ProgramEs {
                 PageInfo<ProgramListVo> pageInfo = businessEsHandle.queryPage(
                         SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
                         ProgramDocumentParamName.INDEX_TYPE, programEsQueryDto, 1, 7, ProgramListVo.class);
-                if (pageInfo.getList().size() > 0) {
+                if (!pageInfo.getList().isEmpty()) {
                     String areaName = pageInfo.getList().get(0).getAreaName();
                     programListVoMap.put(areaName,pageInfo.getList());
                 }
