@@ -4,7 +4,7 @@ import com.damai.service.pagestrategy.ProgramConstant;
 import com.damai.service.pagestrategy.SelectPageHandle;
 import com.damai.service.pagestrategy.SelectPageStrategyContext;
 import com.damai.service.pagestrategy.SelectPageWrapper;
-import com.damai.service.pagestrategy.event.SelectPageHandleStrategyInit;
+import com.damai.service.init.ProgramSelectPageHandleStrategyInit;
 import com.damai.service.pagestrategy.impl.SelectPageDbHandle;
 import com.damai.service.pagestrategy.impl.SelectPageEsHandle;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,8 +37,8 @@ public class ProgramAutoConfig {
     }
     
     @Bean
-    public SelectPageHandleStrategyInit selectPageHandleStrategyInit(SelectPageStrategyContext selectPageStrategyContext){
-        return new SelectPageHandleStrategyInit(selectPageStrategyContext);
+    public ProgramSelectPageHandleStrategyInit selectPageHandleStrategyInit(SelectPageStrategyContext selectPageStrategyContext){
+        return new ProgramSelectPageHandleStrategyInit(selectPageStrategyContext);
     }
     
     @Bean

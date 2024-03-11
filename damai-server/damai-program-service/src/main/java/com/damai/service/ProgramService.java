@@ -45,6 +45,7 @@ import com.damai.page.PageUtil;
 import com.damai.page.PageVo;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
+import com.damai.service.es.SelectHomeListEs;
 import com.damai.service.init.ProgramDocumentParamName;
 import com.damai.service.pagestrategy.SelectPageWrapper;
 import com.damai.servicelock.LockType;
@@ -136,6 +137,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     @Autowired
     private SelectPageWrapper selectPageWrapper;
     
+    @Autowired
+    private SelectHomeListEs selectHomeListEs;
+    
     public Long add(ProgramAddDto programAddDto){
         Program program = new Program();
         BeanUtil.copyProperties(programAddDto,program);
@@ -164,75 +168,57 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         return pageVo;
     }
     public Map<String,List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
-        Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>(256);
         
-        //根据父节目类型id来查询节目类型map，key：节目类型id，value：节目类型名
-        Map<Long, String> programCategoryMap = selectProgramCategoryMap(programPageListDto.getParentProgramCategoryIds());
-        
-        List<Program> programList = new ArrayList<>(64);
-        for (Long parentProgramCategoryId : programPageListDto.getParentProgramCategoryIds()) {
-            //根据区域id和父节目类型id查询节目列表
-            LambdaQueryWrapper<Program> programLambdaQueryWrapper = Wrappers.lambdaQuery(Program.class)
-                    .eq(Program::getProgramStatus, BusinessStatus.YES.getCode())
-                    .eq(Program::getAreaId,programPageListDto.getAreaId())
-                    .eq(Program::getParentProgramCategoryId, parentProgramCategoryId)
-                    .last("limit 7");
-            programList.addAll(programMapper.selectList(programLambdaQueryWrapper));
+        Map<String, List<ProgramListVo>> programListVoMap = selectHomeListEs.selectHomeList(programPageListDto);
+        if (CollectionUtil.isNotEmpty(programListVoMap)) {
+            return programListVoMap;
         }
-        
-        //节目id集合
+        return dbSelectHomeList(programPageListDto);
+    }
+    
+    private Map<String,List<ProgramListVo>> dbSelectHomeList(ProgramListDto programPageListDto){
+        Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>(256);
+        Map<Long, String> programCategoryMap = selectProgramCategoryMap(programPageListDto.getParentProgramCategoryIds());
+        List<Program> programList = programMapper.selectHomeList(programPageListDto);
         List<Long> programIdList = programList.stream().map(Program::getId).collect(Collectors.toList());
-        //根据节目id集合查询节目演出时间集合
         LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper = Wrappers.lambdaQuery(ProgramShowTime.class)
                 .in(ProgramShowTime::getProgramId, programIdList);
         List<ProgramShowTime> programShowTimeList = programShowTimeMapper.selectList(programShowTimeLambdaQueryWrapper);
-        //将节目演出集合根据节目id进行分组成map，key：节目id，value：节目演出时间集合
-        Map<Long, List<ProgramShowTime>> programShowTimeMap = programShowTimeList.stream().collect(Collectors.groupingBy(ProgramShowTime::getProgramId));
+        Map<Long, List<ProgramShowTime>> programShowTimeMap = 
+                programShowTimeList.stream().collect(Collectors.groupingBy(ProgramShowTime::getProgramId));
         
-        
-        
-        //根据节目id统计出票档的最低价和最高价的集合map, key：节目id，value：票档
         Map<Long, TicketCategoryAggregate> ticketCategorieMap = selectTicketCategorieMap(programIdList);
         
-        
-        //将节目结合按照父节目类型id进行分组成map，key：父节目类型id，value：节目集合
-        Map<Long, List<Program>> programMap = programList.stream().collect(Collectors.groupingBy(Program::getParentProgramCategoryId));
-        //循环此map
+        Map<Long, List<Program>> programMap = programList.stream()
+                .collect(Collectors.groupingBy(Program::getParentProgramCategoryId));
         for (Entry<Long, List<Program>> programEntry : programMap.entrySet()) {
-            //父节目类型id
             Long key = programEntry.getKey();
-            //节目集合
             List<Program> value = programEntry.getValue();
             List<ProgramListVo> programListVoList = new ArrayList<>();
-            //循环节目集合
             for (Program program : value) {
                 ProgramListVo programListVo = new ProgramListVo();
                 BeanUtil.copyProperties(program,programListVo);
-                //演出时间
                 programListVo.setShowTime(Optional.ofNullable(programShowTimeMap.get(program.getId()))
                         .filter(list -> !list.isEmpty())
                         .map(list -> list.get(0))
                         .map(ProgramShowTime::getShowTime)
                         .orElse(null));
-                //演出时间(精确到天)
                 programListVo.setShowDayTime(Optional.ofNullable(programShowTimeMap.get(program.getId()))
                         .filter(list -> !list.isEmpty())
                         .map(list -> list.get(0))
                         .map(ProgramShowTime::getShowDayTime)
                         .orElse(null));
-                //演出时间所在的星期
                 programListVo.setShowWeekTime(Optional.ofNullable(programShowTimeMap.get(program.getId()))
                         .filter(list -> !list.isEmpty())
                         .map(list -> list.get(0))
                         .map(ProgramShowTime::getShowWeekTime)
                         .orElse(null));
-                //节目最高价
-                programListVo.setMaxPrice(Optional.ofNullable(ticketCategorieMap.get(program.getId())).map(TicketCategoryAggregate::getMaxPrice).orElse(null));
-                //节目最低价
-                programListVo.setMinPrice(Optional.ofNullable(ticketCategorieMap.get(program.getId())).map(TicketCategoryAggregate::getMinPrice).orElse(null));
+                programListVo.setMaxPrice(Optional.ofNullable(ticketCategorieMap.get(program.getId()))
+                        .map(TicketCategoryAggregate::getMaxPrice).orElse(null));
+                programListVo.setMinPrice(Optional.ofNullable(ticketCategorieMap.get(program.getId()))
+                        .map(TicketCategoryAggregate::getMinPrice).orElse(null));
                 programListVoList.add(programListVo);
             }
-            //key：节目类型名 value：节目列表
             programListVoMap.put(programCategoryMap.get(key),programListVoList);
         }
         return programListVoMap;
@@ -296,17 +282,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         
         preloadTicketUserList(redisProgramVo.getHighHeat());
         
-        ProgramCategory programCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
-                ,String.valueOf(redisProgramVo.getProgramCategoryId()),ProgramCategory.class);
-        if (Objects.nonNull(programCategory)) {
-            redisProgramVo.setProgramCategoryName(programCategory.getName());
-        }
-        
-        ProgramCategory parentProgramCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
-                ,String.valueOf(redisProgramVo.getParentProgramCategoryId()),ProgramCategory.class);
-        if (Objects.nonNull(parentProgramCategory)) {
-            redisProgramVo.setParentProgramCategoryName(parentProgramCategory.getName());
-        }
+        setProgramCategoryData(redisProgramVo);
         
         ProgramShowTime redisProgramShowTime = programShowTimeService.selectProgramShowTimeByProgramId(redisProgramVo.getId());
         redisProgramVo.setShowTime(redisProgramShowTime.getShowTime());
@@ -346,11 +322,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             return programVo;
         },EXPIRE_TIME, TimeUnit.DAYS);
     }
-    /**
-     * 根据节目类型id集合查询节目类型名字
-     * @param programCategoryIdList 节目类型id集合
-     * @return Map<Long, String> key：节目类型id value：节目类型名字
-     * */
+    
     public Map<Long, String> selectProgramCategoryMap(Collection<Long> programCategoryIdList){
         LambdaQueryWrapper<ProgramCategory> pcLambdaQueryWrapper = Wrappers.lambdaQuery(ProgramCategory.class)
                 .in(ProgramCategory::getId, programCategoryIdList);
@@ -428,18 +400,8 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             log.error("base-data rpc getById error areaResponse:{}", JSON.toJSONString(areaResponse));
         }
         
-        //查询节目类型
-        ProgramCategory programCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
-                ,String.valueOf(programVo.getProgramCategoryId()),ProgramCategory.class);
-        if (Objects.nonNull(programCategory)) {
-            programVo.setProgramCategoryName(programCategory.getName());
-        }
-        //查询父节目类型
-        ProgramCategory parentProgramCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
-                ,String.valueOf(programVo.getParentProgramCategoryId()),ProgramCategory.class);
-        if (Objects.nonNull(parentProgramCategory)) {
-            programVo.setParentProgramCategoryName(parentProgramCategory.getName());
-        }
+        //设置节目类型相关信息
+        setProgramCategoryData(programVo);
         
         //查询节目演出时间
         LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
@@ -490,5 +452,18 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 log.error("预热加载投票人列表失败",e);
             }
         });
+    }
+    
+    public void setProgramCategoryData(ProgramVo programVo){
+        ProgramCategory programCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
+                ,String.valueOf(programVo.getProgramCategoryId()),ProgramCategory.class);
+        if (Objects.nonNull(programCategory)) {
+            programVo.setProgramCategoryName(programCategory.getName());
+        }
+        ProgramCategory parentProgramCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
+                ,String.valueOf(programVo.getParentProgramCategoryId()),ProgramCategory.class);
+        if (Objects.nonNull(parentProgramCategory)) {
+            programVo.setParentProgramCategoryName(parentProgramCategory.getName());
+        }
     }
 }

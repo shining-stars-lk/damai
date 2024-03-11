@@ -19,6 +19,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.damai.mapper.ProgramMapper">
     
+    <select id="selectHomeList" parameterType="com.damai.dto.ProgramListDto" resultType="com.damai.entity.Program">
+        <if test = 'programListDto.parentProgramCategoryIds != null and programListDto.parentProgramCategoryIds.size>0'>
+            <foreach collection='programListDto.parentProgramCategoryIds' item='parentProgramCategoryId' index='index' separator=' union all '>
+                select * from (
+                    select
+                        dp.id,dp.area_id,dp.program_category_id,dp.parent_program_category_id,dp.title,dp.actor,
+                        dp.place,dp.item_picture
+                    from
+                        d_program dp
+                    where
+                        dp.program_status = 1
+                    and
+                        dp.area_id = #{programListDto.areaId,jdbcType=BIGINT}
+                    and
+                        dp.parent_program_category_id = #{parentProgramCategoryId,jdbcType=BIGINT} limit 7
+                ) as tmp
+            </foreach>
+        </if>
+    </select>
+    
     <select id="selectPage" parameterType="com.damai.dto.ProgramPageListDto" resultType="com.damai.entity.ProgramV2">
         select
             dp.id,dp.area_id,dp.program_category_id,dp.parent_program_category_id,dp.title,dp.actor,

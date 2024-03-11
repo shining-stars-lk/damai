@@ -1,7 +1,9 @@
 package com.damai.service.init;
 
+import com.damai.core.SpringUtil;
 import com.damai.initialize.base.AbstractApplicationPostConstructHandler;
 import com.damai.service.ProgramShowTimeService;
+import com.damai.util.BusinessEsHandle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,9 @@ public class ProgramShowTimeRenewal extends AbstractApplicationPostConstructHand
     @Autowired
     private ProgramShowTimeService programShowTimeService;
     
+    @Autowired
+    private BusinessEsHandle businessEsHandle;
+    
     @Override
     public Integer executeOrder() {
         return 2;
@@ -27,6 +32,10 @@ public class ProgramShowTimeRenewal extends AbstractApplicationPostConstructHand
      * */
     @Override
     public void executeInit(final ConfigurableApplicationContext context) {
-        programShowTimeService.renewal();
+        boolean flag = programShowTimeService.renewal();
+        if (flag) {
+            businessEsHandle.deleteIndex(SpringUtil.getPrefixDistinctionName() + "-" +
+                    ProgramDocumentParamName.INDEX_NAME);
+        }
     }
 }
