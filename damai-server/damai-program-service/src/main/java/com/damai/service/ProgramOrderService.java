@@ -89,9 +89,13 @@ public class ProgramOrderService {
         List<SeatVo> purchaseSeatList = new ArrayList<>();
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
         //该节目下所有未售卖的座位
-        List<SeatVo> seatVoList = redisCache.getAllForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programOrderCreateDto.getProgramId()), SeatVo.class);
+        List<SeatVo> seatVoList = 
+                redisCache.getAllForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, 
+                        programOrderCreateDto.getProgramId()), SeatVo.class);
         //该节目下的余票数量
-        Map<String, Long> ticketCategoryRemainNumber = redisCache.getAllMapForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programOrderCreateDto.getProgramId()), Long.class);
+        Map<String, Long> ticketCategoryRemainNumber = 
+                redisCache.getAllMapForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, 
+                        programOrderCreateDto.getProgramId()), Long.class);
         //入参座位存在
         if (CollectionUtil.isNotEmpty(seatDtoList)) {
             //余票数量检测
@@ -100,7 +104,8 @@ public class ProgramOrderService {
             for (final Entry<Long, Long> entry : seatTicketCategoryDtoCount.entrySet()) {
                 Long ticketCategoryId = entry.getKey();
                 Long purchaseCount = entry.getValue();
-                Long remainNumber = Optional.ofNullable(ticketCategoryRemainNumber.get(String.valueOf(ticketCategoryId))).orElseThrow(() -> new DaMaiFrameException(BaseCode.TICKET_CATEGORY_NOT_EXIST_V2));
+                Long remainNumber = Optional.ofNullable(ticketCategoryRemainNumber.get(String.valueOf(ticketCategoryId)))
+                        .orElseThrow(() -> new DaMaiFrameException(BaseCode.TICKET_CATEGORY_NOT_EXIST_V2));
                 if (purchaseCount > remainNumber) {
                     throw new DaMaiFrameException(BaseCode.TICKET_REMAIN_NUMBER_NOT_SUFFICIENT);
                 }
@@ -134,7 +139,8 @@ public class ProgramOrderService {
             Long ticketCategoryId = programOrderCreateDto.getTicketCategoryId();
             Integer ticketCount = programOrderCreateDto.getTicketCount();
             //余票检测
-            Long remainNumber = Optional.ofNullable(ticketCategoryRemainNumber.get(String.valueOf(ticketCategoryId))).orElseThrow(() -> new DaMaiFrameException(BaseCode.TICKET_CATEGORY_NOT_EXIST_V2));
+            Long remainNumber = Optional.ofNullable(ticketCategoryRemainNumber.get(String.valueOf(ticketCategoryId)))
+                    .orElseThrow(() -> new DaMaiFrameException(BaseCode.TICKET_CATEGORY_NOT_EXIST_V2));
             if (ticketCount > remainNumber) {
                 throw new DaMaiFrameException(BaseCode.TICKET_REMAIN_NUMBER_NOT_SUFFICIENT);
             }
