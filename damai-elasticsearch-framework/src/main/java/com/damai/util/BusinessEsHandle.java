@@ -325,66 +325,6 @@ public class BusinessEsHandle {
     
     
     /**
-     * 查询
-     *
-     * @param indexName 索引名字
-     * @param indexType 索引类型
-     * @param dsl es的dsl语句
-     * @param clazz 返回的类型
-     * @return List
-     */
-    public <T> List<T> query(String indexName, String indexType, String dsl, Class<T> clazz) throws IOException {
-        if (!esSwitch) {
-            return new ArrayList<>();
-        }
-        if (StringUtil.isEmpty(dsl)) {
-            return new ArrayList<>();
-        }
-        HttpEntity entity = new NStringEntity(dsl, ContentType.APPLICATION_JSON);
-        String endpoint = "";
-        if (esTypeSwitch) {
-            endpoint = "/" + indexName + "/" + indexType + "/_search";
-        }else {
-            endpoint = "/" + indexName + "/_search";
-        }
-        
-        Request request = new Request("POST",endpoint);
-        request.setEntity(entity);
-        request.addParameters(Collections.<String, String>emptyMap());
-        Response response = restClient.performRequest(request);
-        String results = EntityUtils.toString(response.getEntity());
-        if (StringUtil.isEmpty(results)) {
-            return null;
-        }
-        List<T> list = new ArrayList<>();
-        JSONObject parse = (JSONObject) JSONObject.parse(results);
-        if (parse != null) {
-            JSONObject hits = parse.getJSONObject("hits");
-            if (hits != null) {
-                // 数据
-                JSONArray hitsArr = hits.getJSONArray("hits");
-                if (null != hitsArr && !hitsArr.isEmpty()) {
-                    for (int i = 0, size = hitsArr.size(); i < size; i++) {
-                        JSONObject data = hitsArr.getJSONObject(i);
-                        if (null != data) {
-                            JSONObject jsonObject = data.getJSONObject("_source");
-                            
-                            JSONArray jsonArray = data.getJSONArray("sort");
-                            if (null != jsonArray && !jsonArray.isEmpty()) {
-                                Long sort = jsonArray.getLong(0);
-                                jsonObject.put("sort",sort);
-                            }
-                            list.add(JSONObject.parseObject(jsonObject.toJSONString(),clazz));
-                        }
-                    }
-                }
-            }
-        }
-        return list;
-    }
-    
-    
-    /**
      * 查询(分页)
      *
      * @param indexName 索引名字
@@ -471,7 +411,6 @@ public class BusinessEsHandle {
             sortOrder = SortOrder.DESC;
         }
         if (StringUtil.isNotEmpty(sortParam)) {
-            // 排序
             FieldSortBuilder sort = SortBuilders.fieldSort(sortParam);
             sort.order(sortOrder);
             sourceBuilder.sort(sort);
@@ -482,13 +421,11 @@ public class BusinessEsHandle {
             sort.order(sortOrder);
             sourceBuilder.sort(sort);
         }
-        // 经纬度匹配
         if (Objects.nonNull(esGeoPointDto)) {
             QueryBuilder geoQuery = new GeoDistanceQueryBuilder(esGeoPointDto.getParamName()).distance(Long.MAX_VALUE, DistanceUnit.KILOMETERS)
                     .point(esGeoPointDto.getLatitude().doubleValue(), esGeoPointDto.getLongitude().doubleValue()).geoDistance(GeoDistance.PLANE);
             sourceBuilder.query(geoQuery);
         }
-        // 匹配
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
         for (EsDataQueryDto esDataQueryDto : esDataQueryDtoList) {
             String paramName = esDataQueryDto.getParamName();
@@ -547,55 +484,56 @@ public class BusinessEsHandle {
         request.setEntity(entity);
         request.addParameters(Collections.emptyMap());
         Response response = restClient.performRequest(request);
-        String results = EntityUtils.toString(response.getEntity());
-        if (StringUtil.isEmpty(results)) {
+        String result = EntityUtils.toString(response.getEntity());
+        if (StringUtil.isEmpty(result)) {
             return;
         }
-        JSONObject parse = (JSONObject) JSONObject.parse(results);
-        if (Objects.nonNull(parse)) {
-            JSONObject hits = parse.getJSONObject("hits");
-            if (Objects.nonNull(hits)) {
-                // 总条数
-                Long value = null;
-                if (esTypeSwitch) {
-                    value = hits.getLong("total");
-                }else {
-                    JSONObject totalJsonObject = hits.getJSONObject("total");
-                    if (totalJsonObject != null) {
-                        value = totalJsonObject.getLong("value");
+        JSONObject resultJsonObject =  JSONObject.parseObject(result);
+        if (Objects.isNull(resultJsonObject)) {
+            return;
+        }
+        JSONObject hits = resultJsonObject.getJSONObject("hits");
+        if (Objects.isNull(hits)) {
+            return;
+        }
+        Long value = null;
+        if (esTypeSwitch) {
+            value = hits.getLong("total");
+        }else {
+            JSONObject totalJsonObject = hits.getJSONObject("total");
+            if (Objects.nonNull(totalJsonObject)) {
+                value = totalJsonObject.getLong("value");
+            }
+        }
+        if (Objects.nonNull(pageInfo) && Objects.nonNull(value)) {
+            pageInfo.setTotal(value);
+        }
+        JSONArray arrayData = hits.getJSONArray("hits");
+        if (Objects.isNull(arrayData) || arrayData.isEmpty()) {
+            return;
+        }
+        for (int i = 0, size = arrayData.size(); i < size; i++) {
+            JSONObject data = arrayData.getJSONObject(i);
+            if (Objects.isNull(data)) {
+                continue;
+            }
+            JSONObject jsonObject = data.getJSONObject("_source");
+            JSONArray jsonArray = data.getJSONArray("sort");
+            if (Objects.nonNull(jsonArray) && !jsonArray.isEmpty()) {
+                Long sort = jsonArray.getLong(0);
+                jsonObject.put("sort",sort);
+            }
+            JSONObject highlight = data.getJSONObject("highlight");
+            if (Objects.nonNull(highlight) && Objects.nonNull(highLightFieldNameList)) {
+                for (String highLightFieldName : highLightFieldNameList) {
+                    JSONArray highLightFieldValue = highlight.getJSONArray(highLightFieldName);
+                    if (Objects.isNull(highLightFieldValue) || highLightFieldValue.isEmpty()) {
+                        continue;
                     }
-                }
-                if (Objects.nonNull(pageInfo)) {
-                    pageInfo.setTotal(value);
-                }
-                // 数据
-                JSONArray hitsArr = hits.getJSONArray("hits");
-                if (null != hitsArr && !hitsArr.isEmpty()) {
-                    for (int i = 0, size = hitsArr.size(); i < size; i++) {
-                        JSONObject data = hitsArr.getJSONObject(i);
-                        if (Objects.nonNull(data)) {
-                            JSONObject jsonObject = data.getJSONObject("_source");
-                            
-                            JSONArray jsonArray = data.getJSONArray("sort");
-                            if (null != jsonArray && !jsonArray.isEmpty()) {
-                                Long sort = jsonArray.getLong(0);
-                                jsonObject.put("sort",sort);
-                            }
-                            
-                            JSONObject highlight = data.getJSONObject("highlight");
-                            if (Objects.nonNull(highlight) && Objects.nonNull(highLightFieldNameList)) {
-                                for (String highLightFieldName : highLightFieldNameList) {
-                                    JSONArray highLightFieldValue = highlight.getJSONArray(highLightFieldName);
-                                    if (Objects.nonNull(highLightFieldValue) && !highLightFieldValue.isEmpty()) {
-                                        jsonObject.put(highLightFieldName,highLightFieldValue.get(0));
-                                    }
-                                }
-                            }
-                            list.add(JSONObject.parseObject(jsonObject.toJSONString(),clazz));
-                        }
-                    }
+                    jsonObject.put(highLightFieldName,highLightFieldValue.get(0));
                 }
             }
+            list.add(JSONObject.parseObject(jsonObject.toJSONString(),clazz));
         }
     }
 }
