@@ -31,7 +31,7 @@ import static com.damai.repeatexecutelimit.constant.RepeatExecuteLimitConstant.S
  **/
 @Slf4j
 @Aspect
-@Order(-9)
+@Order(-11)
 @AllArgsConstructor
 public class RepeatExecuteLimitAspect {
     

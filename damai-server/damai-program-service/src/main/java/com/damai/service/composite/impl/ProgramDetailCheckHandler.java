@@ -21,7 +21,6 @@ public class ProgramDetailCheckHandler extends AbstractProgramCheckHandler {
     
     @Override
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
-        //避免节目不存在，再次缓存
         ProgramGetDto programGetDto = new ProgramGetDto();
         programGetDto.setId(programOrderCreateDto.getProgramId());
         programService.getDetail(programGetDto);

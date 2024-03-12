@@ -2,9 +2,11 @@ package com.damai.lock;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
+import com.damai.core.RepeatExecuteLimitConstants;
 import com.damai.dto.ProgramOrderCreateDto;
 import com.damai.dto.SeatDto;
 import com.damai.locallock.LocalLockCache;
+import com.damai.repeatexecutelimit.annotion.RepeatExecuteLimit;
 import com.damai.service.ProgramOrderService;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
@@ -43,6 +45,9 @@ public class ProgramOrderLock {
     /**
      * 订单创建，使用节目id作为锁
      * */
+    @RepeatExecuteLimit(
+            name = RepeatExecuteLimitConstants.CREATE_PROGRAM_ORDER,
+            keys = {"#programOrderCreateDto.userId","#programOrderCreateDto.programId"})
     @ServiceLock(name = PROGRAM_ORDER_CREATE_V1,keys = {"#programOrderCreateDto.programId"})
     public String createV1(ProgramOrderCreateDto programOrderCreateDto) {
         return programOrderService.create(programOrderCreateDto);
@@ -52,6 +57,9 @@ public class ProgramOrderLock {
      * 订单优化版本v2，先用本地锁将没有获得锁的请求拦在外，获得本地锁后，再去获得分布式锁，这样可以减少对redis的压力。
      * 
      */
+    @RepeatExecuteLimit(
+            name = RepeatExecuteLimitConstants.CREATE_PROGRAM_ORDER,
+            keys = {"#programOrderCreateDto.userId","#programOrderCreateDto.programId"})
     public String createV2(ProgramOrderCreateDto programOrderCreateDto) {
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
         List<Long> ticketCategoryIdList = new ArrayList<>();
@@ -125,6 +133,9 @@ public class ProgramOrderLock {
      * 订单创建，进行优化，一开始直接利用lua执行判断要购买的座位和票的数量是足够，不足够直接返回，足够的话进行相应扣除，
      * 这样既能将大量无用的抢购请求直接返回掉，又可以实现无锁化
      * */
+    @RepeatExecuteLimit(
+            name = RepeatExecuteLimitConstants.CREATE_PROGRAM_ORDER,
+            keys = {"#programOrderCreateDto.userId","#programOrderCreateDto.programId"})
     public String createV3(ProgramOrderCreateDto programOrderCreateDto) {
         return programOrderService.createNew(programOrderCreateDto);
     }

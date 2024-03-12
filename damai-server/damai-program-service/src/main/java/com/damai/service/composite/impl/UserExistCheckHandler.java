@@ -39,8 +39,6 @@ public class UserExistCheckHandler extends AbstractProgramCheckHandler {
     
     @Override
     protected void execute(ProgramOrderCreateDto programOrderCreateDto) {
-        //验证用户和购票人信息正确性
-        //先从缓存中查询
         List<TicketUserVo> ticketUserVoList = redisCache.getValueIsList(RedisKeyBuild.createRedisKey(
                 RedisKeyManage.TICKET_USER_LIST, programOrderCreateDto.getUserId()), TicketUserVo.class);
         if (CollectionUtil.isEmpty(ticketUserVoList)) {
@@ -59,7 +57,6 @@ public class UserExistCheckHandler extends AbstractProgramCheckHandler {
         }
         Map<Long, TicketUserVo> ticketUserVoMap = ticketUserVoList.stream()
                 .collect(Collectors.toMap(TicketUserVo::getId, ticketUserVo -> ticketUserVo, (v1, v2) -> v2));
-        
         for (Long ticketUserId : programOrderCreateDto.getTicketUserIdList()) {
             if (Objects.isNull(ticketUserVoMap.get(ticketUserId))) {
                 throw new DaMaiFrameException(BaseCode.TICKET_USER_EMPTY);
@@ -74,11 +71,11 @@ public class UserExistCheckHandler extends AbstractProgramCheckHandler {
     
     @Override
     public Integer executeTier() {
-        return 5;
+        return 2;
     }
     
     @Override
     public Integer executeOrder() {
-        return 1;
+        return 4;
     }
 }
