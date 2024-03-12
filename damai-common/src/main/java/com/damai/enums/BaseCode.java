@@ -154,6 +154,8 @@ public enum BaseCode {
     
     END_DATE_TIME_NOT_EXIST(50005,"结束时间为空"),
     
+    PROGRAM_NOT_ALLOW_CHOOSE_SEAT(50006,"此节目不允许选择座位"),
+    
     USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
     
     USER_LOG_IN(60002,"用户已登录"),

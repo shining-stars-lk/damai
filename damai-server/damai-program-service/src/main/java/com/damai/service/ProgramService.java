@@ -315,23 +315,11 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @ServiceLock(lockType= LockType.Read,name = PROGRAM_LOCK,keys = {"#programId"})
     public ProgramVo getById(Long programId) {
-        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId),ProgramVo.class,() -> {
-            ProgramVo programVo = new ProgramVo();
-            Program program = Optional.ofNullable(programMapper.selectById(programId)).orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST));
-            BeanUtil.copyProperties(program,programVo);
-            
-            AreaGetDto areaGetDto = new AreaGetDto();
-            areaGetDto.setId(program.getAreaId());
-            ApiResponse<AreaVo> areaResponse = baseDataClient.getById(areaGetDto);
-            if (Objects.equals(areaResponse.getCode(), ApiResponse.ok().getCode())) {
-                if (Objects.nonNull(areaResponse.getData())) {
-                    programVo.setAreaName(areaResponse.getData().getName());
-                }
-            }else {
-                log.error("base-data rpc getById error areaResponse:{}", JSON.toJSONString(areaResponse));
-            }
-            return programVo;
-        },EXPIRE_TIME, TimeUnit.DAYS);
+        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId)
+                ,ProgramVo.class,
+                () -> createProgramVo(programId)
+                ,EXPIRE_TIME, 
+                TimeUnit.DAYS);
     }
     
     public Map<Long, String> selectProgramCategoryMap(Collection<Long> programCategoryIdList){
@@ -383,21 +371,12 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         }
     }
     
-    public List<Long> getAllProgramIdList(){
-        LambdaQueryWrapper<Program> programLambdaQueryWrapper =
-                Wrappers.lambdaQuery(Program.class).eq(Program::getProgramStatus, BusinessStatus.YES.getCode())
-                        .select(Program::getId);
-        List<Program> programs = programMapper.selectList(programLambdaQueryWrapper);
-        return programs.stream().map(Program::getId).collect(Collectors.toList());
-    }
-    
-    public ProgramVo getDetailFromDb(Long programId) {
+    private ProgramVo createProgramVo(long programId){
         ProgramVo programVo = new ProgramVo();
-        //根据id查询到节目
-        Program program = Optional.ofNullable(programMapper.selectById(programId)).orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST));
+        Program program = 
+                Optional.ofNullable(programMapper.selectById(programId))
+                        .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST));
         BeanUtil.copyProperties(program,programVo);
-        
-        //查询区域
         AreaGetDto areaGetDto = new AreaGetDto();
         areaGetDto.setId(program.getAreaId());
         ApiResponse<AreaVo> areaResponse = baseDataClient.getById(areaGetDto);
@@ -408,16 +387,26 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         }else {
             log.error("base-data rpc getById error areaResponse:{}", JSON.toJSONString(areaResponse));
         }
+        return programVo;
+    }
+    
+    public List<Long> getAllProgramIdList(){
+        LambdaQueryWrapper<Program> programLambdaQueryWrapper =
+                Wrappers.lambdaQuery(Program.class).eq(Program::getProgramStatus, BusinessStatus.YES.getCode())
+                        .select(Program::getId);
+        List<Program> programs = programMapper.selectList(programLambdaQueryWrapper);
+        return programs.stream().map(Program::getId).collect(Collectors.toList());
+    }
+    
+    public ProgramVo getDetailFromDb(Long programId) {
+        ProgramVo programVo = createProgramVo(programId);
         
-        //设置节目类型相关信息
         setProgramCategoryData(programVo);
         
-        //查询节目演出时间
         LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
                 Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
         ProgramShowTime programShowTime = Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
                 .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
-        
         
         programVo.setShowTime(programShowTime.getShowTime());
         programVo.setShowDayTime(programShowTime.getShowDayTime());

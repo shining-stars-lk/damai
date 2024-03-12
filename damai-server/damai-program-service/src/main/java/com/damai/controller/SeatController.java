@@ -2,7 +2,9 @@ package com.damai.controller;
 
 import com.damai.common.ApiResponse;
 import com.damai.dto.SeatAddDto;
+import com.damai.dto.SeatListDto;
 import com.damai.service.SeatService;
+import com.damai.vo.SeatRelateInfoVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +33,11 @@ public class SeatController {
     @PostMapping(value = "/add")
     public ApiResponse<Long> add(@Valid @RequestBody SeatAddDto seatAddDto) {
         return ApiResponse.ok(seatService.add(seatAddDto));
+    }
+    
+    @ApiOperation(value = "查询座位相关信息")
+    @PostMapping(value = "/relate/info")
+    public ApiResponse<SeatRelateInfoVo> relateInfo(@Valid @RequestBody SeatListDto seatListDto) {
+        return ApiResponse.ok(seatService.relateInfo(seatListDto));
     }
 }
