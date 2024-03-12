@@ -20,7 +20,6 @@ import java.util.Objects;
 public class ProgramOrderCreateParamCheckHandler extends AbstractProgramCheckHandler {
     @Override
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
-        //验证手动选择座位和自动分配座位的参数是否正确
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
         if (CollectionUtil.isNotEmpty(seatDtoList)) {
             for (SeatDto seatDto : seatDtoList) {

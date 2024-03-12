@@ -25,7 +25,6 @@ public class ProgramShowTimeCheckHandler extends AbstractProgramCheckHandler {
     private RedisCache redisCache;
     @Override
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
-        //查询节目演出时间
         ProgramShowTime programShowTime = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME
                 ,programOrderCreateDto.getProgramId()),ProgramShowTime.class);
         if (Objects.isNull(programShowTime)) {
@@ -40,11 +39,11 @@ public class ProgramShowTimeCheckHandler extends AbstractProgramCheckHandler {
     
     @Override
     public Integer executeTier() {
-        return 4;
+        return 2;
     }
     
     @Override
     public Integer executeOrder() {
-        return 1;
+        return 3;
     }
 }
