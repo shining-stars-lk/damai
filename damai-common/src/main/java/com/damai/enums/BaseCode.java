@@ -144,6 +144,8 @@ public enum BaseCode {
     
     SEAT_PRICE_EMPTY(40026,"座位价格为空"),
     
+    SEAT_IS_NOT_NOT_SOLD(40027,"座位不是未售卖"),
+    
     DELAY_QUEUE_CLIENT_NOT_EXIST(50001,"延迟队列客户端不存在"),
     
     DELAY_QUEUE_MESSAGE_NOT_EXIST(50002,"延迟队列消息不存在"),

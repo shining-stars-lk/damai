@@ -77,31 +77,22 @@ public class ProgramOrderService {
     
     
     public String create(ProgramOrderCreateDto programOrderCreateDto) {
-        //进行业务验证
         compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
-        //节目id
         Long programId = programOrderCreateDto.getProgramId();
-        //传入的座位总价格
         BigDecimal parameterOrderPrice = new BigDecimal("0");
-        //库中的座位总价格
         BigDecimal databaseOrderPrice = new BigDecimal("0");
-        //要购买的座位
         List<SeatVo> purchaseSeatList = new ArrayList<>();
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
-        //该节目下所有未售卖的座位
         List<SeatVo> seatVoList = 
                 redisCache.getAllForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, 
                         programOrderCreateDto.getProgramId()), SeatVo.class);
-        //该节目下的余票数量
         Map<String, Long> ticketCategoryRemainNumber = 
                 redisCache.getAllMapForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, 
                         programOrderCreateDto.getProgramId()), Long.class);
-        //入参座位存在
         if (CollectionUtil.isNotEmpty(seatDtoList)) {
-            //余票数量检测
             Map<Long, Long> seatTicketCategoryDtoCount = seatDtoList.stream()
                     .collect(Collectors.groupingBy(SeatDto::getTicketCategoryId, Collectors.counting()));
-            for (final Entry<Long, Long> entry : seatTicketCategoryDtoCount.entrySet()) {
+            for (Entry<Long, Long> entry : seatTicketCategoryDtoCount.entrySet()) {
                 Long ticketCategoryId = entry.getKey();
                 Long purchaseCount = entry.getValue();
                 Long remainNumber = Optional.ofNullable(ticketCategoryRemainNumber.get(String.valueOf(ticketCategoryId)))
@@ -110,35 +101,23 @@ public class ProgramOrderService {
                     throw new DaMaiFrameException(BaseCode.TICKET_REMAIN_NUMBER_NOT_SUFFICIENT);
                 }
             }
-            //循环入参的座位对象
             for (SeatDto seatDto : seatDtoList) {
-                //验证入参的对象在库中的状态，不存在、已锁、已售卖
                 Map<String, SeatVo> seatVoMap = seatVoList.stream().collect(Collectors
                         .toMap(seat -> seat.getRowCode() + "-" + seat.getColCode(), seat -> seat, (v1, v2) -> v2));
                 SeatVo seatVo = seatVoMap.get(seatDto.getRowCode() + "-" + seatDto.getColCode());
                 if (Objects.isNull(seatVo)) {
-                    throw new DaMaiFrameException(BaseCode.SEAT_NOT_EXIST);
-                }
-                if (Objects.equals(seatVo.getSellStatus(), SellStatus.LOCK.getCode())) {
-                    throw new DaMaiFrameException(BaseCode.SEAT_LOCK);
-                }
-                if (Objects.equals(seatVo.getSellStatus(), SellStatus.SOLD.getCode())) {
-                    throw new DaMaiFrameException(BaseCode.SEAT_SOLD);
+                    throw new DaMaiFrameException(BaseCode.SEAT_IS_NOT_NOT_SOLD);
                 }
                 purchaseSeatList.add(seatVo);
-                //将入参的座位价格进行累加
                 parameterOrderPrice = parameterOrderPrice.add(seatDto.getPrice());
-                //将库中的座位价格进行类型
                 databaseOrderPrice = databaseOrderPrice.add(seatVo.getPrice());
             }
             if (parameterOrderPrice.compareTo(databaseOrderPrice) > 0) {
                 throw new DaMaiFrameException(BaseCode.PRICE_ERROR);
             }
         }else {
-            //入参座位不存在，利用算法自动根据人数和票档进行分配相邻座位
             Long ticketCategoryId = programOrderCreateDto.getTicketCategoryId();
             Integer ticketCount = programOrderCreateDto.getTicketCount();
-            //余票检测
             Long remainNumber = Optional.ofNullable(ticketCategoryRemainNumber.get(String.valueOf(ticketCategoryId)))
                     .orElseThrow(() -> new DaMaiFrameException(BaseCode.TICKET_CATEGORY_NOT_EXIST_V2));
             if (ticketCount > remainNumber) {
@@ -151,9 +130,7 @@ public class ProgramOrderService {
                 throw new DaMaiFrameException(BaseCode.SEAT_OCCUPY);
             }
         }
-        //进行操作缓存中的数据
         updateProgramCacheData(programId,purchaseSeatList,OrderStatus.NO_PAY);
-        //将筛选出来的购买的座位信息传入，执行创建订单的操作
         return doCreate(programOrderCreateDto,purchaseSeatList);
     }
     
