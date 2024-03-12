@@ -40,115 +40,9 @@ public class ProgramElasticsearchInitData extends AbstractApplicationPostConstru
         return 3;
     }
     
-    /**
-     * 项目启动后，异步将program的数据更新到Elasticsearch中，当数据量特别大时，生产环境绝对不会这么做
-     * 会每个一个节目到数据库后，就会添加到Elasticsearch中，以及用定时任务来更新到Elasticsearch中
-     * */
     @Override
     public void executeInit(final ConfigurableApplicationContext context) {
         BusinessThreadPool.execute(this::initElasticsearchData);
-    }
-    
-    public boolean indexAdd(){
-        boolean result = businessEsHandle.checkIndex(SpringUtil.getPrefixDistinctionName() + "-" + 
-                ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE);
-        if (result) {
-            return false;
-        }
-        try {
-            businessEsHandle.createIndex(SpringUtil.getPrefixDistinctionName() + "-" + 
-                    ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE,getEsMapping());
-            return true;
-        }catch (Exception e) {
-            log.error("createIndex error",e);
-        }
-        return false;
-    }
-    
-    public List<EsDocumentMappingDto> getEsMapping(){
-        List<EsDocumentMappingDto> list = new ArrayList<>();
-        
-        EsDocumentMappingDto idDto = new EsDocumentMappingDto();
-        idDto.setParamName(ProgramDocumentParamName.ID);
-        idDto.setParamType("long");
-        list.add(idDto);
-        
-        EsDocumentMappingDto titleDto = new EsDocumentMappingDto();
-        titleDto.setParamName(ProgramDocumentParamName.TITLE);
-        titleDto.setParamType("text");
-        list.add(titleDto);
-        
-        EsDocumentMappingDto actorDto = new EsDocumentMappingDto();
-        actorDto.setParamName(ProgramDocumentParamName.ACTOR);
-        actorDto.setParamType("text");
-        list.add(actorDto);
-        
-        EsDocumentMappingDto placeDto = new EsDocumentMappingDto();
-        placeDto.setParamName(ProgramDocumentParamName.PLACE);
-        placeDto.setParamType("text");
-        list.add(placeDto);
-        
-        EsDocumentMappingDto itemPictureDto = new EsDocumentMappingDto();
-        itemPictureDto.setParamName(ProgramDocumentParamName.ITEM_PICTURE);
-        itemPictureDto.setParamType("text");
-        list.add(itemPictureDto);
-        
-        EsDocumentMappingDto areaIdDto = new EsDocumentMappingDto();
-        areaIdDto.setParamName(ProgramDocumentParamName.AREA_ID);
-        areaIdDto.setParamType("long");
-        list.add(areaIdDto);
-        
-        EsDocumentMappingDto areaNameDto = new EsDocumentMappingDto();
-        areaNameDto.setParamName(ProgramDocumentParamName.AREA_NAME);
-        areaNameDto.setParamType("text");
-        list.add(areaNameDto);
-        
-        EsDocumentMappingDto programCategoryIdDto = new EsDocumentMappingDto();
-        programCategoryIdDto.setParamName(ProgramDocumentParamName.PROGRAM_CATEGORY_ID);
-        programCategoryIdDto.setParamType("long");
-        list.add(programCategoryIdDto);
-        
-        EsDocumentMappingDto programCategoryNameDto = new EsDocumentMappingDto();
-        programCategoryNameDto.setParamName(ProgramDocumentParamName.PROGRAM_CATEGORY_NAME);
-        programCategoryNameDto.setParamType("text");
-        list.add(programCategoryNameDto);
-        
-        EsDocumentMappingDto parentProgramCategoryIdDto = new EsDocumentMappingDto();
-        parentProgramCategoryIdDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID);
-        parentProgramCategoryIdDto.setParamType("long");
-        list.add(parentProgramCategoryIdDto);
-        
-        EsDocumentMappingDto parentProgramCategoryNameDto = new EsDocumentMappingDto();
-        parentProgramCategoryNameDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_NAME);
-        parentProgramCategoryNameDto.setParamType("text");
-        list.add(parentProgramCategoryNameDto);
-        
-        EsDocumentMappingDto showTimeDto = new EsDocumentMappingDto();
-        showTimeDto.setParamName(ProgramDocumentParamName.SHOW_TIME);
-        showTimeDto.setParamType("date");
-        list.add(showTimeDto);
-        
-        EsDocumentMappingDto showDayTimeDto = new EsDocumentMappingDto();
-        showDayTimeDto.setParamName(ProgramDocumentParamName.SHOW_DAY_TIME);
-        showDayTimeDto.setParamType("date");
-        list.add(showDayTimeDto);
-        
-        EsDocumentMappingDto showWeekTimeDto = new EsDocumentMappingDto();
-        showWeekTimeDto.setParamName(ProgramDocumentParamName.SHOW_WEEK_TIME);
-        showWeekTimeDto.setParamType("text");
-        list.add(showWeekTimeDto);
-        
-        EsDocumentMappingDto minPriceDto = new EsDocumentMappingDto();
-        minPriceDto.setParamName(ProgramDocumentParamName.MIN_PRICE);
-        minPriceDto.setParamType("integer");
-        list.add(minPriceDto);
-        
-        EsDocumentMappingDto maxPriceDto = new EsDocumentMappingDto();
-        maxPriceDto.setParamName(ProgramDocumentParamName.MAX_PRICE);
-        maxPriceDto.setParamType("integer");
-        list.add(maxPriceDto);
-        
-        return list;
     }
     
     public void initElasticsearchData(){
@@ -156,7 +50,6 @@ public class ProgramElasticsearchInitData extends AbstractApplicationPostConstru
             return;
         }
         List<Long> allProgramIdList = programService.getAllProgramIdList();
-        //根据节目id统计出票档的最低价和最高价的集合map, key：节目id，value：票档
         Map<Long, TicketCategoryAggregate> ticketCategorieMap = programService.selectTicketCategorieMap(allProgramIdList);
         
         for (Long programId : allProgramIdList) {
@@ -176,12 +69,53 @@ public class ProgramElasticsearchInitData extends AbstractApplicationPostConstru
             map.put(ProgramDocumentParamName.SHOW_TIME, programVo.getShowTime());
             map.put(ProgramDocumentParamName.SHOW_DAY_TIME,programVo.getShowDayTime());
             map.put(ProgramDocumentParamName.SHOW_WEEK_TIME,programVo.getShowWeekTime());
-            //最低价
-            map.put(ProgramDocumentParamName.MIN_PRICE,Optional.ofNullable(ticketCategorieMap.get(programVo.getId())).map(TicketCategoryAggregate::getMinPrice).orElse(null));
-            //最高价
-            map.put(ProgramDocumentParamName.MAX_PRICE,Optional.ofNullable(ticketCategorieMap.get(programVo.getId())).map(TicketCategoryAggregate::getMaxPrice).orElse(null));
+            map.put(ProgramDocumentParamName.MIN_PRICE,
+                    Optional.ofNullable(ticketCategorieMap.get(programVo.getId()))
+                            .map(TicketCategoryAggregate::getMinPrice).orElse(null));
+            map.put(ProgramDocumentParamName.MAX_PRICE,
+                    Optional.ofNullable(ticketCategorieMap.get(programVo.getId()))
+                            .map(TicketCategoryAggregate::getMaxPrice).orElse(null));
             businessEsHandle.add(SpringUtil.getPrefixDistinctionName() + "-" + 
                     ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE,map);
         }
+    }
+    
+    public boolean indexAdd(){
+        boolean result = businessEsHandle.checkIndex(SpringUtil.getPrefixDistinctionName() + "-" +
+                ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE);
+        if (result) {
+            return false;
+        }
+        try {
+            businessEsHandle.createIndex(SpringUtil.getPrefixDistinctionName() + "-" +
+                    ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE,getEsMapping());
+            return true;
+        }catch (Exception e) {
+            log.error("createIndex error",e);
+        }
+        return false;
+    }
+    
+    public List<EsDocumentMappingDto> getEsMapping(){
+        List<EsDocumentMappingDto> list = new ArrayList<>();
+        
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.ID,"long"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.TITLE,"text"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.ACTOR,"text"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.PLACE,"text"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.ITEM_PICTURE,"text"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.AREA_ID,"long"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.AREA_NAME,"text"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.PROGRAM_CATEGORY_ID,"long"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.PROGRAM_CATEGORY_NAME,"text"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID,"long"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_NAME,"text"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.SHOW_TIME,"date"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.SHOW_DAY_TIME,"date"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.SHOW_WEEK_TIME,"text"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.MIN_PRICE,"integer"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.MAX_PRICE,"integer"));
+        
+        return list;
     }
 }

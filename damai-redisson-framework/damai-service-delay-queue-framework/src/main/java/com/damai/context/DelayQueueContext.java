@@ -12,7 +12,9 @@ import java.util.concurrent.TimeUnit;
 public class DelayQueueContext {
     
     private final DelayQueueBasePart delayQueueBasePart;
-    //key为topc主题，value为发送消息的处理器
+    /**
+     * key为topic主题，value为发送消息的处理器
+     * */
     private final Map<String, DelayQueueProduceCombine> delayQueueProduceCombineMap = new ConcurrentHashMap<>();
     
     public DelayQueueContext(DelayQueueBasePart delayQueueBasePart){

@@ -7,15 +7,21 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.core.RedisKeyManage;
+import com.damai.dto.ProgramGetDto;
 import com.damai.dto.SeatAddDto;
+import com.damai.dto.SeatListDto;
+import com.damai.entity.ProgramShowTime;
 import com.damai.entity.Seat;
 import com.damai.enums.BaseCode;
+import com.damai.enums.BusinessStatus;
 import com.damai.enums.SeatType;
 import com.damai.enums.SellStatus;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.SeatMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
+import com.damai.vo.ProgramVo;
+import com.damai.vo.SeatRelateInfoVo;
 import com.damai.vo.SeatVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +51,12 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
     
     @Autowired
     private SeatMapper seatMapper;
+    
+    @Autowired
+    private ProgramService programService;
+    
+    @Autowired
+    private ProgramShowTimeService programShowTimeService;
     
     /**
      * 添加座位
@@ -112,5 +124,31 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
         seatVoList = seatVoList.stream().sorted(Comparator.comparingInt(SeatVo::getRowCode)
                 .thenComparingInt(SeatVo::getColCode)).collect(Collectors.toList());
         return seatVoList;
+    }
+    
+    public SeatRelateInfoVo relateInfo(SeatListDto seatListDto) {
+        SeatRelateInfoVo seatRelateInfoVo = new SeatRelateInfoVo();
+        ProgramVo programVo = 
+                redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,seatListDto.getProgramId()),ProgramVo.class);
+        if (Objects.isNull(programVo)){
+            ProgramGetDto programGetDto = new ProgramGetDto();
+            programGetDto.setId(seatListDto.getProgramId());
+            programVo = programService.getDetail(programGetDto);
+        }
+        if (programVo.getPermitChooseSeat().equals(BusinessStatus.NO.getCode())) {
+            throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_ALLOW_CHOOSE_SEAT);
+        }
+        List<SeatVo> seatVos = selectSeatByProgramId(seatListDto.getProgramId());
+        Map<String, List<SeatVo>> seatVoMap = 
+                seatVos.stream().collect(Collectors.groupingBy(seatVo -> seatVo.getPrice().toString()));
+        ProgramShowTime programShowTime = programShowTimeService.selectProgramShowTimeByProgramId(seatListDto.getProgramId());
+        
+        seatRelateInfoVo.setProgramId(programVo.getId());
+        seatRelateInfoVo.setPlace(programVo.getPlace());
+        seatRelateInfoVo.setShowTime(programShowTime.getShowTime());
+        seatRelateInfoVo.setShowWeekTime(programShowTime.getShowWeekTime());
+        seatRelateInfoVo.setPriceList(seatVoMap.keySet().stream().sorted().collect(Collectors.toList()));
+        seatRelateInfoVo.setSeatVoMap(seatVoMap);
+        return seatRelateInfoVo;
     }
 }
