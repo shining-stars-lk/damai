@@ -34,7 +34,7 @@ public class TableOrderComplexGeneArithmetic implements ComplexKeysShardingAlgor
         String logicTableName = complexKeysShardingValue.getLogicTableName();
         Map<String, Collection<Long>> columnNameAndShardingValuesMap = complexKeysShardingValue.getColumnNameAndShardingValuesMap();
         if (CollectionUtil.isEmpty(columnNameAndShardingValuesMap)) {
-            return actualTableNames;
+            return allActualSplitTableNames;
         }
         Collection<Long> orderNumberValues = columnNameAndShardingValuesMap.get("order_number");
         Collection<Long> userIdValues = columnNameAndShardingValuesMap.get("user_id");
@@ -47,6 +47,7 @@ public class TableOrderComplexGeneArithmetic implements ComplexKeysShardingAlgor
         }
         if (Objects.nonNull(value)) {
             actualTableNames.add(logicTableName + "_" + value % shardingCount);
+            return actualTableNames;
         }
         return allActualSplitTableNames;
     }

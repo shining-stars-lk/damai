@@ -1,6 +1,7 @@
 package com.damai.client;
 
 import com.damai.common.ApiResponse;
+import com.damai.dto.TicketUserListDto;
 import com.damai.dto.UserGetAndTicketUserListDto;
 import com.damai.dto.UserIdDto;
 import com.damai.vo.TicketUserVo;
@@ -38,7 +39,7 @@ public interface UserClient {
      * @return 结果
      * */
     @PostMapping(value = "/ticket/user/select")
-    ApiResponse<List<TicketUserVo>> select(UserIdDto dto);
+    ApiResponse<List<TicketUserVo>> select(TicketUserListDto dto);
     
     /**
      * 查询用户和购票人集合

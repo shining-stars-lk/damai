@@ -15,7 +15,6 @@ public class SeatMatch {
     public static List<SeatVo> findAdjacentSeatVos(List<SeatVo> allSeats, int seatCount) {
         List<SeatVo> adjacentSeats = new ArrayList<>();
         
-        // 对可用座位排序
         allSeats.sort((s1, s2) -> {
             if (Objects.equals(s1.getRowCode(), s2.getRowCode())) {
                 return s1.getColCode() - s2.getColCode();
@@ -24,14 +23,14 @@ public class SeatMatch {
             }
         });
         
-        // 寻找相邻座位
         for (int i = 0; i < allSeats.size() - seatCount + 1; i++) {
             boolean seatsFound = true;
             for (int j = 0; j < seatCount - 1; j++) {
                 SeatVo current = allSeats.get(i + j);
                 SeatVo next = allSeats.get(i + j + 1);
                 
-                if (!(Objects.equals(current.getRowCode(), next.getRowCode()) && next.getColCode() - current.getColCode() == 1)) {
+                if (!(Objects.equals(current.getRowCode(), next.getRowCode()) && 
+                        next.getColCode() - current.getColCode() == 1)) {
                     seatsFound = false;
                     break;
                 }
@@ -43,7 +42,6 @@ public class SeatMatch {
                 return adjacentSeats;
             }
         }
-        // 如果没有找到，返回空列表
         return adjacentSeats;
     }
 }
