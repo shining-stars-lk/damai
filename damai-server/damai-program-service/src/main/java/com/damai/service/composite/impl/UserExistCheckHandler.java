@@ -6,7 +6,7 @@ import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyManage;
 import com.damai.dto.ProgramOrderCreateDto;
-import com.damai.dto.UserIdDto;
+import com.damai.dto.TicketUserListDto;
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.redis.RedisCache;
@@ -42,9 +42,9 @@ public class UserExistCheckHandler extends AbstractProgramCheckHandler {
         List<TicketUserVo> ticketUserVoList = redisCache.getValueIsList(RedisKeyBuild.createRedisKey(
                 RedisKeyManage.TICKET_USER_LIST, programOrderCreateDto.getUserId()), TicketUserVo.class);
         if (CollectionUtil.isEmpty(ticketUserVoList)) {
-            UserIdDto userIdDto = new UserIdDto();
-            userIdDto.setId(programOrderCreateDto.getProgramId());
-            ApiResponse<List<TicketUserVo>> apiResponse = userClient.select(userIdDto);
+            TicketUserListDto ticketUserListDto = new TicketUserListDto();
+            ticketUserListDto.setUserId(programOrderCreateDto.getUserId());
+            ApiResponse<List<TicketUserVo>> apiResponse = userClient.select(ticketUserListDto);
             if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
                 ticketUserVoList = apiResponse.getData();
             }else {

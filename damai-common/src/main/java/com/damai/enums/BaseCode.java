@@ -196,6 +196,10 @@ public enum BaseCode {
     
     GET_USER_AND_TICKET_USER_ERROR(60019,"获取用户和购票人信息错误"),
     
+    TICKET_USER_ID_REPEAT(60020,"购票人id重复"),
+    
+    TICKET_USER_COUNT_UNEQUAL_SEAT_COUNT(60021,"购票人数量和要购买的座位数量不相等"),
+    
     ORDER_NUMBER_NOT_EXIST(70000,"order_number的值不存在"),
     
     USER_ID_NOT_EXIST(70001,"user_id的值不存在"),

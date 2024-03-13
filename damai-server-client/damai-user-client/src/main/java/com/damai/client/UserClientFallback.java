@@ -1,6 +1,7 @@
 package com.damai.client;
 
 import com.damai.common.ApiResponse;
+import com.damai.dto.TicketUserListDto;
 import com.damai.dto.UserGetAndTicketUserListDto;
 import com.damai.dto.UserIdDto;
 import com.damai.enums.BaseCode;
@@ -25,12 +26,12 @@ public class UserClientFallback implements UserClient {
     }
     
     @Override
-    public ApiResponse<List<TicketUserVo>> select(final UserIdDto userIdDto) {
+    public ApiResponse<List<TicketUserVo>> select(final TicketUserListDto dto) {
         return ApiResponse.error(BaseCode.SYSTEM_ERROR);
     }
     
     @Override
-    public ApiResponse<UserGetAndTicketUserListVo> getUserAndTicketUserList(final UserGetAndTicketUserListDto userGetAndTicketUserListDto) {
+    public ApiResponse<UserGetAndTicketUserListVo> getUserAndTicketUserList(final UserGetAndTicketUserListDto dto) {
         return ApiResponse.error(BaseCode.SYSTEM_ERROR);
     }
 }

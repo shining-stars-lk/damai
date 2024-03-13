@@ -39,6 +39,7 @@ import com.damai.mapper.OrderMapper;
 import com.damai.mapper.OrderTicketUserMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
+import com.damai.repeatexecutelimit.annotion.RepeatExecuteLimit;
 import com.damai.service.delaysend.DelayOperateProgramDataSend;
 import com.damai.service.properties.OrderProperties;
 import com.damai.servicelock.annotion.ServiceLock;
@@ -70,6 +71,7 @@ import java.util.stream.Collectors;
 import static com.damai.constant.Constant.ALIPAY_NOTIFY_SUCCESS_RESULT;
 import static com.damai.core.DistributedLockConstants.ORDER_CANCEL_LOCK;
 import static com.damai.core.DistributedLockConstants.ORDER_PAY_CHECK;
+import static com.damai.core.RepeatExecuteLimitConstants.CANCEL_PROGRAM_ORDER;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
@@ -117,13 +119,14 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     public String create(OrderCreateDto orderCreateDto) {
         LambdaQueryWrapper<Order> orderLambdaQueryWrapper = 
                 Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, orderCreateDto.getOrderNumber());
+        //如果订单存在了，那么直接拒绝
         Order oldOrder = orderMapper.selectOne(orderLambdaQueryWrapper);
         if (Objects.nonNull(oldOrder)) {
             throw new DaMaiFrameException(BaseCode.ORDER_EXIST);
         }
         Order order = new Order();
         BeanUtil.copyProperties(orderCreateDto,order);
-        
+        //转化订单对象
         List<OrderTicketUser> orderTicketUserList = new ArrayList<>();
         for (OrderTicketUserCreateDto orderTicketUserCreateDto : orderCreateDto.getOrderTicketUserCreateDtoList()) {
             OrderTicketUser orderTicketUser = new OrderTicketUser();
@@ -131,7 +134,9 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             orderTicketUser.setId(uidGenerator.getUid());
             orderTicketUserList.add(orderTicketUser);
         }
+        //插入主订单
         orderMapper.insert(order);
+        //插入购票人订单
         orderTicketUserService.saveBatch(orderTicketUserList);
         return String.valueOf(order.getOrderNumber());
     }
@@ -139,8 +144,9 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     /**
      * 订单取消，以订单编号加锁
      * */
-    @Transactional(rollbackFor = Exception.class)
+    @RepeatExecuteLimit(name = CANCEL_PROGRAM_ORDER,keys = {"#orderCancelDto.orderNumber"})
     @ServiceLock(name = ORDER_CANCEL_LOCK,keys = {"#orderCancelDto.orderNumber"})
+    @Transactional(rollbackFor = Exception.class)
     public boolean cancel(OrderCancelDto orderCancelDto){
         updateOrderRelatedData(orderCancelDto.getOrderNumber(),OrderStatus.CANCEL);
         return true;
@@ -257,12 +263,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (!checkOrderStatus(order)) {
             return;
         }
-        //将订单更新为取消或者支付状态
         Order updateOrder = new Order();
         updateOrder.setId(order.getId());
         updateOrder.setOrderStatus(orderStatus.getCode());
         
-        //将购票人订单更新为取消或者支付状态
         OrderTicketUser updateOrderTicketUser = new OrderTicketUser();
         updateOrderTicketUser.setOrderStatus(orderStatus.getCode());
         if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
@@ -272,10 +276,8 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             updateOrder.setCancelOrderTime(DateUtils.now());
             updateOrderTicketUser.setCancelOrderTime(DateUtils.now());
         }
-        //更新订单
         int updateOrderResult = orderMapper.updateById(updateOrder);
         
-        //更新购票人订单
         LambdaUpdateWrapper<OrderTicketUser> orderTicketUserLambdaUpdateWrapper =
                 Wrappers.lambdaUpdate(OrderTicketUser.class).eq(OrderTicketUser::getOrderNumber, order.getOrderNumber());
         int updateTicketUserOrderResult =
@@ -283,7 +285,6 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (updateOrderResult <= 0 || updateTicketUserOrderResult <= 0) {
             throw new DaMaiFrameException(BaseCode.ORDER_CANAL_ERROR);
         }
-        
         LambdaQueryWrapper<OrderTicketUser> orderTicketUserLambdaQueryWrapper =
                 Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderNumber, order.getOrderNumber());
         List<OrderTicketUser> orderTicketUserList = orderTicketUserMapper.selectList(orderTicketUserLambdaQueryWrapper);
@@ -291,10 +292,8 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             throw new DaMaiFrameException(BaseCode.TICKET_USER_ORDER_NOT_EXIST);
         }
         Long programId = order.getProgramId();
-        //查询到购票人的座位
         List<String> seatIdList =
                 orderTicketUserList.stream().map(OrderTicketUser::getSeatId).map(String::valueOf).collect(Collectors.toList());
-        //更新缓存相关数据
         updateProgramRelatedData(programId,seatIdList,orderStatus);
     }
     
@@ -318,12 +317,12 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     }
     
     public void updateProgramRelatedData(Long programId,List<String> seatIdList,OrderStatus orderStatus){
-        //从redis中查询锁定中的座位
-        List<SeatVo> seatVoList = redisCache.multiGetForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId), seatIdList, SeatVo.class);
+        List<SeatVo> seatVoList = 
+                redisCache.multiGetForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId), 
+                        seatIdList, SeatVo.class);
         if (CollectionUtil.isEmpty(seatVoList)) {
             throw new DaMaiFrameException(BaseCode.LOCK_SEAT_LIST_EMPTY);
         }
-        //redis解除锁座位
         List<String> unLockSeatIdList = seatVoList.stream().map(SeatVo::getId).map(String::valueOf).collect(Collectors.toList());
         Map<String, SeatVo> unLockSeatVoMap = seatVoList.stream().collect(Collectors
                 .toMap(seatVo -> String.valueOf(seatVo.getId()), seatVo -> seatVo, (v1, v2) -> v2));
@@ -339,20 +338,15 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         });
         
         List<String> keys = new ArrayList<>();
-        //操作类型
         keys.add(String.valueOf(orderStatus.getCode()));
-        //锁定座位的key
         keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
         
         Object[] data = new String[3];
-        //扣除锁定的座位数据
         data[0] = JSON.toJSONString(unLockSeatIdList);
-        //如果是订单取消的操作，那么添加到未售卖的座位数据
-        //如果是订单支付的操作，那么添加到已售卖的座位数据
         data[1] = JSON.toJSONString(seatDataList);
         
-        //根据座位集合统计出对应的票档数量
-        Map<Long, Long> ticketCategoryCountMap = seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, Collectors.counting()));
+        Map<Long, Long> ticketCategoryCountMap = 
+                seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, Collectors.counting()));
         JSONArray jsonArray = new JSONArray();
         ticketCategoryCountMap.forEach((k,v) -> {
             JSONObject jsonObject = new JSONObject();
@@ -362,19 +356,14 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         });
         
         if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
-            //没有售卖座位的key
             keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
-            //恢复库存的key
             keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
-            //恢复库存数据
             data[2] = JSON.toJSONString(jsonArray);
         }else if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
-            //已售卖座位的key
             keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId).getRelKey());
         }
         orderProgramCacheOperate.programCacheReverseOperate(keys,data);
         
-        //如果是支付成功了，发送延迟队列给program服务，将数据库中的票档的余票更新、座位状态更新
         if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
             ProgramOperateDataDto programOperateDataDto = new ProgramOperateDataDto();
             programOperateDataDto.setProgramId(programId);
@@ -396,7 +385,8 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         orderListVos = BeanUtil.copyToList(orderList, OrderListVo.class);
         //每个订单下的购票人订单数量统计
         List<OrderTicketUserAggregate> orderTicketUserAggregateList = 
-                orderTicketUserMapper.selectOrderTicketUserAggregate(orderList.stream().map(Order::getOrderNumber).collect(Collectors.toList()));
+                orderTicketUserMapper.selectOrderTicketUserAggregate(orderList.stream().map(Order::getOrderNumber).
+                        collect(Collectors.toList()));
         Map<Long, Integer> orderTicketUserAggregateMap = orderTicketUserAggregateList.stream()
                 .collect(Collectors.toMap(OrderTicketUserAggregate::getOrderNumber, 
                         OrderTicketUserAggregate::getOrderTicketUserCount, (v1, v2) -> v2));

@@ -22,11 +22,11 @@ import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramOperateDataDto;
 import com.damai.dto.ProgramPageListDto;
 import com.damai.dto.ProgramSearchDto;
-import com.damai.dto.UserIdDto;
+import com.damai.dto.TicketUserListDto;
 import com.damai.entity.Program;
 import com.damai.entity.ProgramCategory;
-import com.damai.entity.ProgramShowTime;
 import com.damai.entity.ProgramJoinShowTime;
+import com.damai.entity.ProgramShowTime;
 import com.damai.entity.Seat;
 import com.damai.entity.TicketCategoryAggregate;
 import com.damai.enums.BaseCode;
@@ -426,16 +426,17 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         }
         BusinessThreadPool.execute(() -> {
             try {
-                Boolean userLogin = redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
+                Boolean userLogin = 
+                        redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
                 if (!userLogin) {
                     return;
                 }
                 if (redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.TICKET_USER_LIST,userId))) {
                     return;
                 }
-                UserIdDto userIdDto = new UserIdDto();
-                userIdDto.setId(Long.parseLong(userId));
-                ApiResponse<List<TicketUserVo>> apiResponse = userClient.select(userIdDto);
+                TicketUserListDto ticketUserListDto = new TicketUserListDto();
+                ticketUserListDto.setUserId(Long.parseLong(userId));
+                ApiResponse<List<TicketUserVo>> apiResponse = userClient.select(ticketUserListDto);
                 if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
                     Optional.ofNullable(apiResponse.getData()).filter(CollectionUtil::isNotEmpty)
                             .ifPresent(ticketUserVoList -> redisCache.set(RedisKeyBuild.createRedisKey(
