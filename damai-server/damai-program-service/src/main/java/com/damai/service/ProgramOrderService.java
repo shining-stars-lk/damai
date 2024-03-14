@@ -15,11 +15,9 @@ import com.damai.dto.ProgramOrderCreateDto;
 import com.damai.dto.SeatDto;
 import com.damai.entity.ProgramShowTime;
 import com.damai.enums.BaseCode;
-import com.damai.enums.CompositeCheckType;
 import com.damai.enums.OrderStatus;
 import com.damai.enums.SellStatus;
 import com.damai.exception.DaMaiFrameException;
-import com.damai.initialize.impl.composite.CompositeContainer;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.service.delaysend.DelayOrderCancelSend;
@@ -70,14 +68,10 @@ public class ProgramOrderService {
     private ProgramCacheCreateOrderOperate programCacheCreateOrderOperate;
     
     @Autowired
-    private CompositeContainer compositeContainer;
-    
-    @Autowired
     private DelayOrderCancelSend delayOrderCancelSend;
     
     
     public String create(ProgramOrderCreateDto programOrderCreateDto) {
-        compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
         Long programId = programOrderCreateDto.getProgramId();
         BigDecimal parameterOrderPrice = new BigDecimal("0");
         BigDecimal databaseOrderPrice = new BigDecimal("0");
@@ -135,26 +129,19 @@ public class ProgramOrderService {
     
     
     public String createNew(ProgramOrderCreateDto programOrderCreateDto) {
-        compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
-        //节目id
         Long programId = programOrderCreateDto.getProgramId();
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
         List<String> keys = new ArrayList<>();
-        //票档数量的key
         keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
-        //没有售卖的座位key
         keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
-        //锁定的座位key
         keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
         String[] data = new String[2];
-        //入参座位存在
         JSONArray jsonArray = new JSONArray();
         if (CollectionUtil.isNotEmpty(seatDtoList)) {
             keys.add("1");
             Map<Long, Long> seatTicketCategoryDtoCount = seatDtoList.stream()
                     .collect(Collectors.groupingBy(SeatDto::getTicketCategoryId, Collectors.counting()));
-            //将入参的座位集合统计出票档id和票档数量
-            for (final Entry<Long, Long> entry : seatTicketCategoryDtoCount.entrySet()) {
+            for (Entry<Long, Long> entry : seatTicketCategoryDtoCount.entrySet()) {
                 Long ticketCategoryId = entry.getKey();
                 Long ticketCount = entry.getValue();
                 JSONObject jsonObject = new JSONObject();
@@ -163,9 +150,7 @@ public class ProgramOrderService {
                 jsonArray.add(jsonObject);
             }
         }else {
-            //入参座位不存在
             keys.add("2");
-            //如果不选择座位，则直接传入票档id和票档数量
             Long ticketCategoryId = programOrderCreateDto.getTicketCategoryId();
             Integer ticketCount = programOrderCreateDto.getTicketCount();
             JSONObject jsonObject = new JSONObject();
@@ -175,13 +160,11 @@ public class ProgramOrderService {
         }
         data[0] = JSON.toJSONString(jsonArray);
         data[1] = JSON.toJSONString(seatDtoList);
-        //升级后的lua脚本处理票档数量和座位状态的检验，以及扣减票档数量的操作
         ProgramCacheCreateOrderData programCacheCreateOrderData = programCacheCreateOrderOperate.programCacheOperate(keys, data);
         if (!Objects.equals(programCacheCreateOrderData.getCode(), BaseCode.SUCCESS.getCode())) {
             throw new DaMaiFrameException(Objects.requireNonNull(BaseCode.getRc(programCacheCreateOrderData.getCode())));
         }
         List<SeatVo> purchaseSeatList = programCacheCreateOrderData.getPurchaseSeatList();
-        //将筛选出来的购买的座位信息传入，执行创建订单的操作
         return doCreate(programOrderCreateDto,purchaseSeatList);
     }
     

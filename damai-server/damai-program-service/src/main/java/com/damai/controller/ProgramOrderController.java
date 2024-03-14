@@ -38,7 +38,7 @@ public class ProgramOrderController {
         return ApiResponse.ok(programOrderLock.createV2(programOrderCreateDto));
     }
     
-    @ApiOperation(value = "购票V2")
+    @ApiOperation(value = "购票V3")
     @PostMapping(value = "/create/v3")
     public ApiResponse<String> createV3(@Valid @RequestBody ProgramOrderCreateDto programOrderCreateDto) {
         return ApiResponse.ok(programOrderLock.createV3(programOrderCreateDto));

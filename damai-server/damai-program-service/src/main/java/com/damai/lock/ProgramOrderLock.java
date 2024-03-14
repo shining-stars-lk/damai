@@ -5,6 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import com.damai.core.RepeatExecuteLimitConstants;
 import com.damai.dto.ProgramOrderCreateDto;
 import com.damai.dto.SeatDto;
+import com.damai.enums.CompositeCheckType;
+import com.damai.initialize.impl.composite.CompositeContainer;
 import com.damai.locallock.LocalLockCache;
 import com.damai.repeatexecutelimit.annotion.RepeatExecuteLimit;
 import com.damai.service.ProgramOrderService;
@@ -42,51 +44,43 @@ public class ProgramOrderLock {
     @Autowired
     private ServiceLockTool serviceLockTool;
     
-    /**
-     * 订单创建，使用节目id作为锁
-     * */
+    @Autowired
+    private CompositeContainer compositeContainer;
+    
     @RepeatExecuteLimit(
             name = RepeatExecuteLimitConstants.CREATE_PROGRAM_ORDER,
             keys = {"#programOrderCreateDto.userId","#programOrderCreateDto.programId"})
     @ServiceLock(name = PROGRAM_ORDER_CREATE_V1,keys = {"#programOrderCreateDto.programId"})
     public String createV1(ProgramOrderCreateDto programOrderCreateDto) {
+        compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
         return programOrderService.create(programOrderCreateDto);
     }
     
-    /**
-     * 订单优化版本v2，先用本地锁将没有获得锁的请求拦在外，获得本地锁后，再去获得分布式锁，这样可以减少对redis的压力。
-     * 
-     */
     @RepeatExecuteLimit(
             name = RepeatExecuteLimitConstants.CREATE_PROGRAM_ORDER,
             keys = {"#programOrderCreateDto.userId","#programOrderCreateDto.programId"})
     public String createV2(ProgramOrderCreateDto programOrderCreateDto) {
+        compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
         List<Long> ticketCategoryIdList = new ArrayList<>();
-        //根据入参座位或者票档id统计出要锁定的票档id
         if (CollectionUtil.isNotEmpty(seatDtoList)) {
-            ticketCategoryIdList = seatDtoList.stream().map(SeatDto::getTicketCategoryId).distinct().collect(Collectors.toList());
+            ticketCategoryIdList = 
+                    seatDtoList.stream().map(SeatDto::getTicketCategoryId).distinct().collect(Collectors.toList());
         }else {
             ticketCategoryIdList.add(programOrderCreateDto.getTicketCategoryId());
         }
-        //本地锁集合
         List<ReentrantLock> localLockList = new ArrayList<>(ticketCategoryIdList.size());
-        //分布式锁集合
-        List<ReentrantLock> localLockSuccessList = new ArrayList<>(ticketCategoryIdList.size());
-        //加锁成功的本地锁集合
         List<RLock> serviceLockList = new ArrayList<>(ticketCategoryIdList.size());
-        //加锁成功的分布式锁集合
+        List<ReentrantLock> localLockSuccessList = new ArrayList<>(ticketCategoryIdList.size());
         List<RLock> serviceLockSuccessList = new ArrayList<>(ticketCategoryIdList.size());
-        //根据统计出的票档id获得本地锁和分布式锁集合
         for (Long ticketCategoryId : ticketCategoryIdList) {
-            //锁的key为d_program_order_create_v2_lock-programId-ticketCategoryId
-            String lockKey = StrUtil.join("-",PROGRAM_ORDER_CREATE_V2,programOrderCreateDto.getProgramId(),ticketCategoryId);
-            ReentrantLock localLock = localLockCache.getLock(lockKey,true);
-            RLock serviceLock = serviceLockTool.getLock(LockType.Fair, lockKey);
+            String lockKey = StrUtil.join("-",PROGRAM_ORDER_CREATE_V2,
+                    programOrderCreateDto.getProgramId(),ticketCategoryId);
+            ReentrantLock localLock = localLockCache.getLock(lockKey,false);
+            RLock serviceLock = serviceLockTool.getLock(LockType.Reentrant, lockKey);
             localLockList.add(localLock);
             serviceLockList.add(serviceLock);
         }
-        //循环本地锁进行加锁
         for (ReentrantLock reentrantLock : localLockList) {
             try {
                 reentrantLock.lock();
@@ -95,7 +89,6 @@ public class ProgramOrderLock {
             }
             localLockSuccessList.add(reentrantLock);
         }
-        //循环分布式锁进行加锁
         for (RLock rLock : serviceLockList) {
             try {
                 rLock.lock();
@@ -105,10 +98,8 @@ public class ProgramOrderLock {
             serviceLockSuccessList.add(rLock);
         }
         try {
-            //进行订单创建
             return programOrderService.create(programOrderCreateDto);
         }finally {
-            //先循环解锁分布式锁
             for (int i = serviceLockSuccessList.size() - 1; i >= 0; i--) {
                 RLock rLock = serviceLockSuccessList.get(i);
                 try {
@@ -117,7 +108,6 @@ public class ProgramOrderLock {
                     log.error("service lock unlock error",t);
                 }
             }
-            //再循环解锁本地锁
             for (int i = localLockSuccessList.size() - 1; i >= 0; i--) {
                 ReentrantLock reentrantLock = localLockSuccessList.get(i);
                 try {
@@ -129,14 +119,11 @@ public class ProgramOrderLock {
         }
     }
     
-    /**
-     * 订单创建，进行优化，一开始直接利用lua执行判断要购买的座位和票的数量是足够，不足够直接返回，足够的话进行相应扣除，
-     * 这样既能将大量无用的抢购请求直接返回掉，又可以实现无锁化
-     * */
     @RepeatExecuteLimit(
             name = RepeatExecuteLimitConstants.CREATE_PROGRAM_ORDER,
             keys = {"#programOrderCreateDto.userId","#programOrderCreateDto.programId"})
     public String createV3(ProgramOrderCreateDto programOrderCreateDto) {
+        compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
         return programOrderService.createNew(programOrderCreateDto);
     }
 }
