@@ -1,8 +1,8 @@
 package com.damai.pay;
 
+import com.damai.initialize.base.AbstractApplicationInitializingBeanHandler;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,13 +13,18 @@ import java.util.Map.Entry;
  * @author: 阿宽不是程序员
  **/
 @AllArgsConstructor
-public class PayStrategyInitHandler implements ApplicationListener<ApplicationStartedEvent> {
+public class PayStrategyInitHandler extends AbstractApplicationInitializingBeanHandler {
     
     private final PayStrategyContext payStrategyContext;
     
     @Override
-    public void onApplicationEvent(ApplicationStartedEvent event) {
-        Map<String, PayStrategyHandler> payStrategyHandlerMap = event.getApplicationContext().getBeansOfType(PayStrategyHandler.class);
+    public Integer executeOrder() {
+        return 1;
+    }
+    
+    @Override
+    public void executeInit(ConfigurableApplicationContext context) {
+        Map<String, PayStrategyHandler> payStrategyHandlerMap = context.getBeansOfType(PayStrategyHandler.class);
         for (Entry<String, PayStrategyHandler> entry : payStrategyHandlerMap.entrySet()) {
             PayStrategyHandler payStrategyHandler = entry.getValue();
             payStrategyContext.put(payStrategyHandler.getChannel(),payStrategyHandler);

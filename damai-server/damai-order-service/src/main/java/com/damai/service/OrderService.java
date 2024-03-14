@@ -172,7 +172,15 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (orderPayDto.getPrice().compareTo(order.getOrderPrice()) != 0) {
             throw new DaMaiFrameException(BaseCode.PAY_PRICE_NOT_EQUAL_ORDER_PRICE);
         }
-        //调用支付服务进行支付
+        PayDto payDto = getPayDto(orderPayDto, orderNumber);
+        ApiResponse<String> payResponse = payClient.commonPay(payDto);
+        if (!Objects.equals(payResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+            throw new DaMaiFrameException(payResponse);
+        }
+        return payResponse.getData();
+    }
+    
+    private PayDto getPayDto(OrderPayDto orderPayDto, Long orderNumber) {
         PayDto payDto = new PayDto();
         payDto.setOrderNumber(String.valueOf(orderNumber));
         payDto.setPayBillType(orderPayDto.getPayBillType());
@@ -182,11 +190,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         payDto.setPrice(orderPayDto.getPrice());
         payDto.setNotifyUrl(orderProperties.getOrderPayNotifyUrl());
         payDto.setReturnUrl(orderProperties.getOrderPayReturnUrl());
-        ApiResponse<String> payResponse = payClient.commonPay(payDto);
-        if (!Objects.equals(payResponse.getCode(), BaseCode.SUCCESS.getCode())) {
-            throw new DaMaiFrameException(payResponse);
-        }
-        return payResponse.getData();
+        return payDto;
     }
     
     /**
