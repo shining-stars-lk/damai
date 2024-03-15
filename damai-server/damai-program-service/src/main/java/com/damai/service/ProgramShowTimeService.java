@@ -61,12 +61,16 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
      * 查询节目演出时间
      * */
     public ProgramShowTime selectProgramShowTimeByProgramId(Long programId){
-        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programId),ProgramShowTime.class,() -> {
-            LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
-                    Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
-            return Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
-                    .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
-        },EXPIRE_TIME, TimeUnit.DAYS);
+        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programId),
+                ProgramShowTime.class,
+                () -> {
+                    LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
+                            Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
+                    return Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
+                            .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
+                },
+                EXPIRE_TIME, 
+                TimeUnit.DAYS);
     }
     
     @Transactional(rollbackFor = Exception.class)
