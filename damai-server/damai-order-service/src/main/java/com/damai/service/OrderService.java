@@ -119,14 +119,12 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     public String create(OrderCreateDto orderCreateDto) {
         LambdaQueryWrapper<Order> orderLambdaQueryWrapper = 
                 Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, orderCreateDto.getOrderNumber());
-        //如果订单存在了，那么直接拒绝
         Order oldOrder = orderMapper.selectOne(orderLambdaQueryWrapper);
         if (Objects.nonNull(oldOrder)) {
             throw new DaMaiFrameException(BaseCode.ORDER_EXIST);
         }
         Order order = new Order();
         BeanUtil.copyProperties(orderCreateDto,order);
-        //转化订单对象
         List<OrderTicketUser> orderTicketUserList = new ArrayList<>();
         for (OrderTicketUserCreateDto orderTicketUserCreateDto : orderCreateDto.getOrderTicketUserCreateDtoList()) {
             OrderTicketUser orderTicketUser = new OrderTicketUser();
@@ -134,9 +132,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             orderTicketUser.setId(uidGenerator.getUid());
             orderTicketUserList.add(orderTicketUser);
         }
-        //插入主订单
         orderMapper.insert(order);
-        //插入购票人订单
         orderTicketUserService.saveBatch(orderTicketUserList);
         return String.valueOf(order.getOrderNumber());
     }
@@ -245,7 +241,6 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (!Objects.equals(notifyResponse.getCode(), BaseCode.SUCCESS.getCode())) {
             throw new DaMaiFrameException(notifyResponse);
         }
-        //将订单状态更新
         if (ALIPAY_NOTIFY_SUCCESS_RESULT.equals(notifyResponse.getData().getPayResult())) {
             orderService.updateOrderRelatedData(Long.parseLong(notifyResponse.getData().getOutTradeNo()),OrderStatus.PAY);
         }
@@ -387,7 +382,6 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             return orderListVos;
         }
         orderListVos = BeanUtil.copyToList(orderList, OrderListVo.class);
-        //每个订单下的购票人订单数量统计
         List<OrderTicketUserAggregate> orderTicketUserAggregateList = 
                 orderTicketUserMapper.selectOrderTicketUserAggregate(orderList.stream().map(Order::getOrderNumber).
                         collect(Collectors.toList()));
@@ -401,14 +395,12 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     }
     
     public OrderGetVo get(OrderGetDto orderGetDto) {
-        //查询订单
         LambdaQueryWrapper<Order> orderLambdaQueryWrapper =
                 Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, orderGetDto.getOrderNumber());
         Order order = orderMapper.selectOne(orderLambdaQueryWrapper);
         if (Objects.isNull(order)) {
             throw new DaMaiFrameException(BaseCode.ORDER_NOT_EXIST);
         }
-        //查询购票人订单
         LambdaQueryWrapper<OrderTicketUser> orderTicketUserLambdaQueryWrapper = 
                 Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderNumber, order.getOrderNumber());
         List<OrderTicketUser> orderTicketUserList = orderTicketUserMapper.selectList(orderTicketUserLambdaQueryWrapper);
@@ -418,10 +410,8 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         
         OrderGetVo orderGetVo = new OrderGetVo();
         BeanUtil.copyProperties(order,orderGetVo);
-        
         orderGetVo.setOrderTicketUserVoList(BeanUtil.copyToList(orderTicketUserList, OrderTicketUserVo.class));
         
-        //查询用户和购票人信息
         UserGetAndTicketUserListDto userGetAndTicketUserListDto = new UserGetAndTicketUserListDto();
         userGetAndTicketUserListDto.setUserId(order.getUserId());
         ApiResponse<UserGetAndTicketUserListVo> userGetAndTicketUserApiResponse = 
@@ -431,7 +421,6 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             throw new DaMaiFrameException(userGetAndTicketUserApiResponse);
             
         }
-        //验证用户和购票人信息是否存在
         UserGetAndTicketUserListVo userAndTicketUserListVo =
                 Optional.ofNullable(userGetAndTicketUserApiResponse.getData())
                         .orElseThrow(() -> new DaMaiFrameException(BaseCode.RPC_RESULT_DATA_EMPTY));
@@ -447,7 +436,6 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         for (OrderTicketUser orderTicketUser : orderTicketUserList) {
             filterTicketUserVoList.add(ticketUserVoMap.get(orderTicketUser.getTicketUserId()));
         }
-                
         UserInfoVo userInfoVo = new UserInfoVo();
         BeanUtil.copyProperties(userAndTicketUserListVo.getUserVo(),userInfoVo);
         UserAndTicketUserInfoVo userAndTicketUserInfoVo = new UserAndTicketUserInfoVo();
