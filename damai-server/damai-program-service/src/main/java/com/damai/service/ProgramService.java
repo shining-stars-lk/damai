@@ -21,6 +21,7 @@ import com.damai.dto.ProgramGetDto;
 import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramOperateDataDto;
 import com.damai.dto.ProgramPageListDto;
+import com.damai.dto.ProgramResetExecuteDto;
 import com.damai.dto.ProgramSearchDto;
 import com.damai.dto.TicketUserListDto;
 import com.damai.entity.Program;
@@ -28,6 +29,7 @@ import com.damai.entity.ProgramCategory;
 import com.damai.entity.ProgramJoinShowTime;
 import com.damai.entity.ProgramShowTime;
 import com.damai.entity.Seat;
+import com.damai.entity.TicketCategory;
 import com.damai.entity.TicketCategoryAggregate;
 import com.damai.enums.BaseCode;
 import com.damai.enums.BusinessStatus;
@@ -341,29 +343,24 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     @Transactional(rollbackFor = Exception.class)
     public void operateProgramData(ProgramOperateDataDto programOperateDataDto){
         Map<Long, Long> ticketCategoryCountMap = programOperateDataDto.getTicketCategoryCountMap();
-        //从库中查询座位集合
         List<Long> seatIdList = programOperateDataDto.getSeatIdList();
         LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = 
                 Wrappers.lambdaQuery(Seat.class).in(Seat::getId, seatIdList);
         List<Seat> seatList = seatMapper.selectList(seatLambdaQueryWrapper);
-        //如果库中的座位集合为空或者库中的座位集合数量和传入的座位数量不相同则抛出异常
         if (CollectionUtil.isEmpty(seatList) || seatList.size() != seatIdList.size()) {
             throw new DaMaiFrameException(BaseCode.SEAT_NOT_EXIST);
         }
         for (Seat seat : seatList) {
-            //如果库中的座位有一个已经是已售卖的状态，则抛出异常
             if (Objects.equals(seat.getSellStatus(), SellStatus.SOLD.getCode())) {
                 throw new DaMaiFrameException(BaseCode.SEAT_SOLD);
             }
         }
-        //将库中的座位集合批量更新为售卖状态
         LambdaUpdateWrapper<Seat> seatLambdaUpdateWrapper = 
                 Wrappers.lambdaUpdate(Seat.class).in(Seat::getId, seatIdList);
         Seat updateSeat = new Seat();
         updateSeat.setSellStatus(SellStatus.SOLD.getCode());
         seatMapper.update(updateSeat,seatLambdaUpdateWrapper);
         
-        //将库中的对应票档进行更新库存
         int updateRemainNumberCount = 
                 ticketCategoryMapper.batchUpdateRemainNumber(ticketCategoryCountMap);
         if (updateRemainNumberCount != ticketCategoryCountMap.size()) {
@@ -462,4 +459,56 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             programVo.setParentProgramCategoryName(parentProgramCategory.getName());
         }
     }
+    
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean resetExecute(ProgramResetExecuteDto programResetExecuteDto) {
+        Long programId = programResetExecuteDto.getProgramId();
+        LambdaQueryWrapper<Seat> seatQueryWrapper =
+                Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, programId);
+        List<Seat> seatList = seatMapper.selectList(seatQueryWrapper);
+        if (CollectionUtil.isEmpty(seatList)) {
+            return true;
+        }
+        boolean resetSeatFlag = false;
+        for (Seat seat : seatList) {
+            if (!seat.getSellStatus().equals(SellStatus.NO_SOLD.getCode())) {
+                resetSeatFlag = true;
+                break;
+            }
+        }
+        if (resetSeatFlag) {
+            LambdaUpdateWrapper<Seat> seatUpdateWrapper =
+                    Wrappers.lambdaUpdate(Seat.class).eq(Seat::getProgramId, programId);
+            Seat seatUpdate = new Seat();
+            seatUpdate.setSellStatus(SellStatus.NO_SOLD.getCode());
+            seatMapper.update(seatUpdate,seatUpdateWrapper);
+        }
+        
+        LambdaQueryWrapper<TicketCategory> ticketCategoryQueryWrapper =
+                Wrappers.lambdaQuery(TicketCategory.class).eq(TicketCategory::getProgramId, programId);
+        List<TicketCategory> ticketCategories = ticketCategoryMapper.selectList(ticketCategoryQueryWrapper);
+        for (TicketCategory ticketCategory : ticketCategories) {
+            Long remainNumber = ticketCategory.getRemainNumber();
+            Long totalNumber = ticketCategory.getTotalNumber();
+            if (!remainNumber.equals(totalNumber)) {
+                TicketCategory ticketCategoryUpdate = new TicketCategory();
+                ticketCategoryUpdate.setRemainNumber(totalNumber);
+                ticketCategoryUpdate.setId(ticketCategory.getId());
+                ticketCategoryMapper.updateById(ticketCategoryUpdate);
+            }
+        }
+        delRedisData(programId);
+        return true;
+    }
+    
+    private void delRedisData(Long programId){
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId));
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programId));
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId));
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId));
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId));
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_CATEGORY_LIST, programId));
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId));
+    }
 }
+

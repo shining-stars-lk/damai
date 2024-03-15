@@ -6,7 +6,7 @@ spring:
   application:
     name: ${prefix.distinction.name:damai}-gateway-service
     #name: ${prefix.distinction.name:damai}-gateway-single-service
-  cloud:
+  cloud:  
     nacos:
       discovery:
         server-addr: 62.234.31.217:8848
