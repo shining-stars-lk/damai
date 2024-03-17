@@ -44,6 +44,7 @@ import com.damai.page.PageUtil;
 import com.damai.page.PageVo;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
+import com.damai.repeatexecutelimit.annotion.RepeatExecuteLimit;
 import com.damai.service.constant.ProgramTimeType;
 import com.damai.service.es.ProgramEs;
 import com.damai.servicelock.LockType;
@@ -77,6 +78,7 @@ import java.util.stream.Collectors;
 import static com.damai.constant.Constant.CODE;
 import static com.damai.constant.Constant.USER_ID;
 import static com.damai.core.DistributedLockConstants.PROGRAM_LOCK;
+import static com.damai.core.RepeatExecuteLimitConstants.CANCEL_PROGRAM_ORDER;
 import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
 import static com.damai.util.DateUtils.FORMAT_DATE;
 
@@ -340,6 +342,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 .collect(Collectors.toMap(TicketCategoryAggregate::getProgramId, ticketCategory -> ticketCategory, (v1, v2) -> v2));
     }
     
+    @RepeatExecuteLimit(name = CANCEL_PROGRAM_ORDER,keys = {"#programOperateDataDto.programId"})
     @Transactional(rollbackFor = Exception.class)
     public void operateProgramData(ProgramOperateDataDto programOperateDataDto){
         Map<Long, Long> ticketCategoryCountMap = programOperateDataDto.getTicketCategoryCountMap();
