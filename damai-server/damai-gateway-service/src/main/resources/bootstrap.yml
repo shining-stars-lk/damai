@@ -15,5 +15,8 @@ spring:
       config:
         server-addr: 62.234.31.217:8848
         file-extension: yaml
+        shared-configs:
+          - data-id: common.yaml
+            refresh: true
         username: nacos
         password: nacos
