@@ -8,15 +8,20 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.core.RedisKeyManage;
 import com.damai.dto.TicketCategoryAddDto;
+import com.damai.dto.TicketCategoryDto;
 import com.damai.entity.TicketCategory;
 import com.damai.mapper.TicketCategoryMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
+import com.damai.vo.TicketCategoryDetailVo;
 import com.damai.vo.TicketCategoryVo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +34,7 @@ import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
  * @description: 票档 service
  * @author: 阿宽不是程序员
  **/
+@Slf4j
 @Service
 public class TicketCategoryService extends ServiceImpl<TicketCategoryMapper, TicketCategory> {
     
@@ -40,6 +46,9 @@ public class TicketCategoryService extends ServiceImpl<TicketCategoryMapper, Tic
     
     @Autowired
     private TicketCategoryMapper ticketCategoryMapper;
+    
+    @Resource
+    SqlSessionFactory sqlSessionFactory;
     
     @Transactional(rollbackFor = Exception.class)
     public Long add(TicketCategoryAddDto ticketCategoryAddDto) {
@@ -78,5 +87,12 @@ public class TicketCategoryService extends ServiceImpl<TicketCategoryMapper, Tic
                     TicketCategory::getRemainNumber, (v1, v2) -> v2));
             redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId),map);
         }
+    }
+    
+    public TicketCategoryDetailVo detail(TicketCategoryDto ticketCategoryDto) {
+        TicketCategory ticketCategory = ticketCategoryMapper.selectById(ticketCategoryDto.getId());
+        TicketCategoryDetailVo ticketCategoryDetailVo = new TicketCategoryDetailVo();
+        BeanUtil.copyProperties(ticketCategory,ticketCategoryDetailVo);
+        return ticketCategoryDetailVo;
     }
 }
