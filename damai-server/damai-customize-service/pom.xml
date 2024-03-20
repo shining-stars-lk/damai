@@ -125,9 +125,8 @@
             <version>${jasypt.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-sentinel-common-general</artifactId>
-            <version>${revision}</version>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba.csp</groupId>
