@@ -1,5 +1,7 @@
 package com.damai.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.damai.data.BaseTableData;
 import lombok.Data;
@@ -21,6 +23,7 @@ public class Seat extends BaseTableData implements Serializable {
     /**
      * 主键id
      */
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**

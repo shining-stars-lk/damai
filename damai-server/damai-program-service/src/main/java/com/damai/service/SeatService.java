@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.core.RedisKeyManage;
 import com.damai.dto.ProgramGetDto;
 import com.damai.dto.SeatAddDto;
+import com.damai.dto.SeatBatchAddDto;
+import com.damai.dto.SeatBatchRelateInfoAddDto;
 import com.damai.dto.SeatListDto;
 import com.damai.entity.ProgramShowTime;
 import com.damai.entity.Seat;
@@ -25,7 +27,9 @@ import com.damai.vo.SeatRelateInfoVo;
 import com.damai.vo.SeatVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -150,5 +154,39 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
         seatRelateInfoVo.setPriceList(seatVoMap.keySet().stream().sorted().collect(Collectors.toList()));
         seatRelateInfoVo.setSeatVoMap(seatVoMap);
         return seatRelateInfoVo;
+    }
+    
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean batchAdd(SeatBatchAddDto seatBatchAddDto) {
+        Long programId = seatBatchAddDto.getProgramId();
+        List<SeatBatchRelateInfoAddDto> seatBatchRelateInfoAddDtoList = seatBatchAddDto.getSeatBatchRelateInfoAddDtoList();
+        
+        
+        int rowIndex = 0;
+        for (SeatBatchRelateInfoAddDto seatBatchRelateInfoAddDto : seatBatchRelateInfoAddDtoList) {
+            Long ticketCategoryId = seatBatchRelateInfoAddDto.getTicketCategoryId();
+            BigDecimal price = seatBatchRelateInfoAddDto.getPrice();
+            Integer count = seatBatchRelateInfoAddDto.getCount();
+            
+            int colCount = 10;
+            int rowCount = count / colCount;
+            
+            for (int i = 1;i<= rowCount;i++) {
+                rowIndex++;
+                for (int j = 1;j<=colCount;j++) {
+                    Seat seat = new Seat();
+                    seat.setProgramId(programId);
+                    seat.setTicketCategoryId(ticketCategoryId);
+                    seat.setRowCode(rowIndex);
+                    seat.setColCode(j);
+                    seat.setSeatType(1);
+                    seat.setPrice(price);
+                    seat.setSellStatus(SellStatus.NO_SOLD.getCode());
+                    seatMapper.insert(seat);
+                }
+            }
+        }
+        
+        return true;
     }
 }

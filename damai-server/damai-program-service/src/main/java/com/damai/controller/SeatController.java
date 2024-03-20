@@ -2,6 +2,7 @@ package com.damai.controller;
 
 import com.damai.common.ApiResponse;
 import com.damai.dto.SeatAddDto;
+import com.damai.dto.SeatBatchAddDto;
 import com.damai.dto.SeatListDto;
 import com.damai.service.SeatService;
 import com.damai.vo.SeatRelateInfoVo;
@@ -29,10 +30,16 @@ public class SeatController {
     private SeatService seatService;
     
     
-    @ApiOperation(value = "添加")
+    @ApiOperation(value = "单个座位添加")
     @PostMapping(value = "/add")
     public ApiResponse<Long> add(@Valid @RequestBody SeatAddDto seatAddDto) {
         return ApiResponse.ok(seatService.add(seatAddDto));
+    }
+    
+    @ApiOperation(value = "批量座位添加")
+    @PostMapping(value = "/batch/add")
+    public ApiResponse<Boolean> batchAdd(@Valid @RequestBody SeatBatchAddDto seatBatchAddDto) {
+        return ApiResponse.ok(seatService.batchAdd(seatBatchAddDto));
     }
     
     @ApiOperation(value = "查询座位相关信息")
