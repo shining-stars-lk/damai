@@ -2,10 +2,12 @@ package com.damai.controller;
 
 import com.damai.common.ApiResponse;
 import com.damai.dto.NotifyDto;
+import com.damai.dto.PayBillDto;
 import com.damai.dto.PayDto;
 import com.damai.dto.TradeCheckDto;
 import com.damai.service.PayService;
 import com.damai.vo.NotifyVo;
+import com.damai.vo.PayBillVo;
 import com.damai.vo.TradeCheckVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,5 +48,11 @@ public class PayController {
     @PostMapping(value = "/trade/check")
     public ApiResponse<TradeCheckVo> tradeCheck(@Valid @RequestBody TradeCheckDto tradeCheckDto) {
         return ApiResponse.ok(payService.tradeCheck(tradeCheckDto));
+    }
+    
+    @ApiOperation(value = "账单详情查询")
+    @PostMapping(value = "/detail")
+    public ApiResponse<PayBillVo> detail(@Valid @RequestBody PayBillDto payBillDto) {
+        return ApiResponse.ok(payService.detail(payBillDto));
     }
 }

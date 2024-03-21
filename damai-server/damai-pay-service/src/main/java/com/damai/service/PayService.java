@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.damai.dto.NotifyDto;
+import com.damai.dto.PayBillDto;
 import com.damai.dto.PayDto;
 import com.damai.dto.TradeCheckDto;
 import com.damai.entity.PayBill;
@@ -21,6 +22,7 @@ import com.damai.pay.TradeResult;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.util.DateUtils;
 import com.damai.vo.NotifyVo;
+import com.damai.vo.PayBillVo;
 import com.damai.vo.TradeCheckVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,5 +178,16 @@ public class PayService {
             return tradeCheckVo;
         }
         return tradeCheckVo;
+    }
+    
+    public PayBillVo detail(PayBillDto payBillDto) {
+        PayBillVo payBillVo = new PayBillVo();
+        LambdaQueryWrapper<PayBill> payBillLambdaQueryWrapper =
+                Wrappers.lambdaQuery(PayBill.class).eq(PayBill::getOutOrderNo, payBillDto.getOrderNumber());
+        PayBill payBill = payBillMapper.selectOne(payBillLambdaQueryWrapper);
+        if (Objects.nonNull(payBill)) {
+            BeanUtil.copyProperties(payBill,payBillVo);
+        }
+        return payBillVo;
     }
 }
