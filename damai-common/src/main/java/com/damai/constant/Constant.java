@@ -32,4 +32,6 @@ public class Constant {
     
     public static final String SPRING_INJECT_PREFIX_DISTINCTION_NAME = "${prefix.distinction.name:damai}";
     
+    public static final String SERVER_GRAY = "${spring.cloud.nacos.discovery.metadata.gray:false}";
+    
 }

@@ -1,6 +1,5 @@
 package com.damai.feign;
 
-import com.damai.balance.ExtraRibbonProperties;
 import com.damai.util.StringUtil;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -11,7 +10,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Objects;
 
 import static com.damai.constant.Constant.CODE;
@@ -29,7 +27,7 @@ import static com.damai.constant.Constant.TRACE_ID;
 @AllArgsConstructor
 public class FeignRequestInterceptor implements RequestInterceptor {
     
-    private final ExtraRibbonProperties extraRibbonProperties;
+    private final String serverGray;
     
     @Override
     public void apply(RequestTemplate template) {
@@ -42,7 +40,7 @@ public class FeignRequestInterceptor implements RequestInterceptor {
                 String code = request.getHeader(CODE);
                 String gray = request.getHeader(GRAY_PARAMETER);
                 if (StringUtil.isEmpty(gray)) {
-                    gray = extraRibbonProperties.getGray();
+                    gray = serverGray;
                 }
                 template.header(TRACE_ID,traceId);
                 template.header(CODE,code);
