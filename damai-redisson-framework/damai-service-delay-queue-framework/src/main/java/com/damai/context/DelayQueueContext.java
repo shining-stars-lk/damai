@@ -1,8 +1,5 @@
 package com.damai.context;
 
-import com.damai.config.DelayQueueProperties;
-import org.redisson.api.RedissonClient;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -14,22 +11,19 @@ import java.util.concurrent.TimeUnit;
  **/
 public class DelayQueueContext {
     
-    private final DelayQueueProperties delayQueueProperties;
-    
-    private final RedissonClient redissonClient;
-    
+    private final DelayQueueBasePart delayQueueBasePart;
+    /**
+     * key为topic主题，value为发送消息的处理器
+     * */
     private final Map<String, DelayQueueProduceCombine> delayQueueProduceCombineMap = new ConcurrentHashMap<>();
     
-    public DelayQueueContext(DelayQueueProperties delayQueueProperties,RedissonClient redissonClient){
-        this.delayQueueProperties = delayQueueProperties;
-        this.redissonClient = redissonClient;
+    public DelayQueueContext(DelayQueueBasePart delayQueueBasePart){
+        this.delayQueueBasePart = delayQueueBasePart;
     }
     
     public void sendMessage(String topic,String content,long delayTime, TimeUnit timeUnit) {
-        DelayQueueProduceCombine delayQueueProduceCombine = delayQueueProduceCombineMap.computeIfAbsent(topic,k -> {
-            DelayQueueBasePart delayQueueBasePart = new DelayQueueBasePart(redissonClient,delayQueueProperties);
-            return new DelayQueueProduceCombine(delayQueueBasePart,topic);
-        });
+        DelayQueueProduceCombine delayQueueProduceCombine = delayQueueProduceCombineMap.computeIfAbsent(
+                topic, k -> new DelayQueueProduceCombine(delayQueueBasePart,topic));
         delayQueueProduceCombine.offer(content,delayTime,timeUnit);
     }
 }

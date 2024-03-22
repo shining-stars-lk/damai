@@ -6,9 +6,30 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum BaseCode {
-    
+    /**
+     * 基础code码
+     * */
     SUCCESS(0, "OK"),
+    
     SYSTEM_ERROR(-1,"系统异常"),
+    
+    UID_WORK_ID_ERROR(500,"uid_work_id设置失败"),
+    
+    NAME_PASSWORD_ERROR(501,"账号名或登录密码不正确"),
+    
+    INITIALIZE_HANDLER_STRATEGY_NOT_EXIST(502,"初始化操作策略不存在"),
+    
+    VERIFY_CAPTCHA_ID_NOT_EXIST(503,"校验验证码id不存在"),
+    
+    CAPTCHA_TYPE_EMPTY(504,"验证码类型为空"),
+    
+    POINT_JSON_EMPTY(505,"点坐标为空"),
+    
+    CAPTCHA_TOKEN_JSON_EMPTY(506,"验证码token为空"),
+    
+    LOAD_BALANCER_NOT_EXIST(507,"负载均衡器不存在"),
+    
+    SERVER_LIST_NOT_EXIST(508,"服务列表不存在"),
     
     RSA_SIGN_ERROR(10000,"res签名验证失败"),
     
@@ -123,11 +144,19 @@ public enum BaseCode {
     
     SEAT_PRICE_EMPTY(40026,"座位价格为空"),
     
+    SEAT_IS_NOT_NOT_SOLD(40027,"座位不是未售卖"),
+    
     DELAY_QUEUE_CLIENT_NOT_EXIST(50001,"延迟队列客户端不存在"),
     
     DELAY_QUEUE_MESSAGE_NOT_EXIST(50002,"延迟队列消息不存在"),
     
     SEAT_IS_EXIST(50003,"该节目下座位以存在"),
+    
+    START_DATE_TIME_NOT_EXIST(50004,"开始时间为空"),
+    
+    END_DATE_TIME_NOT_EXIST(50005,"结束时间为空"),
+    
+    PROGRAM_NOT_ALLOW_CHOOSE_SEAT(50006,"此节目不允许选择座位"),
     
     USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
     
@@ -166,6 +195,10 @@ public enum BaseCode {
     UPDATE_TICKET_CATEGORY_COUNT_NOT_CORRECT(60018,"更新票档数量不正确"),
     
     GET_USER_AND_TICKET_USER_ERROR(60019,"获取用户和购票人信息错误"),
+    
+    TICKET_USER_ID_REPEAT(60020,"购票人id重复"),
+    
+    TICKET_USER_COUNT_UNEQUAL_SEAT_COUNT(60021,"购票人数量和要购买的座位数量不相等"),
     
     ORDER_NUMBER_NOT_EXIST(70000,"order_number的值不存在"),
     

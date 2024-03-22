@@ -6,18 +6,22 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import static com.damai.constant.Constant.SPRING_INJECT_PREFIX_DISTINCTION_NAME;
+
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
  * @description: 订单服务 feign
  * @author: 阿宽不是程序员
  **/
 @Component
-@FeignClient(value = "order-service",fallback = OrderClientFallback.class)
+@FeignClient(value = SPRING_INJECT_PREFIX_DISTINCTION_NAME+"-"+"order-service",fallback = OrderClientFallback.class)
 public interface OrderClient {
     
     /**
      * 创建订单
+     * @param dto 参数
+     * @return 结果
      * */
     @PostMapping("/order/create")
-    ApiResponse<String> create(OrderCreateDto orderCreateDto);
+    ApiResponse<String> create(OrderCreateDto dto);
 }

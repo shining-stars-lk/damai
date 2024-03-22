@@ -2,7 +2,7 @@ package com.damai.conf.swagger;
 
 
 import cn.hutool.core.collection.CollUtil;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -61,7 +61,7 @@ public class SwaggerProvider implements SwaggerResourcesProvider {
     }
     
     private Map<String, Map<String, String>> getServiceMappingNames(GatewayProperties gatewayProperties) {
-        Map<String, Map<String, String>> serviceMap = new HashMap<>();
+        Map<String, Map<String, String>> serviceMap = new HashMap<>(256);
         List<RouteDefinition> routeList = gatewayProperties.getRoutes();
         if (CollUtil.isNotEmpty(routeList)) {
             for (RouteDefinition route : routeList) {

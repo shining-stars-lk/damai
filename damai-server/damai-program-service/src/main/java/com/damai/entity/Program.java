@@ -1,7 +1,7 @@
 package com.damai.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.damai.data.BaseData;
+import com.damai.data.BaseTableData;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,7 +13,7 @@ import java.io.Serializable;
  **/
 @Data
 @TableName("d_program")
-public class Program extends BaseData implements Serializable {
+public class Program extends BaseTableData implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,12 +42,12 @@ public class Program extends BaseData implements Serializable {
      */
     private String title;
     
-    /*
+    /**
      * 艺人
      * */
     private String actor;
     
-    /*
+    /**
      * 地点
      * */
     private String place;
@@ -166,6 +166,11 @@ public class Program extends BaseData implements Serializable {
      * 电子发票 1:是 0:不是
      */
     private Integer electronicInvoice;
+    
+    /**
+     * 高热度节目 0:否 1:是
+     * */
+    private Integer highHeat;
     
     /**
      * 节目状态 1:上架 0:下架

@@ -12,13 +12,15 @@ public class Constant {
      * */
     public static final String TRACE_ID = "traceId";
     
-    public static final String MARK_FLAG_TRUE = "true";
+    public static final String GRAY_FLAG_TRUE = "true";
     
-    public static final String MARK_FLAG_FALSE = "false";
+    public static final String GRAY_FLAG_FALSE = "false";
     
-    public static final String MARK_PARAMETER = "mark";
+    public static final String GRAY_PARAMETER = "gray";
     
     public static final String CODE = "code";
+    
+    public static final String USER_ID = "userId";
     
     public static final String JOB_INFO_ID = "jobInfoId";
     
@@ -27,5 +29,7 @@ public class Constant {
     public static final String ALIPAY_NOTIFY_SUCCESS_RESULT = "success";
     
     public static final String ALIPAY_NOTIFY_FAILURE_RESULT = "failure";
+    
+    public static final String SPRING_INJECT_PREFIX_DISTINCTION_NAME = "${prefix.distinction.name:damai}";
     
 }

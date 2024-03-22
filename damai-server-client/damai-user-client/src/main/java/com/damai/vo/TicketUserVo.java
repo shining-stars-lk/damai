@@ -1,7 +1,8 @@
 package com.damai.vo;
 
 import cn.hutool.core.util.DesensitizedUtil;
-import com.damai.core.StringUtil;
+import cn.hutool.core.util.StrUtil;
+import com.damai.util.StringUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -33,6 +34,13 @@ public class TicketUserVo implements Serializable {
     
     @ApiModelProperty(name ="idNumber", dataType ="String", value ="证件号码")
     private String idNumber;
+    
+    public String getRelName() {
+        if (StringUtil.isNotEmpty(relName)) {
+            return StrUtil.hide(relName, 0, 1);
+        }
+        return relName;
+    }
     
     public String getIdNumber() {
         if (StringUtil.isNotEmpty(idNumber)) {

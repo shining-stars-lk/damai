@@ -22,7 +22,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/apiData")
-@Api(tags = "apiData", description = "api调用记录")
+@Api(tags = "apiData", value = "api调用记录")
 public class ApiDataController {
     
     @Autowired

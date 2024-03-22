@@ -18,6 +18,7 @@
         <module>damai-redisson-common-framework</module>
 		<module>damai-service-lock-framework</module>
         <module>damai-repeat-execute-limit-framework</module>
+        <module>damai-bloom-filter-framework</module>
     </modules>
 
 </project>

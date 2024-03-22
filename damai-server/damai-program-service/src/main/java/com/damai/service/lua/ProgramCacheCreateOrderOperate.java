@@ -1,5 +1,6 @@
 package com.damai.service.lua;
 
+import com.alibaba.fastjson.JSON;
 import com.damai.redis.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,8 @@ public class ProgramCacheCreateOrderOperate {
         }
     }
     
-    public String programCacheOperate(List<String> keys, String[] args){
-        return (String)redisCache.getInstance().execute(redisScript, keys, args);
+    public ProgramCacheCreateOrderData programCacheOperate(List<String> keys, String[] args){
+        Object object = redisCache.getInstance().execute(redisScript, keys, args);
+        return JSON.parseObject((String)object, ProgramCacheCreateOrderData.class);
     }
 }

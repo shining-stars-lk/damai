@@ -158,19 +158,28 @@ public class ServiceInfoHolder implements Closeable {
             //empty or error push, just ignore
             return oldService;
         }
+        // 缓存服务信息
         serviceInfoMap.put(serviceInfo.getKey(), serviceInfo);
+        // 判断注册的实例信息是否已变更
         boolean changed = isChangedServiceInfo(oldService, serviceInfo);
         if (StringUtils.isBlank(serviceInfo.getJsonFromServer())) {
             serviceInfo.setJsonFromServer(JacksonUtils.toJson(serviceInfo));
         }
+        // 监控服务监控缓存Map的大小
         MetricsMonitor.getServiceInfoMapSizeMonitor().set(serviceInfoMap.size());
-        if (changed || (StringUtils.isNotEmpty(notifyService) && "yes".equals(notifyService))) {
-//            NAMING_LOGGER.info("current ips:(" + serviceInfo.ipCount() + ") service: " + serviceInfo.getKey() + " -> "
-//                    + JacksonUtils.toJson(serviceInfo.getHosts()));
-//            System.out.println("current ips:(" + serviceInfo.ipCount() + ") service: " + serviceInfo.getKey() + " -> "
-//                    + JacksonUtils.toJson(serviceInfo.getHosts()));
+        // 服务实例以更变
+        String yes = "yes";
+        if (changed || yes.equals(notifyService)) {
+            ServiceInfo changeServiceInfo = serviceInfo.getChangeServiceInfo();
+            if (changeServiceInfo != null) {
+                //更新nacos本地缓存
+                NAMING_LOGGER.info("changeServiceInfo : "+JacksonUtils.toJson(changeServiceInfo));
+                serviceInfoMap.put(changeServiceInfo.getKey(), changeServiceInfo);
+            }
+            // 添加实例变更事件，会被订阅者执行
             NotifyCenter.publishEvent(new InstancesChangeEvent(serviceInfo.getName(), serviceInfo.getGroupName(),
                     serviceInfo.getClusters(), serviceInfo.getHosts()));
+            // 记录Service本地文件
             DiskCache.write(serviceInfo, cacheDir);
         }
         return serviceInfo;

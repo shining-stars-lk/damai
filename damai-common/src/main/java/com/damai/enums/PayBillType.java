@@ -6,6 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum PayBillType {
+    /**
+     * 账单类型
+     * */
     PROGRAM(1,"节目"),
     ;
 

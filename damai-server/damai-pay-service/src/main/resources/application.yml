@@ -1,0 +1,91 @@
+#服务端口
+server:
+  port: 6087
+# 应用名称
+spring:
+  application:
+    name: ${prefix.distinction.name:damai}-pay-service
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+    servlet:
+      load-on-startup: 1
+    jackson:
+      time-zone: GMT+8
+      date-format: yyyy-MM-dd HH:mm:ss
+      generator:
+        WRITE_NUMBERS_AS_STRINGS: true
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:shardingsphere-pay.yaml
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    timeout: 3000
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        username: nacos
+        password: nacos
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  global-config:
+    db-config:
+      logic-delete-field: status
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    local-cache-scope: statement
+feign:
+  sentinel:
+    enabled: false
+  hystrix:
+    enabled: true
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+  compression:
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 512
+    response:
+      enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+          semaphore:
+            maxConcurrentRequests: 99999
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    health:
+      show-details: always
+  security:
+    enabled: false
+  health:
+    elasticsearch:
+      enabled: false
+jasypt:
+  encryptor:
+    password: bgtjkjl!%^sdc
+    algorithm: PBEWithMD5AndDES

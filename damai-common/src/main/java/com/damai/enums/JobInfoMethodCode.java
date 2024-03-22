@@ -6,6 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum JobInfoMethodCode {
+    /**
+     * job类型
+     * */
     GET(1, "get方法"),
     
     POST(2,"post方法"),

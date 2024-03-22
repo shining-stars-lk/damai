@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -23,10 +23,6 @@ public class ProgramListDto {
     
     @ApiModelProperty(name ="parentProgramCategoryIds", dataType ="Long[]", value ="父节目类型id集合")
     @NotNull
+    @Size(max = 4)
     private List<Long> parentProgramCategoryIds;
-    
-    /**
-     * 业务字段，后端自己填充
-     * */
-    private Date time;
 }

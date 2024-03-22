@@ -8,13 +8,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.ProgramCategoryAddDto;
 import com.damai.dto.ProgramCategoryDto;
 import com.damai.entity.ProgramCategory;
 import com.damai.mapper.ProgramCategoryMapper;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.vo.ProgramCategoryVo;
@@ -64,7 +64,7 @@ public class ProgramCategoryService extends ServiceImpl<ProgramCategoryMapper, P
         List<ProgramCategory> programCategoryList = programCategoryAddDtoList.stream().map((programCategoryAddDto) -> {
             ProgramCategory programCategory = new ProgramCategory();
             BeanUtil.copyProperties(programCategoryAddDto, programCategory);
-            programCategory.setId(uidGenerator.getUID());
+            programCategory.setId(uidGenerator.getUid());
             return programCategory;
         }).collect(Collectors.toList());
         
@@ -72,7 +72,7 @@ public class ProgramCategoryService extends ServiceImpl<ProgramCategoryMapper, P
             this.saveBatch(programCategoryList);
             Map<String, ProgramCategory> programCategoryMap = programCategoryList.stream().collect(
                     Collectors.toMap(p -> String.valueOf(p.getId()), p -> p, (v1, v2) -> v2));
-            redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_CATEGORY_HASH),programCategoryMap);
+            redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH),programCategoryMap);
         }
         
     }

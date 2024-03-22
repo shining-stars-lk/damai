@@ -184,7 +184,7 @@ public class RsaSignTool {
     }
     
     public static void parameterTransferV1() {
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>(8);
         //基础参数
         map.put("code", "1234");
         //业务参数
@@ -199,20 +199,20 @@ public class RsaSignTool {
     }
     
     public static void parameterTransferV2() {
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>(8);
         //基础参数
         map.put("code","1234");
         
         //参数加密后再签名
-        Map<String, Object> businessMap = new HashMap<>();
+        Map<String, Object> businessMap = new HashMap<>(8);
         businessMap.put("id","1111");
         businessMap.put("sleepTime",10);
         
         //将业务参数进行加密
-        String encrypt = RSATool.encrypt(JSON.toJSONString(businessMap), dataPublicKey);
+        String encrypt = RsaTool.encrypt(JSON.toJSONString(businessMap), dataPublicKey);
         System.out.println("参数加密后:" + encrypt);
         
-        String decrypt = RSATool.decrypt(encrypt, dataPrivateKey);
+        String decrypt = RsaTool.decrypt(encrypt, dataPrivateKey);
         System.out.println("参数解密后:" + decrypt);
         
         //将未加密的业务参数和基础参数进行拼接

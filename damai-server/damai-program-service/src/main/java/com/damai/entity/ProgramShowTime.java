@@ -1,7 +1,7 @@
 package com.damai.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.damai.data.BaseData;
+import com.damai.data.BaseTableData;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,7 +14,7 @@ import java.util.Date;
  **/
 @Data
 @TableName("d_program_show_time")
-public class ProgramShowTime extends BaseData implements Serializable {
+public class ProgramShowTime extends BaseTableData implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

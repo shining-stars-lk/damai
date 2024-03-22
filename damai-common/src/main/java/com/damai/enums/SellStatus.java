@@ -6,6 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum SellStatus {
+    /**
+     * 售卖状态
+     * */
     NO_SOLD(1,"未售卖"),
     LOCK(2,"锁定"),
     SOLD(3,"已售卖"),

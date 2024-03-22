@@ -38,12 +38,22 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
+            <artifactId>damai-service-initialize</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
             <artifactId>damai-service-common</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
             <artifactId>damai-service-lock-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-bloom-filter-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
@@ -134,7 +144,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.damai.SingleApplication</mainClass>
+                    <mainClass>com.damai.UserApplication</mainClass>
                     <!-- 如果以jar包启动需要将此配置去掉 -->
                     <skip>true</skip>
                 </configuration>

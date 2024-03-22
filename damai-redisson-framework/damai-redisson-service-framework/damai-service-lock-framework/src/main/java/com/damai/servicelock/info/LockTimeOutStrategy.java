@@ -7,7 +7,9 @@ package com.damai.servicelock.info;
  * @author: 阿宽不是程序员
  **/
 public enum LockTimeOutStrategy implements LockTimeOutHandler{
-
+    /**
+     * 快速失败
+     * */
     FAIL(){
         @Override
         public void handler(String lockName) {

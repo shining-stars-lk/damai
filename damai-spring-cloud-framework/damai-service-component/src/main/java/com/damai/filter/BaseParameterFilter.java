@@ -1,6 +1,6 @@
 package com.damai.filter;
 
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.damai.constant.Constant.MARK_PARAMETER;
+import static com.damai.constant.Constant.CODE;
+import static com.damai.constant.Constant.GRAY_PARAMETER;
 import static com.damai.constant.Constant.TRACE_ID;
+import static com.damai.constant.Constant.USER_ID;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
@@ -26,22 +28,36 @@ public class BaseParameterFilter extends OncePerRequestFilter {
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) throws ServletException, IOException {
         log.info("current thread doFilterInternal : {}",Thread.currentThread().getName());
         String traceId = request.getHeader(TRACE_ID);
-        String mark = request.getHeader(MARK_PARAMETER);
+        String gray = request.getHeader(GRAY_PARAMETER);
+        String userId = request.getHeader(USER_ID);
+        String code = request.getHeader(CODE);
         try {
             if (StringUtil.isNotEmpty(traceId)) {
-                BaseParameterHolder.setParameter(TRACE_ID,traceId);
+                    BaseParameterHolder.setParameter(TRACE_ID,traceId);
                 MDC.put(TRACE_ID,traceId);
             }
-            if (StringUtil.isNotEmpty(mark)) {
-                BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
-                MDC.put(MARK_PARAMETER,mark);
+            if (StringUtil.isNotEmpty(gray)) {
+                BaseParameterHolder.setParameter(GRAY_PARAMETER,gray);
+                MDC.put(GRAY_PARAMETER,gray);
+            }
+            if (StringUtil.isNotEmpty(userId)) {
+                BaseParameterHolder.setParameter(USER_ID,userId);
+                MDC.put(USER_ID,userId);
+            }
+            if (StringUtil.isNotEmpty(code)) {
+                BaseParameterHolder.setParameter(CODE,code);
+                MDC.put(CODE,code);
             }
             filterChain.doFilter(request, response);
         }finally {
             BaseParameterHolder.removeParameter(TRACE_ID);
             MDC.remove(TRACE_ID);
-            BaseParameterHolder.removeParameter(MARK_PARAMETER);
-            MDC.remove(MARK_PARAMETER);
+            BaseParameterHolder.removeParameter(GRAY_PARAMETER);
+            MDC.remove(GRAY_PARAMETER);
+            BaseParameterHolder.removeParameter(USER_ID);
+            MDC.remove(USER_ID);
+            BaseParameterHolder.removeParameter(CODE);
+            MDC.remove(CODE);
         }
     }
 }

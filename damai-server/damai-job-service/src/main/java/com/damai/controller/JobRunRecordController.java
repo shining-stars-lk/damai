@@ -19,15 +19,15 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/jobRunRecord")
-@Api(tags = "jobRunRecord", description = "任务执行记录")
+@Api(tags = "jobRunRecord", value = "任务执行记录")
 public class JobRunRecordController {
     
     @Autowired
     private JobRunRecordService jobRunRecordService;
     
     @RequestMapping(value = "/callBack",method = RequestMethod.POST)
-    public ApiResponse<Integer> callBack(@Valid @RequestBody JobCallBackDto JobCallBackDto) {
-        return ApiResponse.ok(jobRunRecordService.callBack(JobCallBackDto));
+    public ApiResponse<Integer> callBack(@Valid @RequestBody JobCallBackDto jobCallBackDto) {
+        return ApiResponse.ok(jobRunRecordService.callBack(jobCallBackDto));
     }
     
     

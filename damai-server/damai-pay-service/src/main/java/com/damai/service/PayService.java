@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.damai.dto.NotifyDto;
+import com.damai.dto.PayBillDto;
 import com.damai.dto.PayDto;
 import com.damai.dto.TradeCheckDto;
 import com.damai.entity.PayBill;
@@ -21,6 +22,7 @@ import com.damai.pay.TradeResult;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.util.DateUtils;
 import com.damai.vo.NotifyVo;
+import com.damai.vo.PayBillVo;
 import com.damai.vo.TradeCheckVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +73,7 @@ public class PayService {
                 payDto.getSubject(),payDto.getNotifyUrl(),payDto.getReturnUrl());
         if (pay.isSuccess()) {
             payBill = new PayBill();
-            payBill.setId(uidGenerator.getUID());
+            payBill.setId(uidGenerator.getUid());
             payBill.setOutOrderNo(String.valueOf(payDto.getOrderNumber()));
             payBill.setPayChannel(payDto.getChannel());
             payBill.setPayScene("生产");
@@ -89,18 +91,15 @@ public class PayService {
     @Transactional(rollbackFor = Exception.class)
     public NotifyVo notify(NotifyDto notifyDto){
         NotifyVo notifyVo = new NotifyVo();
-        
         log.info("回调通知参数 ===> {}", JSON.toJSONString(notifyDto));
         Map<String, String> params = notifyDto.getParams();
-        //验签
+   
         PayStrategyHandler payStrategyHandler = payStrategyContext.get(notifyDto.getChannel());
         boolean signVerifyResult = payStrategyHandler.signVerify(params);
         if (!signVerifyResult) {
             notifyVo.setPayResult(ALIPAY_NOTIFY_FAILURE_RESULT);
             return notifyVo;
         }
-        //按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验
-        //1 商户需要验证该通知数据中的 out_trade_no 是否为商户系统中创建的订单号
         LambdaQueryWrapper<PayBill> payBillLambdaQueryWrapper =
                 Wrappers.lambdaQuery(PayBill.class).eq(PayBill::getOutOrderNo, params.get("out_trade_no"));
         PayBill payBill = payBillMapper.selectOne(payBillLambdaQueryWrapper);
@@ -127,7 +126,6 @@ public class PayService {
             notifyVo.setPayResult(ALIPAY_NOTIFY_SUCCESS_RESULT);
             return notifyVo;
         }
-        
         boolean dataVerify = payStrategyHandler.dataVerify(notifyDto.getParams(), payBill);
         if (!dataVerify) {
             notifyVo.setPayResult(ALIPAY_NOTIFY_FAILURE_RESULT);
@@ -135,10 +133,8 @@ public class PayService {
         }
         PayBill updatePayBill = new PayBill();
         updatePayBill.setPayBillStatus(PayBillStatus.PAY.getCode());
-        
         LambdaUpdateWrapper<PayBill> payBillLambdaUpdateWrapper =
                 Wrappers.lambdaUpdate(PayBill.class).eq(PayBill::getOutOrderNo, params.get("out_trade_no"));
-        
         payBillMapper.update(updatePayBill,payBillLambdaUpdateWrapper);
         notifyVo.setOutTradeNo(payBill.getOutOrderNo());
         notifyVo.setPayResult(ALIPAY_NOTIFY_SUCCESS_RESULT);
@@ -166,22 +162,32 @@ public class PayService {
             return tradeCheckVo;
         }
         if (payBill.getPayAmount().compareTo(totalAmount) != 0) {
-            log.error("支付宝和库中账单支付金额不一致 支付宝支付金额 : {}, 库中账单支付金额 : {}, tradeCheckDto : {}",
+            log.error("支付渠道 和库中账单支付金额不一致 支付渠道支付金额 : {}, 库中账单支付金额 : {}, tradeCheckDto : {}",
                     totalAmount,payBill.getPayAmount(),JSON.toJSONString(tradeCheckDto));
             return tradeCheckVo;
         }
         if (!Objects.equals(payBill.getPayBillStatus(), payBillStatus)) {
-            log.info("支付宝和库中账单交易状态不一致 支付宝payBillStatus : {}, 库中payBillStatus : {}, tradeCheckDto : {}",
+            log.warn("支付渠道和库中账单交易状态不一致 支付渠道payBillStatus : {}, 库中payBillStatus : {}, tradeCheckDto : {}",
                     payBillStatus,payBill.getPayBillStatus(),JSON.toJSONString(tradeCheckDto));
             PayBill updatePayBill = new PayBill();
             updatePayBill.setId(payBill.getId());
             updatePayBill.setPayBillStatus(payBillStatus);
-            
             LambdaUpdateWrapper<PayBill> payBillLambdaUpdateWrapper =
                     Wrappers.lambdaUpdate(PayBill.class).eq(PayBill::getOutOrderNo, outTradeNo);
             payBillMapper.update(updatePayBill,payBillLambdaUpdateWrapper);
             return tradeCheckVo;
         }
         return tradeCheckVo;
+    }
+    
+    public PayBillVo detail(PayBillDto payBillDto) {
+        PayBillVo payBillVo = new PayBillVo();
+        LambdaQueryWrapper<PayBill> payBillLambdaQueryWrapper =
+                Wrappers.lambdaQuery(PayBill.class).eq(PayBill::getOutOrderNo, payBillDto.getOrderNumber());
+        PayBill payBill = payBillMapper.selectOne(payBillLambdaQueryWrapper);
+        if (Objects.nonNull(payBill)) {
+            BeanUtil.copyProperties(payBill,payBillVo);
+        }
+        return payBillVo;
     }
 }

@@ -20,7 +20,6 @@ public class MybatisPlusGenerator {
                 .globalConfig(builder -> {
                     builder.author("k") // 设置作者
                             //.enableSwagger() // 开启 swagger 模式
-                            .fileOverride() // 覆盖已生成文件
                             .outputDir("D://"); // 指定输出目录
                 })
                 .dataSourceConfig(builder -> builder.typeConvertHandler((globalConfig, typeRegistry, metaInfo) -> {
@@ -39,13 +38,17 @@ public class MybatisPlusGenerator {
                 .packageConfig(builder -> {
                     builder.parent("baomidou") // 设置父包名
                             .moduleName("system") // 设置父包模块名
-                            .pathInfo(Collections.singletonMap(OutputFile.xml, "D://baomidou/mybatispluscode")); // 设置mapperXml生成路径
+                            // 设置mapperXml生成路径
+                            .pathInfo(Collections.singletonMap(OutputFile.xml, "D://baomidou/mybatispluscode")); 
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("d_user_mobile") // 设置需要生成的表名
-                            .addTablePrefix("d_"); // 设置过滤表前缀
+                    // 设置需要生成的表名
+                    builder.addInclude("d_user_mobile")
+                            // 设置过滤表前缀
+                            .addTablePrefix("d_"); 
                 })
-                .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
+                // 使用Freemarker引擎模板，默认的是Velocity引擎模板
+                .templateEngine(new FreemarkerTemplateEngine()) 
                 .execute();
     }
 }

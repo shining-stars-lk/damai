@@ -2,7 +2,7 @@ package com.damai.service;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.dto.AllRuleDto;
 import com.damai.dto.DepthRuleDto;
 import com.damai.enums.BaseCode;

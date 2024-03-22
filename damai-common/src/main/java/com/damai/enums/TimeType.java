@@ -6,8 +6,15 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum TimeType {
-    WEEK(1,"本周内"),
-    MONTH(2,"一个月内"),
+    /**
+     * 时间类型
+     * */
+    ALL(0,"全部"),
+    TODAY(1,"今天"),
+    TOMORROW(2,"明天"),
+    WEEK(3,"本周内"),
+    MONTH(4,"一个月内"),
+    CALENDAR(5,"按日历"),
     ;
 
     private Integer code;

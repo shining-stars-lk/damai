@@ -25,4 +25,6 @@ public class GatewayConstant {
     
     public static final String USER_ID = "user_id";
     
+    public static final String V2 = "v2";
+    
 }

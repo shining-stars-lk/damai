@@ -66,15 +66,18 @@ if (api_rule_type == 2) then
                     trigger_result = 1
                     trigger_call_Stat = 2
                     message_index = index
-                    return {trigger_result,trigger_call_Stat,api_count,threshold,message_index}
+                    return string.format('{"triggerResult": %d, "triggerCallStat": %d, "apiCount": %d, "threshold": %d, "messageIndex": %d}'
+                    ,trigger_result,trigger_call_Stat,api_count,threshold,message_index)
                 end
             end
             if (redis.call('exists', depth_rule_limit_key) == 1) then
                 trigger_result = 1
                 message_index = index
-                return {trigger_result,trigger_call_Stat,api_count,threshold,message_index}
+                return string.format('{"triggerResult": %d, "triggerCallStat": %d, "apiCount": %d, "threshold": %d, "messageIndex": %d}'
+                ,trigger_result,trigger_call_Stat,api_count,threshold,message_index)
             end
         end
     end
 end
-return {trigger_result,trigger_call_Stat,api_count,threshold,message_index}
+return string.format('{"triggerResult": %d, "triggerCallStat": %d, "apiCount": %d, "threshold": %d, "messageIndex": %d}'
+,trigger_result,trigger_call_Stat,api_count,threshold,message_index)

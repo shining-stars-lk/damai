@@ -29,7 +29,7 @@ import java.util.Map;
  **/
 @RestController
 @RequestMapping("/program")
-@Api(tags = "program", description = "节目")
+@Api(tags = "program", value = "节目")
 public class ProgramController {
     
     @Autowired
@@ -63,15 +63,5 @@ public class ProgramController {
     @PostMapping(value = "/detail")
     public ApiResponse<ProgramVo> getDetail(@Valid @RequestBody ProgramGetDto programGetDto) {
         return ApiResponse.ok(programService.getDetail(programGetDto));
-    }
-    
-    @PostMapping(value = "/es/index/add")
-    public ApiResponse<Void> indexAdd(@Valid @RequestBody ProgramGetDto programGetDto) {
-        programService.indexAdd(programGetDto);
-        return ApiResponse.ok();
-    }
-    @PostMapping(value = "/es/data/add")
-    public ApiResponse<ProgramVo> dataAdd(@Valid @RequestBody ProgramGetDto programGetDto) {
-        return ApiResponse.ok(programService.dataAdd(programGetDto));
     }
 }

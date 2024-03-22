@@ -10,30 +10,30 @@ import java.util.Map;
  **/
 public class EurekaAutoConfigurationBean {
     
-    private static final String DiscoveryClientOptionalArgsConfiguration = "org.springframework.cloud.netflix.eureka.config.DiscoveryClientOptionalArgsConfiguration";
+    private static final String DISCOVERY_CLIENT_OPTIONAL_ARGS_CONFIGURATION = "org.springframework.cloud.netflix.eureka.config.DiscoveryClientOptionalArgsConfiguration";
     
-    private static final String EurekaClientAutoConfiguration = "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration";
+    private static final String EUREKA_CLIENT_AUTO_CONFIGURATION = "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration";
     
-    private static final String RibbonEurekaAutoConfiguration = "org.springframework.cloud.netflix.ribbon.eureka.RibbonEurekaAutoConfiguration";
+    private static final String RIBBON_EUREKA_AUTO_CONFIGURATION = "org.springframework.cloud.netflix.ribbon.eureka.RibbonEurekaAutoConfiguration";
     
-    private static final String EurekaDiscoveryClientConfiguration = "org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration";
+    private static final String EUREKA_DISCOVERY_CLIENT_CONFIGURATION = "org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration";
     
-    private static final String EurekaReactiveDiscoveryClientConfiguration = "org.springframework.cloud.netflix.eureka.reactive.EurekaReactiveDiscoveryClientConfiguration";
+    private static final String EUREKA_REACTIVE_DISCOVERY_CLIENT_CONFIGURATION = "org.springframework.cloud.netflix.eureka.reactive.EurekaReactiveDiscoveryClientConfiguration";
     
-    private static final String LoadBalancerEurekaAutoConfiguration = "org.springframework.cloud.netflix.eureka.loadbalancer.LoadBalancerEurekaAutoConfiguration";
+    private static final String LOAD_BALANCER_EUREKA_AUTO_CONFIGURATION = "org.springframework.cloud.netflix.eureka.loadbalancer.LoadBalancerEurekaAutoConfiguration";
     
-    private static final Map<String,String> map = new HashMap<>(10);
+    private static final Map<String,String> MAP = new HashMap<>(10);
     
     static {
-        map.put(DiscoveryClientOptionalArgsConfiguration,DiscoveryClientOptionalArgsConfiguration);
-        map.put(EurekaClientAutoConfiguration,EurekaClientAutoConfiguration);
-        map.put(RibbonEurekaAutoConfiguration,RibbonEurekaAutoConfiguration);
-        map.put(EurekaDiscoveryClientConfiguration,EurekaDiscoveryClientConfiguration);
-        map.put(EurekaReactiveDiscoveryClientConfiguration,EurekaReactiveDiscoveryClientConfiguration);
-        map.put(LoadBalancerEurekaAutoConfiguration,LoadBalancerEurekaAutoConfiguration);
+        MAP.put(DISCOVERY_CLIENT_OPTIONAL_ARGS_CONFIGURATION, DISCOVERY_CLIENT_OPTIONAL_ARGS_CONFIGURATION);
+        MAP.put(EUREKA_CLIENT_AUTO_CONFIGURATION, EUREKA_CLIENT_AUTO_CONFIGURATION);
+        MAP.put(RIBBON_EUREKA_AUTO_CONFIGURATION, RIBBON_EUREKA_AUTO_CONFIGURATION);
+        MAP.put(EUREKA_DISCOVERY_CLIENT_CONFIGURATION, EUREKA_DISCOVERY_CLIENT_CONFIGURATION);
+        MAP.put(EUREKA_REACTIVE_DISCOVERY_CLIENT_CONFIGURATION, EUREKA_REACTIVE_DISCOVERY_CLIENT_CONFIGURATION);
+        MAP.put(LOAD_BALANCER_EUREKA_AUTO_CONFIGURATION, LOAD_BALANCER_EUREKA_AUTO_CONFIGURATION);
     }
     
     public static Map<String,String> autoConfigurationBeanNameMap() {
-        return map;
+        return MAP;
     }
 }

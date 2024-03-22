@@ -24,7 +24,7 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/depthRule")
-@Api(tags = "depthRule", description = "深度规则")
+@Api(tags = "depthRule", value = "深度规则")
 public class DepthRuleController {
 
     @Autowired

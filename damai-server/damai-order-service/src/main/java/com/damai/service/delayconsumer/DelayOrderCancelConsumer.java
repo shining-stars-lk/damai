@@ -1,7 +1,8 @@
 package com.damai.service.delayconsumer;
 
 import com.alibaba.fastjson.JSON;
-import com.damai.core.StringUtil;
+import com.damai.core.SpringUtil;
+import com.damai.util.StringUtil;
 import com.damai.core.ConsumerTask;
 import com.damai.dto.DelayOrderCancelDto;
 import com.damai.dto.OrderCancelDto;
@@ -46,6 +47,6 @@ public class DelayOrderCancelConsumer implements ConsumerTask {
     
     @Override
     public String topic() {
-        return DELAY_ORDER_CANCEL_TOPIC;
+        return SpringUtil.getPrefixDistinctionName() + "-" + DELAY_ORDER_CANCEL_TOPIC;
     }
 }

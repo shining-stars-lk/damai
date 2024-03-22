@@ -1,7 +1,7 @@
 package com.damai.redis;
 
 import com.alibaba.fastjson.util.ParameterizedTypeImpl;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
@@ -53,12 +53,12 @@ public class CacheUtil {
     }
 
     /**
-     * 检查 redisKeyWrap 中的key是否为空或空的字符串
+     * 检查 redisKeyBuild 中的key是否为空或空的字符串
      *
-     * @param RedisKeyWrap
+     * @param redisKeyBuild key包装
      */
-    public static void checkNotBlank(RedisKeyWrap RedisKeyWrap) {
-        if (StringUtil.isEmpty(RedisKeyWrap.getRelKey())) {
+    public static void checkNotBlank(RedisKeyBuild redisKeyBuild) {
+        if (StringUtil.isEmpty(redisKeyBuild.getRelKey())) {
             throw new RuntimeException("请求参数缺失");
         }
     }
@@ -79,9 +79,9 @@ public class CacheUtil {
     /**
      * 检查 list 是否为空或空的字符串
      *
-     * @param list
+     * @param list key集合
      */
-    public static void checkNotEmpty(Collection list) {
+    public static void checkNotEmpty(Collection<?> list) {
         for (Object o : list) {
             if (o == null) {
                 throw new RuntimeException("请求参数缺失");
@@ -103,7 +103,6 @@ public class CacheUtil {
     /**
      * 判断 object 是否为空
      *
-     * @param object
      */
     public static boolean isEmpty(Object object) {
         if (object == null) {
@@ -113,13 +112,13 @@ public class CacheUtil {
             return StringUtil.isEmpty((String) object);
         }
         if (object instanceof Collection) {
-            return ((Collection<?>)object).size() == 0;
+            return ((Collection<?>) object).isEmpty();
         }
         return false;
     }
 
-    public static List<String> getBatchKey(Collection<RedisKeyWrap> list){
-        return list.stream().map(RedisKeyWrap::getRelKey).collect(Collectors.toList());
+    public static List<String> getBatchKey(Collection<RedisKeyBuild> list){
+        return list.stream().map(RedisKeyBuild::getRelKey).collect(Collectors.toList());
     }
 
 }

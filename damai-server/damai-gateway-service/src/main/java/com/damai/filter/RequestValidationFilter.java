@@ -1,22 +1,22 @@
 package com.damai.filter;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.damai.conf.RequestTemporaryWrapper;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.enums.BaseCode;
 import com.damai.exception.ArgumentError;
 import com.damai.exception.ArgumentException;
-import com.damai.exception.CheckCodeHandler;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.property.GatewayProperty;
 import com.damai.service.ApiRestrictService;
 import com.damai.service.ChannelDataService;
 import com.damai.service.TokenService;
 import com.damai.threadlocal.BaseParameterHolder;
-import com.damai.util.RSATool;
 import com.damai.util.RsaSignTool;
+import com.damai.util.RsaTool;
 import com.damai.vo.GetChannelDataVo;
 import com.damai.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
@@ -43,14 +43,14 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
-import static com.damai.constant.Constant.MARK_PARAMETER;
+import static com.damai.constant.Constant.GRAY_PARAMETER;
 import static com.damai.constant.Constant.TRACE_ID;
 import static com.damai.constant.GatewayConstant.BUSINESS_BODY;
 import static com.damai.constant.GatewayConstant.CODE;
@@ -59,6 +59,7 @@ import static com.damai.constant.GatewayConstant.NO_VERIFY;
 import static com.damai.constant.GatewayConstant.REQUEST_BODY;
 import static com.damai.constant.GatewayConstant.TOKEN;
 import static com.damai.constant.GatewayConstant.USER_ID;
+import static com.damai.constant.GatewayConstant.V2;
 import static com.damai.constant.GatewayConstant.VERIFY_VALUE;
 
 /**
@@ -85,34 +86,32 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
 
     @Autowired
     private GatewayProperty gatewayProperty;
-    @Resource
-    private UidGenerator uidGenerator;
     
     @Autowired
-    private CheckCodeHandler checkCodeHandler;
+    private UidGenerator uidGenerator;
     
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String traceId = request.getHeaders().getFirst(TRACE_ID);
-        String mark = request.getHeaders().getFirst(MARK_PARAMETER);
+        String gray = request.getHeaders().getFirst(GRAY_PARAMETER);
         String noVerify = request.getHeaders().getFirst(NO_VERIFY);
         if (StringUtil.isEmpty(traceId)) {
-            traceId = String.valueOf(uidGenerator.getUID());
+            traceId = String.valueOf(uidGenerator.getUid());
         }
         MDC.put(TRACE_ID,traceId);
-        Map<String,String> headMap = new HashMap<>();
+        Map<String,String> headMap = new HashMap<>(8);
         headMap.put(TRACE_ID,traceId);
-        headMap.put(MARK_PARAMETER,mark);
+        headMap.put(GRAY_PARAMETER,gray);
         if (StringUtil.isNotEmpty(noVerify)) {
             headMap.put(NO_VERIFY,noVerify);
         }
         BaseParameterHolder.setParameter(TRACE_ID,traceId);
-        BaseParameterHolder.setParameter(MARK_PARAMETER,mark);
+        BaseParameterHolder.setParameter(GRAY_PARAMETER,gray);
         MediaType contentType = request.getHeaders().getContentType();
         //application json请求
-        if (contentType != null && contentType.toString().toLowerCase().contains(MediaType.APPLICATION_JSON_VALUE.toLowerCase())) {
+        if (Objects.nonNull(contentType) && contentType.toString().toLowerCase().contains(MediaType.APPLICATION_JSON_VALUE.toLowerCase())) {
             return readBody(exchange,chain,headMap);
         }else {
             Map<String, String> map = doExecute("", exchange);
@@ -162,7 +161,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         log.info("current thread verify: {}",Thread.currentThread().getName());
         ServerHttpRequest request = exchange.getRequest();
         String requestBody = originalBody;
-        Map<String, String> bodyContent = new HashMap<>();
+        Map<String, String> bodyContent = new HashMap<>(32);
         if (StringUtil.isNotEmpty(originalBody)) {
             bodyContent = JSON.parseObject(originalBody, Map.class);
         }
@@ -179,12 +178,10 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             //token
             token = request.getHeaders().getFirst(TOKEN);
             
-            checkCodeHandler.checkCode(code);
-            
             GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
             
-            if (StringUtil.isNotEmpty(encrypt) && "v2".equals(encrypt)) {
-                String decrypt = RSATool.decrypt(bodyContent.get(BUSINESS_BODY),channelDataVo.getDataSecretKey());
+            if (StringUtil.isNotEmpty(encrypt) && V2.equals(encrypt)) {
+                String decrypt = RsaTool.decrypt(bodyContent.get(BUSINESS_BODY),channelDataVo.getDataSecretKey());
                 bodyContent.put(BUSINESS_BODY,decrypt);
             }
             boolean checkFlag = RsaSignTool.verifyRsaSign256(bodyContent, channelDataVo.getSignPublicKey());
@@ -203,7 +200,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             }
 
             if (!skipCheckTokenResult) {
-                UserVo userVo = tokenService.getUser(token);
+                UserVo userVo = tokenService.getUser(token,code,channelDataVo.getTokenSecret());
                 userId = userVo.getId();
             }
             
@@ -220,7 +217,9 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         }
         return map;
     }
-    //将网关层request请求头中的重要参数传递给后续的微服务中
+    /**
+     * 将网关层request请求头中的重要参数传递给后续的微服务中
+     */
     private ServerHttpRequestDecorator decorateHead(ServerWebExchange exchange, HttpHeaders headers, CachedBodyOutputMessage outputMessage, RequestTemporaryWrapper requestTemporaryWrapper, Map<String,String> headMap){
         return new ServerHttpRequestDecorator(exchange.getRequest()){
             @Override
@@ -230,10 +229,10 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 HttpHeaders newHeaders = new HttpHeaders();
                 newHeaders.putAll(headers);
                 Map<String, String> map = requestTemporaryWrapper.getMap();
-                if (map != null) {
+                if (CollectionUtil.isNotEmpty(map)) {
                     newHeaders.setAll(map);
                 }
-                if (headMap != null) {
+                if (CollectionUtil.isNotEmpty(headMap)) {
                     newHeaders.setAll(headMap);
                 }
                 if (contentLength > 0){
@@ -241,7 +240,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 }else {
                     newHeaders.set(HttpHeaders.TRANSFER_ENCODING,"chunked");
                 }
-                if (headMap != null && StringUtil.isNotEmpty(headMap.get(TRACE_ID))) {
+                if (CollectionUtil.isNotEmpty(headMap) && StringUtil.isNotEmpty(headMap.get(TRACE_ID))) {
                     MDC.put(TRACE_ID,headMap.get(TRACE_ID));
                 }
                 return newHeaders;
@@ -260,12 +259,10 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     }
 
     public boolean skipCheckToken(String url){
-        if (gatewayProperty.getSkipCheckTokenPaths() != null) {
-            for (String skipCheckTokenPath : gatewayProperty.getSkipCheckTokenPaths()) {
-                PathMatcher matcher = new AntPathMatcher();
-                if(matcher.match(skipCheckTokenPath, url)){
-                    return true;
-                }
+        for (String skipCheckTokenPath : gatewayProperty.getSkipCheckTokenPaths()) {
+            PathMatcher matcher = new AntPathMatcher();
+            if (matcher.match(skipCheckTokenPath, url)) {
+                return true;
             }
         }
         return false;
