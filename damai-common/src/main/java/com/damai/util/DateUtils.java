@@ -112,6 +112,13 @@ public class DateUtils {
         return parseDateTime(getFormatedDateString(8,FORMAT_SECOND));
     }
     
+    /**
+     * 获取北京当前时间
+     * */
+    public static Date now(String format){
+        return parseDateTime(getFormatedDateString(8,format),format);
+    }
+    
     public static String nowStr(){
         return getFormatedDateString(8, FORMAT_SECOND);
     }
@@ -204,6 +211,17 @@ public class DateUtils {
      */
     public static Date parseDateTime(String dateTimeStr) {
         return parse(dateTimeStr, FORMAT_SECOND);
+    }
+    
+    /**
+     * 按照format 格式时间转化为 Date 格式时间
+     *
+     * @param dateTimeStr yyyy-MM-dd HH:mm:ss 格式时间（如：2022-06-17 16:06:17）
+     * @param format 格式
+     * @return Date 格式时间
+     */
+    public static Date parseDateTime(String dateTimeStr,String format) {
+        return parse(dateTimeStr, format);
     }
  
     /**
@@ -450,15 +468,16 @@ public class DateUtils {
      * @return -1（时间为空），其他数字（今年的第几周）
      */
     public static int getWeekOfYearIgnoreLastYear(Date date) {
+        int seven = 7;
         if (Objects.isNull(date)) {
             return -1;
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int days = calendar.get(Calendar.DAY_OF_YEAR);
-        int weeks = days / 7;
+        int weeks = days / seven;
         // 如果是 7 的倍数，则表示恰好是多少周
-        if (days % 7 == 0) {
+        if (days % seven == 0) {
             return weeks;
         }
         // 如果有余数，则需要再加 1
@@ -849,7 +868,9 @@ public class DateUtils {
      * @return
      */
     public static String getFormatedDateString(float timeZoneOffset, String pattern) {
-        if (timeZoneOffset > 13 || timeZoneOffset < -12) {
+        int thirteen = 13;
+        int minusTwelve = -12;
+        if (timeZoneOffset > thirteen || timeZoneOffset < minusTwelve) {
             timeZoneOffset = 0;
         }
         

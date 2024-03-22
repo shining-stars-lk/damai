@@ -2,10 +2,9 @@ package com.damai.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.damai.common.ApiResponse;
-import com.damai.core.StringUtil;
-import com.damai.exception.CheckCodeHandler;
+import com.damai.util.StringUtil;
 import com.damai.service.ChannelDataService;
-import com.damai.util.RSATool;
+import com.damai.util.RsaTool;
 import com.damai.vo.GetChannelDataVo;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -36,6 +35,7 @@ import java.util.function.BiFunction;
 import static com.damai.constant.GatewayConstant.CODE;
 import static com.damai.constant.GatewayConstant.ENCRYPT;
 import static com.damai.constant.GatewayConstant.NO_VERIFY;
+import static com.damai.constant.GatewayConstant.V2;
 import static com.damai.constant.GatewayConstant.VERIFY_VALUE;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR;
 
@@ -54,11 +54,6 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
 
     @Autowired
     private ChannelDataService channelDataService;
-    
-    @Autowired
-    private CheckCodeHandler checkCodeHandler;
-    
-
 
     @Override
     public int getOrder() {
@@ -129,16 +124,13 @@ public class ResponseValidationFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = serverWebExchange.getRequest();
         String noVerify = request.getHeaders().getFirst(NO_VERIFY);
         String encrypt = request.getHeaders().getFirst(ENCRYPT);
-        if ((!VERIFY_VALUE.equals(noVerify)) && "v2".equals(encrypt) && StringUtil.isNotEmpty(responseBody)) {
+        if ((!VERIFY_VALUE.equals(noVerify)) && V2.equals(encrypt) && StringUtil.isNotEmpty(responseBody)) {
             ApiResponse apiResponse = JSON.parseObject(responseBody, ApiResponse.class);
             Object data = apiResponse.getData();
             if (data != null) {
                 String code = request.getHeaders().getFirst(CODE);
-                
-                checkCodeHandler.checkCode(code);
-                
                 GetChannelDataVo channelDataVo = channelDataService.getChannelDataByCode(code);
-                String rsaEncrypt = RSATool.encrypt(JSON.toJSONString(data),channelDataVo.getDataPublicKey());
+                String rsaEncrypt = RsaTool.encrypt(JSON.toJSONString(data),channelDataVo.getDataPublicKey());
                 apiResponse.setData(rsaEncrypt);
                 modifyResponseBody = JSON.toJSONString(apiResponse);
             }

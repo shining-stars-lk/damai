@@ -1,17 +1,19 @@
 package com.damai.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.damai.data.BaseTableData;
 import lombok.Data;
 
-import java.util.Date;
+import java.io.Serializable;
 
 /**
- * @program: cook-frame
- * @description:
- * @author: 星哥
- * @create: 2023-06-30
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @description: 深度规则 实体
+ * @author: 阿宽不是程序员
  **/
 @Data
-public class DepthRule {
+@TableName("d_depth_rule")
+public class DepthRule extends BaseTableData implements Serializable {
     
     private Long id;
     
@@ -32,8 +34,4 @@ public class DepthRule {
     private String limitApi;
     
     private String message;
-    
-    private Integer status;
-    
-    private Date createTime;
 }

@@ -1,6 +1,6 @@
 package com.damai.exception;
 
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.enums.BaseCode;
 import org.springframework.stereotype.Component;
 

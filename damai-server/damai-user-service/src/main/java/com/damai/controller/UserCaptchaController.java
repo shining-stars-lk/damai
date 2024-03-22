@@ -4,7 +4,7 @@ import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.damai.common.ApiResponse;
 import com.damai.service.UserCaptchaService;
-import com.damai.vo.CheckVerifyVo;
+import com.damai.vo.CheckNeedCaptchaDataVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  **/
 @RestController
 @RequestMapping("/user/captcha")
-@Api(tags = "captcha", description = "验证码")
+@Api(tags = "captcha", value = "验证码")
 public class UserCaptchaController {
     
     @Autowired
@@ -28,7 +28,7 @@ public class UserCaptchaController {
     
     @ApiOperation(value = "检查是否需要验证码")
     @PostMapping(value = "/check/need")
-    public ApiResponse<CheckVerifyVo> checkNeedCaptcha(){
+    public ApiResponse<CheckNeedCaptchaDataVo> checkNeedCaptcha(){
         return ApiResponse.ok(userCaptchaService.checkNeedCaptcha());
     }
     

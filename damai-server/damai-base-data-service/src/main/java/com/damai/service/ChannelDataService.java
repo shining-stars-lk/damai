@@ -3,13 +3,13 @@ package com.damai.service;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.ChannelDataAddDto;
 import com.damai.dto.GetChannelDataByCodeDto;
-import com.damai.entity.ChannelData;
+import com.damai.entity.ChannelTableData;
 import com.damai.enums.Status;
 import com.damai.mapper.ChannelDataMapper;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.util.DateUtils;
 import com.damai.vo.GetChannelDataVo;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +41,9 @@ public class ChannelDataService {
     
     public GetChannelDataVo getByCode(GetChannelDataByCodeDto dto){
         GetChannelDataVo getChannelDataVo = new GetChannelDataVo();
-        LambdaQueryWrapper<ChannelData> wrapper = Wrappers.lambdaQuery(ChannelData.class)
-                .eq(ChannelData::getStatus, Status.RUN.getCode())
-                .eq(ChannelData::getCode,dto.getCode());
+        LambdaQueryWrapper<ChannelTableData> wrapper = Wrappers.lambdaQuery(ChannelTableData.class)
+                .eq(ChannelTableData::getStatus, Status.RUN.getCode())
+                .eq(ChannelTableData::getCode,dto.getCode());
         Optional.ofNullable(channelDataMapper.selectOne(wrapper)).ifPresent(channelData -> {
             BeanUtils.copyProperties(channelData,getChannelDataVo);
         });
@@ -52,17 +52,17 @@ public class ChannelDataService {
     
     @Transactional(rollbackFor = Exception.class)
     public void add(ChannelDataAddDto channelDataAddDto) {
-        ChannelData channelData = new ChannelData();
+        ChannelTableData channelData = new ChannelTableData();
         BeanUtils.copyProperties(channelDataAddDto,channelData);
-        channelData.setId(uidGenerator.getUID());
+        channelData.setId(uidGenerator.getUid());
         channelData.setCreateTime(DateUtils.now());
         channelDataMapper.insert(channelData);
         addRedisChannelData(channelData);
     }
     
-    private void addRedisChannelData(ChannelData channelData){
+    private void addRedisChannelData(ChannelTableData channelData){
         GetChannelDataVo getChannelDataVo = new GetChannelDataVo();
         BeanUtils.copyProperties(channelData,getChannelDataVo);
-        redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.CHANNEL_DATA,getChannelDataVo.getCode()),getChannelDataVo);
+        redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.CHANNEL_DATA,getChannelDataVo.getCode()),getChannelDataVo);
     }
 }

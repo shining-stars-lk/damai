@@ -38,12 +38,22 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
+            <artifactId>damai-service-initialize</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
             <artifactId>damai-redis-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
             <artifactId>damai-service-lock-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-repeat-execute-limit-framework</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
@@ -150,6 +160,14 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>${snakeyaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-datasource-nacos</artifactId>
         </dependency>
     </dependencies>
 

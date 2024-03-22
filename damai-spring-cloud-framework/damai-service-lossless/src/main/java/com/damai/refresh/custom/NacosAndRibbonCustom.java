@@ -1,6 +1,10 @@
 package com.damai.refresh.custom;
 
+import com.alibaba.nacos.api.naming.pojo.ServiceInfo;
+import com.netflix.loadbalancer.Server;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,10 +29,10 @@ public class NacosAndRibbonCustom {
         return true;
     }
 
-    public Map getNacosAndRibbonCacheList() {
-        Map nacosCache = nacosCustom.getNacosCache();
-        Map ribbonCache = ribbonCustom.getRibbonCache();
-        Map map = new HashMap();
+    public Map<String,?> getNacosAndRibbonCacheList() {
+        Map<String, ServiceInfo> nacosCache = nacosCustom.getNacosCache();
+        Map<String,Map<String, List<Server>>> ribbonCache = ribbonCustom.getRibbonCache();
+        Map<String,Map<String,?>> map = new HashMap<>(8);
         map.put("nacosCache",nacosCache);
         map.put("ribbonCache",ribbonCache);
         return map;

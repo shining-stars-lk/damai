@@ -1,6 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.damai.config.DaMaiCommonAutoConfig
-org.springframework.boot.SpringApplicationRunListener=\
-  com.damai.runlistener.CustomEventPublishingRunListener
 org.springframework.boot.env.EnvironmentPostProcessor=\
   com.damai.environment.SpringEnvironment

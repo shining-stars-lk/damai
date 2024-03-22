@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.client.PayClient;
 import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.NotifyDto;
 import com.damai.dto.OrderCancelDto;
 import com.damai.dto.OrderCreateDto;
@@ -38,7 +38,8 @@ import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.OrderMapper;
 import com.damai.mapper.OrderTicketUserMapper;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
+import com.damai.repeatexecutelimit.annotion.RepeatExecuteLimit;
 import com.damai.service.delaysend.DelayOperateProgramDataSend;
 import com.damai.service.properties.OrderProperties;
 import com.damai.servicelock.annotion.ServiceLock;
@@ -50,6 +51,7 @@ import com.damai.vo.OrderPayCheckVo;
 import com.damai.vo.OrderTicketUserVo;
 import com.damai.vo.SeatVo;
 import com.damai.vo.TicketUserInfoVo;
+import com.damai.vo.TicketUserVo;
 import com.damai.vo.TradeCheckVo;
 import com.damai.vo.UserAndTicketUserInfoVo;
 import com.damai.vo.UserGetAndTicketUserListVo;
@@ -69,6 +71,7 @@ import java.util.stream.Collectors;
 import static com.damai.constant.Constant.ALIPAY_NOTIFY_SUCCESS_RESULT;
 import static com.damai.core.DistributedLockConstants.ORDER_CANCEL_LOCK;
 import static com.damai.core.DistributedLockConstants.ORDER_PAY_CHECK;
+import static com.damai.core.RepeatExecuteLimitConstants.CANCEL_PROGRAM_ORDER;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
@@ -122,12 +125,11 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         }
         Order order = new Order();
         BeanUtil.copyProperties(orderCreateDto,order);
-        
         List<OrderTicketUser> orderTicketUserList = new ArrayList<>();
         for (OrderTicketUserCreateDto orderTicketUserCreateDto : orderCreateDto.getOrderTicketUserCreateDtoList()) {
             OrderTicketUser orderTicketUser = new OrderTicketUser();
             BeanUtil.copyProperties(orderTicketUserCreateDto,orderTicketUser);
-            orderTicketUser.setId(uidGenerator.getUID());
+            orderTicketUser.setId(uidGenerator.getUid());
             orderTicketUserList.add(orderTicketUser);
         }
         orderMapper.insert(order);
@@ -138,8 +140,9 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     /**
      * 订单取消，以订单编号加锁
      * */
-    @Transactional(rollbackFor = Exception.class)
+    @RepeatExecuteLimit(name = CANCEL_PROGRAM_ORDER,keys = {"#orderCancelDto.orderNumber"})
     @ServiceLock(name = ORDER_CANCEL_LOCK,keys = {"#orderCancelDto.orderNumber"})
+    @Transactional(rollbackFor = Exception.class)
     public boolean cancel(OrderCancelDto orderCancelDto){
         updateOrderRelatedData(orderCancelDto.getOrderNumber(),OrderStatus.CANCEL);
         return true;
@@ -165,7 +168,15 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (orderPayDto.getPrice().compareTo(order.getOrderPrice()) != 0) {
             throw new DaMaiFrameException(BaseCode.PAY_PRICE_NOT_EQUAL_ORDER_PRICE);
         }
-        //调用支付服务进行支付
+        PayDto payDto = getPayDto(orderPayDto, orderNumber);
+        ApiResponse<String> payResponse = payClient.commonPay(payDto);
+        if (!Objects.equals(payResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+            throw new DaMaiFrameException(payResponse);
+        }
+        return payResponse.getData();
+    }
+    
+    private PayDto getPayDto(OrderPayDto orderPayDto, Long orderNumber) {
         PayDto payDto = new PayDto();
         payDto.setOrderNumber(String.valueOf(orderNumber));
         payDto.setPayBillType(orderPayDto.getPayBillType());
@@ -175,11 +186,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         payDto.setPrice(orderPayDto.getPrice());
         payDto.setNotifyUrl(orderProperties.getOrderPayNotifyUrl());
         payDto.setReturnUrl(orderProperties.getOrderPayReturnUrl());
-        ApiResponse<String> payResponse = payClient.commonPay(payDto);
-        if (!Objects.equals(payResponse.getCode(), BaseCode.SUCCESS.getCode())) {
-            throw new DaMaiFrameException(payResponse);
-        }
-        return payResponse.getData();
+        return payDto;
     }
     
     /**
@@ -212,10 +219,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
                 orderPayCheckVo.setOrderStatus(payBillStatus);
                 if (Objects.equals(payBillStatus, PayBillStatus.PAY.getCode())) {
                     orderPayCheckVo.setPayOrderTime(DateUtils.now());
-                    updateOrderRelatedData(order.getId(),OrderStatus.PAY);
+                    orderService.updateOrderRelatedData(order.getId(),OrderStatus.PAY);
                 }else if (Objects.equals(payBillStatus, PayBillStatus.CANCEL.getCode())) {
                     orderPayCheckVo.setCancelOrderTime(DateUtils.now());
-                    updateOrderRelatedData(order.getId(),OrderStatus.CANCEL);
+                    orderService.updateOrderRelatedData(order.getId(),OrderStatus.CANCEL);
                 }
             }
         }else {
@@ -234,7 +241,6 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (!Objects.equals(notifyResponse.getCode(), BaseCode.SUCCESS.getCode())) {
             throw new DaMaiFrameException(notifyResponse);
         }
-        //将订单状态更新
         if (ALIPAY_NOTIFY_SUCCESS_RESULT.equals(notifyResponse.getData().getPayResult())) {
             orderService.updateOrderRelatedData(Long.parseLong(notifyResponse.getData().getOutTradeNo()),OrderStatus.PAY);
         }
@@ -253,27 +259,13 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         LambdaQueryWrapper<Order> orderLambdaQueryWrapper =
                 Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, orderNumber);
         Order order = orderMapper.selectOne(orderLambdaQueryWrapper);
-        if (Objects.isNull(order)) {
-            throw new DaMaiFrameException(BaseCode.ORDER_NOT_EXIST);
-        }
-        if (Objects.equals(order.getOrderStatus(), OrderStatus.CANCEL.getCode())) {
-            log.info("订单已取消 orderNumber : {}",orderNumber);
+        if (!checkOrderStatus(order)) {
             return;
         }
-        if (Objects.equals(order.getOrderStatus(), OrderStatus.PAY.getCode())) {
-            log.info("订单已支付 orderNumber : {}",orderNumber);
-            return;
-        }
-        if (Objects.equals(order.getOrderStatus(), OrderStatus.REFUND.getCode())) {
-            log.info("订单已退单 orderNumber : {}",orderNumber);
-            return;
-        }
-        //将订单更新为取消或者支付状态
         Order updateOrder = new Order();
         updateOrder.setId(order.getId());
         updateOrder.setOrderStatus(orderStatus.getCode());
         
-        //将购票人订单更新为取消或者支付状态
         OrderTicketUser updateOrderTicketUser = new OrderTicketUser();
         updateOrderTicketUser.setOrderStatus(orderStatus.getCode());
         if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
@@ -283,10 +275,8 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             updateOrder.setCancelOrderTime(DateUtils.now());
             updateOrderTicketUser.setCancelOrderTime(DateUtils.now());
         }
-        //更新订单
         int updateOrderResult = orderMapper.updateById(updateOrder);
         
-        //更新购票人订单
         LambdaUpdateWrapper<OrderTicketUser> orderTicketUserLambdaUpdateWrapper =
                 Wrappers.lambdaUpdate(OrderTicketUser.class).eq(OrderTicketUser::getOrderNumber, order.getOrderNumber());
         int updateTicketUserOrderResult =
@@ -294,25 +284,44 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (updateOrderResult <= 0 || updateTicketUserOrderResult <= 0) {
             throw new DaMaiFrameException(BaseCode.ORDER_CANAL_ERROR);
         }
-        
         LambdaQueryWrapper<OrderTicketUser> orderTicketUserLambdaQueryWrapper =
                 Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderNumber, order.getOrderNumber());
         List<OrderTicketUser> orderTicketUserList = orderTicketUserMapper.selectList(orderTicketUserLambdaQueryWrapper);
         if (CollectionUtil.isEmpty(orderTicketUserList)) {
             throw new DaMaiFrameException(BaseCode.TICKET_USER_ORDER_NOT_EXIST);
         }
-        Long programId = orderTicketUserList.get(0).getProgramId();
-        //查询到购票人的座位
+        Long programId = order.getProgramId();
         List<String> seatIdList =
                 orderTicketUserList.stream().map(OrderTicketUser::getSeatId).map(String::valueOf).collect(Collectors.toList());
-        //从redis中查询锁定中的座位
-        List<SeatVo> seatVoList = redisCache.multiGetForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId), seatIdList, SeatVo.class);
+        updateProgramRelatedData(programId,seatIdList,orderStatus);
+    }
+    
+    public boolean checkOrderStatus(Order order){
+        if (Objects.isNull(order)) {
+            throw new DaMaiFrameException(BaseCode.ORDER_NOT_EXIST);
+        }
+        if (Objects.equals(order.getOrderStatus(), OrderStatus.CANCEL.getCode())) {
+            log.info("订单已取消 orderNumber : {}",order.getOrderNumber());
+            return false;
+        }
+        if (Objects.equals(order.getOrderStatus(), OrderStatus.PAY.getCode())) {
+            log.info("订单已支付 orderNumber : {}",order.getOrderNumber());
+            return false;
+        }
+        if (Objects.equals(order.getOrderStatus(), OrderStatus.REFUND.getCode())) {
+            log.info("订单已退单 orderNumber : {}",order.getOrderNumber());
+            return false;
+        }
+        return true;
+    }
+    
+    public void updateProgramRelatedData(Long programId,List<String> seatIdList,OrderStatus orderStatus){
+        List<SeatVo> seatVoList = 
+                redisCache.multiGetForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId), 
+                        seatIdList, SeatVo.class);
         if (CollectionUtil.isEmpty(seatVoList)) {
             throw new DaMaiFrameException(BaseCode.LOCK_SEAT_LIST_EMPTY);
         }
-        
-        /**=====操作缓存相关数据====*/
-        //redis解除锁座位
         List<String> unLockSeatIdList = seatVoList.stream().map(SeatVo::getId).map(String::valueOf).collect(Collectors.toList());
         Map<String, SeatVo> unLockSeatVoMap = seatVoList.stream().collect(Collectors
                 .toMap(seatVo -> String.valueOf(seatVo.getId()), seatVo -> seatVo, (v1, v2) -> v2));
@@ -328,20 +337,15 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         });
         
         List<String> keys = new ArrayList<>();
-        //操作类型
         keys.add(String.valueOf(orderStatus.getCode()));
-        //锁定座位的key
-        keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
         
         Object[] data = new String[3];
-        //扣除锁定的座位数据
         data[0] = JSON.toJSONString(unLockSeatIdList);
-        //如果是订单取消的操作，那么添加到未售卖的座位数据
-        //如果是订单支付的操作，那么添加到已售卖的座位数据
         data[1] = JSON.toJSONString(seatDataList);
         
-        //根据座位集合统计出对应的票档数量
-        Map<Long, Long> ticketCategoryCountMap = seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, Collectors.counting()));
+        Map<Long, Long> ticketCategoryCountMap = 
+                seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, Collectors.counting()));
         JSONArray jsonArray = new JSONArray();
         ticketCategoryCountMap.forEach((k,v) -> {
             JSONObject jsonObject = new JSONObject();
@@ -351,19 +355,14 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         });
         
         if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
-            //没有售卖座位的key
-            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
-            //恢复库存的key
-            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
-            //恢复库存数据
+            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
+            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
             data[2] = JSON.toJSONString(jsonArray);
         }else if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
-            //已售卖座位的key
-            keys.add(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_SOLD_HASH, programId).getRelKey());
+            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId).getRelKey());
         }
         orderProgramCacheOperate.programCacheReverseOperate(keys,data);
         
-        //如果是支付成功了，发送延迟队列给program服务，将数据库中的票档的余票更新、座位状态更新
         if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
             ProgramOperateDataDto programOperateDataDto = new ProgramOperateDataDto();
             programOperateDataDto.setProgramId(programId);
@@ -383,9 +382,9 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             return orderListVos;
         }
         orderListVos = BeanUtil.copyToList(orderList, OrderListVo.class);
-        //每个订单下的购票人订单数量统计
         List<OrderTicketUserAggregate> orderTicketUserAggregateList = 
-                orderTicketUserMapper.selectOrderTicketUserAggregate(orderList.stream().map(Order::getOrderNumber).collect(Collectors.toList()));
+                orderTicketUserMapper.selectOrderTicketUserAggregate(orderList.stream().map(Order::getOrderNumber).
+                        collect(Collectors.toList()));
         Map<Long, Integer> orderTicketUserAggregateMap = orderTicketUserAggregateList.stream()
                 .collect(Collectors.toMap(OrderTicketUserAggregate::getOrderNumber, 
                         OrderTicketUserAggregate::getOrderTicketUserCount, (v1, v2) -> v2));
@@ -396,14 +395,12 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     }
     
     public OrderGetVo get(OrderGetDto orderGetDto) {
-        //查询订单
         LambdaQueryWrapper<Order> orderLambdaQueryWrapper =
                 Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, orderGetDto.getOrderNumber());
         Order order = orderMapper.selectOne(orderLambdaQueryWrapper);
         if (Objects.isNull(order)) {
             throw new DaMaiFrameException(BaseCode.ORDER_NOT_EXIST);
         }
-        //查询购票人订单
         LambdaQueryWrapper<OrderTicketUser> orderTicketUserLambdaQueryWrapper = 
                 Wrappers.lambdaQuery(OrderTicketUser.class).eq(OrderTicketUser::getOrderNumber, order.getOrderNumber());
         List<OrderTicketUser> orderTicketUserList = orderTicketUserMapper.selectList(orderTicketUserLambdaQueryWrapper);
@@ -413,14 +410,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         
         OrderGetVo orderGetVo = new OrderGetVo();
         BeanUtil.copyProperties(order,orderGetVo);
-        
         orderGetVo.setOrderTicketUserVoList(BeanUtil.copyToList(orderTicketUserList, OrderTicketUserVo.class));
         
-        //查询用户和购票人信息
         UserGetAndTicketUserListDto userGetAndTicketUserListDto = new UserGetAndTicketUserListDto();
         userGetAndTicketUserListDto.setUserId(order.getUserId());
-        userGetAndTicketUserListDto.setTicketUserIdList(orderTicketUserList.stream()
-                .map(OrderTicketUser::getTicketUserId).collect(Collectors.toList()));
         ApiResponse<UserGetAndTicketUserListVo> userGetAndTicketUserApiResponse = 
                 userClient.getUserAndTicketUserList(userGetAndTicketUserListDto);
         
@@ -428,7 +421,6 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             throw new DaMaiFrameException(userGetAndTicketUserApiResponse);
             
         }
-        //验证用户和购票人信息是否存在
         UserGetAndTicketUserListVo userAndTicketUserListVo =
                 Optional.ofNullable(userGetAndTicketUserApiResponse.getData())
                         .orElseThrow(() -> new DaMaiFrameException(BaseCode.RPC_RESULT_DATA_EMPTY));
@@ -438,11 +430,17 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         if (CollectionUtil.isEmpty(userAndTicketUserListVo.getTicketUserVoList())) {
             throw new DaMaiFrameException(BaseCode.TICKET_USER_EMPTY);
         }
+        List<TicketUserVo> filterTicketUserVoList = new ArrayList<>();
+        Map<Long, TicketUserVo> ticketUserVoMap = userAndTicketUserListVo.getTicketUserVoList()
+                .stream().collect(Collectors.toMap(TicketUserVo::getId, ticketUserVo -> ticketUserVo, (v1, v2) -> v2));
+        for (OrderTicketUser orderTicketUser : orderTicketUserList) {
+            filterTicketUserVoList.add(ticketUserVoMap.get(orderTicketUser.getTicketUserId()));
+        }
         UserInfoVo userInfoVo = new UserInfoVo();
         BeanUtil.copyProperties(userAndTicketUserListVo.getUserVo(),userInfoVo);
         UserAndTicketUserInfoVo userAndTicketUserInfoVo = new UserAndTicketUserInfoVo();
         userAndTicketUserInfoVo.setUserInfoVo(userInfoVo);
-        userAndTicketUserInfoVo.setTicketUserInfoVoList(BeanUtil.copyToList(userAndTicketUserListVo.getTicketUserVoList(), TicketUserInfoVo.class));
+        userAndTicketUserInfoVo.setTicketUserInfoVoList(BeanUtil.copyToList(filterTicketUserVoList, TicketUserInfoVo.class));
         orderGetVo.setUserAndTicketUserInfoVo(userAndTicketUserInfoVo);
         
         return orderGetVo;

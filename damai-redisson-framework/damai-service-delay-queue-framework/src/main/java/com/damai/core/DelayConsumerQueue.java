@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,36 +19,43 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class DelayConsumerQueue extends DelayBaseQueue{
     
-    private final AtomicInteger threadCount = new AtomicInteger(1);
+    private final AtomicInteger listenStartThreadCount = new AtomicInteger(1);
     
-    private final ExecutorService executorService;
+    private final AtomicInteger executeTaskThreadCount = new AtomicInteger(1);
+    
+    private final ThreadPoolExecutor listenStartThreadPool;
+    
+    private final ThreadPoolExecutor executeTaskThreadPool;
     
     private final AtomicBoolean runFlag = new AtomicBoolean(false);
     
     private final ConsumerTask consumerTask;
     
     public DelayConsumerQueue(DelayQueuePart delayQueuePart, String relTopic){
-        super(delayQueuePart.getRedissonClient(),relTopic);
-        this.executorService = new ThreadPoolExecutor(
-                delayQueuePart.getDelayQueueProperties().getCorePoolSize(),
-                delayQueuePart.getDelayQueueProperties().getMaximumPoolSize(),
-                delayQueuePart.getDelayQueueProperties().getKeepAliveTime(),
-                delayQueuePart.getDelayQueueProperties().getUnit(),
-                new LinkedBlockingQueue<>(delayQueuePart.getDelayQueueProperties().getWorkQueueSize()),
+        super(delayQueuePart.getDelayQueueBasePart().getRedissonClient(),relTopic);
+        this.listenStartThreadPool = new ThreadPoolExecutor(1,1,60, 
+                TimeUnit.SECONDS,new LinkedBlockingQueue<>(),r -> new Thread(Thread.currentThread().getThreadGroup(), r,
+                "listen-start-thread-" + listenStartThreadCount.getAndIncrement()));
+        this.executeTaskThreadPool = new ThreadPoolExecutor(
+                delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getCorePoolSize(),
+                delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getMaximumPoolSize(),
+                delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getKeepAliveTime(),
+                delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getUnit(),
+                new LinkedBlockingQueue<>(delayQueuePart.getDelayQueueBasePart().getDelayQueueProperties().getWorkQueueSize()),
                 r -> new Thread(Thread.currentThread().getThreadGroup(), r, 
-                        "delay-queue-consume-thread-" + threadCount.getAndIncrement()));
+                        "delay-queue-consume-thread-" + executeTaskThreadCount.getAndIncrement()));
         this.consumerTask = delayQueuePart.getConsumerTask();
     }
     
     public synchronized void listenStart(){
         if (!runFlag.get()) {
             runFlag.set(true);
-            new Thread(Thread.currentThread().getThreadGroup(), () -> {
+            listenStartThreadPool.execute(() -> {
                 while (!Thread.interrupted()) {
                     try {
                         assert blockingQueue != null;
                         String content = blockingQueue.take();
-                        executorService.execute(() -> {
+                        executeTaskThreadPool.execute(() -> {
                             try {
                                 consumerTask.execute(content);
                             }catch (Exception e) {
@@ -55,12 +63,12 @@ public class DelayConsumerQueue extends DelayBaseQueue{
                             }
                         });
                     } catch (InterruptedException e) {
-                        destroy(executorService);
+                        destroy(executeTaskThreadPool);
                     } catch (Throwable e) {
                         log.error("blockingQueue take error",e);
                     }
                 }
-            }, "listen-thread").start();
+            });
         }
     }
     

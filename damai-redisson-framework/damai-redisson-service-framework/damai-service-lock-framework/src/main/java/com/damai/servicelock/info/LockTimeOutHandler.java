@@ -6,6 +6,10 @@ package com.damai.servicelock.info;
  * @author: 阿宽不是程序员
  **/
 public interface LockTimeOutHandler {
-
+    
+    /**
+     * 处理
+     * @param lockName 锁名
+     * */
     void handler(String lockName);
 }

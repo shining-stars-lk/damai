@@ -6,6 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum IdType {
+    /**
+     * 证件类型
+     * */
     IDENTITY(1, "身份证"),
     HK_M_TW_PERMIT(2, "港澳台居民居住证"),
     HKM_PASS(3, "港澳居民来往内地通行证"),

@@ -30,10 +30,20 @@ public interface UidGenerator {
      * @return UID
      * @throws UidGenerateException
      */
-    long getUID() throws UidGenerateException;
+    long getUid() throws UidGenerateException;
     
+    /**
+     * 获取id
+     * @return 结果
+     * */
     long getId();
     
+    /**
+     * 获取订单编号
+     * @param userId 用户id
+     * @param tableCount 分表数量
+     * @return 结果
+     * */
     long getOrderNumber(long userId,long tableCount);
 
     /**
@@ -43,6 +53,6 @@ public interface UidGenerator {
      * @param uid
      * @return Parsed info
      */
-    String parseUID(long uid);
+    String parseUid(long uid);
 
 }

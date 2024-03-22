@@ -9,10 +9,9 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: www.cookframe.com:8848
-        # 标识
-        metadata:
-          mark: true
+        server-addr: 127.0.0.1:8848
+        username: nacos
+        password: nacos
   security:
     user:
       name: admin

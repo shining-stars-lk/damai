@@ -6,6 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum JobRunStatus {
+    /**
+     * job运行状态
+     * */
     RUN_NEW(1, "新建"),
     
     RUN_SUCCESS(2,"执行成功"),

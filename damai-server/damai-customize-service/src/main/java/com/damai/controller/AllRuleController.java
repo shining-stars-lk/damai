@@ -21,7 +21,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/allRule")
-@Api(tags = "allRule", description = "所有规则")
+@Api(tags = "allRule", value = "所有规则")
 public class AllRuleController {
 
     @Autowired
@@ -30,7 +30,7 @@ public class AllRuleController {
     
     @ApiOperation(value = "添加所有规则")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ApiResponse add(@Valid @RequestBody AllRuleDto allRuleDto) {
+    public ApiResponse<Void> add(@Valid @RequestBody AllRuleDto allRuleDto) {
         allRuleService.add(allRuleDto);
         return ApiResponse.ok();
     }

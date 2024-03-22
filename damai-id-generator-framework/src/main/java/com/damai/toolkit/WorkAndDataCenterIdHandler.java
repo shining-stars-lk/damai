@@ -7,9 +7,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.scripting.support.ResourceScriptSource;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
@@ -24,9 +23,9 @@ public class WorkAndDataCenterIdHandler {
     private final String SNOWFLAKE_DATA_CENTER_ID_key = "snowflake_data_center_id";
     
     
-    public final List<String> keys = Stream.of(SNOWFLAKE_WORK_ID_KEY,SNOWFLAKE_DATA_CENTER_ID_key).collect(Collectors.toList());
+    public final List<String> keys = Arrays.asList(SNOWFLAKE_WORK_ID_KEY,SNOWFLAKE_DATA_CENTER_ID_key);
     
-    private StringRedisTemplate stringRedisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
     
     private DefaultRedisScript<String> redisScript;
     
@@ -44,7 +43,7 @@ public class WorkAndDataCenterIdHandler {
     public WorkDataCenterId getWorkAndDataCenterId(){
         WorkDataCenterId workDataCenterId = new WorkDataCenterId();
         try {
-            String[] data = new String[2];
+            Object[] data = new String[2];
             data[0] = String.valueOf(IdGeneratorConstant.MAX_WORKER_ID);
             data[1] = String.valueOf(IdGeneratorConstant.MAX_DATA_CENTER_ID);
             String result = stringRedisTemplate.execute(redisScript, keys, data);

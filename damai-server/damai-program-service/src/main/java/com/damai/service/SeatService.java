@@ -6,21 +6,30 @@ import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
+import com.damai.dto.ProgramGetDto;
 import com.damai.dto.SeatAddDto;
+import com.damai.dto.SeatBatchAddDto;
+import com.damai.dto.SeatBatchRelateInfoAddDto;
+import com.damai.dto.SeatListDto;
+import com.damai.entity.ProgramShowTime;
 import com.damai.entity.Seat;
 import com.damai.enums.BaseCode;
+import com.damai.enums.BusinessStatus;
 import com.damai.enums.SeatType;
 import com.damai.enums.SellStatus;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.SeatMapper;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
+import com.damai.vo.ProgramVo;
+import com.damai.vo.SeatRelateInfoVo;
 import com.damai.vo.SeatVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +56,12 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
     @Autowired
     private SeatMapper seatMapper;
     
+    @Autowired
+    private ProgramService programService;
+    
+    @Autowired
+    private ProgramShowTimeService programShowTimeService;
+    
     /**
      * 添加座位
      * */
@@ -61,7 +76,7 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
         }
         seat = new Seat();
         BeanUtil.copyProperties(seatAddDto,seat);
-        seat.setId(uidGenerator.getUID());
+        seat.setId(uidGenerator.getUid());
         seatMapper.insert(seat);
         return seat.getId();
     }
@@ -70,11 +85,16 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
      * 查询座位
      * */
     public List<SeatVo> selectSeatByProgramId(Long programId) {
-        List<SeatVo> seatVoList = new ArrayList<>();
-        if ((!redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId))) &&
-                (!redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId))) &&
-                (!redisCache.hasKey(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_SOLD_HASH, programId)))) {
-            LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, programId);
+        List<SeatVo> seatVoList = redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId),SeatVo.class);
+        seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId),SeatVo.class));
+        seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId),SeatVo.class));
+        
+        if (CollectionUtil.isEmpty(seatVoList)) {
+            LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = 
+                    Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, programId);
             List<Seat> seats = seatMapper.selectList(seatLambdaQueryWrapper);
             for (Seat seat : seats) {
                 SeatVo seatVo = new SeatVo();
@@ -87,27 +107,86 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
             List<SeatVo> lockSeatVoList = seatMap.get(SellStatus.LOCK.getCode());
             List<SeatVo> soldSeatVoList = seatMap.get(SellStatus.SOLD.getCode());
             if (CollectionUtil.isNotEmpty(noSoldSeatVoList)) {
-                redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId)
-                        ,noSoldSeatVoList.stream().collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
+                redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId)
+                        ,noSoldSeatVoList.stream()
+                                .collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
                         ,EXPIRE_TIME, TimeUnit.DAYS);
             }
             if (CollectionUtil.isNotEmpty(lockSeatVoList)) {
-                redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId)
-                        ,lockSeatVoList.stream().collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
+                redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId)
+                        ,lockSeatVoList.stream()
+                                .collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
                         ,EXPIRE_TIME, TimeUnit.DAYS);
             }
             if (CollectionUtil.isNotEmpty(soldSeatVoList)) {
-                redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_SOLD_HASH, programId)
-                        ,soldSeatVoList.stream().collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
+                redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId)
+                        ,soldSeatVoList.stream()
+                                .collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
                         ,EXPIRE_TIME, TimeUnit.DAYS);
             }
-        }else {
-            seatVoList = redisCache.getAllForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_NO_SOLD_HASH, programId),SeatVo.class);
-            seatVoList.addAll(redisCache.getAllForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_LOCK_HASH, programId),SeatVo.class));
-            seatVoList.addAll(redisCache.getAllForHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SEAT_SOLD_HASH, programId),SeatVo.class));
-            seatVoList = seatVoList.stream().sorted(Comparator.comparingInt(SeatVo::getRowCode)
-                    .thenComparingInt(SeatVo::getColCode)).collect(Collectors.toList());
         }
+        seatVoList = seatVoList.stream().sorted(Comparator.comparingInt(SeatVo::getRowCode)
+                .thenComparingInt(SeatVo::getColCode)).collect(Collectors.toList());
         return seatVoList;
+    }
+    
+    public SeatRelateInfoVo relateInfo(SeatListDto seatListDto) {
+        SeatRelateInfoVo seatRelateInfoVo = new SeatRelateInfoVo();
+        ProgramVo programVo = 
+                redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,seatListDto.getProgramId()),ProgramVo.class);
+        if (Objects.isNull(programVo)){
+            ProgramGetDto programGetDto = new ProgramGetDto();
+            programGetDto.setId(seatListDto.getProgramId());
+            programVo = programService.getDetail(programGetDto);
+        }
+        if (programVo.getPermitChooseSeat().equals(BusinessStatus.NO.getCode())) {
+            throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_ALLOW_CHOOSE_SEAT);
+        }
+        List<SeatVo> seatVos = selectSeatByProgramId(seatListDto.getProgramId());
+        Map<String, List<SeatVo>> seatVoMap = 
+                seatVos.stream().collect(Collectors.groupingBy(seatVo -> seatVo.getPrice().toString()));
+        ProgramShowTime programShowTime = programShowTimeService.selectProgramShowTimeByProgramId(seatListDto.getProgramId());
+        
+        seatRelateInfoVo.setProgramId(programVo.getId());
+        seatRelateInfoVo.setPlace(programVo.getPlace());
+        seatRelateInfoVo.setShowTime(programShowTime.getShowTime());
+        seatRelateInfoVo.setShowWeekTime(programShowTime.getShowWeekTime());
+        seatRelateInfoVo.setPriceList(seatVoMap.keySet().stream().sorted().collect(Collectors.toList()));
+        seatRelateInfoVo.setSeatVoMap(seatVoMap);
+        return seatRelateInfoVo;
+    }
+    
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean batchAdd(SeatBatchAddDto seatBatchAddDto) {
+        Long programId = seatBatchAddDto.getProgramId();
+        List<SeatBatchRelateInfoAddDto> seatBatchRelateInfoAddDtoList = seatBatchAddDto.getSeatBatchRelateInfoAddDtoList();
+        
+        
+        int rowIndex = 0;
+        for (SeatBatchRelateInfoAddDto seatBatchRelateInfoAddDto : seatBatchRelateInfoAddDtoList) {
+            Long ticketCategoryId = seatBatchRelateInfoAddDto.getTicketCategoryId();
+            BigDecimal price = seatBatchRelateInfoAddDto.getPrice();
+            Integer count = seatBatchRelateInfoAddDto.getCount();
+            
+            int colCount = 10;
+            int rowCount = count / colCount;
+            
+            for (int i = 1;i<= rowCount;i++) {
+                rowIndex++;
+                for (int j = 1;j<=colCount;j++) {
+                    Seat seat = new Seat();
+                    seat.setProgramId(programId);
+                    seat.setTicketCategoryId(ticketCategoryId);
+                    seat.setRowCode(rowIndex);
+                    seat.setColCode(j);
+                    seat.setSeatType(1);
+                    seat.setPrice(price);
+                    seat.setSellStatus(SellStatus.NO_SOLD.getCode());
+                    seatMapper.insert(seat);
+                }
+            }
+        }
+        
+        return true;
     }
 }

@@ -15,8 +15,8 @@ public class RedissonDataHandle {
     
     private final RedissonClient redissonClient;
     
-    public Object get(String key){
-        return redissonClient.getBucket(key).get();
+    public String get(String key){
+        return (String)redissonClient.getBucket(key).get();
     }
     
     public void set(String key,String value){

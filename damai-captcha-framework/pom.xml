@@ -12,7 +12,7 @@
 
     <artifactId>damai-captcha-framework</artifactId>
 
-    <name>damai-captcha-framework</name>
+    <name>captcha-framework</name>
     <description>验证码操作封装</description>
     
     <dependencies>

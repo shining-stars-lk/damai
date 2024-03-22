@@ -4,8 +4,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.damai.core.SpringUtil;
-import com.damai.core.StringUtil;
 import com.damai.dto.EsDataQueryDto;
 import com.damai.dto.EsDocumentMappingDto;
 import com.damai.dto.EsGeoPointDto;
@@ -86,8 +84,8 @@ public class BusinessEsHandle {
             String paramName = esDocumentMappingDto.getParamName();
             String paramType = esDocumentMappingDto.getParamType();
             if ("text".equals(paramType)) {
-                Map<String,Map<String,Object>> map1 = new HashMap<>();
-                Map<String,Object> map2 = new HashMap<>();
+                Map<String,Map<String,Object>> map1 = new HashMap<>(8);
+                Map<String,Object> map2 = new HashMap<>(8);
                 map2.put("type","keyword");
                 map2.put("ignore_above",256);
                 map1.put("keyword",map2);
@@ -104,8 +102,9 @@ public class BusinessEsHandle {
     
         indexRequest.source(builder);
         String source = indexRequest.source().utf8ToString();
+        log.info("create index execute dsl : {}",source);
         HttpEntity entity = new NStringEntity(source, ContentType.APPLICATION_JSON);
-        Request request = new Request("PUT","/"+ SpringUtil.getPrefixDistinctionName() + "-" + indexName);
+        Request request = new Request("PUT","/"+ indexName);
         request.setEntity(entity);
         request.addParameters(Collections.<String, String>emptyMap());
         Response performRequest = restClient.performRequest(request);
@@ -125,9 +124,9 @@ public class BusinessEsHandle {
         try {
             String path = "";
             if (esTypeSwitch) {
-                path = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/" + indexType + "/_mapping?include_type_name";
+                path = "/" + indexName + "/" + indexType + "/_mapping?include_type_name";
             }else {
-                path = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/_mapping";
+                path = "/" + indexName + "/_mapping";
             }
             Request request = new Request("GET", path);
             request.addParameters(Collections.<String, String>emptyMap());
@@ -135,7 +134,7 @@ public class BusinessEsHandle {
             return "OK".equals(response.getStatusLine().getReasonPhrase());
         }catch (Exception e) {
             if (e instanceof ResponseException && ((ResponseException)e).getResponse().getStatusLine().getStatusCode() == RestStatus.NOT_FOUND.getStatus()) {
-                log.warn("index not exist ! indexName:{}, indexType:{}", SpringUtil.getPrefixDistinctionName() + "-" + indexName,indexType);
+                log.warn("index not exist ! indexName:{}, indexType:{}", indexName,indexType);
             }else {
                 log.error("checkIndex error",e);
             }
@@ -153,7 +152,7 @@ public class BusinessEsHandle {
             return false;
         }
         try {
-            Request request = new Request("DELETE", "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName);
+            Request request = new Request("DELETE", "/" + indexName);
             request.addParameters(Collections.<String, String>emptyMap());
             Response response = restClient.performRequest(request);
             return "OK".equals(response.getStatusLine().getReasonPhrase());
@@ -208,9 +207,9 @@ public class BusinessEsHandle {
             HttpEntity entity = new NStringEntity(jsonString, ContentType.APPLICATION_JSON);
             String endpoint = "";
             if (esTypeSwitch) {
-                endpoint = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/" + indexType;
+                endpoint = "/" + indexName + "/" + indexType;
             }else {
-                endpoint = "/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName + "/_doc";
+                endpoint = "/" + indexName + "/_doc";
             }
             if (StringUtil.isNotEmpty(id)) {
                 endpoint = endpoint + "/" + id;
@@ -320,67 +319,7 @@ public class BusinessEsHandle {
             return list;
         }
         SearchSourceBuilder sourceBuilder = getSearchSourceBuilder(esGeoPointDto,esDataQueryDtoList,sortParam,geoPointDtoSortParam,sortOrder);
-        executeQuery(indexName,indexType,list,null,clazz,sourceBuilder);
-        return list;
-    }
-    
-    
-    /**
-     * 查询
-     *
-     * @param indexName 索引名字
-     * @param indexType 索引类型
-     * @param dsl es的dsl语句
-     * @param clazz 返回的类型
-     * @return List
-     */
-    public <T> List<T> query(String indexName, String indexType, String dsl, Class<T> clazz) throws IOException {
-        if (!esSwitch) {
-            return new ArrayList<>();
-        }
-        if (StringUtil.isEmpty(dsl)) {
-            return new ArrayList<>();
-        }
-        HttpEntity entity = new NStringEntity(dsl, ContentType.APPLICATION_JSON);
-        String endpoint = "";
-        if (esTypeSwitch) {
-            endpoint = "/" + indexName + "/" + indexType + "/_search";
-        }else {
-            endpoint = "/" + indexName + "/_search";
-        }
-        
-        Request request = new Request("POST",endpoint);
-        request.setEntity(entity);
-        request.addParameters(Collections.<String, String>emptyMap());
-        Response response = restClient.performRequest(request);
-        String results = EntityUtils.toString(response.getEntity());
-        if (StringUtil.isEmpty(results)) {
-            return null;
-        }
-        List<T> list = new ArrayList<>();
-        JSONObject parse = (JSONObject) JSONObject.parse(results);
-        if (parse != null) {
-            JSONObject hits = parse.getJSONObject("hits");
-            if (hits != null) {
-                // 数据
-                JSONArray hitsArr = hits.getJSONArray("hits");
-                if (null != hitsArr && !hitsArr.isEmpty()) {
-                    for (int i = 0, size = hitsArr.size(); i < size; i++) {
-                        JSONObject data = hitsArr.getJSONObject(i);
-                        if (null != data) {
-                            JSONObject jsonObject = data.getJSONObject("_source");
-                            
-                            JSONArray jsonArray = data.getJSONArray("sort");
-                            if (null != jsonArray && !jsonArray.isEmpty()) {
-                                Long sort = jsonArray.getLong(0);
-                                jsonObject.put("sort",sort);
-                            }
-                            list.add(JSONObject.parseObject(jsonObject.toJSONString(),clazz));
-                        }
-                    }
-                }
-            }
-        }
+        executeQuery(indexName,indexType,list,null,clazz,sourceBuilder,null);
         return list;
     }
     
@@ -462,7 +401,7 @@ public class BusinessEsHandle {
         SearchSourceBuilder sourceBuilder = getSearchSourceBuilder(esGeoPointDto,esDataQueryDtoList,sortParam,geoPointDtoSortParam,sortOrder);
         sourceBuilder.from((pageNo - 1) * pageSize);
         sourceBuilder.size(pageSize);
-        executeQuery(indexName,indexType,list,pageInfo,clazz,sourceBuilder);
+        executeQuery(indexName,indexType,list,pageInfo,clazz,sourceBuilder,null);
         return pageInfo;
     }
     
@@ -472,7 +411,6 @@ public class BusinessEsHandle {
             sortOrder = SortOrder.DESC;
         }
         if (StringUtil.isNotEmpty(sortParam)) {
-            // 排序
             FieldSortBuilder sort = SortBuilders.fieldSort(sortParam);
             sort.order(sortOrder);
             sourceBuilder.sort(sort);
@@ -483,13 +421,11 @@ public class BusinessEsHandle {
             sort.order(sortOrder);
             sourceBuilder.sort(sort);
         }
-        // 经纬度匹配
         if (Objects.nonNull(esGeoPointDto)) {
             QueryBuilder geoQuery = new GeoDistanceQueryBuilder(esGeoPointDto.getParamName()).distance(Long.MAX_VALUE, DistanceUnit.KILOMETERS)
                     .point(esGeoPointDto.getLatitude().doubleValue(), esGeoPointDto.getLongitude().doubleValue()).geoDistance(GeoDistance.PLANE);
             sourceBuilder.query(geoQuery);
         }
-        // 匹配
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
         for (EsDataQueryDto esDataQueryDto : esDataQueryDtoList) {
             String paramName = esDataQueryDto.getParamName();
@@ -532,10 +468,11 @@ public class BusinessEsHandle {
         return sourceBuilder;
     }
     
-    private <T> void executeQuery(String indexName, String indexType,List<T> list,PageInfo<T> pageInfo,Class<T> clazz, SearchSourceBuilder sourceBuilder) throws IOException {
+    public <T> void executeQuery(String indexName, String indexType,List<T> list,PageInfo<T> pageInfo,Class<T> clazz, 
+                                 SearchSourceBuilder sourceBuilder,List<String> highLightFieldNameList) throws IOException {
         String string = sourceBuilder.toString();
         HttpEntity entity = new NStringEntity(string, ContentType.APPLICATION_JSON);
-        StringBuilder endpointStringBuilder = new StringBuilder("/" + SpringUtil.getPrefixDistinctionName() + "-" + indexName);
+        StringBuilder endpointStringBuilder = new StringBuilder("/" + indexName);
         if (esTypeSwitch) {
             endpointStringBuilder.append("/").append(indexType).append("/_search");
         }else {
@@ -547,45 +484,56 @@ public class BusinessEsHandle {
         request.setEntity(entity);
         request.addParameters(Collections.emptyMap());
         Response response = restClient.performRequest(request);
-        String results = EntityUtils.toString(response.getEntity());
-        if (StringUtil.isEmpty(results)) {
+        String result = EntityUtils.toString(response.getEntity());
+        if (StringUtil.isEmpty(result)) {
             return;
         }
-        JSONObject parse = (JSONObject) JSONObject.parse(results);
-        if (Objects.nonNull(parse)) {
-            JSONObject hits = parse.getJSONObject("hits");
-            if (Objects.nonNull(hits)) {
-                // 总条数
-                Long value = null;
-                if (esTypeSwitch) {
-                    value = hits.getLong("total");
-                }else {
-                    JSONObject totalJSONObject = hits.getJSONObject("total");
-                    if (totalJSONObject != null) {
-                        value = totalJSONObject.getLong("value");
+        JSONObject resultJsonObject =  JSONObject.parseObject(result);
+        if (Objects.isNull(resultJsonObject)) {
+            return;
+        }
+        JSONObject hits = resultJsonObject.getJSONObject("hits");
+        if (Objects.isNull(hits)) {
+            return;
+        }
+        Long value = null;
+        if (esTypeSwitch) {
+            value = hits.getLong("total");
+        }else {
+            JSONObject totalJsonObject = hits.getJSONObject("total");
+            if (Objects.nonNull(totalJsonObject)) {
+                value = totalJsonObject.getLong("value");
+            }
+        }
+        if (Objects.nonNull(pageInfo) && Objects.nonNull(value)) {
+            pageInfo.setTotal(value);
+        }
+        JSONArray arrayData = hits.getJSONArray("hits");
+        if (Objects.isNull(arrayData) || arrayData.isEmpty()) {
+            return;
+        }
+        for (int i = 0, size = arrayData.size(); i < size; i++) {
+            JSONObject data = arrayData.getJSONObject(i);
+            if (Objects.isNull(data)) {
+                continue;
+            }
+            JSONObject jsonObject = data.getJSONObject("_source");
+            JSONArray jsonArray = data.getJSONArray("sort");
+            if (Objects.nonNull(jsonArray) && !jsonArray.isEmpty()) {
+                Long sort = jsonArray.getLong(0);
+                jsonObject.put("sort",sort);
+            }
+            JSONObject highlight = data.getJSONObject("highlight");
+            if (Objects.nonNull(highlight) && Objects.nonNull(highLightFieldNameList)) {
+                for (String highLightFieldName : highLightFieldNameList) {
+                    JSONArray highLightFieldValue = highlight.getJSONArray(highLightFieldName);
+                    if (Objects.isNull(highLightFieldValue) || highLightFieldValue.isEmpty()) {
+                        continue;
                     }
-                }
-                if (Objects.nonNull(pageInfo)) {
-                    pageInfo.setTotal(value);
-                }
-                // 数据
-                JSONArray hitsArr = hits.getJSONArray("hits");
-                if (null != hitsArr && !hitsArr.isEmpty()) {
-                    for (int i = 0, size = hitsArr.size(); i < size; i++) {
-                        JSONObject data = hitsArr.getJSONObject(i);
-                        if (null != data) {
-                            JSONObject jsonObject = data.getJSONObject("_source");
-                            
-                            JSONArray jsonArray = data.getJSONArray("sort");
-                            if (null != jsonArray && !jsonArray.isEmpty()) {
-                                Long sort = jsonArray.getLong(0);
-                                jsonObject.put("sort",sort);
-                            }
-                            list.add(JSONObject.parseObject(jsonObject.toJSONString(),clazz));
-                        }
-                    }
+                    jsonObject.put(highLightFieldName,highLightFieldValue.get(0));
                 }
             }
+            list.add(JSONObject.parseObject(jsonObject.toJSONString(),clazz));
         }
     }
 }

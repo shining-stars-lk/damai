@@ -6,6 +6,9 @@ package com.damai.enums;
  * @author: 阿宽不是程序员
  **/
 public enum RuleStatus {
+    /**
+     * 规则状态
+     * */
     RUN(1,"正常"),
     STOP(0,"禁用")
     ;

@@ -11,46 +11,46 @@ import java.util.Optional;
  **/
 public class BaseParameterHolder {
     
-    private static final ThreadLocal<Map<String, String>> threadLocalMap = new ThreadLocal<>();
+    private static final ThreadLocal<Map<String, String>> THREAD_LOCAL_MAP = new ThreadLocal<>();
     
     
     public static void setParameter(String name, String value) {
-        Map<String, String> map = threadLocalMap.get();
+        Map<String, String> map = THREAD_LOCAL_MAP.get();
         if (map == null) {
-            map = new HashMap<>();
+            map = new HashMap<>(64);
         }
         map.put(name, value);
-        threadLocalMap.set(map);
+        THREAD_LOCAL_MAP.set(map);
     }
     
     public static String getParameter(String name) {
-        return Optional.ofNullable(threadLocalMap.get()).map(map -> map.get(name)).orElse(null);
+        return Optional.ofNullable(THREAD_LOCAL_MAP.get()).map(map -> map.get(name)).orElse(null);
     }
     
     public static void removeParameter(String name) {
-        Map<String, String> map = threadLocalMap.get();
+        Map<String, String> map = THREAD_LOCAL_MAP.get();
         if (map != null) {
             map.remove(name);
         }
     }
     
     public static ThreadLocal<Map<String, String>> getThreadLocal() {
-        return threadLocalMap;
+        return THREAD_LOCAL_MAP;
     }
     
     public static Map<String, String> getParameterMap() {
-        Map<String, String> map = threadLocalMap.get();
+        Map<String, String> map = THREAD_LOCAL_MAP.get();
         if (map == null) {
-            map = new HashMap<>();
+            map = new HashMap<>(64);
         }
         return map;
     }
     
     public static void setParameterMap(Map<String, String> map) {
-        threadLocalMap.set(map);
+        THREAD_LOCAL_MAP.set(map);
     }
     
     public static void removeParameterMap(){
-        threadLocalMap.remove();
+        THREAD_LOCAL_MAP.remove();
     }
 }

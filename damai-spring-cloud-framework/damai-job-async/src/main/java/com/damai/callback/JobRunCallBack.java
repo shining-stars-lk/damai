@@ -3,7 +3,7 @@ package com.damai.callback;
 import com.alibaba.fastjson.JSON;
 import com.damai.client.JobClient;
 import com.damai.common.ApiResponse;
-import com.damai.core.StringUtil;
+import com.damai.util.StringUtil;
 import com.damai.dto.JobCallBackDto;
 import com.damai.threadlocal.BaseParameterHolder;
 import lombok.extern.slf4j.Slf4j;

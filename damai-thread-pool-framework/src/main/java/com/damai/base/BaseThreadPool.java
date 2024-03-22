@@ -49,7 +49,7 @@ public class BaseThreadPool {
     }
     
     private static Map<String,Map<String,String>> preprocess(final Map<String, String> parentMdcContext, final Map<String, String> parentHoldContext){
-        Map<String,Map<String,String>> map = new HashMap<>();
+        Map<String,Map<String,String>> map = new HashMap<>(8);
         Map<String, String> holdContext = BaseParameterHolder.getParameterMap();
         Map<String, String> mdcContext = MDC.getCopyOfContextMap();
         if (parentMdcContext == null) {

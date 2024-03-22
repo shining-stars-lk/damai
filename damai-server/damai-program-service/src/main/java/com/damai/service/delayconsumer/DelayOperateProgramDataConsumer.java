@@ -2,7 +2,8 @@ package com.damai.service.delayconsumer;
 
 import com.alibaba.fastjson.JSON;
 import com.damai.core.ConsumerTask;
-import com.damai.core.StringUtil;
+import com.damai.core.SpringUtil;
+import com.damai.util.StringUtil;
 import com.damai.dto.ProgramOperateDataDto;
 import com.damai.service.ProgramService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ import static com.damai.service.constant.ProgramOrderConstant.DELAY_OPERATE_PROG
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
- * @description: 节目缓存操作
+ * @description: 节目消息监听
  * @author: 阿宽不是程序员
  **/
 @Slf4j
@@ -31,11 +32,11 @@ public class DelayOperateProgramDataConsumer implements ConsumerTask {
             return;
         }
         ProgramOperateDataDto programOperateDataDto = JSON.parseObject(content, ProgramOperateDataDto.class);
-        programService.OperateProgramData(programOperateDataDto);
+        programService.operateProgramData(programOperateDataDto);
     }
     
     @Override
     public String topic() {
-        return DELAY_OPERATE_PROGRAM_DATA_TOPIC;
+        return SpringUtil.getPrefixDistinctionName() + "-" + DELAY_OPERATE_PROGRAM_DATA_TOPIC;
     }
 }

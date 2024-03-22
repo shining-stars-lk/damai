@@ -10,21 +10,35 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import static com.damai.constant.Constant.SPRING_INJECT_PREFIX_DISTINCTION_NAME;
+
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
  * @description: 支付服务 feign
  * @author: 阿宽不是程序员
  **/
 @Component
-@FeignClient(value = "pay-service",fallback = PayClientFallback.class)
+@FeignClient(value = SPRING_INJECT_PREFIX_DISTINCTION_NAME+"-"+"pay-service",fallback = PayClientFallback.class)
 public interface PayClient {
-    
+    /**
+     * 支付
+     * @param dto 参数
+     * @return 结果
+     * */
     @PostMapping(value = "/pay/common/pay")
-    ApiResponse<String> commonPay(PayDto payDto);
-    
+    ApiResponse<String> commonPay(PayDto dto);
+    /**
+     * 回调
+     * @param dto 参数
+     * @return 结果
+     * */
     @PostMapping(value = "/pay/notify")
-    ApiResponse<NotifyVo> notify(NotifyDto notifyDto);
-    
+    ApiResponse<NotifyVo> notify(NotifyDto dto);
+    /**
+     * 查询支付状态
+     * @param dto 参数
+     * @return 结果
+     * */
     @PostMapping(value = "/pay/trade/check")
-    ApiResponse<TradeCheckVo> tradeCheck(TradeCheckDto tradeCheckDto);
+    ApiResponse<TradeCheckVo> tradeCheck(TradeCheckDto dto);
 }

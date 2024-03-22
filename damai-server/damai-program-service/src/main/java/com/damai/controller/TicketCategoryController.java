@@ -2,7 +2,9 @@ package com.damai.controller;
 
 import com.damai.common.ApiResponse;
 import com.damai.dto.TicketCategoryAddDto;
+import com.damai.dto.TicketCategoryDto;
 import com.damai.service.TicketCategoryService;
+import com.damai.vo.TicketCategoryDetailVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ import javax.validation.Valid;
  **/
 @RestController
 @RequestMapping("/ticket/category")
-@Api(tags = "ticket-category", description = "票档")
+@Api(tags = "ticket-category", value = "票档")
 public class TicketCategoryController {
     
     @Autowired
@@ -31,5 +33,11 @@ public class TicketCategoryController {
     @PostMapping(value = "/add")
     public ApiResponse<Long> add(@Valid @RequestBody TicketCategoryAddDto ticketCategoryAddDto) {
         return ApiResponse.ok(ticketCategoryService.add(ticketCategoryAddDto));
+    }
+    
+    @ApiOperation(value = "查询详情")
+    @PostMapping(value = "/detail")
+    public ApiResponse<TicketCategoryDetailVo> detail(@Valid @RequestBody TicketCategoryDto ticketCategoryDto) {
+        return ApiResponse.ok(ticketCategoryService.detail(ticketCategoryDto));
     }
 }

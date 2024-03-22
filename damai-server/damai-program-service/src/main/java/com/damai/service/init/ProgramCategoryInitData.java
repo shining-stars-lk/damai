@@ -4,15 +4,16 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.damai.BusinessThreadPool;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.entity.ProgramCategory;
-import com.damai.init.InitData;
+import com.damai.initialize.base.AbstractApplicationPostConstructHandler;
 import com.damai.mapper.ProgramCategoryMapper;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -26,7 +27,7 @@ import static com.damai.core.DistributedLockConstants.PROGRAM_CATEGORY_LOCK;
  * @author: 阿宽不是程序员
  **/
 @Component
-public class ProgramCategoryInitData implements InitData {
+public class ProgramCategoryInitData extends AbstractApplicationPostConstructHandler {
     
     @Autowired
     private ProgramCategoryMapper programCategoryMapper;
@@ -39,7 +40,12 @@ public class ProgramCategoryInitData implements InitData {
     
     
     @Override
-    public void init() {
+    public Integer executeOrder() {
+        return 1;
+    }
+    
+    @Override
+    public void executeInit(final ConfigurableApplicationContext context) {
         BusinessThreadPool.execute(() -> {
             programCategoryInitDataProxy.programCategoryRedisDataInit();
         });
@@ -52,7 +58,7 @@ public class ProgramCategoryInitData implements InitData {
         if (CollectionUtil.isNotEmpty(programCategoryList)) {
             Map<String, ProgramCategory> programCategoryMap = programCategoryList.stream().collect(
                     Collectors.toMap(p -> String.valueOf(p.getId()), p -> p, (v1, v2) -> v2));
-            redisCache.putHash(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_CATEGORY_HASH),programCategoryMap);
+            redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH),programCategoryMap);
         }
     }
 }

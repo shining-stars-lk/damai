@@ -110,6 +110,14 @@
             <artifactId>jasypt-spring-boot-starter</artifactId>
             <version>${jasypt.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-datasource-nacos</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -119,7 +127,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.damai.ProgramApplication</mainClass>
+                    <mainClass>com.damai.BaseDataApplication</mainClass>
                     <!-- 如果以jar包启动需要将此配置去掉 -->
                     <skip>true</skip>
                 </configuration>

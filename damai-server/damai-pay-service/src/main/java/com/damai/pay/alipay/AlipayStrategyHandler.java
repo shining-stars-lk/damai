@@ -34,8 +34,14 @@ import java.util.Map;
 @AllArgsConstructor
 public class AlipayStrategyHandler implements PayStrategyHandler {
 
+    /**
+     * 支付宝的SDK
+     * */
     private final AlipayClient alipayClient;
     
+    /**
+     * 支付宝相关配置
+     * */
     private final AlipayProperties aliPayProperties;
     
     @Override
@@ -106,7 +112,7 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
         }
         //在支付宝的业务通知中，只有交易通知状态为 TRADE_SUCCESS时，支付宝才会认定为买家付款成功
         String tradeStatus = params.get("trade_status");
-        if(!"TRADE_SUCCESS".equals(tradeStatus)){
+        if(!AlipayTradeStatus.TRADE_SUCCESS.getValue().equals(tradeStatus)){
             log.error("支付未成功 tradeStatus : {}",tradeStatus);
             return false;
         }
@@ -115,9 +121,12 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
     
     @Override
     public TradeResult queryTrade(String outTradeNo) {
+        String successCode = "10000";
+        String successMsg = "Success";
         TradeResult tradeResult = new TradeResult();
         tradeResult.setSuccess(false);
         try {
+            //构建查询参数，将订单号放入，调用SDK查询
             AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
             JSONObject bizContent = new JSONObject();
             bizContent.put("out_trade_no", outTradeNo);
@@ -128,10 +137,14 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
                 JSONObject alipayTradeQueryResponse = jsonResponse.getJSONObject("alipay_trade_query_response");
                 String code = alipayTradeQueryResponse.getString("code");
                 String msg = alipayTradeQueryResponse.getString("msg");
-                if ("10000".equals(code) && "Success".equals(msg)) {
+                //如果调用成功
+                if (successCode.equals(code) && successMsg.equals(msg)) {
                     tradeResult.setSuccess(true);
+                    //订单编号
                     tradeResult.setOutTradeNo(alipayTradeQueryResponse.getString("out_trade_no"));
+                    //支付金额
                     tradeResult.setTotalAmount(new BigDecimal(alipayTradeQueryResponse.getString("total_amount")));
+                    //账单状态，需将支付的状态转换为对应的支付服务中账单状态
                     tradeResult.setPayBillStatus(convertPayBillStatus(alipayTradeQueryResponse.getString("trade_status")));
                     return tradeResult;
                 }
@@ -147,6 +160,9 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
         return PayChannel.ALIPAY.getValue();
     }
     
+    /**
+     * 转换账单状态
+     * */
     private Integer convertPayBillStatus(String tradeStatus){
         if (AlipayTradeStatus.WAIT_BUYER_PAY.getValue().equals(tradeStatus)) {
             return PayBillStatus.NO_PAY.getCode();

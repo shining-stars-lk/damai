@@ -7,14 +7,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.damai.core.RedisKeyEnum;
+import com.damai.core.RedisKeyManage;
 import com.damai.dto.ProgramShowTimeAddDto;
 import com.damai.entity.ProgramShowTime;
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.ProgramShowTimeMapper;
 import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyWrap;
+import com.damai.redis.RedisKeyBuild;
 import com.damai.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,7 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
     public Long add(ProgramShowTimeAddDto programShowTimeAddDto) {
         ProgramShowTime programShowTime = new ProgramShowTime();
         BeanUtil.copyProperties(programShowTimeAddDto,programShowTime);
-        programShowTime.setId(uidGenerator.getUID());
+        programShowTime.setId(uidGenerator.getUid());
         programShowTimeMapper.insert(programShowTime);
         return programShowTime.getId();
     }
@@ -61,16 +61,21 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
      * 查询节目演出时间
      * */
     public ProgramShowTime selectProgramShowTimeByProgramId(Long programId){
-        return redisCache.get(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME,programId),ProgramShowTime.class,() -> {
-            LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
-                    Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
-            return Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
-                    .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
-        },EXPIRE_TIME, TimeUnit.DAYS);
+        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programId),
+                ProgramShowTime.class,
+                () -> {
+                    LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
+                            Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
+                    return Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
+                            .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
+                },
+                EXPIRE_TIME, 
+                TimeUnit.DAYS);
     }
     
     @Transactional(rollbackFor = Exception.class)
-    public void renewal(){
+    public boolean renewal(){
+        boolean flag = false;
         LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
                 Wrappers.lambdaQuery(ProgramShowTime.class).
                         le(ProgramShowTime::getShowTime, DateUtils.addDay(DateUtils.now(), 1));
@@ -78,6 +83,11 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
         for (ProgramShowTime programShowTime : programShowTimes) {
             Date oldShowTime = programShowTime.getShowTime();
             Date newShowTime = DateUtils.addMonth(oldShowTime, 1);
+            Date nowDateTime = DateUtils.now();
+            while (newShowTime.before(nowDateTime)) {
+                flag = true;
+                newShowTime = DateUtils.addMonth(newShowTime, 1);
+            }
             Date newShowDayTime = DateUtils.parseDateTime(DateUtils.formatDate(newShowTime) + " 00:00:00");
             ProgramShowTime updateProgramShowTime = new ProgramShowTime();
             updateProgramShowTime.setShowTime(newShowTime);
@@ -86,8 +96,9 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
             LambdaUpdateWrapper<ProgramShowTime> programShowTimeLambdaUpdateWrapper =
                     Wrappers.lambdaUpdate(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programShowTime.getProgramId());
             programShowTimeMapper.update(updateProgramShowTime,programShowTimeLambdaUpdateWrapper);
-            redisCache.set(RedisKeyWrap.createRedisKey(RedisKeyEnum.PROGRAM_SHOW_TIME,programShowTime.getProgramId())
+            redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programShowTime.getProgramId())
                     ,updateProgramShowTime,EXPIRE_TIME, TimeUnit.DAYS);
         }
+        return flag;
     }
 }
