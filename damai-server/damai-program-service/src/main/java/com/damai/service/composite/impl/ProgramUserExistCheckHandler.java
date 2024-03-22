@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  **/
 @Slf4j
 @Component
-public class UserExistCheckHandler extends AbstractProgramCheckHandler {
+public class ProgramUserExistCheckHandler extends AbstractProgramCheckHandler {
     
     @Autowired
     private UserClient userClient;

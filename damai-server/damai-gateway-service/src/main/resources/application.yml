@@ -1,0 +1,163 @@
+#服务端口
+server:
+  port: 6085
+# 应用名称
+spring:
+  application:
+    name: ${prefix.distinction.name:damai}-gateway-service
+  main:
+    allow-bean-definition-overriding: true
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    timeout: 3000
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        username: nacos
+        password: nacos
+    sentinel:
+      eager: true
+      transport:
+        port: 8768
+        dashboard: 127.0.0.1:8082
+      datasource:
+        degrade:
+          nacos:
+            server-addr: 127.0.0.1:8848
+            dataId: ${spring.application.name}-degrade-rules
+            groupId: SENTINEL_GROUP
+            dataType: json
+            rule-type: degrade
+        flow:
+          nacos:
+            server-addr: 127.0.0.1:8848
+            dataId: ${spring.application.name}-flow-rules
+            groupId: SENTINEL_GROUP
+            dataType: json
+            rule-type: flow
+    gateway:
+      enabled: true
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: ${prefix.distinction.name:damai}-base-data-service
+          uri: lb://${prefix.distinction.name:damai}-base-data-service
+          predicates:
+            - Path=/damai/basedata/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 基础数据服务
+
+        - id: ${prefix.distinction.name:damai}-customize-service
+          uri: lb://${prefix.distinction.name:damai}-customize-service
+          predicates:
+            - Path=/damai/customize/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 定制化服务
+
+        - id: ${prefix.distinction.name:damai}-job-service
+          uri: lb://${prefix.distinction.name:damai}-job-service
+          predicates:
+            - Path=/damai/job/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 任务执行服务
+
+        - id: ${prefix.distinction.name:damai}-order-service
+          uri: lb://${prefix.distinction.name:damai}-order-service
+          predicates:
+            - Path=/damai/order/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 订单服务
+
+        - id: ${prefix.distinction.name:damai}-pay-service
+          uri: lb://${prefix.distinction.name:damai}-pay-service
+          predicates:
+            - Path=/damai/pay/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 支付服务
+
+        - id: ${prefix.distinction.name:damai}-program-service
+          uri: lb://${prefix.distinction.name:damai}-program-service
+          predicates:
+            - Path=/damai/program/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 节目服务
+
+        - id: ${prefix.distinction.name:damai}-user-service
+          uri: lb://${prefix.distinction.name:damai}-user-service
+          predicates:
+            - Path=/damai/user/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 用户服务
+api:
+  limit:
+    paths: /**/customize/test/test
+kafka:
+  producer:
+    servers: 127.0.0.1:9092
+    topic: save_api_data    
+feign:
+  sentinel:
+    enabled: false
+  hystrix:
+    enabled: true
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+  compression:
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 512
+    response:
+      enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+          semaphore:
+            maxConcurrentRequests: 99999
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    health:
+      show-details: always
+  security:
+    enabled: false
+  health:
+    elasticsearch:
+      enabled: false
+jasypt:
+  encryptor:
+    password: bgtjkjl!%^sdc
+    algorithm: PBEWithMD5AndDES
