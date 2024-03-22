@@ -1,7 +1,9 @@
 package com.damai.feign;
 
-import com.damai.balance.ExtraRibbonProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+
+import static com.damai.constant.Constant.SERVER_GRAY;
 
 
 /**
@@ -12,8 +14,11 @@ import org.springframework.context.annotation.Bean;
 
 public class ExtraFeignAutoConfiguration {
     
+    @Value(SERVER_GRAY)
+    public String serverGray;
+    
     @Bean
-    public FeignRequestInterceptor feignRequestInterceptor(ExtraRibbonProperties extraRibbonProperties){
-        return new FeignRequestInterceptor(extraRibbonProperties);
+    public FeignRequestInterceptor feignRequestInterceptor(){
+        return new FeignRequestInterceptor(serverGray);
     }
 }

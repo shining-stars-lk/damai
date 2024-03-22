@@ -20,9 +20,9 @@ public class CustomEnabledRule extends PredicateBasedRule {
     
     private final CompositePredicate predicate;
     
-    public CustomEnabledRule(ExtraRibbonProperties extraRibbonProperties){
+    public CustomEnabledRule(String serverGray){
         super();
-        gray = extraRibbonProperties.getGray();
+        gray = serverGray;
         CustomAwarePredicate metadataAwarePredicate = new CustomAwarePredicate(gray, this);
         Assert.notNull(metadataAwarePredicate, "参数 'abstractServerPredicate' 不能为 null");
         predicate = createCompositePredicate(metadataAwarePredicate, new AvailabilityPredicate(this, null));
