@@ -172,9 +172,11 @@ public class ServiceInfoHolder implements Closeable {
         if (changed || yes.equals(notifyService)) {
             ServiceInfo changeServiceInfo = serviceInfo.getChangeServiceInfo();
             if (changeServiceInfo != null) {
-                //更新nacos本地缓存
-                NAMING_LOGGER.info("changeServiceInfo : "+JacksonUtils.toJson(changeServiceInfo));
-                serviceInfoMap.put(changeServiceInfo.getKey(), changeServiceInfo);
+                synchronized (serviceInfoMap) {
+                    //更新nacos本地缓存
+                    NAMING_LOGGER.info("changeServiceInfo : "+JacksonUtils.toJson(changeServiceInfo));
+                    serviceInfoMap.put(changeServiceInfo.getKey(), changeServiceInfo);
+                }
             }
             // 添加实例变更事件，会被订阅者执行
             NotifyCenter.publishEvent(new InstancesChangeEvent(serviceInfo.getName(), serviceInfo.getGroupName(),
