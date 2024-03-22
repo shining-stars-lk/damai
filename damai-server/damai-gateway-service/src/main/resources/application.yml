@@ -26,14 +26,14 @@ spring:
       datasource:
         degrade:
           nacos:
-            server-addr: 127.0.0.1:8848
+            server-addr: ${spring.cloud.nacos.discovery.server-addr}
             dataId: ${spring.application.name}-degrade-rules
             groupId: SENTINEL_GROUP
             dataType: json
             rule-type: degrade
         flow:
           nacos:
-            server-addr: 127.0.0.1:8848
+            server-addr: ${spring.cloud.nacos.discovery.server-addr}
             dataId: ${spring.application.name}-flow-rules
             groupId: SENTINEL_GROUP
             dataType: json
