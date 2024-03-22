@@ -16,7 +16,7 @@ import java.util.Collections;
 public class MybatisPlusGenerator {
     
     public static void main(String[] args) {
-        FastAutoGenerator.create("jdbc:mysql://127.0.0.1:3306/damai?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&remarks=true&useInformationSchema=true", "root", "root")
+        FastAutoGenerator.create("jdbc:mysql://www.cookframe.com:3306/damai?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&remarks=true&useInformationSchema=true", "root", "root")
                 .globalConfig(builder -> {
                     builder.author("k") // 设置作者
                             //.enableSwagger() // 开启 swagger 模式

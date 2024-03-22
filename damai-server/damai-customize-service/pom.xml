@@ -143,7 +143,7 @@
                 <configuration>
                     <mainClass>com.damai.CustomizeApplication</mainClass>
                     <!-- 如果以jar包启动需要将此配置去掉 -->
-                    <skip>true</skip>
+                    <!--<skip>true</skip>-->
                 </configuration>
                 <executions>
                     <execution>
