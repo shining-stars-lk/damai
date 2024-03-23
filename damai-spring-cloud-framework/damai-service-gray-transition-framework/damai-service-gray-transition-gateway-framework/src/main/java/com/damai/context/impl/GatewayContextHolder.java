@@ -1,6 +1,8 @@
 package com.damai.context.impl;
 
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
@@ -8,7 +10,10 @@ import org.springframework.web.server.ServerWebExchange;
  * @description: Gateway的ServerWebExchange数据存放
  * @author: 阿宽不是程序员
  **/
+@Setter
+@Getter
 public class GatewayContextHolder {
+    
     private static final ThreadLocal<GatewayContextHolder> THREAD_LOCAL = ThreadLocal.withInitial(GatewayContextHolder::new);
 
     private ServerWebExchange exchange;
@@ -20,12 +25,5 @@ public class GatewayContextHolder {
     public static void removeCurrentGatewayContext() {
         THREAD_LOCAL.remove();
     }
-
-    public ServerWebExchange getExchange() {
-        return exchange;
-    }
-
-    public void setExchange(ServerWebExchange exchange) {
-        this.exchange = exchange;
-    }
+    
 }

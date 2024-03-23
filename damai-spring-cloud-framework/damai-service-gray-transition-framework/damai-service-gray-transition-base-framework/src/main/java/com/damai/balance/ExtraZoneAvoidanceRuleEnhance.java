@@ -16,7 +16,7 @@ import lombok.Getter;
 public class ExtraZoneAvoidanceRuleEnhance extends ZoneAvoidanceRuleEnhance {
     private CompositePredicate compositePredicate;
     @Getter
-    private ExtraZoneAvoidancePredicate cookPatchEnabledPredicate;
+    private ExtraZoneAvoidancePredicate extraZoneAvoidancePredicate;
     
     /**
      * 使用无参构造方法的原因是Ribbon在定时任务中，会创建此适配器，而创建的方法是使用反射来构建
@@ -37,9 +37,9 @@ public class ExtraZoneAvoidanceRuleEnhance extends ZoneAvoidanceRuleEnhance {
     }
 
     public void init(IClientConfig clientConfig){
-        cookPatchEnabledPredicate = new ExtraZoneAvoidancePredicate(this, clientConfig);
+        extraZoneAvoidancePredicate = new ExtraZoneAvoidancePredicate(this, clientConfig);
         AvailabilityPredicate availabilityPredicate = new AvailabilityPredicate(this, clientConfig);
-        compositePredicate = createCompositePredicate(cookPatchEnabledPredicate, availabilityPredicate);
+        compositePredicate = createCompositePredicate(extraZoneAvoidancePredicate, availabilityPredicate);
     }
     
     /**
