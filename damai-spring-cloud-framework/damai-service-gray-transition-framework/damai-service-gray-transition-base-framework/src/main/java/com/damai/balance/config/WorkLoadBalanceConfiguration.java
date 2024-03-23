@@ -39,7 +39,7 @@ public class WorkLoadBalanceConfiguration {
         ExtraZoneAvoidanceRuleEnhance extraZoneAvoidanceRuleEnhance = new ExtraZoneAvoidanceRuleEnhance();
         extraZoneAvoidanceRuleEnhance.initWithNiwsConfig(config);
         
-        ExtraZoneAvoidancePredicate cookPatchEnabledPredicate = extraZoneAvoidanceRuleEnhance.getCookPatchEnabledPredicate();
+        ExtraZoneAvoidancePredicate cookPatchEnabledPredicate = extraZoneAvoidanceRuleEnhance.getExtraZoneAvoidancePredicate();
         cookPatchEnabledPredicate.setServerGray(serverGray);
         cookPatchEnabledPredicate.setContextHandler(contextHandler);
         return extraZoneAvoidanceRuleEnhance;
