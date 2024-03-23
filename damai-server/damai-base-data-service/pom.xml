@@ -114,6 +114,11 @@
             <version>${jasypt.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-service-gray-transition-webmvc-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
         </dependency>

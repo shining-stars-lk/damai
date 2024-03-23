@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.damai.balance.ExtraRibbonAutoConfiguration
+  com.damai.context.config.WebMvcContextAutoConfiguration

@@ -21,7 +21,7 @@
         <module>damai-service-lossless</module>
         <module>damai-service-hystrix</module>
         <module>damai-service-initialize</module>
-        <module>damai-service-gray-transition</module>
+        <module>damai-service-gray-transition-framework</module>
     </modules>
 
 </project>
