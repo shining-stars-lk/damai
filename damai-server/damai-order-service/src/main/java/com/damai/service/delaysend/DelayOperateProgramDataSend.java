@@ -11,7 +11,7 @@ import static com.damai.service.constant.OrderConstant.DELAY_OPERATE_PROGRAM_DAT
 import static com.damai.service.constant.OrderConstant.DELAY_OPERATE_PROGRAM_DATA_TOPIC;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 订单支付成功后 更新相关数据
  * @author: 阿宽不是程序员
  **/
