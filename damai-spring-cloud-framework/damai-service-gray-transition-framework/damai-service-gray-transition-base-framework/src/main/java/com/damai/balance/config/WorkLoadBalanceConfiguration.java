@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Bean;
 import static com.damai.constant.Constant.SERVER_GRAY;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: Ribbon负载均衡规则选择器
  * @author: 阿宽不是程序员
  **/
