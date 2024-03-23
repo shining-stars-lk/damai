@@ -17,7 +17,6 @@ public class GatewayWorkRouteFilter implements GlobalFilter, Ordered {
     
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
-        //把ServerWebExchange放入ThreadLocal中
         GatewayContextHolder.getCurrentGatewayContext().setExchange(exchange);
         return chain.filter(exchange);
     }
