@@ -17,11 +17,11 @@ import java.util.List;
 @ApiModel(value="ProgramListDto", description ="主页节目列表")
 public class ProgramListDto {
     
-    @ApiModelProperty(name ="areaId", dataType ="Long", value ="所在区域id")
+    @ApiModelProperty(name ="areaId", dataType ="Long", value ="所在区域id",required = true)
     @NotNull
     private Long areaId;
     
-    @ApiModelProperty(name ="parentProgramCategoryIds", dataType ="Long[]", value ="父节目类型id集合")
+    @ApiModelProperty(name ="parentProgramCategoryIds", dataType ="Long[]", value ="父节目类型id集合",required = true)
     @NotNull
     @Size(max = 4)
     private List<Long> parentProgramCategoryIds;

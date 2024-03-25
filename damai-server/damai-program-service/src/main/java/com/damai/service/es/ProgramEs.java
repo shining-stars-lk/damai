@@ -10,6 +10,7 @@ import com.damai.page.PageVo;
 import com.damai.service.init.ProgramDocumentParamName;
 import com.damai.util.BusinessEsHandle;
 import com.damai.util.StringUtil;
+import com.damai.vo.ProgramHomeVo;
 import com.damai.vo.ProgramListVo;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +24,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -40,8 +39,8 @@ public class ProgramEs {
     @Autowired
     private BusinessEsHandle businessEsHandle;
     
-    public Map<String, List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
-        Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>(256);
+    public List<ProgramHomeVo> selectHomeList(ProgramListDto programPageListDto) {
+        List<ProgramHomeVo> programHomeVoList = new ArrayList<>();
         
         try {
             for (Long parentProgramCategoryId : programPageListDto.getParentProgramCategoryIds()) {
@@ -59,13 +58,16 @@ public class ProgramEs {
                         ProgramDocumentParamName.INDEX_TYPE, programEsQueryDto, 1, 7, ProgramListVo.class);
                 if (!pageInfo.getList().isEmpty()) {
                     String areaName = pageInfo.getList().get(0).getAreaName();
-                    programListVoMap.put(areaName,pageInfo.getList());
+                    ProgramHomeVo programHomeVo = new ProgramHomeVo();
+                    programHomeVo.setCategoryName(areaName);
+                    programHomeVo.setProgramListVoList(pageInfo.getList());
+                    programHomeVoList.add(programHomeVo);
                 }
             }
         }catch (Exception e) {
             log.error("businessEsHandle.queryPage error",e);
         }
-        return programListVoMap;
+        return programHomeVoList;
     }
     
     public PageVo<ProgramListVo> selectPage(ProgramPageListDto programPageListDto) {

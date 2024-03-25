@@ -20,11 +20,11 @@ public class NotifyDto implements Serializable {
     private static final long serialVersionUID = 1L;
     
     
-    @ApiModelProperty(name ="channel", dataType ="Integer", value ="支付渠道 alipay：支付宝 wx：微信")
+    @ApiModelProperty(name ="channel", dataType ="Integer", value ="支付渠道 alipay：支付宝 wx：微信",required = true)
     @NotNull
     private String channel;
 
-    @ApiModelProperty(name ="params", dataType ="Map<String, String>", value ="回调参数")
+    @ApiModelProperty(name ="params", dataType ="Map<String, String>", value ="回调参数",required = true)
     @NotNull
     private Map<String, String> params;
 }

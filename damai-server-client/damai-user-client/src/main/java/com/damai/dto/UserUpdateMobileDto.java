@@ -19,11 +19,11 @@ public class UserUpdateMobileDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="用户id")
+    @ApiModelProperty(name ="id", dataType ="Long", value ="用户id",required = true)
     @NotNull
     private Long id;
     
-    @ApiModelProperty(name ="mobile", dataType ="String", value ="手机号")
+    @ApiModelProperty(name ="mobile", dataType ="String", value ="手机号",required = true)
     @NotBlank
     private String mobile;
     

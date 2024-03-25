@@ -18,7 +18,7 @@ public class PayBillDto implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单号")
+    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单号",required = true)
     @NotNull
     private String orderNumber;
 }

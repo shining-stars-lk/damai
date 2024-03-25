@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value="ProgramGetDto", description ="节目")
 public class ProgramGetDto{
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="id")
+    @ApiModelProperty(name ="id", dataType ="Long", value ="id",required = true)
     @NotNull
     private Long id;
 }
