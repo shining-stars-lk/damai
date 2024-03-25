@@ -47,7 +47,7 @@ public class UserRegisterDto implements Serializable {
     @ApiModelProperty(name ="idNumber", dataType ="String", value ="身份证号码")
     private String idNumber;
     
-    @ApiModelProperty(name ="id", dataType ="captchaId", value ="captchaId 调用是否需要校验验证码接口返回")
+    @ApiModelProperty(name ="id", dataType ="captchaId", value ="captchaId 调用是否需要校验验证码接口返回",required = true)
     @NotBlank
     private String captchaId;
     

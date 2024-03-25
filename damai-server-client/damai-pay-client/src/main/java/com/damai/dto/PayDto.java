@@ -21,35 +21,35 @@ public class PayDto implements Serializable {
     private static final long serialVersionUID = 1L;
     
     
-    @ApiModelProperty(name ="platform", dataType ="Integer", value ="支付平台 1：小程序  2：H5  3：pc网页  4：app")
+    @ApiModelProperty(name ="platform", dataType ="Integer", value ="支付平台 1：小程序  2：H5  3：pc网页  4：app",required = true)
     @NotNull
     private Integer platform;
     
-    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单号")
+    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单号",required = true)
     @NotNull
     private String orderNumber;
     
-    @ApiModelProperty(name ="subject", dataType ="String", value ="订单标题")
+    @ApiModelProperty(name ="subject", dataType ="String", value ="订单标题",required = true)
     @NotBlank
     private String subject;
     
-    @ApiModelProperty(name ="price", dataType ="BigDecimal", value ="价格")
+    @ApiModelProperty(name ="price", dataType ="BigDecimal", value ="价格",required = true)
     @NotNull
     private BigDecimal price;
     
-    @ApiModelProperty(name ="channel", dataType ="Integer", value ="支付渠道 alipay：支付宝 wx：微信")
+    @ApiModelProperty(name ="channel", dataType ="Integer", value ="支付渠道 alipay：支付宝 wx：微信",required = true)
     @NotNull
     private String channel;
 
-    @ApiModelProperty(name ="payBillType", dataType ="Integer", value ="支付种类")
+    @ApiModelProperty(name ="payBillType", dataType ="Integer", value ="支付种类",required = true)
     @NotNull
     private Integer payBillType;
     
-    @ApiModelProperty(name ="notifyUrl", dataType ="String", value ="支付成功后通知接口地址")
+    @ApiModelProperty(name ="notifyUrl", dataType ="String", value ="支付成功后通知接口地址",required = true)
     @NotBlank
     private String notifyUrl;
     
-    @ApiModelProperty(name ="returnUrl", dataType ="String", value ="支付成功后跳转页面")
+    @ApiModelProperty(name ="returnUrl", dataType ="String", value ="支付成功后跳转页面",required = true)
     @NotBlank
     private String returnUrl;
 }

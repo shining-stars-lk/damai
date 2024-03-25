@@ -20,7 +20,7 @@ public class TradeCheckDto implements Serializable {
     @NotBlank
     private String outTradeNo;
     
-    @ApiModelProperty(name ="channel", dataType ="Integer", value ="支付渠道 alipay：支付宝 wx：微信")
+    @ApiModelProperty(name ="channel", dataType ="Integer", value ="支付渠道 alipay：支付宝 wx：微信",required = true)
     @NotBlank
     private String channel;
 }

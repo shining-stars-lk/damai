@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value="ProgramResetExecuteDto", description ="节目数据重置")
 public class ProgramResetExecuteDto {
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目id")
+    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目id",required = true)
     @NotNull
     private Long programId;
 }

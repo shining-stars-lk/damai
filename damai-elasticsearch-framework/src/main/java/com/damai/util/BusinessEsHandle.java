@@ -131,6 +131,8 @@ public class BusinessEsHandle {
             Request request = new Request("GET", path);
             request.addParameters(Collections.<String, String>emptyMap());
             Response response = restClient.performRequest(request);
+            String result = EntityUtils.toString(response.getEntity());
+            System.out.println(JSON.toJSONString(result));
             return "OK".equals(response.getStatusLine().getReasonPhrase());
         }catch (Exception e) {
             if (e instanceof ResponseException && ((ResponseException)e).getResponse().getStatusLine().getStatusCode() == RestStatus.NOT_FOUND.getStatus()) {

@@ -23,11 +23,11 @@ public class UserAuthenticationDto implements Serializable {
     @NotNull
     private Long id;
     
-    @ApiModelProperty(name ="relName", dataType ="String", value ="用户真实名字")
+    @ApiModelProperty(name ="relName", dataType ="String", value ="用户真实名字",required = true)
     @NotBlank
     private String relName;
     
-    @ApiModelProperty(name ="idNumber", dataType ="String", value ="身份证号码")
+    @ApiModelProperty(name ="idNumber", dataType ="String", value ="身份证号码",required = true)
     @NotBlank
     private String idNumber;
     
