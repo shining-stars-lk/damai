@@ -1,0 +1,77 @@
+spring:
+  cloud:
+    gateway:
+      enabled: true
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: ${prefix.distinction.name:damai}-base-data-single-service
+          uri: lb://${prefix.distinction.name:damai}-single-service
+          predicates:
+            - Path=/damai/basedata/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 单体服务
+            relServiceName: ${prefix.distinction.name:damai}-single-service
+
+        - id: ${prefix.distinction.name:damai}-customize-single-service
+          uri: lb://${prefix.distinction.name:damai}-single-service
+          predicates:
+            - Path=/damai/customize/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 单体服务
+            relServiceName: ${prefix.distinction.name:damai}-single-service
+
+        - id: ${prefix.distinction.name:damai}-job-single-service
+          uri: lb://${prefix.distinction.name:damai}-single-service
+          predicates:
+            - Path=/damai/job/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 单体服务
+            relServiceName: ${prefix.distinction.name:damai}-single-service
+
+        - id: ${prefix.distinction.name:damai}-order-single-service
+          uri: lb://${prefix.distinction.name:damai}-single-service
+          predicates:
+            - Path=/damai/order/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 单体服务
+            relServiceName: ${prefix.distinction.name:damai}-single-service
+
+        - id: ${prefix.distinction.name:damai}-pay-single-service
+          uri: lb://${prefix.distinction.name:damai}-single-service
+          predicates:
+            - Path=/damai/pay/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 单体服务
+            relServiceName: ${prefix.distinction.name:damai}-single-service
+
+        - id: ${prefix.distinction.name:damai}-program-single-service
+          uri: lb://${prefix.distinction.name:damai}-single-service
+          predicates:
+            - Path=/damai/program/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 单体服务
+            relServiceName: ${prefix.distinction.name:damai}-single-service
+
+        - id: ${prefix.distinction.name:damai}-user-single-service
+          uri: lb://${prefix.distinction.name:damai}-single-service
+          predicates:
+            - Path=/damai/user/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 单体服务
+            relServiceName: ${prefix.distinction.name:damai}-single-service
