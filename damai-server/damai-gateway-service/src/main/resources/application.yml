@@ -5,6 +5,11 @@ server:
 spring:
   application:
     name: ${prefix.distinction.name:damai}-gateway-service
+  profiles:
+    # 微服务调用
+    active: cloud
+    # 单体服务调用
+#    active: single
   main:
     allow-bean-definition-overriding: true
   redis:
@@ -40,74 +45,6 @@ spring:
             groupId: SENTINEL_GROUP
             dataType: json
             rule-type: flow
-    gateway:
-      enabled: true
-      discovery:
-        locator:
-          enabled: true
-      routes:
-        - id: ${prefix.distinction.name:damai}-base-data-service
-          uri: lb://${prefix.distinction.name:damai}-base-data-service
-          predicates:
-            - Path=/damai/basedata/**
-          filters:
-            - StripPrefix=2
-          metadata:
-            title: 基础数据服务
-
-        - id: ${prefix.distinction.name:damai}-customize-service
-          uri: lb://${prefix.distinction.name:damai}-customize-service
-          predicates:
-            - Path=/damai/customize/**
-          filters:
-            - StripPrefix=2
-          metadata:
-            title: 定制化服务
-
-        - id: ${prefix.distinction.name:damai}-job-service
-          uri: lb://${prefix.distinction.name:damai}-job-service
-          predicates:
-            - Path=/damai/job/**
-          filters:
-            - StripPrefix=2
-          metadata:
-            title: 任务执行服务
-
-        - id: ${prefix.distinction.name:damai}-order-service
-          uri: lb://${prefix.distinction.name:damai}-order-service
-          predicates:
-            - Path=/damai/order/**
-          filters:
-            - StripPrefix=2
-          metadata:
-            title: 订单服务
-
-        - id: ${prefix.distinction.name:damai}-pay-service
-          uri: lb://${prefix.distinction.name:damai}-pay-service
-          predicates:
-            - Path=/damai/pay/**
-          filters:
-            - StripPrefix=2
-          metadata:
-            title: 支付服务
-
-        - id: ${prefix.distinction.name:damai}-program-service
-          uri: lb://${prefix.distinction.name:damai}-program-service
-          predicates:
-            - Path=/damai/program/**
-          filters:
-            - StripPrefix=2
-          metadata:
-            title: 节目服务
-
-        - id: ${prefix.distinction.name:damai}-user-service
-          uri: lb://${prefix.distinction.name:damai}-user-service
-          predicates:
-            - Path=/damai/user/**
-          filters:
-            - StripPrefix=2
-          metadata:
-            title: 用户服务
 api:
   limit:
     paths: /**/customize/test/test
