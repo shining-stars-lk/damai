@@ -61,6 +61,7 @@ import com.damai.vo.TicketCategoryVo;
 import com.damai.vo.TicketUserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -133,6 +134,19 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @Autowired
     private ProgramEs programEs;
+    
+    public String getData(String id){
+        RedisTemplate<String,String> redisTemplate = redisCache.getInstance();
+        String cachedValue = redisTemplate.opsForValue().get(id);
+        if (StringUtil.isEmpty(cachedValue)) {
+            Program program = programMapper.selectById(id);
+            if (Objects.nonNull(program)) {
+                redisTemplate.opsForValue().set(id,JSON.toJSONString(program));
+                cachedValue = JSON.toJSONString(program);
+            }
+        }
+        return cachedValue;
+    };
     
     public Long add(ProgramAddDto programAddDto){
         Program program = new Program();
