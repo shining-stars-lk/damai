@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
  * @author: 阿宽不是程序员
  **/
 @Data
-@ApiModel(value="UserLoginDto", description ="用户退出登录")
+@ApiModel(value="UserLogoutDto", description ="用户退出登录")
 public class UserLogoutDto {
     
     @ApiModelProperty(name ="code", dataType ="String", value ="渠道code 0001:pc网站", required = true)
