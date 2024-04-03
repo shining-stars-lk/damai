@@ -2,6 +2,7 @@ package com.damai.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -10,7 +11,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.client.BaseDataClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyManage;
-import com.damai.util.StringUtil;
 import com.damai.dto.GetChannelDataByCodeDto;
 import com.damai.dto.UserAuthenticationDto;
 import com.damai.dto.UserExistDto;
@@ -43,9 +43,11 @@ import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
+import com.damai.util.StringUtil;
 import com.damai.vo.GetChannelDataVo;
 import com.damai.vo.TicketUserVo;
 import com.damai.vo.UserGetAndTicketUserListVo;
+import com.damai.vo.UserLoginVo;
 import com.damai.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -136,7 +138,8 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         }
     }
     
-    public String login(UserLoginDto userLoginDto) {
+    public UserLoginVo login(UserLoginDto userLoginDto) {
+        UserLoginVo userLoginVo = new UserLoginVo();
         String code = userLoginDto.getCode();
         String mobile = userLoginDto.getMobile();
         String email = userLoginDto.getEmail();
@@ -175,16 +178,10 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         }
         redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN,code,user.getId()),user,
                 tokenExpireTime,TimeUnit.MINUTES);
-        return createToken(user.getId(),getChannelDataByCode(code).getTokenSecret());
+        userLoginVo.setUserId(userId);
+        userLoginVo.setToken(createToken(user.getId(),getChannelDataByCode(code).getTokenSecret()));
+        return userLoginVo;
     }
-    private GetChannelDataVo getChannelDataByCode(String code){
-        GetChannelDataVo channelDataVo = getChannelDataByRedis(code);
-        if (Objects.isNull(channelDataVo)) {
-            channelDataVo = getChannelDataByClient(code);
-        }
-        return channelDataVo;
-    }
-    
     private GetChannelDataVo getChannelDataByRedis(String code){
         return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.CHANNEL_DATA,code),GetChannelDataVo.class);
     }
@@ -206,12 +203,23 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     }
     
     public void logout(UserLogoutDto userLogoutDto) {
-        User user = userMapper.selectById(userLogoutDto.getId());
-        if (Objects.isNull(user)) {
+        String userStr = TokenUtil.parseToken(userLogoutDto.getToken(),getChannelDataByCode(userLogoutDto.getCode())
+                .getTokenSecret());
+        if (StringUtil.isEmpty(userStr)) {
             throw new DaMaiFrameException(BaseCode.USER_EMPTY);
         }
-        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN,userLogoutDto.getCode(),user.getId()));
+        String userId = JSONObject.parseObject(userStr).getString("userId");
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN,userLogoutDto.getCode(),userId));
     }
+    
+    public GetChannelDataVo getChannelDataByCode(String code){
+        GetChannelDataVo channelDataVo = getChannelDataByRedis(code);
+        if (Objects.isNull(channelDataVo)) {
+            channelDataVo = getChannelDataByClient(code);
+        }
+        return channelDataVo;
+    }
+    
     @Transactional(rollbackFor = Exception.class)
     public void update(UserUpdateDto userUpdateDto){
         User user = userMapper.selectById(userUpdateDto.getId());
