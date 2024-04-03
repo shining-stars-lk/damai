@@ -29,6 +29,7 @@ public class UserRegisterDto implements Serializable {
     private Integer gender;
     
     @ApiModelProperty(name ="password", dataType ="String", value ="密码",required = true)
+    @NotBlank
     private String password;
     
     @ApiModelProperty(name ="mobile", dataType ="String", value ="手机号",required = true)
