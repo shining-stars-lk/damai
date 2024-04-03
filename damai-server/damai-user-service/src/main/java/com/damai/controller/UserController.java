@@ -15,6 +15,7 @@ import com.damai.dto.UserUpdateMobileDto;
 import com.damai.dto.UserUpdatePasswordDto;
 import com.damai.service.UserService;
 import com.damai.vo.UserGetAndTicketUserListVo;
+import com.damai.vo.UserLoginVo;
 import com.damai.vo.UserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -67,7 +68,7 @@ public class UserController {
     
     @ApiOperation(value = "登录")
     @PostMapping(value = "/login")
-    public ApiResponse<String> login(@Valid @RequestBody UserLoginDto userLoginDto) {
+    public ApiResponse<UserLoginVo> login(@Valid @RequestBody UserLoginDto userLoginDto) {
         return ApiResponse.ok(userService.login(userLoginDto));
     }
     
