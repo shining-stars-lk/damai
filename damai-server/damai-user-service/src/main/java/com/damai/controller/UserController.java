@@ -74,9 +74,8 @@ public class UserController {
     
     @ApiOperation(value = "退出登录")
     @PostMapping(value = "/logout")
-    public ApiResponse<Void> logout(@Valid @RequestBody UserLogoutDto userLogoutDto) {
-        userService.logout(userLogoutDto);
-        return ApiResponse.ok();
+    public ApiResponse<Boolean> logout(@Valid @RequestBody UserLogoutDto userLogoutDto) {
+        return ApiResponse.ok(userService.logout(userLogoutDto));
     }
     
     @ApiOperation(value = "修改个人信息")

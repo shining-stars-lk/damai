@@ -202,7 +202,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         return TokenUtil.createToken(String.valueOf(uidGenerator.getUid()), JSON.toJSONString(map),tokenExpireTime * 60 * 1000,tokenSecret);
     }
     
-    public void logout(UserLogoutDto userLogoutDto) {
+    public Boolean logout(UserLogoutDto userLogoutDto) {
         String userStr = TokenUtil.parseToken(userLogoutDto.getToken(),getChannelDataByCode(userLogoutDto.getCode())
                 .getTokenSecret());
         if (StringUtil.isEmpty(userStr)) {
@@ -210,6 +210,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         }
         String userId = JSONObject.parseObject(userStr).getString("userId");
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN,userLogoutDto.getCode(),userId));
+        return true;
     }
     
     public GetChannelDataVo getChannelDataByCode(String code){
