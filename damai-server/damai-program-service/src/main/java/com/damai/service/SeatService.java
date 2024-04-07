@@ -22,6 +22,8 @@ import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.SeatMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
+import com.damai.servicelock.LockType;
+import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.vo.ProgramVo;
 import com.damai.vo.SeatRelateInfoVo;
 import com.damai.vo.SeatVo;
@@ -37,6 +39,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.damai.core.DistributedLockConstants.SEAT_LOCK;
 import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
 
 /**
@@ -84,6 +87,7 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
     /**
      * 查询座位
      * */
+    @ServiceLock(lockType= LockType.Read,name = SEAT_LOCK,keys = {"#programId"})
     public List<SeatVo> selectSeatByProgramId(Long programId) {
         List<SeatVo> seatVoList = redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
                 RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId),SeatVo.class);
