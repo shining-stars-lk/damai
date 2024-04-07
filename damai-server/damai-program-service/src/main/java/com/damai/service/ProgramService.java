@@ -51,6 +51,7 @@ import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.threadlocal.BaseParameterHolder;
 import com.damai.util.DateUtils;
+import com.damai.util.ServiceLockTool;
 import com.damai.util.StringUtil;
 import com.damai.vo.AreaVo;
 import com.damai.vo.ProgramHomeVo;
@@ -60,6 +61,7 @@ import com.damai.vo.SeatVo;
 import com.damai.vo.TicketCategoryVo;
 import com.damai.vo.TicketUserVo;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -79,6 +81,7 @@ import java.util.stream.Collectors;
 
 import static com.damai.constant.Constant.CODE;
 import static com.damai.constant.Constant.USER_ID;
+import static com.damai.core.DistributedLockConstants.GET_PROGRAM_LOCK;
 import static com.damai.core.DistributedLockConstants.PROGRAM_LOCK;
 import static com.damai.core.RepeatExecuteLimitConstants.CANCEL_PROGRAM_ORDER;
 import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
@@ -135,6 +138,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     @Autowired
     private ProgramEs programEs;
     
+    @Autowired
+    private ServiceLockTool serviceLockTool;
+    
     public String getData(String id){
         RedisTemplate<String,String> redisTemplate = redisCache.getInstance();
         String cachedValue = redisTemplate.opsForValue().get(id);
@@ -146,7 +152,48 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             }
         }
         return cachedValue;
-    };
+    }
+    
+    public String getDataV2(String id){
+        RedisTemplate<String,String> redisTemplate = redisCache.getInstance();
+        String cachedValue = redisTemplate.opsForValue().get(id);
+        if (StringUtil.isEmpty(cachedValue)) {
+            RLock lock = serviceLockTool.getLock(LockType.Reentrant, id);
+            lock.lock();
+            try {
+                Program program = programMapper.selectById(id);
+                if (Objects.nonNull(program)) {
+                    redisTemplate.opsForValue().set(id,JSON.toJSONString(program));
+                    cachedValue = JSON.toJSONString(program);
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        return cachedValue;
+    }
+    
+    public String getDataV3(String id){
+        RedisTemplate<String,String> redisTemplate = redisCache.getInstance();
+        String cachedValue = redisTemplate.opsForValue().get(id);
+        if (StringUtil.isEmpty(cachedValue)) {
+            RLock lock = serviceLockTool.getLock(LockType.Reentrant, id);
+            lock.lock();
+            try {
+                cachedValue = redisTemplate.opsForValue().get(id);
+                if (StringUtil.isEmpty(cachedValue)) {
+                    Program program = programMapper.selectById(id);
+                    if (Objects.nonNull(program)) {
+                        redisTemplate.opsForValue().set(id,JSON.toJSONString(program));
+                        cachedValue = JSON.toJSONString(program);
+                    }
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        return cachedValue;
+    }
     
     public Long add(ProgramAddDto programAddDto){
         Program program = new Program();
@@ -336,12 +383,28 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     @ServiceLock(lockType= LockType.Read,name = PROGRAM_LOCK,keys = {"#programId"})
-    public ProgramVo getById(Long programId) {
-        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId)
-                ,ProgramVo.class,
-                () -> createProgramVo(programId)
-                ,EXPIRE_TIME, 
-                TimeUnit.DAYS);
+    private ProgramVo getById(Long programId) {
+        ProgramVo programVo = 
+                redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId), ProgramVo.class);
+        if (Objects.nonNull(programVo)) {
+            return programVo;
+        }
+        RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_PROGRAM_LOCK, new String[]{String.valueOf(programId)});
+        lock.lock();
+        try {
+            programVo =
+                    redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId), ProgramVo.class);
+            if (Objects.nonNull(programVo)) {
+                return programVo;
+            }
+            return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId)
+                    ,ProgramVo.class,
+                    () -> createProgramVo(programId)
+                    ,EXPIRE_TIME,
+                    TimeUnit.DAYS);
+        }finally {
+            lock.unlock();
+        }
     }
     
     public Map<Long, String> selectProgramCategoryMap(Collection<Long> programCategoryIdList){
@@ -389,7 +452,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         }
     }
     
-    private ProgramVo createProgramVo(long programId){
+    private ProgramVo createProgramVo(Long programId){
         ProgramVo programVo = new ProgramVo();
         Program program = 
                 Optional.ofNullable(programMapper.selectById(programId))
