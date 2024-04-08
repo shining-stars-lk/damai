@@ -63,7 +63,6 @@ import com.damai.vo.TicketUserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -141,59 +140,6 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     @Autowired
     private ServiceLockTool serviceLockTool;
     
-    public String getData(String id){
-        RedisTemplate<String,String> redisTemplate = redisCache.getInstance();
-        String cachedValue = redisTemplate.opsForValue().get(id);
-        if (StringUtil.isEmpty(cachedValue)) {
-            Program program = programMapper.selectById(id);
-            if (Objects.nonNull(program)) {
-                redisTemplate.opsForValue().set(id,JSON.toJSONString(program));
-                cachedValue = JSON.toJSONString(program);
-            }
-        }
-        return cachedValue;
-    }
-    
-    public String getDataV2(String id){
-        RedisTemplate<String,String> redisTemplate = redisCache.getInstance();
-        String cachedValue = redisTemplate.opsForValue().get(id);
-        if (StringUtil.isEmpty(cachedValue)) {
-            RLock lock = serviceLockTool.getLock(LockType.Reentrant, id);
-            lock.lock();
-            try {
-                Program program = programMapper.selectById(id);
-                if (Objects.nonNull(program)) {
-                    redisTemplate.opsForValue().set(id,JSON.toJSONString(program));
-                    cachedValue = JSON.toJSONString(program);
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-        return cachedValue;
-    }
-    
-    public String getDataV3(String id){
-        RedisTemplate<String,String> redisTemplate = redisCache.getInstance();
-        String cachedValue = redisTemplate.opsForValue().get(id);
-        if (StringUtil.isEmpty(cachedValue)) {
-            RLock lock = serviceLockTool.getLock(LockType.Reentrant, id);
-            lock.lock();
-            try {
-                cachedValue = redisTemplate.opsForValue().get(id);
-                if (StringUtil.isEmpty(cachedValue)) {
-                    Program program = programMapper.selectById(id);
-                    if (Objects.nonNull(program)) {
-                        redisTemplate.opsForValue().set(id,JSON.toJSONString(program));
-                        cachedValue = JSON.toJSONString(program);
-                    }
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-        return cachedValue;
-    }
     
     public Long add(ProgramAddDto programAddDto){
         Program program = new Program();
@@ -374,7 +320,8 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             redisProgramVo.setSeatVoList(redisSeatVoList);
         }
         
-        List<TicketCategoryVo> ticketCategoryVoList = ticketCategoryService.selectTicketCategoryListByProgramId(redisProgramVo.getId());
+        List<TicketCategoryVo> ticketCategoryVoList = 
+                ticketCategoryService.selectTicketCategoryListByProgramId(redisProgramVo.getId());
         redisProgramVo.setTicketCategoryVoList(ticketCategoryVoList);
         
         ticketCategoryService.setRedisRemainNumber(redisProgramVo.getId());
@@ -392,11 +339,6 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_PROGRAM_LOCK, new String[]{String.valueOf(programId)});
         lock.lock();
         try {
-            programVo =
-                    redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId), ProgramVo.class);
-            if (Objects.nonNull(programVo)) {
-                return programVo;
-            }
             return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId)
                     ,ProgramVo.class,
                     () -> createProgramVo(programId)

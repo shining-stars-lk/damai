@@ -80,11 +80,6 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
         RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_PROGRAM_SHOW_TIME_LOCK, new String[]{String.valueOf(programId)});
         lock.lock();
         try {
-            programShowTime = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,
-                    programId), ProgramShowTime.class);
-            if (Objects.nonNull(programShowTime)) {
-                return programShowTime;
-            }
             return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programId),
                     ProgramShowTime.class,
                     () -> {

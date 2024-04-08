@@ -57,9 +57,34 @@ public class DistributedLockConstants {
     public final static String SEAT_LOCK = "d_seat_lock";
     
     /**
+     * 查看座位
+     * */
+    public final static String GET_SEAT_LOCK = "d_get_seat_lock";
+    
+    /**
+     * 票档类型
+     * */
+    public final static String TICKET_CATEGORY_LOCK = "d_ticket_category_lock";
+    
+    /**
+     * 查看票档类型
+     * */
+    public final static String GET_TICKET_CATEGORY_LOCK = "d_get_ticket_category_lock";
+    
+    /**
      * 节目类型
      * */
     public final static String PROGRAM_CATEGORY_LOCK = "d_program_category_lock";
+    
+    /**
+     * 余票数量
+     * */
+    public final static String REMAIN_NUMBER_LOCK = "d_remain_number_lock";
+    
+    /**
+     * 查看余票数量
+     * */
+    public final static String GET_REMAIN_NUMBER_LOCK = "d_get_remain_number_lock";
     
     /**
      * 取消订单

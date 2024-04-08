@@ -24,9 +24,11 @@ import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
+import com.damai.util.ServiceLockTool;
 import com.damai.vo.ProgramVo;
 import com.damai.vo.SeatRelateInfoVo;
 import com.damai.vo.SeatVo;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +41,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.damai.core.DistributedLockConstants.GET_SEAT_LOCK;
 import static com.damai.core.DistributedLockConstants.SEAT_LOCK;
 import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
 
@@ -65,6 +68,9 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
     @Autowired
     private ProgramShowTimeService programShowTimeService;
     
+    @Autowired
+    private ServiceLockTool serviceLockTool;
+    
     /**
      * 添加座位
      * */
@@ -89,15 +95,18 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
      * */
     @ServiceLock(lockType= LockType.Read,name = SEAT_LOCK,keys = {"#programId"})
     public List<SeatVo> selectSeatByProgramId(Long programId) {
-        List<SeatVo> seatVoList = redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
-                RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId),SeatVo.class);
-        seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
-                RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId),SeatVo.class));
-        seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
-                RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId),SeatVo.class));
-        
-        if (CollectionUtil.isEmpty(seatVoList)) {
-            LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = 
+        List<SeatVo> seatVoList = getSeatVoListByCache(programId);
+        if (CollectionUtil.isNotEmpty(seatVoList)) {
+            return seatVoList;
+        }
+        RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_SEAT_LOCK, new String[]{String.valueOf(programId)});
+        lock.lock();
+        try {
+            seatVoList = getSeatVoListByCache(programId);
+            if (CollectionUtil.isNotEmpty(seatVoList)) {
+                return seatVoList;
+            }
+            LambdaQueryWrapper<Seat> seatLambdaQueryWrapper =
                     Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, programId);
             List<Seat> seats = seatMapper.selectList(seatLambdaQueryWrapper);
             for (Seat seat : seats) {
@@ -128,9 +137,21 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
                                 .collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
                         ,EXPIRE_TIME, TimeUnit.DAYS);
             }
+            seatVoList = seatVoList.stream().sorted(Comparator.comparingInt(SeatVo::getRowCode)
+                    .thenComparingInt(SeatVo::getColCode)).collect(Collectors.toList());
+            return seatVoList;
+        }finally {
+            lock.unlock();
         }
-        seatVoList = seatVoList.stream().sorted(Comparator.comparingInt(SeatVo::getRowCode)
-                .thenComparingInt(SeatVo::getColCode)).collect(Collectors.toList());
+    }
+    
+    private List<SeatVo> getSeatVoListByCache(Long programId){
+        List<SeatVo> seatVoList = redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId),SeatVo.class);
+        seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId),SeatVo.class));
+        seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId),SeatVo.class));
         return seatVoList;
     }
     
