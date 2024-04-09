@@ -32,6 +32,10 @@ public class UserRegisterDto implements Serializable {
     @NotBlank
     private String password;
     
+    @ApiModelProperty(name ="confirmPassword", dataType ="String", value ="二次确认的密码",required = true)
+    @NotBlank
+    private String confirmPassword;
+    
     @ApiModelProperty(name ="mobile", dataType ="String", value ="手机号",required = true)
     @NotBlank
     private String mobile;

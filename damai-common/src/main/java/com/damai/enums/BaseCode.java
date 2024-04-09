@@ -31,6 +31,8 @@ public enum BaseCode {
     
     SERVER_LIST_NOT_EXIST(508,"服务列表不存在"),
     
+    TWO_PASSWORDS_DIFFERENT(509,"两次输入的密码不同"),
+    
     RSA_SIGN_ERROR(10000,"res签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"res解密失败"),
