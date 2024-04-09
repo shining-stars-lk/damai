@@ -32,21 +32,21 @@ public class RuleController {
     
     @ApiOperation(value = "添加普通规则")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ApiResponse add(@Valid @RequestBody RuleDto ruleDto) {
+    public ApiResponse<Void> add(@Valid @RequestBody RuleDto ruleDto) {
         ruleService.ruleAdd(ruleDto);
         return ApiResponse.ok();
     }
     
     @ApiOperation(value = "修改普通规则")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public ApiResponse update(@Valid @RequestBody RuleUpdateDto ruleUpdateDto) {
+    public ApiResponse<Void> update(@Valid @RequestBody RuleUpdateDto ruleUpdateDto) {
         ruleService.ruleUpdate(ruleUpdateDto);
         return ApiResponse.ok();
     }
     
     @ApiOperation(value = "修改普通规则状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
-    public ApiResponse updateStatus(@Valid @RequestBody RuleStatusDto ruleStatusDto){
+    public ApiResponse<Void> updateStatus(@Valid @RequestBody RuleStatusDto ruleStatusDto){
         ruleService.ruleUpdateStatus(ruleStatusDto);
         return ApiResponse.ok();
     }
