@@ -34,6 +34,6 @@ public class CaptchaHandle {
         assert requestAttributes != null;
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         captchaVO.setBrowserInfo(RemoteUtil.getRemoteId(request));
-        return captchaService.verification(captchaVO);
+        return captchaService.check(captchaVO);
     }
 }
