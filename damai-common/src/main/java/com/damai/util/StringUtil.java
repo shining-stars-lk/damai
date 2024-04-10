@@ -39,15 +39,14 @@ public class StringUtil {
 	 * 将流转换为字符串
 	 * @param is 文件流
 	 * @return
-	 * @throws IOException
 	 */
-	public static String inputStream2String(InputStream is){
+	public static String inputStreamConvertString(InputStream is){
 		ByteArrayOutputStream baos = null;
 		String result = null;
 		try {
 			if(is != null) {
 				baos = new ByteArrayOutputStream();
-				int i = -1;
+				int i;
 				while ((i = is.read()) != -1) {
 					baos.write(i);
 				}

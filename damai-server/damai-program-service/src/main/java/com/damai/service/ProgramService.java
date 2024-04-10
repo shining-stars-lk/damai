@@ -330,7 +330,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     @ServiceLock(lockType= LockType.Read,name = PROGRAM_LOCK,keys = {"#programId"})
-    private ProgramVo getById(Long programId) {
+    public ProgramVo getById(Long programId) {
         ProgramVo programVo = 
                 redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId), ProgramVo.class);
         if (Objects.nonNull(programVo)) {
