@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -20,37 +21,19 @@ public class CustomizeRequestWrapper extends HttpServletRequestWrapper {
     
     private final String requestBody;
     
-    private String rewriteRequestBody;
-    
-    private boolean rewriteFlag = false;
-    
     
     public CustomizeRequestWrapper(HttpServletRequest request) throws IOException {
         super(request);
         requestBody = StringUtil.inputStreamConvertString(request.getInputStream());
     }
     
-    public CustomizeRequestWrapper(HttpServletRequest request, String sourceRequstBody, String rewriteRequestBody) throws IOException {
-        super(request);
-        this.rewriteFlag = true;
-        this.requestBody = sourceRequstBody;
-        this.rewriteRequestBody = rewriteRequestBody;
-        
-    }
-    
-    
     @Override
-    public ServletInputStream getInputStream() throws IOException {
-        String data = "";
-        if(rewriteFlag) {
-            data = rewriteRequestBody;
-        }else {
-            data = requestBody;
-        }
-        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data.getBytes("UTF-8"));
+    public ServletInputStream getInputStream() {
+        ByteArrayInputStream byteArrayInputStream = 
+                new ByteArrayInputStream(requestBody.getBytes(StandardCharsets.UTF_8));
         return new ServletInputStream() {
             @Override
-            public int read() throws IOException {
+            public int read() {
                 return byteArrayInputStream.read();
             }
             
@@ -72,14 +55,8 @@ public class CustomizeRequestWrapper extends HttpServletRequestWrapper {
     }
     
     @Override
-    public BufferedReader getReader() throws IOException {
+    public BufferedReader getReader() {
         return new BufferedReader(new InputStreamReader(this.getInputStream()));
     }
-    
-    public String getRequestBody() {
-        return this.requestBody;
-    }
-    
-    
     
 }
