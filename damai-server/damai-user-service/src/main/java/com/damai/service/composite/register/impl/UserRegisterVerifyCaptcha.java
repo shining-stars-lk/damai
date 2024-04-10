@@ -41,20 +41,12 @@ public class UserRegisterVerifyCaptcha extends AbstractUserRegisterCheckHandler 
             throw new DaMaiFrameException(BaseCode.VERIFY_CAPTCHA_ID_NOT_EXIST);
         }
         if (VerifyCaptcha.YES.getValue().equals(verifyCaptcha)) {
-            if (StringUtil.isEmpty(param.getCaptchaType())) {
-                throw new DaMaiFrameException(BaseCode.CAPTCHA_TYPE_EMPTY);
-            }
-            if (StringUtil.isEmpty(param.getPointJson())) {
-                throw new DaMaiFrameException(BaseCode.POINT_JSON_EMPTY);
-            }
-            if (StringUtil.isEmpty(param.getToken())) {
-                throw new DaMaiFrameException(BaseCode.CAPTCHA_TOKEN_JSON_EMPTY);
+            if (StringUtil.isEmpty(param.getCaptchaVerification())) {
+                throw new DaMaiFrameException(BaseCode.VERIFY_CAPTCHA_EMPTY);
             }
             CaptchaVO captchaVO = new CaptchaVO();
-            captchaVO.setCaptchaType(param.getCaptchaType());
-            captchaVO.setPointJson(param.getPointJson());
-            captchaVO.setToken(param.getToken());
-            ResponseModel responseModel = captchaHandle.checkCaptcha(captchaVO);
+            captchaVO.setCaptchaVerification(param.getCaptchaVerification());
+            ResponseModel responseModel = captchaHandle.verification(captchaVO);
             if (!responseModel.isSuccess()) {
                 throw new DaMaiFrameException(responseModel.getRepCode(),responseModel.getRepMsg());
             }

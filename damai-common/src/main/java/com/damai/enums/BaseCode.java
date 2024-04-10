@@ -21,7 +21,7 @@ public enum BaseCode {
     
     VERIFY_CAPTCHA_ID_NOT_EXIST(503,"校验验证码id不存在"),
     
-    CAPTCHA_TYPE_EMPTY(504,"验证码类型为空"),
+    VERIFY_CAPTCHA_EMPTY(504,"二次校验验证码的参数为空"),
     
     POINT_JSON_EMPTY(505,"点坐标为空"),
     
