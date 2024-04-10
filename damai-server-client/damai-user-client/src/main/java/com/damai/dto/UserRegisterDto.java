@@ -56,16 +56,8 @@ public class UserRegisterDto implements Serializable {
     @NotBlank
     private String captchaId;
     
-    @ApiModelProperty(name ="captchaType", dataType ="String", value ="验证码类型: clickWord,blockPuzzle" +
-            " (如果调用 检查是否需要验证码 返回是需要验证码，那么传入调用 获取验证码 的数据)")
-    private String captchaType;
-    
-    @ApiModelProperty(name ="pointJson", dataType ="String", value ="点坐标 base64加密传输 " +
-            "(如果调用 检查是否需要验证码 返回是需要验证码，那么传入调用 获取验证码 的数据)")
-    private String pointJson;
-    
-    @ApiModelProperty(name ="token", dataType ="String", value ="token 每次请求的验证码唯一标识 " +
-            "(如果调用 检查是否需要验证码 返回是需要验证码，那么传入调用 获取验证码 的数据)")
-    private String token;
+    @ApiModelProperty(name ="captchaVerification", dataType ="String", value ="二次校验验证码 " +
+            "前端将 校验验证码返回的 token---pointJson 拼接后 使用AES加密 加密的秘钥使用获取验证码返回的secretKey")
+    private String captchaVerification;
     
 }
