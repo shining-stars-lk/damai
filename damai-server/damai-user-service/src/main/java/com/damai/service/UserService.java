@@ -105,7 +105,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     
     @Transactional(rollbackFor = Exception.class)
     @ServiceLock(lockType= LockType.Write,name = REGISTER_USER_LOCK,keys = {"#userRegisterDto.mobile"})
-    public void register(UserRegisterDto userRegisterDto) {
+    public Boolean register(UserRegisterDto userRegisterDto) {
         compositeContainer.execute(CompositeCheckType.USER_REGISTER_CHECK.getValue(),userRegisterDto);
         //用户表添加
         User user = new User();
@@ -119,6 +119,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         userMobile.setMobile(userRegisterDto.getMobile());
         userMobileMapper.insert(userMobile);
         bloomFilterHandler.add(userMobile.getMobile());
+        return true;
     }
     
     @ServiceLock(lockType= LockType.Read,name = REGISTER_USER_LOCK,keys = {"#mobile"})
