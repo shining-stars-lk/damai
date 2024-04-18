@@ -54,9 +54,8 @@ public class UserController {
     
     @ApiOperation(value = "注册")
     @PostMapping(value = "/register")
-    public ApiResponse<Void> register(@Valid @RequestBody UserRegisterDto userRegisterDto){
-        userService.register(userRegisterDto);
-        return ApiResponse.ok();
+    public ApiResponse<Boolean> register(@Valid @RequestBody UserRegisterDto userRegisterDto){
+        return ApiResponse.ok(userService.register(userRegisterDto));
     }
     
     @ApiOperation(value = "是否存在")

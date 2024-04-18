@@ -12,6 +12,7 @@ import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.service.CaptchaHandle;
 import com.damai.service.composite.register.AbstractUserRegisterCheckHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
  * @description: 用户注册检查
  * @author: 阿宽不是程序员
  **/
+@Slf4j
 @Component
 public class UserRegisterVerifyCaptcha extends AbstractUserRegisterCheckHandler {
     
@@ -44,6 +46,7 @@ public class UserRegisterVerifyCaptcha extends AbstractUserRegisterCheckHandler 
             if (StringUtil.isEmpty(param.getCaptchaVerification())) {
                 throw new DaMaiFrameException(BaseCode.VERIFY_CAPTCHA_EMPTY);
             }
+            log.info("传入的captchaVerification:{}",param.getCaptchaVerification());
             CaptchaVO captchaVO = new CaptchaVO();
             captchaVO.setCaptchaVerification(param.getCaptchaVerification());
             ResponseModel responseModel = captchaHandle.verification(captchaVO);
