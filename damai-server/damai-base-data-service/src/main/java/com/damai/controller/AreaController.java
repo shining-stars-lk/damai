@@ -46,4 +46,16 @@ public class AreaController {
     public ApiResponse<AreaVo> getById(@Valid @RequestBody AreaGetDto areaGetDto){
         return ApiResponse.ok(areaService.getById(areaGetDto));
     }
+    
+    @ApiOperation(value = "当前城市")
+    @PostMapping(value = "/current")
+    public ApiResponse<AreaVo> current(){
+        return ApiResponse.ok(areaService.current());
+    }
+    
+    @ApiOperation(value = "热门城市")
+    @PostMapping(value = "/hot")
+    public ApiResponse<List<AreaVo>> hot() {
+        return ApiResponse.ok(areaService.hot());
+    }
 }

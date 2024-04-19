@@ -55,4 +55,22 @@ public class AreaService extends ServiceImpl<AreaMapper, Area> {
         }
         return areaVo;
     }
+    
+    public AreaVo current() {
+        final LambdaQueryWrapper<Area> lambdaQueryWrapper = Wrappers.lambdaQuery(Area.class)
+                .eq(Area::getName, "北京");
+        Area area = areaMapper.selectOne(lambdaQueryWrapper);
+        AreaVo areaVo = new AreaVo();
+        if (Objects.nonNull(area)) {
+            BeanUtil.copyProperties(area,areaVo);
+        }
+        return areaVo;
+    }
+    
+    public List<AreaVo> hot() {
+        final LambdaQueryWrapper<Area> lambdaQueryWrapper = Wrappers.lambdaQuery(Area.class)
+                .in(Area::getId, "全国","北京","上海","深圳","广州","杭州","天津","重庆","成都","中国香港");
+        List<Area> areas = areaMapper.selectList(lambdaQueryWrapper);
+        return BeanUtil.copyToList(areas,AreaVo.class);
+    }
 }
