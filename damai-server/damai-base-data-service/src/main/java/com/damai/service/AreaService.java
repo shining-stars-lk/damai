@@ -58,7 +58,7 @@ public class AreaService extends ServiceImpl<AreaMapper, Area> {
     
     public AreaVo current() {
         final LambdaQueryWrapper<Area> lambdaQueryWrapper = Wrappers.lambdaQuery(Area.class)
-                .eq(Area::getName, "北京");
+                .eq(Area::getId, 2);
         Area area = areaMapper.selectOne(lambdaQueryWrapper);
         AreaVo areaVo = new AreaVo();
         if (Objects.nonNull(area)) {
@@ -69,7 +69,7 @@ public class AreaService extends ServiceImpl<AreaMapper, Area> {
     
     public List<AreaVo> hot() {
         final LambdaQueryWrapper<Area> lambdaQueryWrapper = Wrappers.lambdaQuery(Area.class)
-                .in(Area::getId, "全国","北京","上海","深圳","广州","杭州","天津","重庆","成都","中国香港");
+                .in(Area::getName, "全国","北京","上海","深圳","广州","杭州","天津","重庆","成都","中国香港");
         List<Area> areas = areaMapper.selectList(lambdaQueryWrapper);
         return BeanUtil.copyToList(areas,AreaVo.class);
     }
