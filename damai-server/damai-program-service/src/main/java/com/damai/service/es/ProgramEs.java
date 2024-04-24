@@ -43,24 +43,30 @@ public class ProgramEs {
         List<ProgramHomeVo> programHomeVoList = new ArrayList<>();
         
         try {
-            List<EsDataQueryDto> programEsQueryDto = new ArrayList<>();
-            EsDataQueryDto areaIdQueryDto = new EsDataQueryDto();
-            areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
-            areaIdQueryDto.setParamValue(programPageListDto.getAreaId());
-            programEsQueryDto.add(areaIdQueryDto);
-            EsDataQueryDto parentProgramCategoryIdQueryDto = new EsDataQueryDto();
-            parentProgramCategoryIdQueryDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID);
-            parentProgramCategoryIdQueryDto.setParamValue(programPageListDto.getParentProgramCategoryIds());
-            programEsQueryDto.add(parentProgramCategoryIdQueryDto);
-            PageInfo<ProgramListVo> pageInfo = businessEsHandle.queryPage(
-                    SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
-                    ProgramDocumentParamName.INDEX_TYPE, programEsQueryDto, 1, 7, ProgramListVo.class);
-            if (!pageInfo.getList().isEmpty()) {
-                String areaName = pageInfo.getList().get(0).getAreaName();
-                ProgramHomeVo programHomeVo = new ProgramHomeVo();
-                programHomeVo.setCategoryName(areaName);
-                programHomeVo.setProgramListVoList(pageInfo.getList());
-                programHomeVoList.add(programHomeVo);
+            //按照父节目id集合来进行循环从es中查询，主页页面是4个父节目，也就是循环4次
+            for (Long parentProgramCategoryId : programPageListDto.getParentProgramCategoryIds()) {
+                List<EsDataQueryDto> programEsQueryDto = new ArrayList<>();
+                //地区id
+                EsDataQueryDto areaIdQueryDto = new EsDataQueryDto();
+                areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
+                areaIdQueryDto.setParamValue(programPageListDto.getAreaId());
+                programEsQueryDto.add(areaIdQueryDto);
+                //父节目类型id集合
+                EsDataQueryDto parentProgramCategoryIdQueryDto = new EsDataQueryDto();
+                parentProgramCategoryIdQueryDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID);
+                parentProgramCategoryIdQueryDto.setParamValue(parentProgramCategoryId);
+                programEsQueryDto.add(parentProgramCategoryIdQueryDto);
+                //查询前7条
+                PageInfo<ProgramListVo> pageInfo = businessEsHandle.queryPage(
+                        SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
+                        ProgramDocumentParamName.INDEX_TYPE, programEsQueryDto, 1, 7, ProgramListVo.class);
+                if (!pageInfo.getList().isEmpty()) {
+                    String areaName = pageInfo.getList().get(0).getAreaName();
+                    ProgramHomeVo programHomeVo = new ProgramHomeVo();
+                    programHomeVo.setCategoryName(areaName);
+                    programHomeVo.setProgramListVoList(pageInfo.getList());
+                    programHomeVoList.add(programHomeVo);
+                }
             }
         }catch (Exception e) {
             log.error("businessEsHandle.queryPage error",e);
