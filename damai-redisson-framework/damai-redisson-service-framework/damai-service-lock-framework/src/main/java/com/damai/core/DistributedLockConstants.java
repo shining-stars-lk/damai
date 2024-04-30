@@ -37,6 +37,11 @@ public class DistributedLockConstants {
     public final static String PROGRAM_LOCK = "d_program_lock";
     
     /**
+     * 节目分组
+     * */
+    public final static String PROGRAM_GROUP_LOCK = "d_program_group_lock";
+    
+    /**
      * 查看节目
      * */
     public final static String GET_PROGRAM_LOCK = "d_get_program_lock";

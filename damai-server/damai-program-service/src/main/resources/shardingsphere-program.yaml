@@ -26,6 +26,16 @@ rules:
           standard:
             shardingColumn: id
             shardingAlgorithmName: tableProgramModModel
+      d_program_group:
+        actualDataNodes: ds_${0..1}.d_program_group_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: databaseProgramGroupModModel
+        tableStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: tableProgramGroupModModel
       d_program_show_time:
         actualDataNodes: ds_${0..1}.d_program_show_time_${0..1}
         databaseStrategy:
@@ -67,6 +77,14 @@ rules:
         type: MOD
         props:
           sharding-count: 2
+      databaseProgramGroupModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      tableProgramGroupModModel:
+        type: MOD
+        props:
+          sharding-count: 2    
       databaseProgramShowTimeModModel:
         type: MOD
         props:

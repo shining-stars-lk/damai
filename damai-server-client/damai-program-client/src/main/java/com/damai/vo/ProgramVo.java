@@ -22,6 +22,12 @@ public class ProgramVo implements Serializable {
     @ApiModelProperty(name ="id", dataType ="Long", value ="主键id")
     private Long id;
     
+    @ApiModelProperty(name ="programGroupId", dataType ="Long", value ="节目分组id")
+    private Long programGroupId;
+    
+    @ApiModelProperty(name ="programGroupVo", dataType ="ProgramGroupVo", value ="节目分组")
+    private ProgramGroupVo programGroupVo;
+    
     @ApiModelProperty(name ="title", dataType ="Long", value ="标题")
     private String title;
     
@@ -33,6 +39,15 @@ public class ProgramVo implements Serializable {
     
     @ApiModelProperty(name ="itemPicture", dataType ="String", value ="图片介绍")
     private String itemPicture;
+    
+    @ApiModelProperty(name ="preSell", dataType ="Integer", value ="预售 1:是 0:否")
+    private Integer preSell;
+    
+    @ApiModelProperty(name ="preSellInstruction", dataType ="String", value ="预售说明")
+    private String preSellInstruction;
+    
+    @ApiModelProperty(name ="importantNotice", dataType ="String", value ="重要通知")
+    private String importantNotice;
     
     @ApiModelProperty(name ="areaId", dataType ="Long", value ="区域id")
     private Long areaId;

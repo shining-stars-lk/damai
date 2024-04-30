@@ -26,6 +26,7 @@ import com.damai.dto.ProgramSearchDto;
 import com.damai.dto.TicketUserListDto;
 import com.damai.entity.Program;
 import com.damai.entity.ProgramCategory;
+import com.damai.entity.ProgramGroup;
 import com.damai.entity.ProgramJoinShowTime;
 import com.damai.entity.ProgramShowTime;
 import com.damai.entity.Seat;
@@ -36,6 +37,7 @@ import com.damai.enums.BusinessStatus;
 import com.damai.enums.SellStatus;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.ProgramCategoryMapper;
+import com.damai.mapper.ProgramGroupMapper;
 import com.damai.mapper.ProgramMapper;
 import com.damai.mapper.ProgramShowTimeMapper;
 import com.damai.mapper.SeatMapper;
@@ -54,8 +56,10 @@ import com.damai.util.DateUtils;
 import com.damai.util.ServiceLockTool;
 import com.damai.util.StringUtil;
 import com.damai.vo.AreaVo;
+import com.damai.vo.ProgramGroupVo;
 import com.damai.vo.ProgramHomeVo;
 import com.damai.vo.ProgramListVo;
+import com.damai.vo.ProgramSimpleInfoVo;
 import com.damai.vo.ProgramVo;
 import com.damai.vo.SeatVo;
 import com.damai.vo.TicketCategoryVo;
@@ -81,6 +85,7 @@ import java.util.stream.Collectors;
 import static com.damai.constant.Constant.CODE;
 import static com.damai.constant.Constant.USER_ID;
 import static com.damai.core.DistributedLockConstants.GET_PROGRAM_LOCK;
+import static com.damai.core.DistributedLockConstants.PROGRAM_GROUP_LOCK;
 import static com.damai.core.DistributedLockConstants.PROGRAM_LOCK;
 import static com.damai.core.RepeatExecuteLimitConstants.CANCEL_PROGRAM_ORDER;
 import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
@@ -100,6 +105,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @Autowired
     private ProgramMapper programMapper;
+    
+    @Autowired
+    private ProgramGroupMapper programGroupMapper;
     
     @Autowired
     private ProgramShowTimeMapper programShowTimeMapper;
@@ -306,6 +314,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     public ProgramVo getDetail(ProgramGetDto programGetDto) {
         ProgramVo redisProgramVo = programService.getById(programGetDto.getId());
         
+        ProgramGroupVo programGroupVo = programService.getProgramGroup(programGetDto.getId());
+        redisProgramVo.setProgramGroupVo(programGroupVo);
+        
         preloadTicketUserList(redisProgramVo.getHighHeat());
         
         setProgramCategoryData(redisProgramVo);
@@ -342,6 +353,26 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId)
                     ,ProgramVo.class,
                     () -> createProgramVo(programId)
+                    ,EXPIRE_TIME,
+                    TimeUnit.DAYS);
+        }finally {
+            lock.unlock();
+        }
+    }
+    
+    @ServiceLock(lockType= LockType.Read,name = PROGRAM_GROUP_LOCK,keys = {"#programGroupId"})
+    public ProgramGroupVo getProgramGroup(Long programGroupId) {
+        ProgramGroupVo programGroupVo =
+                redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_GROUP, programGroupId), ProgramGroupVo.class);
+        if (Objects.nonNull(programGroupVo)) {
+            return programGroupVo;
+        }
+        RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_PROGRAM_LOCK, new String[]{String.valueOf(programGroupId)});
+        lock.lock();
+        try {
+            return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programGroupId)
+                    ,ProgramGroupVo.class,
+                    () -> createProgramGroupVo(programGroupId)
                     ,EXPIRE_TIME,
                     TimeUnit.DAYS);
         }finally {
@@ -411,6 +442,16 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             log.error("base-data rpc getById error areaResponse:{}", JSON.toJSONString(areaResponse));
         }
         return programVo;
+    }
+    
+    private ProgramGroupVo createProgramGroupVo(Long programGroupId){
+        ProgramGroupVo programGroupVo = new ProgramGroupVo();
+        ProgramGroup programGroup =
+                Optional.ofNullable(programGroupMapper.selectById(programGroupId))
+                        .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_GROUP_NOT_EXIST));
+        programGroupVo.setId(programGroup.getId());
+        programGroupVo.setProgramSimpleInfoVoList(JSON.parseArray(programGroup.getProgramJson(), ProgramSimpleInfoVo.class));
+        return programGroupVo;
     }
     
     public List<Long> getAllProgramIdList(){
