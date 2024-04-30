@@ -21,6 +21,11 @@ public class Program extends BaseTableData implements Serializable {
      * 主键id
      */
     private Long id;
+    
+    /**
+     * 节目分组id
+     */
+    private Long programGroupId;
 
     /**
      * 所在区域id
@@ -56,6 +61,21 @@ public class Program extends BaseTableData implements Serializable {
      * 项目图片
      * */
     private String itemPicture;
+    
+    /**
+     * 预售 1:是 0:否
+     * */
+    private Integer preSell;
+    
+    /**
+     * 预售说明
+     * */
+    private String preSellInstruction;
+    
+    /**
+     * 重要通知
+     * */
+    private String importantNotice;
 
     /**
      * 项目详情

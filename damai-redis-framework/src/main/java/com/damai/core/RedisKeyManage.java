@@ -54,6 +54,8 @@ public enum RedisKeyManage {
     
     PROGRAM("d_mai_program_%S","节目id","节目","k"),
     
+    PROGRAM_GROUP("d_mai_program_group_%S","节目分组id","节目分组","k"),
+    
     PROGRAM_SHOW_TIME("d_mai_program_show_time_%S","节目演出时间id","节目演出时间","k"),
     
     PROGRAM_SEAT_NO_SOLD_HASH("d_mai_program_seat_no_sold_hash_%S","节目座位未售卖集合id","节目座位未售卖集合","k"),
