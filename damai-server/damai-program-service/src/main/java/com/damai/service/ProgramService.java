@@ -370,7 +370,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_PROGRAM_LOCK, new String[]{String.valueOf(programGroupId)});
         lock.lock();
         try {
-            return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programGroupId)
+            return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_GROUP,programGroupId)
                     ,ProgramGroupVo.class,
                     () -> createProgramGroupVo(programGroupId)
                     ,EXPIRE_TIME,
@@ -569,7 +569,10 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     private void delRedisData(Long programId){
+        Program program = Optional.ofNullable(programMapper.selectById(programId))
+                .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId));
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_GROUP,program.getProgramGroupId()));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programId));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId));
