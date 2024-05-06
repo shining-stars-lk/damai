@@ -1,10 +1,11 @@
 package com.damai.config;
 
+import com.damai.MessageConsumer;
 import com.damai.RedisStreamConfigProperties;
 import com.damai.RedisStreamListener;
 import com.damai.RedisStreamPushHandler;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
@@ -23,9 +24,10 @@ public class RedisStreamAutoConfig {
     }
     
     @Bean
+    @ConditionalOnBean(MessageConsumer.class)
     public RedisStreamListener redisStreamListener(StringRedisTemplate stringRedisTemplate, 
                                                    RedisStreamConfigProperties redisStreamConfigProperties,
-                                                   ApplicationContext applicationContext){
-        return new RedisStreamListener(stringRedisTemplate,redisStreamConfigProperties,applicationContext);
+                                                   MessageConsumer messageConsumer){
+        return new RedisStreamListener(stringRedisTemplate,redisStreamConfigProperties,messageConsumer);
     }
 }
