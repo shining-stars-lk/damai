@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.damai.config.RedisStreamAutoConfig,\
+  com.damai.config.RedisStreamConsumerAutoConfig

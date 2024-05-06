@@ -33,6 +33,8 @@ public enum BaseCode {
     
     TWO_PASSWORDS_DIFFERENT(509,"两次输入的密码不同"),
     
+    MESSAGE_CONSUMER_NOT_EXIST(510,"messageConsumer实现不存在"),
+    
     RSA_SIGN_ERROR(10000,"res签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"res解密失败"),
