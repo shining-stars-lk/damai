@@ -8,6 +8,7 @@ import com.damai.dto.ProgramPageListDto;
 import com.damai.dto.ProgramSearchDto;
 import com.damai.page.PageVo;
 import com.damai.service.ProgramService;
+import com.damai.service.test2.RedisPushService;
 import com.damai.vo.ProgramHomeVo;
 import com.damai.vo.ProgramListVo;
 import com.damai.vo.ProgramVo;
@@ -34,6 +35,8 @@ public class ProgramController {
     
     @Autowired
     private ProgramService programService;
+    
+    
     
     @ApiOperation(value = "添加")
     @PostMapping(value = "/add")
@@ -63,5 +66,15 @@ public class ProgramController {
     @PostMapping(value = "/detail")
     public ApiResponse<ProgramVo> getDetail(@Valid @RequestBody ProgramGetDto programGetDto) {
         return ApiResponse.ok(programService.getDetail(programGetDto));
+    }
+    
+    @Autowired
+    private RedisPushService redisPushService;
+    
+    @PostMapping(value = "/test")
+    public ApiResponse<Void> test(@Valid @RequestBody ProgramGetDto programGetDto) {
+        //programService.testStream(programGetDto.getId());
+        redisPushService.push(String.valueOf(programGetDto.getId()));
+        return ApiResponse.ok();
     }
 }
