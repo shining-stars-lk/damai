@@ -25,6 +25,10 @@ spring:
     host: 127.0.0.1
     port: 6379
     timeout: 3000
+    stream:
+      streamName: test_stream
+      consumerGroup: test_group
+      consumerName: test_consumer_1
   cloud:
     nacos:
       discovery:
@@ -113,6 +117,3 @@ elasticsearch:
   ip: 127.0.0.1:9200
   userName: elastic
   passWord: elastic
-redisstream:
-  dcirgroup: test_group
-  dcirconsumer: dcir-consumer-1

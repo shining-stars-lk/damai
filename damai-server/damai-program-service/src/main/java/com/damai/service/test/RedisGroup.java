@@ -26,15 +26,15 @@
 //@Slf4j
 //@Component
 //public class RedisGroup {
-//    
+//
 //    @Autowired
 //    private StringRedisTemplate stringRedisTemplate;
-//    
+//
 //    private final AtomicBoolean isCreated = new AtomicBoolean(false);
-//    
+//
 //    @PostConstruct
 //    public void groupInfo() {
-//        
+//
 //        // 发送个心跳,保证stream已经存在
 //        HashMap<Object, Object> map = new HashMap<>();
 //        map.put("fileBeat","fileBeat...");
@@ -42,14 +42,14 @@
 //                .in(StreamConstant.streamName)
 //                .ofMap(map)
 //                .withId(RecordId.autoGenerate());
-//        
+//
 //        final StreamOperations<String, Object, Object> stream = stringRedisTemplate.opsForStream();
 //        stream.add(record);
-//        
+//
 //        final StreamInfo.XInfoGroups xInfoGroups = stream.groups(StreamConstant.streamName);
-//        
+//
 //        Collection<XInfoGroup> needDestroyColl = new ArrayList<>();
-//        
+//
 //        xInfoGroups.forEach(xInfoStream -> {
 //            if (xInfoStream.groupName().equals(StreamConstant.consumerGroup)) {
 //                isCreated.set(true);
@@ -57,17 +57,19 @@
 //                needDestroyColl.add(xInfoStream);
 //            }
 //        });
-//        
+//
 //        for (StreamInfo.XInfoGroup xInfoGroup : needDestroyColl) {
 //            log.info("destroy consumer group[{}]...", xInfoGroup.groupName());
 //            stream.destroyGroup(StreamConstant.streamName,xInfoGroup.groupName());
 //        }
-//        
-//        if (isCreated.get()) return;
-//        
+//
+//        if (isCreated.get()) {
+//            return;
+//        }
+//
 //        log.info("create consumer group[{}]...", StreamConstant.consumerGroup);
-//        
+//
 //        stream.createGroup(StreamConstant.streamName, StreamConstant.consumerGroup);
-//        
+//
 //    }
 //}

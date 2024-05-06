@@ -16,13 +16,14 @@ public class RedisPushService {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
-    private RedisStreamConfig redisStreamConfig;
+    private RedisStreamConfigProperties redisStreamConfigProperties;
 
     public void push(String msg){
         // 创建消息记录, 以及指定stream
-        StringRecord stringRecord = StreamRecords.string(Collections.singletonMap("data", msg)).withStreamKey(RedisStreamConfig.DCIR);
+        StringRecord stringRecord = StreamRecords.string(Collections.singletonMap("data", msg))
+                .withStreamKey(redisStreamConfigProperties.getStreamName());
         // 将消息添加至消息队列中
         this.stringRedisTemplate.opsForStream().add(stringRecord);
-        log.info("{}已发送消息:{}",RedisStreamConfig.DCIR,msg);
+        log.info("{}已发送消息:{}", redisStreamConfigProperties.getStreamName(),msg);
     }
 }

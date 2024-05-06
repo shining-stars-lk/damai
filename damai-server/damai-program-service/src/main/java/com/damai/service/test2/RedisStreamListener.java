@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class DcirStreamListener implements StreamListener<String, ObjectRecord<String, String>> {
+public class RedisStreamListener implements StreamListener<String, ObjectRecord<String, String>> {
     @Autowired
     StringRedisTemplate stringRedisTemplate;
 
     @Autowired
-    RedisStreamConfig redisStreamConfig;
+    RedisStreamConfigProperties redisStreamConfigProperties;
 
     @Override
     protected void finalize() throws Throwable {
@@ -27,12 +27,11 @@ public class DcirStreamListener implements StreamListener<String, ObjectRecord<S
         try{
             // 消息ID
             RecordId messageId = message.getId();
-
             // 消息的key和value
             String string = message.getValue();
-            log.info("dcir获取到数据。messageId={}, stream={}, body={}", messageId, message.getStream(), string);
+            log.info("stream获取到数据。messageId={}, stream={}, body={}", messageId, message.getStream(), string);
             // 通过RedisTemplate手动确认消息 
-            this.stringRedisTemplate.opsForStream().acknowledge(redisStreamConfig.getDcirgroup(), message);
+            this.stringRedisTemplate.opsForStream().acknowledge(redisStreamConfigProperties.getConsumerGroup(), message);
         }catch (Exception e){
             // 处理异常
             e.printStackTrace();
