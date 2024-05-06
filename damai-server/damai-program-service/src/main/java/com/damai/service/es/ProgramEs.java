@@ -58,7 +58,7 @@ public class ProgramEs {
                 programEsQueryDto.add(parentProgramCategoryIdQueryDto);
                 //查询前7条
                 PageInfo<ProgramListVo> pageInfo = businessEsHandle.queryPage(
-                        SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
+                        "online" + "-" + ProgramDocumentParamName.INDEX_NAME,
                         ProgramDocumentParamName.INDEX_TYPE, programEsQueryDto, 1, 7, ProgramListVo.class);
                 if (!pageInfo.getList().isEmpty()) {
                     String areaName = pageInfo.getList().get(0).getAreaName();
