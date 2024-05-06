@@ -16,8 +16,8 @@
 //
 //@Slf4j
 //@Configuration  
-//public class RedisStreamConfig {
-//    
+//public class RedisStreamConfigProperties {
+//
 //    private ExecutorService executorService = Executors.newCachedThreadPool();
 //
 //    @Bean  
