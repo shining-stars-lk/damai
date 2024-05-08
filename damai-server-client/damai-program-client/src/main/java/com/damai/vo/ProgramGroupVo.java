@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,4 +24,7 @@ public class ProgramGroupVo implements Serializable {
     
     @ApiModelProperty(name ="programSimpleInfoVoList", dataType ="List<ProgramSimpleInfoVo>", value ="节目简单信息集合")
     private List<ProgramSimpleInfoVo> programSimpleInfoVoList;
+    
+    @ApiModelProperty(name ="recentShowTime", dataType ="Date", value ="最近的节目演出时间")
+    private Date recentShowTime;
 }
