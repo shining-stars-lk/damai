@@ -335,7 +335,7 @@ public class DateUtils {
         if (Objects.isNull(date)) {
             return 0L;
         }
-        return Long.valueOf(format(date, FORMAT_NO_SECOND));
+        return Long.parseLong(format(date, FORMAT_NO_SECOND));
     }
  
     /**
@@ -348,7 +348,7 @@ public class DateUtils {
         if (Objects.isNull(date)) {
             return 0L;
         }
-        return Long.valueOf(format(date, FORMAT_NO_MILLISECOND));
+        return Long.parseLong(format(date, FORMAT_NO_MILLISECOND));
     }
  
     /**
@@ -744,6 +744,23 @@ public class DateUtils {
         Date nextMonthDateStart = getMonthDateStart(addMonth(monthDateStart, 1));
         return getDateEnd(addDay(nextMonthDateStart, -1));
     }
+    
+    /**
+     * 获取两个日期相差的秒数（以日期为单位计算，不以24小时制计算，详见下面说明）<br>
+     *
+     * @param date1 日期1
+     * @param date2 日期2
+     * @return 相差秒数（若返回 -1，则至少有一个日期存在为空，此时不能进行比较）
+     */
+    public static long countBetweenSecond(Date date1, Date date2) {
+        if (Objects.isNull(date1) || Objects.isNull(date2)) {
+            return -1;
+        }
+        long t1 = getDateTimeNo(date1);
+        long t2 = getDateTimeNo(date1);
+        // 相差秒数
+        return Math.abs(t1 - t2);
+    }
  
     /**
      * 获取两个日期相差的天数（以日期为单位计算，不以24小时制计算，详见下面说明）<br>
@@ -759,8 +776,8 @@ public class DateUtils {
             return -1;
         }
         // 获取两个日期 0 点 0 时 0 分 0 秒 0 毫秒时的时间戳（毫秒级）
-        long t1 = getDateStart(date1).getTime();
-        long t2 = getDateStart(date2).getTime();
+        long t1 = Objects.requireNonNull(getDateStart(date1)).getTime();
+        long t2 = Objects.requireNonNull(getDateStart(date2)).getTime();
         // 相差天数 = 相差的毫秒数 / 一天的毫秒数
         return (int) (Math.abs(t1 - t2) / DAY_MILLISECONDS);
     }

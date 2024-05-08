@@ -48,6 +48,7 @@ import com.damai.page.PageVo;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.repeatexecutelimit.annotion.RepeatExecuteLimit;
+import com.damai.service.cache.local.LocalProgramCache;
 import com.damai.service.constant.ProgramTimeType;
 import com.damai.service.es.ProgramEs;
 import com.damai.servicelock.LockType;
@@ -62,7 +63,6 @@ import com.damai.vo.ProgramHomeVo;
 import com.damai.vo.ProgramListVo;
 import com.damai.vo.ProgramSimpleInfoVo;
 import com.damai.vo.ProgramVo;
-import com.damai.vo.SeatVo;
 import com.damai.vo.TicketCategoryVo;
 import com.damai.vo.TicketUserVo;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +73,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,6 +152,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @Autowired
     private RedisStreamPushHandler redisStreamPushHandler;
+    
+    @Autowired
+    private LocalProgramCache localProgramCache;
     
     
     public Long add(ProgramAddDto programAddDto){
@@ -316,34 +320,49 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     
     public ProgramVo getDetail(ProgramGetDto programGetDto) {
-        ProgramVo redisProgramVo = programService.getById(programGetDto.getId());
+        ProgramShowTime redisProgramShowTime =
+                programShowTimeService.selectProgramShowTimeByProgramIdMultipleCache(programGetDto.getId());
+        
+        ProgramVo programVo = programService.getByIdMultipleCache(programGetDto.getId(),redisProgramShowTime.getShowTime());
+        
+        programVo.setShowTime(redisProgramShowTime.getShowTime());
+        programVo.setShowDayTime(redisProgramShowTime.getShowDayTime());
+        programVo.setShowWeekTime(redisProgramShowTime.getShowWeekTime());
         
         ProgramGroupVo programGroupVo = programService.getProgramGroup(programGetDto.getId());
-        redisProgramVo.setProgramGroupVo(programGroupVo);
+        programVo.setProgramGroupVo(programGroupVo);
         
-        preloadTicketUserList(redisProgramVo.getHighHeat());
+        preloadTicketUserList(programVo.getHighHeat());
         
-        setProgramCategoryData(redisProgramVo);
+        setProgramCategoryData(programVo);
         
-        ProgramShowTime redisProgramShowTime = programShowTimeService.selectProgramShowTimeByProgramId(redisProgramVo.getId());
-        redisProgramVo.setShowTime(redisProgramShowTime.getShowTime());
-        redisProgramVo.setShowDayTime(redisProgramShowTime.getShowDayTime());
-        redisProgramVo.setShowWeekTime(redisProgramShowTime.getShowWeekTime());
-        
-        List<SeatVo> redisSeatVoList = seatService.selectSeatByProgramId(redisProgramVo.getId());
-        if (Objects.equals(redisProgramVo.getPermitChooseSeat(), BusinessStatus.YES.getCode())) {
-            redisProgramVo.setSeatVoList(redisSeatVoList);
-        }
+        seatService.selectSeatByProgramId(programVo.getId());
+      
         
         List<TicketCategoryVo> ticketCategoryVoList = 
-                ticketCategoryService.selectTicketCategoryListByProgramId(redisProgramVo.getId());
-        redisProgramVo.setTicketCategoryVoList(ticketCategoryVoList);
+                ticketCategoryService.selectTicketCategoryListByProgramId(programVo.getId());
+        programVo.setTicketCategoryVoList(ticketCategoryVoList);
         
-        ticketCategoryService.setRedisRemainNumber(redisProgramVo.getId());
+        ticketCategoryService.setRedisRemainNumber(programVo.getId());
         
-        return redisProgramVo;
+        return programVo;
     }
     
+    /**
+     * 查询节目(结合多级缓存查询)
+     * */
+    public ProgramVo getByIdMultipleCache(Long programId, Date showTime){
+        return localProgramCache.getCache(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId).getRelKey(),
+                key -> {
+                    ProgramVo programVo = getById(programId);
+                    programVo.setShowTime(showTime);
+                    return programVo;
+                });
+    }
+    
+    /**
+     * 查询节目
+     * */
     @ServiceLock(lockType= LockType.Read,name = PROGRAM_LOCK,keys = {"#programId"})
     public ProgramVo getById(Long programId) {
         ProgramVo programVo = 
@@ -455,6 +474,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                         .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_GROUP_NOT_EXIST));
         programGroupVo.setId(programGroup.getId());
         programGroupVo.setProgramSimpleInfoVoList(JSON.parseArray(programGroup.getProgramJson(), ProgramSimpleInfoVo.class));
+        programGroupVo.setRecentShowTime(programGroup.getRecentShowTime());
         return programGroupVo;
     }
     
@@ -586,7 +606,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     public void test(ProgramGetDto programGetDto) {
-        redisStreamPushHandler.push(String.valueOf(programGetDto.getId()));
+        redisStreamPushHandler.push(JSON.toJSONString(programGetDto));
     }
 }
 

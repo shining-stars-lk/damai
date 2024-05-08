@@ -15,6 +15,7 @@ import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.ProgramShowTimeMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
+import com.damai.service.cache.local.LocalProgramShowTimeCache;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.util.DateUtils;
@@ -54,6 +55,9 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
     @Autowired
     private ServiceLockTool serviceLockTool;
     
+    @Autowired
+    private LocalProgramShowTimeCache localProgramShowTimeCache;
+    
     
     /**
      * 添加节目
@@ -68,6 +72,15 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
     }
     
     /**
+     * 查询节目演出时间(结合多级缓存查询)
+     * */
+    public ProgramShowTime selectProgramShowTimeByProgramIdMultipleCache(Long programId){
+        return localProgramShowTimeCache.getCache(RedisKeyBuild.createRedisKey
+                (RedisKeyManage.PROGRAM_SHOW_TIME, programId).getRelKey(),
+                key -> selectProgramShowTimeByProgramId(programId));
+    }
+            
+    /**
      * 查询节目演出时间
      * */
     @ServiceLock(lockType= LockType.Read,name = PROGRAM_SHOW_TIME_LOCK,keys = {"#programId"})
@@ -80,16 +93,17 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
         RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_PROGRAM_SHOW_TIME_LOCK, new String[]{String.valueOf(programId)});
         lock.lock();
         try {
-            return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programId),
-                    ProgramShowTime.class,
-                    () -> {
-                        LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
-                                Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
-                        return Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
-                                .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
-                    },
-                    EXPIRE_TIME,
-                    TimeUnit.DAYS);
+            programShowTime = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,
+                    programId), ProgramShowTime.class);
+            if (Objects.isNull(programShowTime)) {
+                LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
+                        Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
+                programShowTime = Optional.ofNullable(programShowTimeMapper.selectOne(programShowTimeLambdaQueryWrapper))
+                        .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST));
+                redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME, programId),programShowTime
+                        ,DateUtils.countBetweenSecond(DateUtils.now(),programShowTime.getShowTime()),TimeUnit.SECONDS);
+            }
+            return programShowTime;
         }finally {
             lock.unlock();   
         }

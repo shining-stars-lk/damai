@@ -35,6 +35,8 @@ public enum BaseCode {
     
     MESSAGE_CONSUMER_NOT_EXIST(510,"messageConsumer实现不存在"),
     
+    REDIS_STREAM_CONSUMER_TYPE_NOT_EXIST(511,"redisStream消费方式不存在"),
+    
     RSA_SIGN_ERROR(10000,"res签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"res解密失败"),
