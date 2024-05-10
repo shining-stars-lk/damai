@@ -87,6 +87,17 @@ rules:
             shardingColumn: id
             # 使用id分表算法
             shardingAlgorithmName: tableProgramHashModModel
+      # 对d_program_group表进行分表
+      d_program_group:
+        # 库为damai 表为d_program_group_0 至 d_program_group_1
+        actualDataNodes: ds_${0..1}.d_program_group_${0..1}
+        # 分表策略
+        tableStrategy:
+          standard:
+            # 使用id作为分片键
+            shardingColumn: id
+            # 使用id分表算法
+            shardingAlgorithmName: tableProgramGroupModModel      
       # 对d_program_show_time表进行分表
       d_program_show_time:
         # 库为damai 表为d_program_show_time_0 至 d_program_show_time_1
@@ -191,6 +202,12 @@ rules:
         props:
           # 分表数量
           sharding-count: 2
+      # d_program_group表分表算法    
+      tableProgramGroupModModel:
+        type: MOD
+        props:
+          # 分表数量
+          sharding-count: 2    
       # d_program_show_time表分表算法
       tableProgramShowTimeHashModModel:
         type: MOD
