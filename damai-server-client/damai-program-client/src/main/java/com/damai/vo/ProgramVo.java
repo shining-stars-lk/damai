@@ -121,33 +121,30 @@ public class ProgramVo implements Serializable {
     @ApiModelProperty(name ="totalCount", dataType ="Long", value ="大麦网初始开售时全场可售门票总张数")
     private Long totalCount;
     
-    /**
-     * 是否允许退款 1:允许 0:不允许
-     */
-    @ApiModelProperty(name ="permitRefund", dataType ="Integer", value ="否允许退款 1:允许 0:不允许")
+    @ApiModelProperty(name ="permitRefund", dataType ="Integer", value ="是否允许退款  0:不支持退 1:条件退 2:全部退")
     private Integer permitRefund;
     
-    /**
-     * 是否允许选座 1:允许选座 0:不允许选座
-     */
+    @ApiModelProperty(name ="refundExplain", dataType ="String", value ="退款说明")
+    private String refundExplain;
+    
     @ApiModelProperty(name ="permitChooseSeat", dataType ="Integer", value ="是否允许选座 1:允许选座 0:不允许选座")
     private Integer permitChooseSeat;
     
-    /**
-     * 电子票/快递票 1:是 0:不是
-     */
-    @ApiModelProperty(name ="electronicDeliveryTicket", dataType ="Integer", value ="电子票/快递票 1:是 0:不是")
+    @ApiModelProperty(name ="chooseSeatExplain", dataType ="String", value ="选座说明")
+    private String chooseSeatExplain;
+
+    @ApiModelProperty(name ="electronicDeliveryTicket", dataType ="Integer", value ="电子票/快递票 0:都没有1:电子票 2:快递票")
     private Integer electronicDeliveryTicket;
     
-    /**
-     * 电子发票 1:是 0:不是
-     */
+    @ApiModelProperty(name ="electronicDeliveryTicketExplain", dataType ="String", value ="电子票说明")
+    private String electronicDeliveryTicketExplain;
+    
     @ApiModelProperty(name ="electronicInvoice", dataType ="Integer", value ="电子发票 1:是 0:不是")
     private Integer electronicInvoice;
     
-    /**
-     * 高热度节目 0:否 1:是
-     * */
+    @ApiModelProperty(name ="electronicInvoiceExplain", dataType ="String", value ="电子发票说明")
+    private String electronicInvoiceExplain;
+
     @ApiModelProperty(name ="highHeat", dataType ="Integer", value ="高热度节目 0:否 1:是")
     private Integer highHeat;
     
