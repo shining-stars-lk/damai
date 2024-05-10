@@ -168,9 +168,14 @@ public class Program extends BaseTableData implements Serializable {
     private Long totalCount;
     
     /**
-     * 是否允许退款 1:允许 0:不允许
+     * 是否允许退款  0:不支持退 1:条件退 2:全部退
      */
     private Integer permitRefund;
+    
+    /**
+     * 退款说明
+     * */
+    private String refundExplain;
     
     /**
      * 是否允许选座 1:允许选座 0:不允许选座
@@ -178,14 +183,29 @@ public class Program extends BaseTableData implements Serializable {
     private Integer permitChooseSeat;
     
     /**
-     * 电子票/快递票 1:是 0:不是
+     * 选座说明
+     * */
+    private String chooseSeatExplain;
+    
+    /**
+     * 电子票/快递票 0:都没有1:电子票 2:快递票
      */
     private Integer electronicDeliveryTicket;
+    
+    /**
+     * 电子票说明
+     */
+    private Integer electronicDeliveryTicketExplain;
     
     /**
      * 电子发票 1:是 0:不是
      */
     private Integer electronicInvoice;
+    
+    /**
+     * 电子发票说明
+     */
+    private Integer electronicInvoiceExplain;
     
     /**
      * 高热度节目 0:否 1:是
