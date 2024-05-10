@@ -26,7 +26,7 @@ spring:
     port: 6379
     timeout: 3000
     stream:
-      streamName: test_stream
+      streamName: invalid_program
       consumerType: broadcast
   cloud:
     nacos:
