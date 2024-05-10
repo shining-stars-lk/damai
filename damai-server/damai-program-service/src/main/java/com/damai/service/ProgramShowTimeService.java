@@ -15,7 +15,7 @@ import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.ProgramShowTimeMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
-import com.damai.service.cache.local.LocalProgramShowTimeCache;
+import com.damai.service.cache.local.LocalCacheProgramShowTime;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.util.DateUtils;
@@ -26,14 +26,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static com.damai.core.DistributedLockConstants.GET_PROGRAM_SHOW_TIME_LOCK;
 import static com.damai.core.DistributedLockConstants.PROGRAM_SHOW_TIME_LOCK;
-import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -56,12 +57,9 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
     private ServiceLockTool serviceLockTool;
     
     @Autowired
-    private LocalProgramShowTimeCache localProgramShowTimeCache;
+    private LocalCacheProgramShowTime localCacheProgramShowTime;
     
     
-    /**
-     * 添加节目
-     * */
     @Transactional(rollbackFor = Exception.class)
     public Long add(ProgramShowTimeAddDto programShowTimeAddDto) {
         ProgramShowTime programShowTime = new ProgramShowTime();
@@ -71,18 +69,12 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
         return programShowTime.getId();
     }
     
-    /**
-     * 查询节目演出时间(结合多级缓存查询)
-     * */
     public ProgramShowTime selectProgramShowTimeByProgramIdMultipleCache(Long programId){
-        return localProgramShowTimeCache.getCache(RedisKeyBuild.createRedisKey
+        return localCacheProgramShowTime.getCache(RedisKeyBuild.createRedisKey
                 (RedisKeyManage.PROGRAM_SHOW_TIME, programId).getRelKey(),
                 key -> selectProgramShowTimeByProgramId(programId));
     }
-            
-    /**
-     * 查询节目演出时间
-     * */
+    
     @ServiceLock(lockType= LockType.Read,name = PROGRAM_SHOW_TIME_LOCK,keys = {"#programId"})
     public ProgramShowTime selectProgramShowTimeByProgramId(Long programId){
         ProgramShowTime programShowTime = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME, 
@@ -90,7 +82,8 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
         if (Objects.nonNull(programShowTime)) {
             return programShowTime;
         }
-        RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_PROGRAM_SHOW_TIME_LOCK, new String[]{String.valueOf(programId)});
+        RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_PROGRAM_SHOW_TIME_LOCK, 
+                new String[]{String.valueOf(programId)});
         lock.lock();
         try {
             programShowTime = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,
@@ -110,31 +103,28 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
     }
     
     @Transactional(rollbackFor = Exception.class)
-    public boolean renewal(){
-        boolean flag = false;
+    public Set<Long> renewal(){
+        Set<Long> programIdSet = new HashSet<>();
         LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
                 Wrappers.lambdaQuery(ProgramShowTime.class).
                         le(ProgramShowTime::getShowTime, DateUtils.addDay(DateUtils.now(), 1));
         List<ProgramShowTime> programShowTimes = programShowTimeMapper.selectList(programShowTimeLambdaQueryWrapper);
         for (ProgramShowTime programShowTime : programShowTimes) {
-            Date oldShowTime = programShowTime.getShowTime();
-            Date newShowTime = DateUtils.addMonth(oldShowTime, 1);
-            Date nowDateTime = DateUtils.now();
-            while (newShowTime.before(nowDateTime)) {
-                flag = true;
-                newShowTime = DateUtils.addMonth(newShowTime, 1);
+            Date showTime = programShowTime.getShowTime();
+            Date compareDateTime = DateUtils.addMonth(DateUtils.now(), 1);
+            while (showTime.before(compareDateTime)) {
+                programIdSet.add(programShowTime.getProgramId());
+                showTime = DateUtils.addMonth(showTime, 1);
             }
-            Date newShowDayTime = DateUtils.parseDateTime(DateUtils.formatDate(newShowTime) + " 00:00:00");
+            Date newShowDayTime = DateUtils.parseDateTime(DateUtils.formatDate(showTime) + " 00:00:00");
             ProgramShowTime updateProgramShowTime = new ProgramShowTime();
-            updateProgramShowTime.setShowTime(newShowTime);
+            updateProgramShowTime.setShowTime(showTime);
             updateProgramShowTime.setShowDayTime(newShowDayTime);
-            updateProgramShowTime.setShowWeekTime(DateUtils.getWeekStr(newShowTime));
+            updateProgramShowTime.setShowWeekTime(DateUtils.getWeekStr(showTime));
             LambdaUpdateWrapper<ProgramShowTime> programShowTimeLambdaUpdateWrapper =
                     Wrappers.lambdaUpdate(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programShowTime.getProgramId());
             programShowTimeMapper.update(updateProgramShowTime,programShowTimeLambdaUpdateWrapper);
-            redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programShowTime.getProgramId())
-                    ,updateProgramShowTime,EXPIRE_TIME, TimeUnit.DAYS);
         }
-        return flag;
+        return programIdSet;
     }
 }

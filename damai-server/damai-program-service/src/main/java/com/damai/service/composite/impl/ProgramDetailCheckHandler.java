@@ -23,7 +23,7 @@ public class ProgramDetailCheckHandler extends AbstractProgramCheckHandler {
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
         ProgramGetDto programGetDto = new ProgramGetDto();
         programGetDto.setId(programOrderCreateDto.getProgramId());
-        programService.getDetail(programGetDto);
+        programService.detail(programGetDto);
     }
     
     @Override

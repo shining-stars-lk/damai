@@ -18,7 +18,6 @@
         <module>damai-job-async</module>
         <module>damai-service-component</module>
         <module>damai-service-common</module>
-        <module>damai-service-lossless</module>
         <module>damai-service-hystrix</module>
         <module>damai-service-initialize</module>
         <module>damai-service-gray-transition-framework</module>

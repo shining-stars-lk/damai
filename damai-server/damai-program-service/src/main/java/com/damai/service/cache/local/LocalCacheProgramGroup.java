@@ -1,7 +1,7 @@
 package com.damai.service.cache.local;
 
 import com.damai.util.DateUtils;
-import com.damai.vo.ProgramVo;
+import com.damai.vo.ProgramGroupVo;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Expiry;
@@ -16,22 +16,17 @@ import java.util.function.Function;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
- * @description: 节目本地缓存
+ * @description: 节目分组本地缓存
  * @author: 阿宽不是程序员
  **/
 @Component
-public class LocalProgramCache {
+public class LocalCacheProgramGroup {
     
     /**
-     * 本地锁缓存
+     * 本地缓存
      * */
-    private Cache<String, ProgramVo> localCache;
+    private Cache<String, ProgramGroupVo> localCache;
     
-    /**
-     * 本地缓存的过期时间(小时单位)
-     * */
-    @Value("${programDurationTime:24}")
-    private Integer durationTime;
     
     /**
      * 本地缓存的容量
@@ -43,21 +38,22 @@ public class LocalProgramCache {
     public void localLockCacheInit(){
         localCache = Caffeine.newBuilder()
                 .maximumSize(maximumSize)
-                .expireAfter(new Expiry<String, ProgramVo>() {
+                .expireAfter(new Expiry<String, ProgramGroupVo>() {
                     @Override
-                    public long expireAfterCreate(@NonNull final String key, @NonNull final ProgramVo value, 
+                    public long expireAfterCreate(@NonNull final String key, @NonNull final ProgramGroupVo value,
                                                   final long currentTime) {
-                        return TimeUnit.MILLISECONDS.toNanos(DateUtils.countBetweenSecond(DateUtils.now(),value.getShowTime()));
+                        return TimeUnit.MILLISECONDS.toNanos
+                                (DateUtils.countBetweenSecond(DateUtils.now(),value.getRecentShowTime()));
                     }
                     
                     @Override
-                    public long expireAfterUpdate(@NonNull final String key, @NonNull final ProgramVo value, 
+                    public long expireAfterUpdate(@NonNull final String key, @NonNull final ProgramGroupVo value,
                                                   final long currentTime, @NonNegative final long currentDuration) {
                         return currentDuration;
                     }
                     
                     @Override
-                    public long expireAfterRead(@NonNull final String key, @NonNull final ProgramVo value, 
+                    public long expireAfterRead(@NonNull final String key, @NonNull final ProgramGroupVo value,
                                                 final long currentTime, @NonNegative final long currentDuration) {
                         return currentDuration;
                     }
@@ -66,9 +62,13 @@ public class LocalProgramCache {
     }
     
     /**
-     * 获得锁，Caffeine的get是线程安全的
+     * Caffeine的get是线程安全的
      * */
-    public ProgramVo getCache(String id, Function<String, ProgramVo> function){
+    public ProgramGroupVo getCache(String id, Function<String, ProgramGroupVo> function){
         return localCache.get(id,function);
+    }
+    
+    public void del(String id){
+        localCache.invalidate(id);
     }
 }

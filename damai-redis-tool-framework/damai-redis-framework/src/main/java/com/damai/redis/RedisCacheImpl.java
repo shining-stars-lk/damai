@@ -114,6 +114,13 @@ public class RedisCacheImpl implements RedisCache {
         String key = redisKeyBuild.getRelKey();
         return redisTemplate.getExpire(key);
     }
+    
+    @Override
+    public Long getExpire(RedisKeyBuild redisKeyBuild,TimeUnit timeUnit) {
+        CacheUtil.checkNotBlank(redisKeyBuild);
+        String key = redisKeyBuild.getRelKey();
+        return redisTemplate.getExpire(key,timeUnit);
+    }
 
     @Override
     public Set<String> keys(String pattern) {

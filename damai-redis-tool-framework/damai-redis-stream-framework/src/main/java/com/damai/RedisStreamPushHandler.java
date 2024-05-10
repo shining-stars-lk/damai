@@ -22,14 +22,10 @@ public class RedisStreamPushHandler {
     private final RedisStreamConfigProperties redisStreamConfigProperties;
 
     public RecordId push(String msg){
-        // 创建消息记录, 以及指定stream
         ObjectRecord<String, String> record = StreamRecords.newRecord()
-                //streamName
                 .in(redisStreamConfigProperties.getStreamName())
-                //消息数据
                 .ofObject(msg) 
                 .withId(RecordId.autoGenerate());
-        // 将消息添加至消息队列中
         RecordId recordId = this.stringRedisTemplate.opsForStream().add(record);
         log.info("redis streamName : {} message : {}", redisStreamConfigProperties.getStreamName(),msg);
         return recordId;
