@@ -27,8 +27,7 @@ spring:
     timeout: 3000
     stream:
       streamName: test_stream
-      consumerGroup: test_group
-      consumerName: test_consumer_1
+      consumerType: broadcast
   cloud:
     nacos:
       discovery:

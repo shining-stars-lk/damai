@@ -20,18 +20,13 @@ import java.util.function.Function;
  * @author: 阿宽不是程序员
  **/
 @Component
-public class LocalProgramShowTimeCache {
+public class LocalCacheProgramShowTime {
     
     /**
-     * 本地锁缓存
+     * 本地缓存
      * */
     private Cache<String, ProgramShowTime> localCache;
     
-    /**
-     * 本地缓存的过期时间(小时单位)
-     * */
-    @Value("${programDurationTime:24}")
-    private Integer durationTime;
     
     /**
      * 本地缓存的容量
@@ -66,9 +61,13 @@ public class LocalProgramShowTimeCache {
     }
     
     /**
-     * 获得锁，Caffeine的get是线程安全的
+     * Caffeine的get是线程安全的
      * */
     public ProgramShowTime getCache(String id, Function<String, ProgramShowTime> function){
         return localCache.get(id,function);
+    }
+    
+    public void del(String id){
+        localCache.invalidate(id);
     }
 }

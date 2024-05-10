@@ -3,6 +3,7 @@ package com.damai.controller;
 import com.damai.common.ApiResponse;
 import com.damai.dto.ProgramAddDto;
 import com.damai.dto.ProgramGetDto;
+import com.damai.dto.ProgramInvalidDto;
 import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramPageListDto;
 import com.damai.dto.ProgramSearchDto;
@@ -63,12 +64,11 @@ public class ProgramController {
     @ApiOperation(value = "查询详情(根据id)")
     @PostMapping(value = "/detail")
     public ApiResponse<ProgramVo> getDetail(@Valid @RequestBody ProgramGetDto programGetDto) {
-        return ApiResponse.ok(programService.getDetail(programGetDto));
+        return ApiResponse.ok(programService.detail(programGetDto));
     }
     
-    @PostMapping(value = "/test")
-    public ApiResponse<Void> test(@Valid @RequestBody ProgramGetDto programGetDto) {
-        programService.test(programGetDto);
-        return ApiResponse.ok();
+    @PostMapping(value = "/invalid")
+    public ApiResponse<Boolean> invalid(@Valid @RequestBody ProgramInvalidDto programInvalidDto) {
+        return ApiResponse.ok(programService.invalid(programInvalidDto));
     }
 }

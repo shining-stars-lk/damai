@@ -60,46 +60,32 @@ public class RedisStreamAutoConfig {
             RedisStreamConfigProperties redisStreamConfigProperties, 
             RedisStreamHandler redisStreamHandler, 
             MessageConsumer messageConsumer) {
-        //消息侦听容器，创建后，StreamMessageListenerContainer可以订阅Redis流并使用传入的消息
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, String>> 
                 options = StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
-                    //拉取消息超时时间
                     .pollTimeout(Duration.ofSeconds(5))
-                    //批量抓取消息的数量
                     .batchSize(10)
-                    //传递的数据类型
                     .targetType(String.class)
-                    //获取消息的过程或获取到消息给具体的消息者处理的过程中，发生了异常的处理
                     .errorHandler(t -> log.error("出现异常", t))
-                    //执行拉取任务的执行线程池
                     .executor(createThreadPool()).build();
         StreamMessageListenerContainer<String, ObjectRecord<String, String>> container = 
                 StreamMessageListenerContainer.create(redisConnectionFactory, options);
-        //检查消费类型，消费组或者广播
         checkConsumerType(redisStreamConfigProperties.getConsumerType());
-        //监听器
         RedisStreamListener redisStreamListener = new RedisStreamListener(messageConsumer);
-        //如果是分组消费
         if (RedisStreamConstant.GROUP.equals(redisStreamConfigProperties.getConsumerType())) {
-            //绑定stream和消费组
             redisStreamHandler.streamBindingGroup(redisStreamConfigProperties.getStreamName(), 
                     redisStreamConfigProperties.getConsumerGroup());
-            //这里用的是ack自动提交
             container.receiveAutoAck(Consumer.from(redisStreamConfigProperties.getConsumerGroup(), 
                     redisStreamConfigProperties.getConsumerName()), 
                     StreamOffset.create(redisStreamConfigProperties.getStreamName(), ReadOffset.lastConsumed()), 
                     redisStreamListener);
         } else {
-            //如果是广播消费
             container.receive(StreamOffset.fromStart(redisStreamConfigProperties.getStreamName()), redisStreamListener);
         }
-        //启动监听
         container.start();
         return container;
     }
     
     public ThreadPoolExecutor createThreadPool(){
-        //线程池
         int coreThreadCount = Runtime.getRuntime().availableProcessors();
         AtomicInteger threadCount = new AtomicInteger(1);
         return new ThreadPoolExecutor(
@@ -114,7 +100,6 @@ public class RedisStreamAutoConfig {
                     return thread;
                 });
     }
-    
     public void checkConsumerType(String consumerType){
         if ((!RedisStreamConstant.GROUP.equals(consumerType)) && (!RedisStreamConstant.BROADCAST.equals(consumerType))) {
             throw new DaMaiFrameException(BaseCode.REDIS_STREAM_CONSUMER_TYPE_NOT_EXIST);

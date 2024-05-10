@@ -24,6 +24,7 @@ import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
+import com.damai.util.DateUtils;
 import com.damai.util.ServiceLockTool;
 import com.damai.vo.ProgramVo;
 import com.damai.vo.SeatRelateInfoVo;
@@ -43,7 +44,6 @@ import java.util.stream.Collectors;
 
 import static com.damai.core.DistributedLockConstants.GET_SEAT_LOCK;
 import static com.damai.core.DistributedLockConstants.SEAT_LOCK;
-import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -94,7 +94,7 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
      * 查询座位
      * */
     @ServiceLock(lockType= LockType.Read,name = SEAT_LOCK,keys = {"#programId"})
-    public List<SeatVo> selectSeatByProgramId(Long programId) {
+    public List<SeatVo> selectSeatByProgramId(Long programId,Long expireTime,TimeUnit timeUnit) {
         List<SeatVo> seatVoList = getSeatVoListByCache(programId);
         if (CollectionUtil.isNotEmpty(seatVoList)) {
             return seatVoList;
@@ -123,19 +123,19 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
                 redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId)
                         ,noSoldSeatVoList.stream()
                                 .collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
-                        ,EXPIRE_TIME, TimeUnit.DAYS);
+                        ,expireTime, timeUnit);
             }
             if (CollectionUtil.isNotEmpty(lockSeatVoList)) {
                 redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId)
                         ,lockSeatVoList.stream()
                                 .collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
-                        ,EXPIRE_TIME, TimeUnit.DAYS);
+                        ,expireTime, timeUnit);
             }
             if (CollectionUtil.isNotEmpty(soldSeatVoList)) {
                 redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId)
                         ,soldSeatVoList.stream()
                                 .collect(Collectors.toMap(s -> String.valueOf(s.getId()),s -> s,(v1,v2) -> v2))
-                        ,EXPIRE_TIME, TimeUnit.DAYS);
+                        ,expireTime, timeUnit);
             }
             seatVoList = seatVoList.stream().sorted(Comparator.comparingInt(SeatVo::getRowCode)
                     .thenComparingInt(SeatVo::getColCode)).collect(Collectors.toList());
@@ -162,15 +162,17 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
         if (Objects.isNull(programVo)){
             ProgramGetDto programGetDto = new ProgramGetDto();
             programGetDto.setId(seatListDto.getProgramId());
-            programVo = programService.getDetail(programGetDto);
+            programVo = programService.detail(programGetDto);
         }
         if (programVo.getPermitChooseSeat().equals(BusinessStatus.NO.getCode())) {
             throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_ALLOW_CHOOSE_SEAT);
         }
-        List<SeatVo> seatVos = selectSeatByProgramId(seatListDto.getProgramId());
-        Map<String, List<SeatVo>> seatVoMap = 
-                seatVos.stream().collect(Collectors.groupingBy(seatVo -> seatVo.getPrice().toString()));
         ProgramShowTime programShowTime = programShowTimeService.selectProgramShowTimeByProgramId(seatListDto.getProgramId());
+        
+        List<SeatVo> seatVos = selectSeatByProgramId(seatListDto.getProgramId(),
+                DateUtils.countBetweenSecond(DateUtils.now(), programShowTime.getShowTime()), TimeUnit.SECONDS);
+        Map<String, List<SeatVo>> seatVoMap =
+                seatVos.stream().collect(Collectors.groupingBy(seatVo -> seatVo.getPrice().toString()));
         
         seatRelateInfoVo.setProgramId(programVo.getId());
         seatRelateInfoVo.setPlace(programVo.getPlace());

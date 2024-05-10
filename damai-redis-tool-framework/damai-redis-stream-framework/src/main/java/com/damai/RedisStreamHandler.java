@@ -23,17 +23,10 @@ public class RedisStreamHandler {
     
     private final StringRedisTemplate stringRedisTemplate;
     
-    /**
-     * 用来创建绑定流和组
-     */
     public void addGroup(String streamName, String groupName){
         stringRedisTemplate.opsForStream().createGroup(streamName,groupName);
     }
     
-    
-    /**
-     * 用来判断key是否存在
-     */
     public Boolean hasKey(String key){
         if(Objects.isNull(key)){
             return false;
@@ -42,26 +35,18 @@ public class RedisStreamHandler {
         }
         
     }
-    /**
-     * 用来删除掉消费了的消息
-     */
+ 
     public void del(String key, RecordId recordIds){
         stringRedisTemplate.opsForStream().delete(key,recordIds);
     }
     
-    /**
-     * 用来初始化 实现绑定key和消费组
-     */
     public void streamBindingGroup(String streamName, String group){
-        //判断key是否存在，如果不存在则创建
         boolean hasKey = hasKey(streamName);
         if(!hasKey){
             Map<String,Object> map = new HashMap<>(2);
             map.put("key","value");
             RecordId recordId = redisStreamPushHandler.push(JSON.toJSONString(map));
-            //第一次初始化时需要把Stream和group绑定
             addGroup(streamName,group);
-            //清除掉该条无用数据
             del(streamName,recordId);
             log.info("initStream streamName : {} group : {}",streamName,group);
         }

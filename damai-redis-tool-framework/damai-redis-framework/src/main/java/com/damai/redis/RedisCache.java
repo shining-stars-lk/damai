@@ -126,6 +126,15 @@ public interface RedisCache {
      * @return 超时时间
      */
     Long getExpire(RedisKeyBuild redisKeyBuild);
+    
+    /**
+     * 获取key超时时间
+     *
+     * @param redisKeyBuild redisKeyBuild
+     * @param timeUnit 时间单位
+     * @return 超时时间
+     */
+    Long getExpire(RedisKeyBuild redisKeyBuild,TimeUnit timeUnit);
 
     /**
      * 查找匹配的key
