@@ -178,6 +178,16 @@ public class Program extends BaseTableData implements Serializable {
     private String refundExplain;
     
     /**
+     * 实名制购票和入场 1:是 0:否
+     * */
+    private Integer relNameTicketEntrance;
+    
+    /**
+     * 实名制购票和入场说明
+     * */
+    private String relNameTicketEntranceExplain;
+    
+    /**
      * 是否允许选座 1:允许选座 0:不允许选座
      */
     private Integer permitChooseSeat;
