@@ -195,7 +195,7 @@ public class Program extends BaseTableData implements Serializable {
     /**
      * 电子票说明
      */
-    private Integer electronicDeliveryTicketExplain;
+    private String electronicDeliveryTicketExplain;
     
     /**
      * 电子发票 1:是 0:不是
@@ -205,7 +205,7 @@ public class Program extends BaseTableData implements Serializable {
     /**
      * 电子发票说明
      */
-    private Integer electronicInvoiceExplain;
+    private String electronicInvoiceExplain;
     
     /**
      * 高热度节目 0:否 1:是
