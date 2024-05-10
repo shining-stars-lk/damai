@@ -127,13 +127,19 @@ public class ProgramVo implements Serializable {
     @ApiModelProperty(name ="refundExplain", dataType ="String", value ="退款说明")
     private String refundExplain;
     
+    @ApiModelProperty(name ="relNameTicketEntrance", dataType ="Integer", value ="实名制购票和入场 1:是 0:否")
+    private Integer relNameTicketEntrance;
+    
+    @ApiModelProperty(name ="relNameTicketEntranceExplain", dataType ="String", value ="实名制购票和入场说明")
+    private String relNameTicketEntranceExplain;
+    
     @ApiModelProperty(name ="permitChooseSeat", dataType ="Integer", value ="是否允许选座 1:允许选座 0:不允许选座")
     private Integer permitChooseSeat;
     
     @ApiModelProperty(name ="chooseSeatExplain", dataType ="String", value ="选座说明")
     private String chooseSeatExplain;
 
-    @ApiModelProperty(name ="electronicDeliveryTicket", dataType ="Integer", value ="电子票/快递票 0:都没有1:电子票 2:快递票")
+    @ApiModelProperty(name ="electronicDeliveryTicket", dataType ="Integer", value ="电子票/快递票 0:都没有 1:电子票 2:快递票")
     private Integer electronicDeliveryTicket;
     
     @ApiModelProperty(name ="electronicDeliveryTicketExplain", dataType ="String", value ="电子票说明")
