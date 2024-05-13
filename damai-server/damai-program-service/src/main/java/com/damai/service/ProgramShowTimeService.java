@@ -110,17 +110,18 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
                         le(ProgramShowTime::getShowTime, DateUtils.addDay(DateUtils.now(), 1));
         List<ProgramShowTime> programShowTimes = programShowTimeMapper.selectList(programShowTimeLambdaQueryWrapper);
         for (ProgramShowTime programShowTime : programShowTimes) {
-            Date showTime = programShowTime.getShowTime();
-            Date compareDateTime = DateUtils.addMonth(DateUtils.now(), 1);
-            while (showTime.before(compareDateTime)) {
-                programIdSet.add(programShowTime.getProgramId());
-                showTime = DateUtils.addMonth(showTime, 1);
+            programIdSet.add(programShowTime.getProgramId());
+            Date oldShowTime = programShowTime.getShowTime();
+            Date newShowTime = DateUtils.addMonth(oldShowTime, 1);
+            Date nowDateTime = DateUtils.now();
+            while (newShowTime.before(nowDateTime)) {
+                newShowTime = DateUtils.addMonth(newShowTime, 1);
             }
-            Date newShowDayTime = DateUtils.parseDateTime(DateUtils.formatDate(showTime) + " 00:00:00");
+            Date newShowDayTime = DateUtils.parseDateTime(DateUtils.formatDate(newShowTime) + " 00:00:00");
             ProgramShowTime updateProgramShowTime = new ProgramShowTime();
-            updateProgramShowTime.setShowTime(showTime);
+            updateProgramShowTime.setShowTime(newShowTime);
             updateProgramShowTime.setShowDayTime(newShowDayTime);
-            updateProgramShowTime.setShowWeekTime(DateUtils.getWeekStr(showTime));
+            updateProgramShowTime.setShowWeekTime(DateUtils.getWeekStr(newShowTime));
             LambdaUpdateWrapper<ProgramShowTime> programShowTimeLambdaUpdateWrapper =
                     Wrappers.lambdaUpdate(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programShowTime.getProgramId());
             programShowTimeMapper.update(updateProgramShowTime,programShowTimeLambdaUpdateWrapper);
