@@ -16,10 +16,11 @@
 
 package com.damai.hystrixfactory;
 
+import com.damai.hystrixfactory.FineGritHystrixGatewayFilterFactory.Config;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
-import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
+import com.netflix.hystrix.HystrixObservableCommand.Setter;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -29,20 +30,22 @@ import org.springframework.cloud.gateway.support.ServiceUnavailableException;
 import org.springframework.cloud.gateway.support.TimeoutException;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+import reactor.util.context.Context;
 import rx.Observable;
 import rx.RxReactiveStreams;
 import rx.Subscription;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static java.util.Collections.singletonList;
@@ -59,54 +62,87 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.r
  * @author: 阿星不是程序员
  **/
 public class FineGritHystrixGatewayFilterFactory
-		extends AbstractGatewayFilterFactory<FineGritHystrixGatewayFilterFactory.Config> {
-
+		extends AbstractGatewayFilterFactory<Config> {
+	
+	private static final String NAME = "FineGritHystrix";
+	
 	private final ObjectProvider<DispatcherHandler> dispatcherHandlerProvider;
+	
+	// do not use this dispatcherHandler directly, use getDispatcherHandler() instead.
 	private volatile DispatcherHandler dispatcherHandler;
-
+	
 	public FineGritHystrixGatewayFilterFactory(
 			ObjectProvider<DispatcherHandler> dispatcherHandlerProvider) {
 		super(Config.class);
 		this.dispatcherHandlerProvider = dispatcherHandlerProvider;
 	}
-
+	
 	private DispatcherHandler getDispatcherHandler() {
 		if (dispatcherHandler == null) {
 			dispatcherHandler = dispatcherHandlerProvider.getIfAvailable();
 		}
-
+		
 		return dispatcherHandler;
 	}
-
+	
+	@Override
+	public String name() {
+		return NAME;
+	}
+	
 	@Override
 	public List<String> shortcutFieldOrder() {
 		return singletonList(NAME_KEY);
 	}
-
+	
+	@Override
+	// TODO: make Config implement HasRouteId and remove this method.
+	public GatewayFilter apply(String routeId, Consumer<Config> consumer) {
+		Config config = newConfig();
+		consumer.accept(config);
+		
+		if (StringUtils.isEmpty(config.getName()) && !StringUtils.isEmpty(routeId)) {
+			config.setName(routeId);
+		}
+		
+		return apply(config);
+	}
+	
+	/**
+	 * Create a {@link Setter} based on incoming request attribute. <br>
+	 * This could be useful for example to create a Setter with {@link HystrixCommandKey}
+	 * being set as the target service's host:port, as obtained from
+	 * {@link ServerWebExchange#getRequest()} to do per service instance level circuit
+	 * breaking.
+	 */
+	protected Setter createCommandSetter(Config config, ServerWebExchange exchange) {
+		return config.setter;
+	}
+	
 	@Override
 	public GatewayFilter apply(Config config) {
+		// TODO: if no name is supplied, generate one from command id (useful for default
+		// config.name对应的是#spring.cloud.gateway.routes[0].filters[1].args.name
+		if (config.setter == null) {
+			Assert.notNull(config.name,
+					"A name must be supplied for the Hystrix Command Key");
+			HystrixCommandGroupKey groupKey = HystrixCommandGroupKey.Factory
+					//这里是自定义加上了config.name，这样可以通过配置config.name来设置每个路由服务配置每个线程池
+					.asKey(getClass().getSimpleName() + config.name);
+			HystrixCommandKey commandKey = HystrixCommandKey.Factory.asKey(config.name);
+			
+			config.setter = Setter.withGroupKey(groupKey).andCommandKey(commandKey);
+		}
+		
 		return new GatewayFilter() {
 			@Override
 			public Mono<Void> filter(ServerWebExchange exchange,
-					GatewayFilterChain chain) {
+									 GatewayFilterChain chain) {
 				return Mono.deferWithContext(context -> {
+					RouteHystrixCommand command = new RouteHystrixCommand(
+							createCommandSetter(config, exchange), config.fallbackUri,
+							exchange, chain, context);
 					
-					ServerHttpRequest request = exchange.getRequest();
-					String path = request.getPath().pathWithinApplication().value();
-					Map<String, Integer> rulMap = config.getUrlMap();
-					Integer timeout = null;
-					if (rulMap != null) {
-						timeout = rulMap.get(path);
-					}
-					
-					RouteHystrixCommand command;
-					if (timeout == null) {
-						//没有额外配置url级别的超时时间则用默认时间
-						command = new RouteHystrixCommand(config, exchange, chain, path);
-					} else {
-						//有配置时间的接口将使用配置的时间
-						command = new RouteHystrixCommand(config, exchange, chain, timeout, path);
-					}
 					return Mono.create(s -> {
 						Subscription sub = command.toObservable().subscribe(s::success,
 								s::error, s::success);
@@ -116,85 +152,75 @@ public class FineGritHystrixGatewayFilterFactory
 							HystrixRuntimeException e = (HystrixRuntimeException) throwable;
 							HystrixRuntimeException.FailureType failureType = e
 									.getFailureType();
-
+							
 							switch (failureType) {
-							case TIMEOUT:
-								return Mono.error(new TimeoutException());
-							case SHORTCIRCUIT:
-								return Mono.error(new ServiceUnavailableException());
-							case COMMAND_EXCEPTION: {
-								Throwable cause = e.getCause();
-
-								/*
-								 * We forsake here the null check for cause as
-								 * HystrixRuntimeException will always have a cause if the
-								 * failure type is COMMAND_EXCEPTION.
-								 */
-								if (cause instanceof ResponseStatusException
-										|| AnnotatedElementUtils.findMergedAnnotation(
-												cause.getClass(),
-												ResponseStatus.class) != null) {
-									return Mono.error(cause);
+								case TIMEOUT:
+									return Mono.error(new TimeoutException());
+								case SHORTCIRCUIT:
+									return Mono.error(new ServiceUnavailableException());
+								case COMMAND_EXCEPTION: {
+									Throwable cause = e.getCause();
+									
+									/*
+									 * We forsake here the null check for cause as
+									 * HystrixRuntimeException will always have a cause if the
+									 * failure type is COMMAND_EXCEPTION.
+									 */
+									if (cause instanceof ResponseStatusException
+											|| AnnotatedElementUtils.findMergedAnnotation(
+											cause.getClass(),
+											ResponseStatus.class) != null) {
+										return Mono.error(cause);
+									}
 								}
-							}
-							default:
-								break;
+								default:
+									break;
 							}
 						}
 						return Mono.error(throwable);
 					}).then();
 				});
 			}
-
+			
 			@Override
 			public String toString() {
 				return filterToStringCreator(FineGritHystrixGatewayFilterFactory.this)
-						.append("id", config.getId())
+						.append("name", config.getName())
 						.append("fallback", config.fallbackUri).toString();
 			}
 		};
 	}
 	
-	@Override
-	public String name() {
-		return "FineGritHystrix";
-	}
-
 	public static class Config {
 		
-		private String id;
-
+		private String name;
+		
+		private Setter setter;
+		
 		private URI fallbackUri;
 		
-		/**
-		 * key url
-		 * value timeout ms
-		 */
-		private Map<String, Integer> urlMap;
-		
-		public String getId() {
-			return id;
+		public String getName() {
+			return name;
 		}
 		
-		public Config setId(String id) {
-			this.id = id;
+		public Config setName(String name) {
+			this.name = name;
 			return this;
 		}
-
+		
 		public Config setFallbackUri(String fallbackUri) {
 			if (fallbackUri != null) {
 				setFallbackUri(URI.create(fallbackUri));
 			}
 			return this;
 		}
-
+		
 		public URI getFallbackUri() {
 			return fallbackUri;
 		}
-
+		
 		public void setFallbackUri(URI fallbackUri) {
-			String forward = "forward";
-			if (fallbackUri != null && !forward.equals(fallbackUri.getScheme())) {
+			if (fallbackUri != null && !"forward".equals(fallbackUri.getScheme())) {
 				throw new IllegalArgumentException(
 						"Hystrix Filter currently only supports 'forward' URIs, found "
 								+ fallbackUri);
@@ -202,71 +228,45 @@ public class FineGritHystrixGatewayFilterFactory
 			this.fallbackUri = fallbackUri;
 		}
 		
-		public Map<String, Integer> getUrlMap() {
-			return urlMap;
-		}
-		
-		public Config setUrlMap(Map<String, Integer> timeout) {
-			Map<String, Integer> map = new HashMap<>(timeout.size());
-			for (String key : timeout.keySet()) {
-				Integer value = timeout.get(key);
-				
-				key = key.replace("-", "/");
-				if (!key.startsWith("/")) {
-					key = "/" + key;
-				}
-				if (key.endsWith("/")) {
-					key = key + "**";
-				}
-				map.put(key, value);
-			}
-			this.urlMap = map;
+		public Config setSetter(Setter setter) {
+			this.setter = setter;
 			return this;
 		}
+		
 	}
-
-	/**
-	 * TODO: replace with HystrixMonoCommand that we write
-	 * */
+	
+	// TODO: replace with HystrixMonoCommand that we write
 	private class RouteHystrixCommand extends HystrixObservableCommand<Void> {
-
+		
 		private final URI fallbackUri;
-
+		
 		private final ServerWebExchange exchange;
-
+		
 		private final GatewayFilterChain chain;
-
-		RouteHystrixCommand(Config config, ServerWebExchange exchange,
-				GatewayFilterChain chain, String hystrixKey) {
-			super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(hystrixKey))
-					.andCommandKey(HystrixCommandKey.Factory.asKey(config.id)));
-			this.fallbackUri = config.getFallbackUri();
+		
+		private final Context context;
+		
+		RouteHystrixCommand(Setter setter, URI fallbackUri, ServerWebExchange exchange,
+							GatewayFilterChain chain, Context context) {
+			super(setter);
+			this.fallbackUri = fallbackUri;
 			this.exchange = exchange;
 			this.chain = chain;
+			this.context = context;
 		}
 		
-		RouteHystrixCommand(Config config, ServerWebExchange exchange,
-							GatewayFilterChain chain, int timeout, String hystrixKey) {
-			super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(hystrixKey))
-					.andCommandKey(HystrixCommandKey.Factory.asKey(config.id))
-					.andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(timeout)));
-			this.fallbackUri = config.getFallbackUri();
-			this.exchange = exchange;
-			this.chain = chain;
-		}
-
 		@Override
 		protected Observable<Void> construct() {
 			return RxReactiveStreams
-					.toObservable(this.chain.filter(exchange));
+					.toObservable(this.chain.filter(exchange).subscriberContext(context));
 		}
-
+		
 		@Override
 		protected Observable<Void> resumeWithFallback() {
 			if (this.fallbackUri == null) {
 				return super.resumeWithFallback();
 			}
-
+			
 			// TODO: copied from RouteToRequestUrlFilter
 			URI uri = exchange.getRequest().getURI();
 			// TODO: assume always?
@@ -275,7 +275,7 @@ public class FineGritHystrixGatewayFilterFactory
 					.uri(this.fallbackUri).scheme(null).build(encoded).toUri();
 			exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, requestUrl);
 			addExceptionDetails();
-
+			
 			ServerHttpRequest request = this.exchange.getRequest().mutate()
 					.uri(requestUrl).build();
 			ServerWebExchange mutated = exchange.mutate().request(request).build();
@@ -285,13 +285,13 @@ public class FineGritHystrixGatewayFilterFactory
 			removeAlreadyRouted(mutated);
 			return RxReactiveStreams.toObservable(getDispatcherHandler().handle(mutated));
 		}
-
+		
 		private void addExceptionDetails() {
 			Throwable executionException = getExecutionException();
 			ofNullable(executionException).ifPresent(exception -> exchange.getAttributes()
 					.put(HYSTRIX_EXECUTION_EXCEPTION_ATTR, exception));
 		}
-
+		
 	}
-
+	
 }

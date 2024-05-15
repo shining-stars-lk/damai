@@ -45,6 +45,20 @@ spring:
             groupId: SENTINEL_GROUP
             dataType: json
             rule-type: flow
+    gateway:
+      globalcors:
+        corsConfigurations:
+          [/**]:
+            allowedHeaders: *
+            allowedOrigins: *
+            allowCredentials: true
+            allowedMethods: *
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+        - args:
+            fallbackUri: forward:/fallBackHandler
+            id: fallbackcmd
+            name: FineGritHystrix
 api:
   limit:
     paths: /**/customize/test/test
@@ -78,7 +92,7 @@ hystrix:
           thread:
             timeoutInMilliseconds: 10000
           semaphore:
-            maxConcurrentRequests: 99999
+            maxConcurrentRequests: 200
 ribbon:
   ReadTimeout: 60000
   ConnectTimeout: 60000
