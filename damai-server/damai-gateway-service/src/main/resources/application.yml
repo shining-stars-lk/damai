@@ -49,16 +49,16 @@ spring:
       globalcors:
         corsConfigurations:
           [/**]:
-            allowedHeaders: *
-            allowedOrigins: *
+            allowedHeaders: '*'
+            allowedOrigins: '*'
             allowCredentials: true
-            allowedMethods: *
+            allowedMethods: '*'
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
-        - args:
+        - name: FineGritHystrix  
+          args:
             fallbackUri: forward:/fallBackHandler
-            id: fallbackcmd
-            name: FineGritHystrix
+            name: fallbackcmd
 api:
   limit:
     paths: /**/customize/test/test
@@ -91,8 +91,19 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 10000
+    fallbackcmd:
+      execution:
+        isolation:
+          strategy: SEMAPHORE
           semaphore:
             maxConcurrentRequests: 200
+  # 此配置是hystrix线程池隔离模式，目前生效的是信号量模式，此线程配置不生效
+  # 如果生效的话，需要把上面的SEMAPHORE修改为THREAD
+  threadpool:
+    default:
+      coreSize: 100
+      maximumSize: 300
+      allowMaximumSizeToDivergeFromCoreSize: true
 ribbon:
   ReadTimeout: 60000
   ConnectTimeout: 60000
