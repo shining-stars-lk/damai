@@ -164,13 +164,16 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
             programGetDto.setId(seatListDto.getProgramId());
             programVo = programService.detail(programGetDto);
         }
-        if (programVo.getPermitChooseSeat().equals(BusinessStatus.NO.getCode())) {
-            throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_ALLOW_CHOOSE_SEAT);
-        }
+        
         ProgramShowTime programShowTime = programShowTimeService.selectProgramShowTimeByProgramId(seatListDto.getProgramId());
         
         List<SeatVo> seatVos = selectSeatByProgramId(seatListDto.getProgramId(),
                 DateUtils.countBetweenSecond(DateUtils.now(), programShowTime.getShowTime()), TimeUnit.SECONDS);
+        
+        if (programVo.getPermitChooseSeat().equals(BusinessStatus.NO.getCode())) {
+            throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_ALLOW_CHOOSE_SEAT);
+        }
+        
         Map<String, List<SeatVo>> seatVoMap =
                 seatVos.stream().collect(Collectors.groupingBy(seatVo -> seatVo.getPrice().toString()));
         

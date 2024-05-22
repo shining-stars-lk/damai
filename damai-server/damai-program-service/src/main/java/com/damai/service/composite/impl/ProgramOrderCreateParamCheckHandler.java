@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
  **/
 @Component
 public class ProgramOrderCreateParamCheckHandler extends AbstractProgramCheckHandler {
+    
     @Override
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
