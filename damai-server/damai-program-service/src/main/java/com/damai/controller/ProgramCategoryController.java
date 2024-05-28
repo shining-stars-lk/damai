@@ -1,6 +1,7 @@
 package com.damai.controller;
 
 import com.damai.common.ApiResponse;
+import com.damai.dto.ParentProgramCategoryDto;
 import com.damai.dto.ProgramCategoryAddDto;
 import com.damai.dto.ProgramCategoryDto;
 import com.damai.service.ProgramCategoryService;
@@ -39,6 +40,12 @@ public class ProgramCategoryController {
     @PostMapping(value = "/selectByType")
     public ApiResponse<List<ProgramCategoryVo>> selectByType(@Valid @RequestBody ProgramCategoryDto programCategoryDto) {
         return ApiResponse.ok(programCategoryService.selectByType(programCategoryDto));
+    }
+    
+    @ApiOperation(value = "通过父节目类型查询子节目类型")
+    @PostMapping(value = "/selectByParentProgramCategoryId")
+    public ApiResponse<List<ProgramCategoryVo>> selectByParentProgramCategoryId(@Valid @RequestBody ParentProgramCategoryDto parentProgramCategoryDto) {
+        return ApiResponse.ok(programCategoryService.selectByParentProgramCategoryId(parentProgramCategoryDto));
     }
     
     @ApiOperation(value = "批量添加节目类型")
