@@ -12,9 +12,16 @@ public enum CompositeCheckType {
     USER_REGISTER_CHECK(1,"user_register_check","用户注册"),
     
     /**
+     * 节目详情查看
+     * */
+    PROGRAM_DETAIL_CHECK(2,"program_detail_check","节目详情"),
+    
+    /**
      * 订单创建
      * */
-    PROGRAM_ORDER_CREATE_CHECK(2,"program_order_create_check","订单创建"),
+    PROGRAM_ORDER_CREATE_CHECK(3,"program_order_create_check","订单创建"),
+    
+    
     ;
 
     private Integer code;
