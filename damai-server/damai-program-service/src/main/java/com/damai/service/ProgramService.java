@@ -36,8 +36,10 @@ import com.damai.entity.TicketCategory;
 import com.damai.entity.TicketCategoryAggregate;
 import com.damai.enums.BaseCode;
 import com.damai.enums.BusinessStatus;
+import com.damai.enums.CompositeCheckType;
 import com.damai.enums.SellStatus;
 import com.damai.exception.DaMaiFrameException;
+import com.damai.initialize.impl.composite.CompositeContainer;
 import com.damai.mapper.ProgramCategoryMapper;
 import com.damai.mapper.ProgramGroupMapper;
 import com.damai.mapper.ProgramMapper;
@@ -160,6 +162,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @Autowired
     private LocalCacheProgramCategory localCacheProgramCategory;
+    
+    @Autowired
+    private CompositeContainer compositeContainer;
     
     
     public Long add(ProgramAddDto programAddDto){
@@ -324,6 +329,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     public ProgramVo detail(ProgramGetDto programGetDto) {
+        compositeContainer.execute(CompositeCheckType.PROGRAM_DETAIL_CHECK.getValue(),programGetDto);
         return getDetailV2(programGetDto);
     }
     

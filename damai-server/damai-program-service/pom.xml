@@ -58,6 +58,11 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
+            <artifactId>damai-bloom-filter-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
             <artifactId>damai-repeat-execute-limit-framework</artifactId>
             <version>${revision}</version>
         </dependency>
