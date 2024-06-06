@@ -58,12 +58,12 @@ public class ProgramEs {
                 programEsQueryDto.add(parentProgramCategoryIdQueryDto);
                 //查询前7条
                 PageInfo<ProgramListVo> pageInfo = businessEsHandle.queryPage(
-                        "online" + "-" + ProgramDocumentParamName.INDEX_NAME,
+                        SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
                         ProgramDocumentParamName.INDEX_TYPE, programEsQueryDto, 1, 7, ProgramListVo.class);
                 if (!pageInfo.getList().isEmpty()) {
-                    String areaName = pageInfo.getList().get(0).getAreaName();
+                    String parentProgramCategoryName = pageInfo.getList().get(0).getParentProgramCategoryName();
                     ProgramHomeVo programHomeVo = new ProgramHomeVo();
-                    programHomeVo.setCategoryName(areaName);
+                    programHomeVo.setCategoryName(parentProgramCategoryName);
                     programHomeVo.setProgramListVoList(pageInfo.getList());
                     programHomeVoList.add(programHomeVo);
                 }

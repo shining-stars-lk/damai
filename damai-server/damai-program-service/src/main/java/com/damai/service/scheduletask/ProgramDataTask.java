@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-
 /**
  * @program: damai
  * @description:
@@ -27,7 +25,6 @@ public class ProgramDataTask {
     private ProgramElasticsearchInitData programElasticsearchInitData;
 
     
-    @PostConstruct
     public void executeTask(){
         programShowTimeRenewal.executeInit(applicationContext);
         programElasticsearchInitData.executeInit(applicationContext);
