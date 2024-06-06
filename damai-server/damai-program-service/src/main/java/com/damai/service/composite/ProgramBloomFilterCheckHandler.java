@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * @author: 阿星不是程序员
  **/
 @Component
-public class ProgramDetailCheckHandler extends AbstractComposite<ProgramGetDto> {
+public class ProgramBloomFilterCheckHandler extends AbstractComposite<ProgramGetDto> {
     
     @Autowired
     private BloomFilterHandler bloomFilterHandler;

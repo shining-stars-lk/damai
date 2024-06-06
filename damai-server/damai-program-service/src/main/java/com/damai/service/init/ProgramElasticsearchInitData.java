@@ -42,7 +42,13 @@ public class ProgramElasticsearchInitData extends AbstractApplicationPostConstru
     
     @Override
     public void executeInit(final ConfigurableApplicationContext context) {
-        BusinessThreadPool.execute(this::initElasticsearchData);
+        BusinessThreadPool.execute(() -> {
+            try {
+                initElasticsearchData();
+            }catch (Exception e) {
+                log.error("executeInit error",e);
+            }
+        });
     }
     
     public void initElasticsearchData(){
