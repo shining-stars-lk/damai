@@ -30,7 +30,9 @@ public class Constant {
     
     public static final String ALIPAY_NOTIFY_FAILURE_RESULT = "failure";
     
-    public static final String SPRING_INJECT_PREFIX_DISTINCTION_NAME = "${prefix.distinction.name:damai}";
+    public static final String SPRING_INJECT_PREFIX_DISTINCTION_NAME = "prefix.distinction.name";
+    
+    public static final String DEFAULT_SPRING_INJECT_PREFIX_DISTINCTION_NAME = "damai";
     
     public static final String SERVER_GRAY = "${spring.cloud.nacos.discovery.metadata.gray:false}";
     
