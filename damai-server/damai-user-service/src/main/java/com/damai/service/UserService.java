@@ -107,6 +107,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     @ServiceLock(lockType= LockType.Write,name = REGISTER_USER_LOCK,keys = {"#userRegisterDto.mobile"})
     public Boolean register(UserRegisterDto userRegisterDto) {
         compositeContainer.execute(CompositeCheckType.USER_REGISTER_CHECK.getValue(),userRegisterDto);
+        log.info("注册手机号:{}",userRegisterDto.getMobile());
         //用户表添加
         User user = new User();
         BeanUtils.copyProperties(userRegisterDto,user);
