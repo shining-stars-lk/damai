@@ -5,6 +5,7 @@ import com.damai.dto.EsDataQueryDto;
 import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramPageListDto;
 import com.damai.dto.ProgramSearchDto;
+import com.damai.enums.BusinessStatus;
 import com.damai.page.PageUtil;
 import com.damai.page.PageVo;
 import com.damai.service.init.ProgramDocumentParamName;
@@ -46,11 +47,19 @@ public class ProgramEs {
             //按照父节目id集合来进行循环从es中查询，主页页面是4个父节目，也就是循环4次
             for (Long parentProgramCategoryId : programPageListDto.getParentProgramCategoryIds()) {
                 List<EsDataQueryDto> programEsQueryDto = new ArrayList<>();
-                //地区id
-                EsDataQueryDto areaIdQueryDto = new EsDataQueryDto();
-                areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
-                areaIdQueryDto.setParamValue(programPageListDto.getAreaId());
-                programEsQueryDto.add(areaIdQueryDto);
+                if (Objects.nonNull(programPageListDto.getAreaId())) {
+                    //地区id
+                    EsDataQueryDto areaIdQueryDto = new EsDataQueryDto();
+                    areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
+                    areaIdQueryDto.setParamValue(programPageListDto.getAreaId());
+                    programEsQueryDto.add(areaIdQueryDto);
+                }else {
+                    EsDataQueryDto primeQueryDto = new EsDataQueryDto();
+                    primeQueryDto.setParamName(ProgramDocumentParamName.PRIME);
+                    primeQueryDto.setParamValue(BusinessStatus.YES.getCode());
+                    programEsQueryDto.add(primeQueryDto);
+                }
+                
                 //父节目类型id集合
                 EsDataQueryDto parentProgramCategoryIdQueryDto = new EsDataQueryDto();
                 parentProgramCategoryIdQueryDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID);
@@ -83,6 +92,11 @@ public class ProgramEs {
                 areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
                 areaIdQueryDto.setParamValue(programPageListDto.getAreaId());
                 esDataQueryDtoList.add(areaIdQueryDto);
+            }else {
+                EsDataQueryDto primeQueryDto = new EsDataQueryDto();
+                primeQueryDto.setParamName(ProgramDocumentParamName.PRIME);
+                primeQueryDto.setParamValue(BusinessStatus.YES.getCode());
+                esDataQueryDtoList.add(primeQueryDto);
             }
             if (Objects.nonNull(programPageListDto.getParentProgramCategoryId())) {
                 EsDataQueryDto parentProgramCategoryIdQueryDto = new EsDataQueryDto();
