@@ -26,6 +26,11 @@ public class Program extends BaseTableData implements Serializable {
      * 节目分组id
      */
     private Long programGroupId;
+    
+    /**
+     * 当属于同一个节目分组时 是否为主要节目 0:否 1:是
+     */
+    private Integer prime;
 
     /**
      * 所在区域id

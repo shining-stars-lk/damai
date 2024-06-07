@@ -62,6 +62,8 @@ public class ProgramElasticsearchInitData extends AbstractApplicationPostConstru
             ProgramVo programVo = programService.getDetailFromDb(programId);
             Map<String,Object> map = new HashMap<>(32);
             map.put(ProgramDocumentParamName.ID,programVo.getId());
+            map.put(ProgramDocumentParamName.PROGRAM_GROUP_ID,programVo.getProgramGroupId());
+            map.put(ProgramDocumentParamName.PRIME,programVo.getPrime());
             map.put(ProgramDocumentParamName.TITLE,programVo.getTitle());
             map.put(ProgramDocumentParamName.ACTOR,programVo.getActor());
             map.put(ProgramDocumentParamName.PLACE,programVo.getPlace());

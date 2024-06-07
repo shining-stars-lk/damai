@@ -25,6 +25,9 @@ public class ProgramVo implements Serializable {
     @ApiModelProperty(name ="programGroupId", dataType ="Long", value ="节目分组id")
     private Long programGroupId;
     
+    @ApiModelProperty(name ="prime", dataType ="Integer", value ="当属于同一个节目分组时 是否为主要节目 0:否 1:是")
+    private Integer prime;
+    
     @ApiModelProperty(name ="programGroupVo", dataType ="ProgramGroupVo", value ="节目分组")
     private ProgramGroupVo programGroupVo;
     

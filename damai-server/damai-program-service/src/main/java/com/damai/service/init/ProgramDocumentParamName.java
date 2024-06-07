@@ -12,6 +12,10 @@ public class ProgramDocumentParamName {
     
     public static final String ID = "id";
     
+    public static final String PROGRAM_GROUP_ID = "programGroupId";
+    
+    public static final String PRIME = "prime";
+    
     public static final String TITLE = "title";
     
     public static final String ACTOR = "actor";

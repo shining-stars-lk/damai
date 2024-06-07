@@ -30,8 +30,12 @@
                         d_program dp
                     where
                         dp.program_status = 1
-                    and
-                        dp.area_id = #{programListDto.areaId,jdbcType=BIGINT}
+                    <if test ='programListDto.areaId == null'>
+                        and dp.prime = 1
+                    </if>
+                    <if test ='programListDto.areaId != null'>
+                        and dp.area_id = #{programListDto.areaId,jdbcType=BIGINT}
+                    </if>
                     and
                         dp.parent_program_category_id = #{parentProgramCategoryId,jdbcType=BIGINT} limit 7
                 ) as tmp
@@ -48,20 +52,23 @@
         on dp.id = ds.program_id
         where 
             dp.status = 1 and ds.status = 1 and dp.program_status = 1
+            <if test ='programPageListDto.areaId == null'>
+                and dp.prime = 1
+            </if>
             <if test ='programPageListDto.areaId != null'>
              and dp.area_id = #{programPageListDto.areaId,jdbcType=BIGINT} 
             </if>
-        <if test = 'programPageListDto.programCategoryId != null'>
-            and dp.program_category_id = #{programPageListDto.programCategoryId,jdbcType=BIGINT}
-        </if>
-        <if test = 'programPageListDto.parentProgramCategoryId != null'>
-            and dp.parent_program_category_id = #{programPageListDto.parentProgramCategoryId,jdbcType=BIGINT}
-        </if>
-        <if test = 'programPageListDto.startDateTime != null'>
-          and ds.show_day_time &gt;= #{programPageListDto.startDateTime}
-        </if>
-        <if test = 'programPageListDto.endDateTime != null'>
-          and ds.show_day_time &lt;= #{programPageListDto.endDateTime}
-        </if>
+            <if test = 'programPageListDto.programCategoryId != null'>
+                and dp.program_category_id = #{programPageListDto.programCategoryId,jdbcType=BIGINT}
+            </if>
+            <if test = 'programPageListDto.parentProgramCategoryId != null'>
+                and dp.parent_program_category_id = #{programPageListDto.parentProgramCategoryId,jdbcType=BIGINT}
+            </if>
+            <if test = 'programPageListDto.startDateTime != null'>
+              and ds.show_day_time &gt;= #{programPageListDto.startDateTime}
+            </if>
+            <if test = 'programPageListDto.endDateTime != null'>
+              and ds.show_day_time &lt;= #{programPageListDto.endDateTime}
+            </if>
     </select>
 </mapper>
