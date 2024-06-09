@@ -6,6 +6,7 @@ import com.damai.dto.ProgramGetDto;
 import com.damai.dto.ProgramInvalidDto;
 import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramPageListDto;
+import com.damai.dto.ProgramRecommendListDto;
 import com.damai.dto.ProgramSearchDto;
 import com.damai.page.PageVo;
 import com.damai.service.ProgramService;
@@ -51,14 +52,20 @@ public class ProgramController {
     
     @ApiOperation(value = "查询主页列表")
     @PostMapping(value = "/home/list")
-    public ApiResponse<List<ProgramHomeVo>> selectHomeList(@Valid @RequestBody ProgramListDto programPageListDto) {
-        return ApiResponse.ok(programService.selectHomeList(programPageListDto));
+    public ApiResponse<List<ProgramHomeVo>> selectHomeList(@Valid @RequestBody ProgramListDto programListDto) {
+        return ApiResponse.ok(programService.selectHomeList(programListDto));
     }
     
     @ApiOperation(value = "查询分页列表")
     @PostMapping(value = "/page")
     public ApiResponse<PageVo<ProgramListVo>> selectPage(@Valid @RequestBody ProgramPageListDto programPageListDto) {
         return ApiResponse.ok(programService.selectPage(programPageListDto));
+    }
+    
+    @ApiOperation(value = "查询推荐列表")
+    @PostMapping(value = "/recommend/list")
+    public ApiResponse<List<ProgramListVo>> recommendList(@Valid @RequestBody ProgramRecommendListDto programRecommendListDto) {
+        return ApiResponse.ok(programService.recommendList(programRecommendListDto));
     }
     
     @ApiOperation(value = "查询详情(根据id)")
