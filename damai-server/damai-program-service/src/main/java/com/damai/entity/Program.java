@@ -5,6 +5,7 @@ import com.damai.data.BaseTableData;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -231,4 +232,9 @@ public class Program extends BaseTableData implements Serializable {
      * 节目状态 1:上架 0:下架
      */
     private Integer programStatus;
+    
+    /**
+     * 上架发行时间
+     * */
+    private Date issueTime;
 }

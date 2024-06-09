@@ -36,6 +36,10 @@ public class ProgramDocumentParamName {
     
     public static final String PARENT_PROGRAM_CATEGORY_NAME = "parentProgramCategoryName";
     
+    public static final String HIGH_HEAT = "high_heat";
+    
+    public static final String ISSUE_TIME = "issueTime";
+    
     public static final String SHOW_TIME = "showTime";
     
     public static final String SHOW_DAY_TIME = "showDayTime";

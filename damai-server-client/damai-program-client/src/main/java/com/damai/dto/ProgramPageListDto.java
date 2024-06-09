@@ -34,4 +34,7 @@ public class ProgramPageListDto extends BasePageDto{
     
     @ApiModelProperty(name ="endDateTime", dataType ="Date", value ="结束时间(如果timeType = 5，此项必填)")
     private Date endDateTime;
+    
+    @ApiModelProperty(name ="type", dataType ="Integer", value ="查询方式 1:相关度排序(默认) 2:推荐排序 3:最近开场 4:最新上架")
+    private Integer type = 1;
 }
