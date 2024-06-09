@@ -23,6 +23,8 @@ spring:
     url: jdbc:mysql://www.cookframe.com:3306/damai_customize?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
     username: root
     password: qazxsw890
+    hikari:
+      max-lifetime: 60000
   redis:
     database: 0
     host: 127.0.0.1

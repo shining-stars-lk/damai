@@ -160,6 +160,9 @@ public class ProgramVo implements Serializable {
     @ApiModelProperty(name ="programStatus", dataType ="Integer", value ="节目状态 1:上架 0:下架")
     private Integer programStatus;
     
+    @ApiModelProperty(name ="issueTime", dataType ="Date", value ="上架发行时间")
+    private Integer issueTime;
+    
     /**
      * 业务字段
      * */

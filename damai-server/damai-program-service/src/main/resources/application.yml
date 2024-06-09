@@ -1,6 +1,13 @@
 #服务端口
 server:
   port: 6086
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  tomcat:
+    uri-encoding: UTF-8
 # 应用名称
 spring:
   application:

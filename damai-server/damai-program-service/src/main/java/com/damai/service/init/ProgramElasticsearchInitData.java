@@ -74,6 +74,8 @@ public class ProgramElasticsearchInitData extends AbstractApplicationPostConstru
             map.put(ProgramDocumentParamName.PROGRAM_CATEGORY_NAME,programVo.getProgramCategoryName());
             map.put(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID,programVo.getParentProgramCategoryId());
             map.put(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_NAME,programVo.getParentProgramCategoryName());
+            map.put(ProgramDocumentParamName.HIGH_HEAT,programVo.getHighHeat());
+            map.put(ProgramDocumentParamName.ISSUE_TIME,programVo.getIssueTime());
             map.put(ProgramDocumentParamName.SHOW_TIME, programVo.getShowTime());
             map.put(ProgramDocumentParamName.SHOW_DAY_TIME,programVo.getShowDayTime());
             map.put(ProgramDocumentParamName.SHOW_WEEK_TIME,programVo.getShowWeekTime());
@@ -108,6 +110,8 @@ public class ProgramElasticsearchInitData extends AbstractApplicationPostConstru
         List<EsDocumentMappingDto> list = new ArrayList<>();
         
         list.add(new EsDocumentMappingDto(ProgramDocumentParamName.ID,"long"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.PROGRAM_GROUP_ID,"integer"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.PRIME,"long"));
         list.add(new EsDocumentMappingDto(ProgramDocumentParamName.TITLE,"text"));
         list.add(new EsDocumentMappingDto(ProgramDocumentParamName.ACTOR,"text"));
         list.add(new EsDocumentMappingDto(ProgramDocumentParamName.PLACE,"text"));
@@ -118,6 +122,8 @@ public class ProgramElasticsearchInitData extends AbstractApplicationPostConstru
         list.add(new EsDocumentMappingDto(ProgramDocumentParamName.PROGRAM_CATEGORY_NAME,"text"));
         list.add(new EsDocumentMappingDto(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID,"long"));
         list.add(new EsDocumentMappingDto(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_NAME,"text"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.HIGH_HEAT,"integer"));
+        list.add(new EsDocumentMappingDto(ProgramDocumentParamName.ISSUE_TIME,"date"));
         list.add(new EsDocumentMappingDto(ProgramDocumentParamName.SHOW_TIME,"date"));
         list.add(new EsDocumentMappingDto(ProgramDocumentParamName.SHOW_DAY_TIME,"date"));
         list.add(new EsDocumentMappingDto(ProgramDocumentParamName.SHOW_WEEK_TIME,"text"));

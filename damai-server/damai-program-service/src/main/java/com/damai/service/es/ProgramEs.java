@@ -9,6 +9,7 @@ import com.damai.enums.BusinessStatus;
 import com.damai.page.PageUtil;
 import com.damai.page.PageVo;
 import com.damai.service.init.ProgramDocumentParamName;
+import com.damai.service.tool.ProgramPageOrder;
 import com.damai.util.BusinessEsHandle;
 import com.damai.util.StringUtil;
 import com.damai.vo.ProgramHomeVo;
@@ -20,6 +21,9 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -119,15 +123,44 @@ public class ProgramEs {
                 esDataQueryDtoList.add(showDayTimeQueryDto);
             }
             
+            ProgramPageOrder programPageOrder = getProgramPageOrder(programPageListDto);
+            
             PageInfo<ProgramListVo> programListVoPageInfo = businessEsHandle.queryPage(
                     SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
-                    ProgramDocumentParamName.INDEX_TYPE, esDataQueryDtoList, programPageListDto.getPageNumber(),
-                    programPageListDto.getPageSize(), ProgramListVo.class);
+                    ProgramDocumentParamName.INDEX_TYPE, esDataQueryDtoList, programPageOrder.sortParam, 
+                    programPageOrder.sortOrder, programPageListDto.getPageNumber(), programPageListDto.getPageSize(), 
+                    ProgramListVo.class);
             pageVo = PageUtil.convertPage(programListVoPageInfo, programListVo -> programListVo);
         }catch (Exception e) {
             log.error("selectPage error",e);
         }
         return pageVo;
+    }
+    
+    public ProgramPageOrder getProgramPageOrder(ProgramPageListDto programPageListDto){
+        ProgramPageOrder programPageOrder = new ProgramPageOrder();
+        switch (programPageListDto.getType()) {
+            //推荐排序
+            case 2:
+                programPageOrder.sortParam = ProgramDocumentParamName.HIGH_HEAT;
+                programPageOrder.sortOrder = SortOrder.DESC;
+                break;
+            //最近开场    
+            case 3:
+                programPageOrder.sortParam = ProgramDocumentParamName.SHOW_TIME;
+                programPageOrder.sortOrder = SortOrder.ASC;
+                break;
+            //最新上架    
+            case 4:
+                programPageOrder.sortParam = ProgramDocumentParamName.ISSUE_TIME;
+                programPageOrder.sortOrder = SortOrder.ASC;
+                break;
+            //相关度排序    
+            default:
+                programPageOrder.sortParam = null;
+                programPageOrder.sortOrder = null;
+        }
+        return programPageOrder;
     }
     
     public PageVo<ProgramListVo> search(ProgramSearchDto programSearchDto) {
@@ -155,7 +188,14 @@ public class ProgramEs {
                 innerBoolQuery.minimumShouldMatch(1);
                 boolQuery.must(innerBoolQuery);
             }
+            
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            ProgramPageOrder programPageOrder = getProgramPageOrder(programSearchDto);
+            if (Objects.nonNull(programPageOrder.sortParam) && Objects.nonNull(programPageOrder.sortOrder)) {
+                FieldSortBuilder sort = SortBuilders.fieldSort(programPageOrder.sortParam);
+                sort.order(programPageOrder.sortOrder);
+                searchSourceBuilder.sort(sort);
+            }
             searchSourceBuilder.query(boolQuery);
             searchSourceBuilder.trackTotalHits(true);
             searchSourceBuilder.from((programSearchDto.getPageNumber() - 1) * programSearchDto.getPageSize());

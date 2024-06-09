@@ -70,5 +70,14 @@
             <if test = 'programPageListDto.endDateTime != null'>
               and ds.show_day_time &lt;= #{programPageListDto.endDateTime}
             </if>
+        <if test="programPageListDto.type == 2">
+            order by dp.high_heat desc
+        </if>
+        <if test="programPageListDto.type == 3">
+            order by ds.show_time asc
+        </if>
+        <if test="programPageListDto.type == 4">
+            order by dp.issue_time asc
+        </if>
     </select>
 </mapper>
