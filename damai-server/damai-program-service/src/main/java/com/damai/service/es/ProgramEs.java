@@ -4,6 +4,7 @@ import com.damai.core.SpringUtil;
 import com.damai.dto.EsDataQueryDto;
 import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramPageListDto;
+import com.damai.dto.ProgramRecommendListDto;
 import com.damai.dto.ProgramSearchDto;
 import com.damai.enums.BusinessStatus;
 import com.damai.page.PageUtil;
@@ -31,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -44,18 +47,18 @@ public class ProgramEs {
     @Autowired
     private BusinessEsHandle businessEsHandle;
     
-    public List<ProgramHomeVo> selectHomeList(ProgramListDto programPageListDto) {
+    public List<ProgramHomeVo> selectHomeList(ProgramListDto programListDto) {
         List<ProgramHomeVo> programHomeVoList = new ArrayList<>();
         
         try {
             //按照父节目id集合来进行循环从es中查询，主页页面是4个父节目，也就是循环4次
-            for (Long parentProgramCategoryId : programPageListDto.getParentProgramCategoryIds()) {
+            for (Long parentProgramCategoryId : programListDto.getParentProgramCategoryIds()) {
                 List<EsDataQueryDto> programEsQueryDto = new ArrayList<>();
-                if (Objects.nonNull(programPageListDto.getAreaId())) {
+                if (Objects.nonNull(programListDto.getAreaId())) {
                     //地区id
                     EsDataQueryDto areaIdQueryDto = new EsDataQueryDto();
                     areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
-                    areaIdQueryDto.setParamValue(programPageListDto.getAreaId());
+                    areaIdQueryDto.setParamValue(programListDto.getAreaId());
                     programEsQueryDto.add(areaIdQueryDto);
                 }else {
                     EsDataQueryDto primeQueryDto = new EsDataQueryDto();
@@ -85,6 +88,29 @@ public class ProgramEs {
             log.error("businessEsHandle.queryPage error",e);
         }
         return programHomeVoList;
+    }
+    
+    public List<ProgramListVo> recommendList(ProgramRecommendListDto programRecommendListDto){
+        List<ProgramListVo> programListVoList = new ArrayList<>();
+        try {
+            EsDataQueryDto areaIdQueryDto = new EsDataQueryDto();
+            areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
+            areaIdQueryDto.setParamValue(programRecommendListDto.getAreaId());
+            
+            EsDataQueryDto parentProgramCategoryIdQueryDto = new EsDataQueryDto();
+            parentProgramCategoryIdQueryDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID);
+            parentProgramCategoryIdQueryDto.setParamValue(programRecommendListDto.getParentProgramCategoryId());
+            
+            List<EsDataQueryDto> list = Stream.of(areaIdQueryDto, parentProgramCategoryIdQueryDto).collect(Collectors.toList());
+            PageInfo<ProgramListVo> pageInfo = businessEsHandle.queryPage(
+                    SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
+                    ProgramDocumentParamName.INDEX_TYPE, list, ProgramDocumentParamName.HIGH_HEAT,
+                    SortOrder.DESC, 1, 3, ProgramListVo.class);
+            programListVoList = pageInfo.getList();
+        }catch (Exception e){
+            log.error("recommendList error",e);
+        }
+        return programListVoList;
     }
     
     public PageVo<ProgramListVo> selectPage(ProgramPageListDto programPageListDto) {

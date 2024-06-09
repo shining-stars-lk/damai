@@ -23,6 +23,7 @@ import com.damai.dto.ProgramInvalidDto;
 import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramOperateDataDto;
 import com.damai.dto.ProgramPageListDto;
+import com.damai.dto.ProgramRecommendListDto;
 import com.damai.dto.ProgramResetExecuteDto;
 import com.damai.dto.ProgramSearchDto;
 import com.damai.dto.TicketUserListDto;
@@ -179,13 +180,13 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         setQueryTime(programSearchDto);
         return programEs.search(programSearchDto);
     }
-    public List<ProgramHomeVo> selectHomeList(ProgramListDto programPageListDto) {
+    public List<ProgramHomeVo> selectHomeList(ProgramListDto programListDto) {
         
-        List<ProgramHomeVo> programHomeVoList = programEs.selectHomeList(programPageListDto);
+        List<ProgramHomeVo> programHomeVoList = programEs.selectHomeList(programListDto);
         if (CollectionUtil.isNotEmpty(programHomeVoList)) {
             return programHomeVoList;
         }
-        return dbSelectHomeList(programPageListDto);
+        return dbSelectHomeList(programListDto);
     }
     
     private List<ProgramHomeVo> dbSelectHomeList(ProgramListDto programPageListDto){
@@ -287,6 +288,11 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         }
         return dbSelectPage(programPageListDto);
     }
+    
+    public List<ProgramListVo> recommendList(ProgramRecommendListDto programRecommendListDto){
+        return programEs.recommendList(programRecommendListDto);
+    }
+    
     public PageVo<ProgramListVo> dbSelectPage(ProgramPageListDto programPageListDto) {
         IPage<ProgramJoinShowTime> iPage = 
                 programMapper.selectPage(PageUtil.getPageParams(programPageListDto), programPageListDto);
