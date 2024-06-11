@@ -109,6 +109,12 @@ public class ProgramEs {
                         programRecommendListDto.getParentProgramCategoryId());
                 boolQuery.must(builds);
             }
+            if (Objects.nonNull(programRecommendListDto.getProgramId())) {
+                allQueryFlag = false;
+                QueryBuilder builds = QueryBuilders.termQuery(ProgramDocumentParamName.ID,
+                        programRecommendListDto.getProgramId());
+                boolQuery.mustNot(builds);
+            }
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
             searchSourceBuilder.query(allQueryFlag ? matchAllQueryBuilder : boolQuery);
             searchSourceBuilder.trackTotalHits(true);

@@ -166,6 +166,8 @@ public enum BaseCode {
     
     PROGRAM_NOT_ALLOW_CHOOSE_SEAT(50006,"此节目不允许选择座位"),
     
+    PARAMETERS_CANNOT_BE_EMPTY(50007,"参数不允许都为空"),
+    
     USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
     
     USER_LOG_IN(60002,"用户已登录"),

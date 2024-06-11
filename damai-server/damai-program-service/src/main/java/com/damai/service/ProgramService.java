@@ -290,6 +290,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     public List<ProgramListVo> recommendList(ProgramRecommendListDto programRecommendListDto){
+        compositeContainer.execute(CompositeCheckType.PROGRAM_RECOMMEND_CHECK.getValue(),programRecommendListDto);
         return programEs.recommendList(programRecommendListDto);
     }
     

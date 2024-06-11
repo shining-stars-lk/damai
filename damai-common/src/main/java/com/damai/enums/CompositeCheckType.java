@@ -21,6 +21,11 @@ public enum CompositeCheckType {
      * */
     PROGRAM_ORDER_CREATE_CHECK(3,"program_order_create_check","订单创建"),
     
+    /**
+     * 节目推荐
+     * */
+    PROGRAM_RECOMMEND_CHECK(4,"program_recommend_check","节目推荐"),
+    
     
     ;
 

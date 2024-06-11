@@ -18,4 +18,7 @@ public class ProgramRecommendListDto {
     
     @ApiModelProperty(name ="parentProgramCategoryId", dataType ="Long", value ="父节目类型id")
     private Long parentProgramCategoryId;
+    
+    @ApiModelProperty(name ="programId", dataType ="Long", value ="查看节目详情时，调用推荐列表时要传入此节目id")
+    private Long programId;
 }
