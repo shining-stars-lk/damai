@@ -18,11 +18,14 @@ import com.damai.vo.ProgramListVo;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.script.Script;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.ScriptSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +35,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -90,28 +91,46 @@ public class ProgramEs {
         return programHomeVoList;
     }
     
-    public List<ProgramListVo> recommendList(ProgramRecommendListDto programRecommendListDto){
+    public List<ProgramListVo> recommendList(ProgramRecommendListDto programRecommendListDto) {
         List<ProgramListVo> programListVoList = new ArrayList<>();
         try {
-            EsDataQueryDto areaIdQueryDto = new EsDataQueryDto();
-            areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
-            areaIdQueryDto.setParamValue(programRecommendListDto.getAreaId());
+            boolean allQueryFlag = true;
+            MatchAllQueryBuilder matchAllQueryBuilder = QueryBuilders.matchAllQuery();
+            BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+            if (Objects.nonNull(programRecommendListDto.getAreaId())) {
+                allQueryFlag = false;
+                QueryBuilder builds = QueryBuilders.termQuery(ProgramDocumentParamName.AREA_ID, 
+                        programRecommendListDto.getAreaId());
+                boolQuery.must(builds);
+            }
+            if (Objects.nonNull(programRecommendListDto.getParentProgramCategoryId())) {
+                allQueryFlag = false;
+                QueryBuilder builds = QueryBuilders.termQuery(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID, 
+                        programRecommendListDto.getParentProgramCategoryId());
+                boolQuery.must(builds);
+            }
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            searchSourceBuilder.query(allQueryFlag ? matchAllQueryBuilder : boolQuery);
+            searchSourceBuilder.trackTotalHits(true);
+            searchSourceBuilder.from(1);
+            searchSourceBuilder.size(10);
+           
+            Script script = new Script("Math.random()");
+            ScriptSortBuilder scriptSortBuilder = new ScriptSortBuilder(script, ScriptSortBuilder.ScriptSortType.NUMBER);
+            scriptSortBuilder.order(SortOrder.ASC);
             
-            EsDataQueryDto parentProgramCategoryIdQueryDto = new EsDataQueryDto();
-            parentProgramCategoryIdQueryDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID);
-            parentProgramCategoryIdQueryDto.setParamValue(programRecommendListDto.getParentProgramCategoryId());
+            searchSourceBuilder.sort(scriptSortBuilder);
             
-            List<EsDataQueryDto> list = Stream.of(areaIdQueryDto, parentProgramCategoryIdQueryDto).collect(Collectors.toList());
-            PageInfo<ProgramListVo> pageInfo = businessEsHandle.queryPage(
+            businessEsHandle.executeQuery(
                     SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
-                    ProgramDocumentParamName.INDEX_TYPE, list, ProgramDocumentParamName.HIGH_HEAT,
-                    SortOrder.DESC, 1, 3, ProgramListVo.class);
-            programListVoList = pageInfo.getList();
-        }catch (Exception e){
+                    ProgramDocumentParamName.INDEX_TYPE,programListVoList,null,ProgramListVo.class,
+                    searchSourceBuilder,null);
+        }catch (Exception e) {
             log.error("recommendList error",e);
         }
         return programListVoList;
     }
+    
     
     public PageVo<ProgramListVo> selectPage(ProgramPageListDto programPageListDto) {
         PageVo<ProgramListVo> pageVo = new PageVo<>();
