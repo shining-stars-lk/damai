@@ -22,6 +22,9 @@ public class OrderGetVo {
     
     @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id")
     private Long programId;
+    
+    @ApiModelProperty(name ="programItemPicture", dataType ="String", value ="节目图片介绍")
+    private String programItemPicture;
 
     @ApiModelProperty(name ="userId", dataType ="Long", value ="用户id")
     private Long userId;

@@ -27,6 +27,10 @@ public class OrderCreateDto {
     @NotNull
     private Long programId;
     
+    @ApiModelProperty(name ="programItemPicture", dataType ="String", value ="节目图片介绍", required =true)
+    @NotBlank
+    private String programItemPicture;
+    
     @ApiModelProperty(name ="userId", dataType ="Long", value ="用户id", required =true)
     @NotNull
     private Long userId;
