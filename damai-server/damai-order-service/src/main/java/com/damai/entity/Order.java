@@ -33,6 +33,11 @@ public class Order extends BaseTableData implements Serializable {
      * 节目表id
      */
     private Long programId;
+    
+    /**
+     * 节目图片介绍
+     * */
+    private String programItemPicture;
 
     /**
      * 用户id

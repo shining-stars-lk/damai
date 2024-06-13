@@ -176,6 +176,7 @@ public class ProgramOrderService {
         OrderCreateDto orderCreateDto = new OrderCreateDto();
         orderCreateDto.setOrderNumber(uidGenerator.getOrderNumber(programOrderCreateDto.getUserId(),ORDER_TABLE_COUNT));
         orderCreateDto.setProgramId(programOrderCreateDto.getProgramId());
+        orderCreateDto.setProgramItemPicture(programVo.getItemPicture());
         orderCreateDto.setUserId(programOrderCreateDto.getUserId());
         orderCreateDto.setProgramTitle(programVo.getTitle());
         orderCreateDto.setProgramPlace(programVo.getPlace());
