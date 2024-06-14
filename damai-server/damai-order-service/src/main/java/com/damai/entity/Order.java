@@ -58,6 +58,11 @@ public class Order extends BaseTableData implements Serializable {
      * 节目演出时间
      * */
     private Date programShowTime;
+    
+    /**
+     * 节目是否允许选座 1:允许选座 0:不允许选座
+     * */
+    private Integer programPermitChooseSeat;
 
     /**
      * 配送方式
