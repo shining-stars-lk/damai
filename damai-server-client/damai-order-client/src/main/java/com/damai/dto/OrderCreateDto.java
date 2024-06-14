@@ -19,7 +19,7 @@ import java.util.List;
 @ApiModel(value="OrderCreateDto", description ="订单创建")
 public class OrderCreateDto {
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="订单编号", required =true)
+    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单编号", required =true)
     @NotNull
     private Long orderNumber;
     
@@ -46,6 +46,10 @@ public class OrderCreateDto {
     @ApiModelProperty(name ="programShowTime", dataType ="Date", value ="节目演出时间", required =true)
     @NotNull
     private Date programShowTime;
+    
+    @ApiModelProperty(name ="programPermitChooseSeat", dataType ="Integer", value ="节目是否允许选座 1:允许选座 0:不允许选座", required =true)
+    @NotNull
+    private Integer programPermitChooseSeat;
     
     @ApiModelProperty(name ="distributionMode", dataType ="String", value ="配送方式")
     private String distributionMode;
