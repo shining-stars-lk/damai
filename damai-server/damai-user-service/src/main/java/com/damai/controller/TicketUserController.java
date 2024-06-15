@@ -31,9 +31,9 @@ public class TicketUserController {
     private TicketUserService ticketUserService;
     
     @ApiOperation(value = "查询购票人列表")
-    @PostMapping(value = "/select")
-    public ApiResponse<List<TicketUserVo>> select(@Valid @RequestBody TicketUserListDto ticketUserListDto){
-        return ApiResponse.ok(ticketUserService.select(ticketUserListDto));
+    @PostMapping(value = "/list")
+    public ApiResponse<List<TicketUserVo>> list(@Valid @RequestBody TicketUserListDto ticketUserListDto){
+        return ApiResponse.ok(ticketUserService.list(ticketUserListDto));
     }
     
     @ApiOperation(value = "添加购票人")

@@ -47,7 +47,7 @@ public class TicketUserService extends ServiceImpl<TicketUserMapper, TicketUser>
     @Autowired
     private RedisCache redisCache;
     
-    public List<TicketUserVo> select(TicketUserListDto ticketUserListDto) {
+    public List<TicketUserVo> list(TicketUserListDto ticketUserListDto) {
         //先从缓存中查询
         List<TicketUserVo> ticketUserVoList = redisCache.getValueIsList(RedisKeyBuild.createRedisKey(
                 RedisKeyManage.TICKET_USER_LIST, ticketUserListDto.getUserId()), TicketUserVo.class);
