@@ -144,15 +144,15 @@ public enum BaseCode {
     
     SEAT_ID_EMPTY(40026,"座位id为空"),
     
-    SEAT_TICKET_CATEGORY_ID_EMPTY(40026,"座位的票档id为空"),
+    SEAT_TICKET_CATEGORY_ID_EMPTY(40027,"座位的票档id为空"),
     
-    SEAT_ROW_CODE_EMPTY(40026,"座位的rowCode为空"),
+    SEAT_ROW_CODE_EMPTY(40028,"座位的rowCode为空"),
     
-    SEAT_COL_CODE_EMPTY(40026,"座位的colCode为空"),
+    SEAT_COL_CODE_EMPTY(40029,"座位的colCode为空"),
     
-    SEAT_PRICE_EMPTY(40026,"座位价格为空"),
+    SEAT_PRICE_EMPTY(40030,"座位价格为空"),
     
-    SEAT_IS_NOT_NOT_SOLD(40027,"座位不是未售卖"),
+    SEAT_IS_NOT_NOT_SOLD(40031,"座位不是未售卖"),
     
     DELAY_QUEUE_CLIENT_NOT_EXIST(50001,"延迟队列客户端不存在"),
     
@@ -167,6 +167,8 @@ public enum BaseCode {
     PROGRAM_NOT_ALLOW_CHOOSE_SEAT(50006,"此节目不允许选择座位"),
     
     PARAMETERS_CANNOT_BE_EMPTY(50007,"参数不允许都为空"),
+    
+    PER_ORDER_PURCHASE_COUNT_OVER_LIMIT(50008,"每单购买数量大于限制"),
     
     USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
     

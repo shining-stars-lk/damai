@@ -73,8 +73,11 @@ public class ProgramVo implements Serializable {
     @ApiModelProperty(name ="detail", dataType ="String", value ="项目详情")
     private String detail;
     
-    @ApiModelProperty(name ="purchaseLimitRule", dataType ="String", value ="限购规则")
-    private String purchaseLimitRule;
+    @ApiModelProperty(name ="perOrderLimitPurchaseCount", dataType ="Integer", value ="每笔订单最多购买数量")
+    private Integer perOrderLimitPurchaseCount;
+    
+    @ApiModelProperty(name ="perAccountLimitPurchaseCount", dataType ="Integer", value ="每个账号最多购买数量")
+    private Integer perAccountLimitPurchaseCount;
     
     @ApiModelProperty(name ="refundTicketRule", dataType ="String", value ="退票/换票规则")
     private String refundTicketRule;

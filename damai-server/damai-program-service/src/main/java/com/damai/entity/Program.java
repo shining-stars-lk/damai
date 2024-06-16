@@ -89,9 +89,14 @@ public class Program extends BaseTableData implements Serializable {
     private String detail;
 
     /**
-     * 限购规则
-     */
-    private String purchaseLimitRule;
+     * 每笔订单最多购买数量
+     * */
+    private Integer perOrderLimitPurchaseCount;
+    
+    /**
+     * 每个账号最多购买数量
+     * */
+    private Integer perAccountLimitPurchaseCount;
 
     /**
      * 退票/换票规则
