@@ -12,9 +12,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.BusinessThreadPool;
 import com.damai.RedisStreamPushHandler;
 import com.damai.client.BaseDataClient;
+import com.damai.client.OrderClient;
 import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyManage;
+import com.damai.dto.AccountOrderCountDto;
 import com.damai.dto.AreaGetDto;
 import com.damai.dto.AreaSelectDto;
 import com.damai.dto.ProgramAddDto;
@@ -57,12 +59,14 @@ import com.damai.service.cache.local.LocalCacheProgramCategory;
 import com.damai.service.cache.local.LocalCacheProgramGroup;
 import com.damai.service.constant.ProgramTimeType;
 import com.damai.service.es.ProgramEs;
+import com.damai.service.tool.TokenExpireManager;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.threadlocal.BaseParameterHolder;
 import com.damai.util.DateUtils;
 import com.damai.util.ServiceLockTool;
 import com.damai.util.StringUtil;
+import com.damai.vo.AccountOrderCountVo;
 import com.damai.vo.AreaVo;
 import com.damai.vo.ProgramGroupVo;
 import com.damai.vo.ProgramHomeVo;
@@ -135,6 +139,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     private UserClient userClient;
     
     @Autowired
+    private OrderClient orderClient;
+    
+    @Autowired
     private RedisCache redisCache;
     
     @Autowired
@@ -166,6 +173,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @Autowired
     private CompositeContainer compositeContainer;
+    
+    @Autowired
+    private TokenExpireManager tokenExpireManager;
     
     
     public Long add(ProgramAddDto programAddDto){
@@ -353,6 +363,8 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         
         preloadTicketUserList(programVo.getHighHeat());
         
+        preloadAccountOrderCount(programVo.getId());
+        
         ProgramCategory programCategory = getProgramCategory(programVo.getProgramCategoryId());
         if (Objects.nonNull(programCategory)) {
             programVo.setProgramCategoryName(programCategory.getName());
@@ -386,6 +398,8 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         programVo.setProgramGroupVo(programGroupVo);
         
         preloadTicketUserList(programVo.getHighHeat());
+        
+        preloadAccountOrderCount(programVo.getId());
         
         ProgramCategory programCategory = getProgramCategoryMultipleCache(programVo.getProgramCategoryId());
         if (Objects.nonNull(programCategory)) {
@@ -587,21 +601,55 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 if (!userLogin) {
                     return;
                 }
-                if (redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.TICKET_USER_LIST,userId))) {
+                if (!redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.TICKET_USER_LIST,userId))) {
+                    TicketUserListDto ticketUserListDto = new TicketUserListDto();
+                    ticketUserListDto.setUserId(Long.parseLong(userId));
+                    ApiResponse<List<TicketUserVo>> apiResponse = userClient.list(ticketUserListDto);
+                    if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+                        Optional.ofNullable(apiResponse.getData()).filter(CollectionUtil::isNotEmpty)
+                                .ifPresent(ticketUserVoList -> redisCache.set(RedisKeyBuild.createRedisKey(
+                                        RedisKeyManage.TICKET_USER_LIST,userId),ticketUserVoList));
+                    }else {
+                        log.warn("userClient.select 调用失败 apiResponse : {}",JSON.toJSONString(apiResponse));
+                    }
+                }
+                
+            }catch (Exception e) {
+                log.error("预热加载购票人列表失败",e);
+            }
+        });
+    }
+    
+    private void preloadAccountOrderCount(Long programId){
+        String userId = BaseParameterHolder.getParameter(USER_ID);
+        String code = BaseParameterHolder.getParameter(CODE);
+        if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(code)) {
+            return;
+        }
+        BusinessThreadPool.execute(() -> {
+            try {
+                Boolean userLogin =
+                        redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
+                if (!userLogin) {
                     return;
                 }
-                TicketUserListDto ticketUserListDto = new TicketUserListDto();
-                ticketUserListDto.setUserId(Long.parseLong(userId));
-                ApiResponse<List<TicketUserVo>> apiResponse = userClient.select(ticketUserListDto);
-                if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
-                    Optional.ofNullable(apiResponse.getData()).filter(CollectionUtil::isNotEmpty)
-                            .ifPresent(ticketUserVoList -> redisCache.set(RedisKeyBuild.createRedisKey(
-                                    RedisKeyManage.TICKET_USER_LIST,userId),ticketUserVoList));
-                }else {
-                    log.warn("userClient.select 调用失败 apiResponse : {}",JSON.toJSONString(apiResponse));
+                if (!redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.ACCOUNT_ORDER_COUNT,userId,programId))) {
+                    AccountOrderCountDto accountOrderCountDto = new AccountOrderCountDto();
+                    accountOrderCountDto.setUserId(Long.parseLong(userId));
+                    accountOrderCountDto.setProgramId(programId);
+                    ApiResponse<AccountOrderCountVo> apiResponse = orderClient.accountOrderCount(accountOrderCountDto);
+                    if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+                        Optional.ofNullable(apiResponse.getData())
+                                .ifPresent(accountOrderCountVo -> redisCache.set(
+                                        RedisKeyBuild.createRedisKey(RedisKeyManage.ACCOUNT_ORDER_COUNT,userId,programId),
+                                        accountOrderCountVo.getCount(), tokenExpireManager.getTokenExpireTime() + 1,
+                                        TimeUnit.MINUTES));
+                    }else {
+                        log.warn("orderClient.accountOrderCount 调用失败 apiResponse : {}",JSON.toJSONString(apiResponse));
+                    }
                 }
             }catch (Exception e) {
-                log.error("预热加载投票人列表失败",e);
+                log.error("预热加载账户订单数量失败",e);
             }
         });
     }

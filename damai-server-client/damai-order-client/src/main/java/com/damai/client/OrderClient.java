@@ -1,7 +1,9 @@
 package com.damai.client;
 
 import com.damai.common.ApiResponse;
+import com.damai.dto.AccountOrderCountDto;
 import com.damai.dto.OrderCreateDto;
+import com.damai.vo.AccountOrderCountVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,4 +26,12 @@ public interface OrderClient {
      * */
     @PostMapping("/order/create")
     ApiResponse<String> create(OrderCreateDto dto);
+    
+    /**
+     * 账户下某个节目的订单数量
+     * @param dto 参数
+     * @return 结果
+     * */
+    @PostMapping("/order/account/order/count")
+    ApiResponse<AccountOrderCountVo> accountOrderCount(AccountOrderCountDto dto);
 }

@@ -2,9 +2,11 @@ package com.damai.service.composite.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
+import com.damai.client.OrderClient;
 import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyManage;
+import com.damai.dto.AccountOrderCountDto;
 import com.damai.dto.ProgramOrderCreateDto;
 import com.damai.dto.TicketUserListDto;
 import com.damai.enums.BaseCode;
@@ -12,6 +14,9 @@ import com.damai.exception.DaMaiFrameException;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.service.composite.AbstractProgramCheckHandler;
+import com.damai.service.tool.TokenExpireManager;
+import com.damai.vo.AccountOrderCountVo;
+import com.damai.vo.ProgramVo;
 import com.damai.vo.TicketUserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +25,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +44,12 @@ public class ProgramUserExistCheckHandler extends AbstractProgramCheckHandler {
     @Autowired
     private RedisCache redisCache;
     
+    @Autowired
+    private OrderClient orderClient;
+    
+    @Autowired
+    private TokenExpireManager tokenExpireManager;
+    
     @Override
     protected void execute(ProgramOrderCreateDto programOrderCreateDto) {
         List<TicketUserVo> ticketUserVoList = redisCache.getValueIsList(RedisKeyBuild.createRedisKey(
@@ -44,7 +57,7 @@ public class ProgramUserExistCheckHandler extends AbstractProgramCheckHandler {
         if (CollectionUtil.isEmpty(ticketUserVoList)) {
             TicketUserListDto ticketUserListDto = new TicketUserListDto();
             ticketUserListDto.setUserId(programOrderCreateDto.getUserId());
-            ApiResponse<List<TicketUserVo>> apiResponse = userClient.select(ticketUserListDto);
+            ApiResponse<List<TicketUserVo>> apiResponse = userClient.list(ticketUserListDto);
             if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
                 ticketUserVoList = apiResponse.getData();
             }else {
@@ -61,6 +74,45 @@ public class ProgramUserExistCheckHandler extends AbstractProgramCheckHandler {
             if (Objects.isNull(ticketUserVoMap.get(ticketUserId))) {
                 throw new DaMaiFrameException(BaseCode.TICKET_USER_EMPTY);
             }
+        }
+        
+        ProgramVo programVo = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, 
+                programOrderCreateDto.getProgramId()), ProgramVo.class);
+        if (Objects.isNull(programVo)) {
+            throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST);
+        }
+        
+        Integer count = 0;
+        if (redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.ACCOUNT_ORDER_COUNT,
+                programOrderCreateDto.getUserId(),programOrderCreateDto.getProgramId()))) {
+            count = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.ACCOUNT_ORDER_COUNT,
+                    programOrderCreateDto.getUserId(),programOrderCreateDto.getProgramId()), Integer.class);
+        }else {
+            AccountOrderCountDto accountOrderCountDto = new AccountOrderCountDto();
+            accountOrderCountDto.setUserId(programOrderCreateDto.getUserId());
+            accountOrderCountDto.setProgramId(programOrderCreateDto.getProgramId());
+            ApiResponse<AccountOrderCountVo> apiResponse = orderClient.accountOrderCount(accountOrderCountDto);
+            if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+                count = Optional.ofNullable(apiResponse.getData()).map(AccountOrderCountVo::getCount).orElse(0);
+                redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.ACCOUNT_ORDER_COUNT,
+                                programOrderCreateDto.getUserId(),
+                                programOrderCreateDto.getProgramId()),
+                        count, tokenExpireManager.getTokenExpireTime() + 1, TimeUnit.MINUTES);
+            }
+        }
+        
+        Integer seatCount = Optional.ofNullable(programOrderCreateDto.getSeatDtoList()).map(List::size).orElse(0);
+        
+        Integer ticketCount = Optional.ofNullable(programOrderCreateDto.getTicketCount()).orElse(0);
+        
+        if (seatCount != 0) {
+            count = count + seatCount;
+        }else if (ticketCount != 0) {
+            count = count + ticketCount;
+        }
+        
+        if (count > programVo.getPerAccountLimitPurchaseCount()) {
+            throw new DaMaiFrameException(BaseCode.PER_ACCOUNT_PURCHASE_COUNT_OVER_LIMIT);
         }
     }
     

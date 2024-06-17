@@ -77,6 +77,8 @@ public enum RedisKeyManage {
     VERIFY_CAPTCHA_ID("d_mai_verify_captcha_id_%S","校验验证码id的key","校验验证码id","k"),
     
     TICKET_USER_LIST("d_mai_ticket_user_list_%S","购票人列表的key","购票人列表","k"),
+    
+    ACCOUNT_ORDER_COUNT("d_mai_account_order_count_%S_%S","账户下订单数量的key","账户下订单数量","k"),
     ;
 
     /**
