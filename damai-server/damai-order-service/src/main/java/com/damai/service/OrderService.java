@@ -14,6 +14,7 @@ import com.damai.client.PayClient;
 import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyManage;
+import com.damai.dto.AccountOrderCountDto;
 import com.damai.dto.NotifyDto;
 import com.damai.dto.OrderCancelDto;
 import com.damai.dto.OrderCreateDto;
@@ -45,6 +46,7 @@ import com.damai.service.delaysend.DelayOperateProgramDataSend;
 import com.damai.service.properties.OrderProperties;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.util.DateUtils;
+import com.damai.vo.AccountOrderCountVo;
 import com.damai.vo.NotifyVo;
 import com.damai.vo.OrderGetVo;
 import com.damai.vo.OrderListVo;
@@ -138,6 +140,11 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         }
         orderMapper.insert(order);
         orderTicketUserService.saveBatch(orderTicketUserList);
+        redisCache.incrBy(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.ACCOUNT_ORDER_COUNT,
+                        orderCreateDto.getUserId(),
+                        orderCreateDto.getProgramId()),
+                orderCreateDto.getOrderTicketUserCreateDtoList().size());
         return String.valueOf(order.getOrderNumber());
     }
     
@@ -300,6 +307,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         List<OrderTicketUser> orderTicketUserList = orderTicketUserMapper.selectList(orderTicketUserLambdaQueryWrapper);
         if (CollectionUtil.isEmpty(orderTicketUserList)) {
             throw new DaMaiFrameException(BaseCode.TICKET_USER_ORDER_NOT_EXIST);
+        }
+        if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
+            redisCache.incrBy(RedisKeyBuild.createRedisKey(
+                    RedisKeyManage.ACCOUNT_ORDER_COUNT,order.getUserId(),order.getProgramId()),-updateTicketUserOrderResult);
         }
         Long programId = order.getProgramId();
         List<String> seatIdList =
@@ -469,5 +480,12 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         orderGetVo.setUserAndTicketUserInfoVo(userAndTicketUserInfoVo);
         
         return orderGetVo;
+    }
+    
+    public AccountOrderCountVo accountOrderCount(AccountOrderCountDto accountOrderCountDto) {
+        AccountOrderCountVo accountOrderCountVo = new AccountOrderCountVo();
+        accountOrderCountVo.setCount(orderMapper.accountOrderCount(accountOrderCountDto.getUserId(),
+                accountOrderCountDto.getProgramId()));
+        return accountOrderCountVo;
     }
 }

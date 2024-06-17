@@ -168,7 +168,9 @@ public enum BaseCode {
     
     PARAMETERS_CANNOT_BE_EMPTY(50007,"参数不允许都为空"),
     
-    PER_ORDER_PURCHASE_COUNT_OVER_LIMIT(50008,"每单购买数量大于限制"),
+    PER_ORDER_PURCHASE_COUNT_OVER_LIMIT(50008,"该订单购买数量大于限制"),
+    
+    PER_ACCOUNT_PURCHASE_COUNT_OVER_LIMIT(50009,"该账户购买数量大于限制"),
     
     USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
     

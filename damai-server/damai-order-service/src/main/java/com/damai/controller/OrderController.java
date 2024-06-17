@@ -1,6 +1,7 @@
 package com.damai.controller;
 
 import com.damai.common.ApiResponse;
+import com.damai.dto.AccountOrderCountDto;
 import com.damai.dto.OrderCancelDto;
 import com.damai.dto.OrderCreateDto;
 import com.damai.dto.OrderGetDto;
@@ -8,6 +9,7 @@ import com.damai.dto.OrderListDto;
 import com.damai.dto.OrderPayCheckDto;
 import com.damai.dto.OrderPayDto;
 import com.damai.service.OrderService;
+import com.damai.vo.AccountOrderCountVo;
 import com.damai.vo.OrderGetVo;
 import com.damai.vo.OrderListVo;
 import com.damai.vo.OrderPayCheckVo;
@@ -77,5 +79,11 @@ public class OrderController {
     @PostMapping(value = "/get")
     public ApiResponse<OrderGetVo> get(@Valid @RequestBody OrderGetDto orderGetDto) {
         return ApiResponse.ok(orderService.get(orderGetDto));
+    }
+    
+    @ApiOperation(value = "账户下某个节目的订单数量(不提供给前端调用，只允许内部program服务调用)")
+    @PostMapping(value = "/account/order/count")
+    public ApiResponse<AccountOrderCountVo> accountOrderCount(@Valid @RequestBody AccountOrderCountDto accountOrderCountDto) {
+        return ApiResponse.ok(orderService.accountOrderCount(accountOrderCountDto));
     }
 }

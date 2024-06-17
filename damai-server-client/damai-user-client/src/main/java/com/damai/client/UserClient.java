@@ -38,8 +38,8 @@ public interface UserClient {
      * @param dto 参数
      * @return 结果
      * */
-    @PostMapping(value = "/ticket/user/select")
-    ApiResponse<List<TicketUserVo>> select(TicketUserListDto dto);
+    @PostMapping(value = "/ticket/user/list")
+    ApiResponse<List<TicketUserVo>> list(TicketUserListDto dto);
     
     /**
      * 查询用户和购票人集合
