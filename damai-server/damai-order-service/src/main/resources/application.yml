@@ -91,6 +91,6 @@ jasypt:
     algorithm: PBEWithMD5AndDES
 delay:
   queue:
-    corePoolSize: 1
-    maximumPoolSize: 1
-    isolationRegionCount: 1
+    corePoolSize: 12
+    maximumPoolSize: 24
+    isolationRegionCount: 4
