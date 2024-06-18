@@ -89,3 +89,8 @@ jasypt:
   encryptor:
     password: bgtjkjl!%^sdc
     algorithm: PBEWithMD5AndDES
+delay:
+  queue:
+    corePoolSize: 1
+    maximumPoolSize: 1
+    isolationRegionCount: 1

@@ -10,7 +10,7 @@ server:
     uri-encoding: UTF-8
     threads:
       # 最大线程数(默认200)
-      max: 200
+      max: 300
       # 最小工作空闲线程数(默认10)
       min-spare: 10
     # 最大连接数  (默认8192)
@@ -136,3 +136,8 @@ elasticsearch:
   ip: 127.0.0.1:9200
   userName: elastic
   passWord: elastic
+delay:
+  queue:
+    corePoolSize: 1
+    maximumPoolSize: 1
+    isolationRegionCount: 1
