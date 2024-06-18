@@ -347,6 +347,16 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     public ProgramVo detail(ProgramGetDto programGetDto) {
         compositeContainer.execute(CompositeCheckType.PROGRAM_DETAIL_CHECK.getValue(),programGetDto);
+        return getDetail(programGetDto);
+    }
+    
+    public ProgramVo detailV1(ProgramGetDto programGetDto) {
+        compositeContainer.execute(CompositeCheckType.PROGRAM_DETAIL_CHECK.getValue(),programGetDto);
+        return getDetail(programGetDto);
+    }
+    
+    public ProgramVo detailV2(ProgramGetDto programGetDto) {
+        compositeContainer.execute(CompositeCheckType.PROGRAM_DETAIL_CHECK.getValue(),programGetDto);
         return getDetailV2(programGetDto);
     }
     
@@ -594,13 +604,13 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(code)) {
             return;
         }
+        Boolean userLogin =
+                redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
+        if (!userLogin) {
+            return;
+        }
         BusinessThreadPool.execute(() -> {
             try {
-                Boolean userLogin = 
-                        redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
-                if (!userLogin) {
-                    return;
-                }
                 if (!redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.TICKET_USER_LIST,userId))) {
                     TicketUserListDto ticketUserListDto = new TicketUserListDto();
                     ticketUserListDto.setUserId(Long.parseLong(userId));
@@ -626,13 +636,13 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(code)) {
             return;
         }
+        Boolean userLogin =
+                redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
+        if (!userLogin) {
+            return;
+        }
         BusinessThreadPool.execute(() -> {
             try {
-                Boolean userLogin =
-                        redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
-                if (!userLogin) {
-                    return;
-                }
                 if (!redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.ACCOUNT_ORDER_COUNT,userId,programId))) {
                     AccountOrderCountDto accountOrderCountDto = new AccountOrderCountDto();
                     accountOrderCountDto.setUserId(Long.parseLong(userId));

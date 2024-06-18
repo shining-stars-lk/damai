@@ -74,6 +74,18 @@ public class ProgramController {
         return ApiResponse.ok(programService.detail(programGetDto));
     }
     
+    @ApiOperation(value = "查询详情V1(根据id)")
+    @PostMapping(value = "/detail/v1")
+    public ApiResponse<ProgramVo> getDetailV1(@Valid @RequestBody ProgramGetDto programGetDto) {
+        return ApiResponse.ok(programService.detailV1(programGetDto));
+    }
+    
+    @ApiOperation(value = "查询详情V2(根据id)")
+    @PostMapping(value = "/detail/v2")
+    public ApiResponse<ProgramVo> getDetailV2(@Valid @RequestBody ProgramGetDto programGetDto) {
+        return ApiResponse.ok(programService.detailV2(programGetDto));
+    }
+    
     @ApiOperation(value = "节目失效(根据id)")
     @PostMapping(value = "/invalid")
     public ApiResponse<Boolean> invalid(@Valid @RequestBody ProgramInvalidDto programInvalidDto) {

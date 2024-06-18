@@ -1,9 +1,7 @@
 package com.damai.service.composite;
 
 import com.damai.dto.ProgramGetDto;
-import com.damai.enums.BaseCode;
 import com.damai.enums.CompositeCheckType;
-import com.damai.exception.DaMaiFrameException;
 import com.damai.handler.BloomFilterHandler;
 import com.damai.initialize.impl.composite.AbstractComposite;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +20,10 @@ public class ProgramBloomFilterCheckHandler extends AbstractComposite<ProgramGet
     
     @Override
     protected void execute(final ProgramGetDto param) {
-        boolean contains = bloomFilterHandler.contains(String.valueOf(param.getId()));
-        if (!contains) {
-            throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST);
-        }
+//        boolean contains = bloomFilterHandler.contains(String.valueOf(param.getId()));
+//        if (!contains) {
+//            throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST);
+//        }
     }
     
     @Override
