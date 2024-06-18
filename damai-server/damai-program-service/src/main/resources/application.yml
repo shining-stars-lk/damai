@@ -43,7 +43,7 @@ spring:
     timeout: 3000
     stream:
       streamName: invalid_program
-      consumerType: broadcast
+      consumerType: broadcast  
   cloud:
     nacos:
       discovery:
@@ -140,4 +140,4 @@ delay:
   queue:
     corePoolSize: 1
     maximumPoolSize: 1
-    isolationRegionCount: 1
+    isolationRegionCount: 4
