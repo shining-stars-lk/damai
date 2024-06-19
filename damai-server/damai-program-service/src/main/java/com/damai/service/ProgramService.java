@@ -347,7 +347,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     public ProgramVo detail(ProgramGetDto programGetDto) {
         compositeContainer.execute(CompositeCheckType.PROGRAM_DETAIL_CHECK.getValue(),programGetDto);
-        return getDetail(programGetDto);
+        return getDetailV2(programGetDto);
     }
     
     public ProgramVo detailV1(ProgramGetDto programGetDto) {
