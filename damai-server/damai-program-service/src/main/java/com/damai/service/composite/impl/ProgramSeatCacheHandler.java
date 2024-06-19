@@ -1,16 +1,17 @@
 package com.damai.service.composite.impl;
 
-import com.damai.core.RedisKeyManage;
 import com.damai.dto.ProgramOrderCreateDto;
 import com.damai.entity.ProgramShowTime;
-import com.damai.redis.RedisCache;
-import com.damai.redis.RedisKeyBuild;
+import com.damai.enums.BaseCode;
+import com.damai.exception.DaMaiFrameException;
+import com.damai.service.ProgramShowTimeService;
 import com.damai.service.SeatService;
 import com.damai.service.composite.AbstractProgramCheckHandler;
 import com.damai.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,15 +23,18 @@ import java.util.concurrent.TimeUnit;
 public class ProgramSeatCacheHandler extends AbstractProgramCheckHandler {
     
     @Autowired
-    private RedisCache redisCache;
+    private ProgramShowTimeService programShowTimeService;
     
     @Autowired
     private SeatService seatService;
     
     @Override
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
-        ProgramShowTime programShowTime = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME
-                ,programOrderCreateDto.getProgramId()),ProgramShowTime.class);
+        ProgramShowTime programShowTime =
+                programShowTimeService.selectProgramShowTimeByProgramIdMultipleCache(programOrderCreateDto.getProgramId());
+        if (Objects.isNull(programShowTime)) {
+            throw new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST);
+        }
         
         seatService.selectSeatByProgramId(programOrderCreateDto.getProgramId(),
                 DateUtils.countBetweenSecond(DateUtils.now(), programShowTime.getShowTime()), TimeUnit.SECONDS);
@@ -48,6 +52,6 @@ public class ProgramSeatCacheHandler extends AbstractProgramCheckHandler {
     
     @Override
     public Integer executeOrder() {
-        return 4;
+        return 2;
     }
 }

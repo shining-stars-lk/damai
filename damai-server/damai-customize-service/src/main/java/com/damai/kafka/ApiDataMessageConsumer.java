@@ -6,6 +6,7 @@ import com.damai.service.ApiDataService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.kafka.annotation.KafkaListener;
 
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public class ApiDataMessageConsumer {
     
     private ApiDataService apiDataService;
     
-    //@KafkaListener(topics = {"${kafka.consumer.topic:save_api_data}"},containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = {"${kafka.consumer.topic:save_api_data}"},containerFactory = "kafkaListenerContainerFactory")
     public void consumerApiDataMessage(ConsumerRecord consumerRecord){
         try {
             Optional.ofNullable(consumerRecord.value()).map(String::valueOf).ifPresent(value -> {

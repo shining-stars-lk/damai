@@ -7,12 +7,14 @@ import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyManage;
 import com.damai.dto.AccountOrderCountDto;
+import com.damai.dto.ProgramGetDto;
 import com.damai.dto.ProgramOrderCreateDto;
 import com.damai.dto.TicketUserListDto;
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
+import com.damai.service.ProgramService;
 import com.damai.service.composite.AbstractProgramCheckHandler;
 import com.damai.service.tool.TokenExpireManager;
 import com.damai.vo.AccountOrderCountVo;
@@ -48,6 +50,9 @@ public class ProgramUserExistCheckHandler extends AbstractProgramCheckHandler {
     private OrderClient orderClient;
     
     @Autowired
+    private ProgramService programService;
+    
+    @Autowired
     private TokenExpireManager tokenExpireManager;
     
     @Override
@@ -75,13 +80,12 @@ public class ProgramUserExistCheckHandler extends AbstractProgramCheckHandler {
                 throw new DaMaiFrameException(BaseCode.TICKET_USER_EMPTY);
             }
         }
-        
-        ProgramVo programVo = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, 
-                programOrderCreateDto.getProgramId()), ProgramVo.class);
+        ProgramGetDto programGetDto = new ProgramGetDto();
+        programGetDto.setId(programOrderCreateDto.getProgramId());
+        ProgramVo programVo = programService.detail(programGetDto);
         if (Objects.isNull(programVo)) {
             throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST);
         }
-        
         Integer count = 0;
         if (redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.ACCOUNT_ORDER_COUNT,
                 programOrderCreateDto.getUserId(),programOrderCreateDto.getProgramId()))) {
@@ -104,13 +108,11 @@ public class ProgramUserExistCheckHandler extends AbstractProgramCheckHandler {
         Integer seatCount = Optional.ofNullable(programOrderCreateDto.getSeatDtoList()).map(List::size).orElse(0);
         
         Integer ticketCount = Optional.ofNullable(programOrderCreateDto.getTicketCount()).orElse(0);
-        
         if (seatCount != 0) {
             count = count + seatCount;
         }else if (ticketCount != 0) {
             count = count + ticketCount;
         }
-        
         if (count > programVo.getPerAccountLimitPurchaseCount()) {
             throw new DaMaiFrameException(BaseCode.PER_ACCOUNT_PURCHASE_COUNT_OVER_LIMIT);
         }
@@ -128,6 +130,6 @@ public class ProgramUserExistCheckHandler extends AbstractProgramCheckHandler {
     
     @Override
     public Integer executeOrder() {
-        return 5;
+        return 3;
     }
 }
