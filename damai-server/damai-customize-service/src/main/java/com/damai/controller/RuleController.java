@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 普通规则 控制层
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @RestController
 @RequestMapping("/rule")
@@ -32,21 +32,21 @@ public class RuleController {
     
     @ApiOperation(value = "添加普通规则")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ApiResponse add(@Valid @RequestBody RuleDto ruleDto) {
+    public ApiResponse<Void> add(@Valid @RequestBody RuleDto ruleDto) {
         ruleService.ruleAdd(ruleDto);
         return ApiResponse.ok();
     }
     
     @ApiOperation(value = "修改普通规则")
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public ApiResponse update(@Valid @RequestBody RuleUpdateDto ruleUpdateDto) {
+    public ApiResponse<Void> update(@Valid @RequestBody RuleUpdateDto ruleUpdateDto) {
         ruleService.ruleUpdate(ruleUpdateDto);
         return ApiResponse.ok();
     }
     
     @ApiOperation(value = "修改普通规则状态")
     @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
-    public ApiResponse updateStatus(@Valid @RequestBody RuleStatusDto ruleStatusDto){
+    public ApiResponse<Void> updateStatus(@Valid @RequestBody RuleStatusDto ruleStatusDto){
         ruleService.ruleUpdateStatus(ruleStatusDto);
         return ApiResponse.ok();
     }

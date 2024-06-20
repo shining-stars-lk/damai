@@ -4,34 +4,42 @@ import com.damai.core.SpringUtil;
 import com.damai.dto.EsDataQueryDto;
 import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramPageListDto;
+import com.damai.dto.ProgramRecommendListDto;
 import com.damai.dto.ProgramSearchDto;
+import com.damai.enums.BusinessStatus;
 import com.damai.page.PageUtil;
 import com.damai.page.PageVo;
 import com.damai.service.init.ProgramDocumentParamName;
+import com.damai.service.tool.ProgramPageOrder;
 import com.damai.util.BusinessEsHandle;
 import com.damai.util.StringUtil;
+import com.damai.vo.ProgramHomeVo;
 import com.damai.vo.ProgramListVo;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.script.Script;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.ScriptSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: es查询
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @Slf4j
 @Component
@@ -40,33 +48,95 @@ public class ProgramEs {
     @Autowired
     private BusinessEsHandle businessEsHandle;
     
-    public Map<String, List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
-        Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>(256);
+    public List<ProgramHomeVo> selectHomeList(ProgramListDto programListDto) {
+        List<ProgramHomeVo> programHomeVoList = new ArrayList<>();
         
         try {
-            for (Long parentProgramCategoryId : programPageListDto.getParentProgramCategoryIds()) {
+            //按照父节目id集合来进行循环从es中查询，主页页面是4个父节目，也就是循环4次
+            for (Long parentProgramCategoryId : programListDto.getParentProgramCategoryIds()) {
                 List<EsDataQueryDto> programEsQueryDto = new ArrayList<>();
-                EsDataQueryDto areaIdQueryDto = new EsDataQueryDto();
-                areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
-                areaIdQueryDto.setParamValue(programPageListDto.getAreaId());
-                programEsQueryDto.add(areaIdQueryDto);
+                if (Objects.nonNull(programListDto.getAreaId())) {
+                    //地区id
+                    EsDataQueryDto areaIdQueryDto = new EsDataQueryDto();
+                    areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
+                    areaIdQueryDto.setParamValue(programListDto.getAreaId());
+                    programEsQueryDto.add(areaIdQueryDto);
+                }else {
+                    EsDataQueryDto primeQueryDto = new EsDataQueryDto();
+                    primeQueryDto.setParamName(ProgramDocumentParamName.PRIME);
+                    primeQueryDto.setParamValue(BusinessStatus.YES.getCode());
+                    programEsQueryDto.add(primeQueryDto);
+                }
+                
+                //父节目类型id集合
                 EsDataQueryDto parentProgramCategoryIdQueryDto = new EsDataQueryDto();
                 parentProgramCategoryIdQueryDto.setParamName(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID);
                 parentProgramCategoryIdQueryDto.setParamValue(parentProgramCategoryId);
                 programEsQueryDto.add(parentProgramCategoryIdQueryDto);
+                //查询前7条
                 PageInfo<ProgramListVo> pageInfo = businessEsHandle.queryPage(
                         SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
                         ProgramDocumentParamName.INDEX_TYPE, programEsQueryDto, 1, 7, ProgramListVo.class);
                 if (!pageInfo.getList().isEmpty()) {
-                    String areaName = pageInfo.getList().get(0).getAreaName();
-                    programListVoMap.put(areaName,pageInfo.getList());
+                    String parentProgramCategoryName = pageInfo.getList().get(0).getParentProgramCategoryName();
+                    ProgramHomeVo programHomeVo = new ProgramHomeVo();
+                    programHomeVo.setCategoryName(parentProgramCategoryName);
+                    programHomeVo.setProgramListVoList(pageInfo.getList());
+                    programHomeVoList.add(programHomeVo);
                 }
             }
         }catch (Exception e) {
             log.error("businessEsHandle.queryPage error",e);
         }
-        return programListVoMap;
+        return programHomeVoList;
     }
+    
+    public List<ProgramListVo> recommendList(ProgramRecommendListDto programRecommendListDto) {
+        List<ProgramListVo> programListVoList = new ArrayList<>();
+        try {
+            boolean allQueryFlag = true;
+            MatchAllQueryBuilder matchAllQueryBuilder = QueryBuilders.matchAllQuery();
+            BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+            if (Objects.nonNull(programRecommendListDto.getAreaId())) {
+                allQueryFlag = false;
+                QueryBuilder builds = QueryBuilders.termQuery(ProgramDocumentParamName.AREA_ID, 
+                        programRecommendListDto.getAreaId());
+                boolQuery.must(builds);
+            }
+            if (Objects.nonNull(programRecommendListDto.getParentProgramCategoryId())) {
+                allQueryFlag = false;
+                QueryBuilder builds = QueryBuilders.termQuery(ProgramDocumentParamName.PARENT_PROGRAM_CATEGORY_ID, 
+                        programRecommendListDto.getParentProgramCategoryId());
+                boolQuery.must(builds);
+            }
+            if (Objects.nonNull(programRecommendListDto.getProgramId())) {
+                allQueryFlag = false;
+                QueryBuilder builds = QueryBuilders.termQuery(ProgramDocumentParamName.ID,
+                        programRecommendListDto.getProgramId());
+                boolQuery.mustNot(builds);
+            }
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            searchSourceBuilder.query(allQueryFlag ? matchAllQueryBuilder : boolQuery);
+            searchSourceBuilder.trackTotalHits(true);
+            searchSourceBuilder.from(1);
+            searchSourceBuilder.size(10);
+           
+            Script script = new Script("Math.random()");
+            ScriptSortBuilder scriptSortBuilder = new ScriptSortBuilder(script, ScriptSortBuilder.ScriptSortType.NUMBER);
+            scriptSortBuilder.order(SortOrder.ASC);
+            
+            searchSourceBuilder.sort(scriptSortBuilder);
+            
+            businessEsHandle.executeQuery(
+                    SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
+                    ProgramDocumentParamName.INDEX_TYPE,programListVoList,null,ProgramListVo.class,
+                    searchSourceBuilder,null);
+        }catch (Exception e) {
+            log.error("recommendList error",e);
+        }
+        return programListVoList;
+    }
+    
     
     public PageVo<ProgramListVo> selectPage(ProgramPageListDto programPageListDto) {
         PageVo<ProgramListVo> pageVo = new PageVo<>();
@@ -77,6 +147,11 @@ public class ProgramEs {
                 areaIdQueryDto.setParamName(ProgramDocumentParamName.AREA_ID);
                 areaIdQueryDto.setParamValue(programPageListDto.getAreaId());
                 esDataQueryDtoList.add(areaIdQueryDto);
+            }else {
+                EsDataQueryDto primeQueryDto = new EsDataQueryDto();
+                primeQueryDto.setParamName(ProgramDocumentParamName.PRIME);
+                primeQueryDto.setParamValue(BusinessStatus.YES.getCode());
+                esDataQueryDtoList.add(primeQueryDto);
             }
             if (Objects.nonNull(programPageListDto.getParentProgramCategoryId())) {
                 EsDataQueryDto parentProgramCategoryIdQueryDto = new EsDataQueryDto();
@@ -99,15 +174,44 @@ public class ProgramEs {
                 esDataQueryDtoList.add(showDayTimeQueryDto);
             }
             
+            ProgramPageOrder programPageOrder = getProgramPageOrder(programPageListDto);
+            
             PageInfo<ProgramListVo> programListVoPageInfo = businessEsHandle.queryPage(
                     SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
-                    ProgramDocumentParamName.INDEX_TYPE, esDataQueryDtoList, programPageListDto.getPageNumber(),
-                    programPageListDto.getPageSize(), ProgramListVo.class);
+                    ProgramDocumentParamName.INDEX_TYPE, esDataQueryDtoList, programPageOrder.sortParam, 
+                    programPageOrder.sortOrder, programPageListDto.getPageNumber(), programPageListDto.getPageSize(), 
+                    ProgramListVo.class);
             pageVo = PageUtil.convertPage(programListVoPageInfo, programListVo -> programListVo);
         }catch (Exception e) {
             log.error("selectPage error",e);
         }
         return pageVo;
+    }
+    
+    public ProgramPageOrder getProgramPageOrder(ProgramPageListDto programPageListDto){
+        ProgramPageOrder programPageOrder = new ProgramPageOrder();
+        switch (programPageListDto.getType()) {
+            //推荐排序
+            case 2:
+                programPageOrder.sortParam = ProgramDocumentParamName.HIGH_HEAT;
+                programPageOrder.sortOrder = SortOrder.DESC;
+                break;
+            //最近开场    
+            case 3:
+                programPageOrder.sortParam = ProgramDocumentParamName.SHOW_TIME;
+                programPageOrder.sortOrder = SortOrder.ASC;
+                break;
+            //最新上架    
+            case 4:
+                programPageOrder.sortParam = ProgramDocumentParamName.ISSUE_TIME;
+                programPageOrder.sortOrder = SortOrder.ASC;
+                break;
+            //相关度排序    
+            default:
+                programPageOrder.sortParam = null;
+                programPageOrder.sortOrder = null;
+        }
+        return programPageOrder;
     }
     
     public PageVo<ProgramListVo> search(ProgramSearchDto programSearchDto) {
@@ -135,7 +239,14 @@ public class ProgramEs {
                 innerBoolQuery.minimumShouldMatch(1);
                 boolQuery.must(innerBoolQuery);
             }
+            
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            ProgramPageOrder programPageOrder = getProgramPageOrder(programSearchDto);
+            if (Objects.nonNull(programPageOrder.sortParam) && Objects.nonNull(programPageOrder.sortOrder)) {
+                FieldSortBuilder sort = SortBuilders.fieldSort(programPageOrder.sortParam);
+                sort.order(programPageOrder.sortOrder);
+                searchSourceBuilder.sort(sort);
+            }
             searchSourceBuilder.query(boolQuery);
             searchSourceBuilder.trackTotalHits(true);
             searchSourceBuilder.from((programSearchDto.getPageNumber() - 1) * programSearchDto.getPageSize());

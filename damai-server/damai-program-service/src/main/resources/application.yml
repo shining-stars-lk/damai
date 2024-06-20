@@ -1,6 +1,22 @@
 #服务端口
 server:
   port: 6086
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  tomcat:
+    uri-encoding: UTF-8
+    threads:
+      # 最大线程数(默认200)
+      max: 200
+      # 最小工作空闲线程数(默认10)
+      min-spare: 10
+    # 最大连接数  (默认8192)
+    max-connections: 10000
+    # 等待队列长度，默认(100)
+    accept-count: 200
 # 应用名称
 spring:
   application:
@@ -25,6 +41,12 @@ spring:
     host: 127.0.0.1
     port: 6379
     timeout: 3000
+    stream:
+      streamName: invalid_program
+      consumerType: broadcast
+    jedis:
+      pool:
+        max-active: 300
   cloud:
     nacos:
       discovery:
@@ -38,19 +60,23 @@ spring:
       datasource:
         degrade:
           nacos:
-            server-addr: 127.0.0.1:8848
+            server-addr: ${spring.cloud.nacos.discovery.server-addr}
             dataId: ${spring.application.name}-degrade-rules
             groupId: SENTINEL_GROUP
             dataType: json
             rule-type: degrade
         flow:
           nacos:
-            server-addr: 127.0.0.1:8848
+            server-addr: ${spring.cloud.nacos.discovery.server-addr}
             dataId: ${spring.application.name}-flow-rules
             groupId: SENTINEL_GROUP
             dataType: json
             rule-type: flow
-      eager: true    
+      eager: true
+bloom-filter:
+  name: programDetail
+  expectedInsertions: 1000
+  falseProbability: 0.01
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   global-config:
@@ -112,4 +138,9 @@ jasypt:
 elasticsearch:
   ip: 127.0.0.1:9200
   userName: elastic
-  passWord: elastic    
+  passWord: elastic
+delay:
+  queue:
+    corePoolSize: 1
+    maximumPoolSize: 1
+    isolationRegionCount: 4

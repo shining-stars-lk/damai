@@ -1,68 +1,29 @@
 package com.damai.core;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 
-import javax.annotation.PostConstruct;
+import static com.damai.constant.Constant.DEFAULT_PREFIX_DISTINCTION_NAME;
+import static com.damai.constant.Constant.PREFIX_DISTINCTION_NAME;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: spring工具
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 
-public class SpringUtil implements ApplicationContextAware, EnvironmentAware {
+public class SpringUtil implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     
-    private final PrefixDistinctionNameProperties prefixDistinctionNameProperties;
+    private static ConfigurableApplicationContext configurableApplicationContext;
     
-    private ApplicationContext applicationContext;
-    
-    private Environment environment;
-    
-    private static SpringUtil springUtil;
-    
-    public SpringUtil(PrefixDistinctionNameProperties prefixDistinctionNameProperties){
-        this.prefixDistinctionNameProperties = prefixDistinctionNameProperties;
-    }
-    
-    @PostConstruct
-    public void init(){
-        springUtil = this;
-    }
-    
-    public static ApplicationContext getApplicationContext(){
-        return springUtil.applicationContext;
-    }
-    
-    
-    public static <T> T getBean(Class<T> requiredType){
-        if (springUtil == null) {
-            return null;
-        }
-        return springUtil.applicationContext.getBean(requiredType);
-    }
-    
-    public static String getProperty(String key){
-        if (springUtil == null) {
-            return null;
-        }
-        return springUtil.environment.getProperty(key);
-    }
     
     public static String getPrefixDistinctionName(){
-        return springUtil.prefixDistinctionNameProperties.getName();
+        return configurableApplicationContext.getEnvironment().getProperty(PREFIX_DISTINCTION_NAME,
+                DEFAULT_PREFIX_DISTINCTION_NAME);
     }
     
     @Override
-    public void setEnvironment(final Environment environment) {
-        this.environment = environment;
-    }
-    
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    public void initialize(final ConfigurableApplicationContext applicationContext) {
+        configurableApplicationContext = applicationContext;
     }
 }

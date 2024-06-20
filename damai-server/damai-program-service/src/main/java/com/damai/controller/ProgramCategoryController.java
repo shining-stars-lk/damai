@@ -1,6 +1,7 @@
 package com.damai.controller;
 
 import com.damai.common.ApiResponse;
+import com.damai.dto.ParentProgramCategoryDto;
 import com.damai.dto.ProgramCategoryAddDto;
 import com.damai.dto.ProgramCategoryDto;
 import com.damai.service.ProgramCategoryService;
@@ -17,9 +18,9 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 节目类型 控制层
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @RestController
 @RequestMapping("/program/category")
@@ -39,6 +40,12 @@ public class ProgramCategoryController {
     @PostMapping(value = "/selectByType")
     public ApiResponse<List<ProgramCategoryVo>> selectByType(@Valid @RequestBody ProgramCategoryDto programCategoryDto) {
         return ApiResponse.ok(programCategoryService.selectByType(programCategoryDto));
+    }
+    
+    @ApiOperation(value = "通过父节目类型查询子节目类型")
+    @PostMapping(value = "/selectByParentProgramCategoryId")
+    public ApiResponse<List<ProgramCategoryVo>> selectByParentProgramCategoryId(@Valid @RequestBody ParentProgramCategoryDto parentProgramCategoryDto) {
+        return ApiResponse.ok(programCategoryService.selectByParentProgramCategoryId(parentProgramCategoryDto));
     }
     
     @ApiOperation(value = "批量添加节目类型")

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.core.RedisKeyManage;
+import com.damai.dto.ParentProgramCategoryDto;
 import com.damai.dto.ProgramCategoryAddDto;
 import com.damai.dto.ProgramCategoryDto;
 import com.damai.entity.ProgramCategory;
@@ -29,9 +30,9 @@ import java.util.stream.Collectors;
 import static com.damai.core.DistributedLockConstants.PROGRAM_CATEGORY_LOCK;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 节目类型 service
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @Service
 public class ProgramCategoryService extends ServiceImpl<ProgramCategoryMapper, ProgramCategory> {
@@ -51,9 +52,16 @@ public class ProgramCategoryService extends ServiceImpl<ProgramCategoryMapper, P
         return BeanUtil.copyToList(programCategoryList,ProgramCategoryVo.class);
     }
             
-    public List<ProgramCategoryVo> selectByType(final ProgramCategoryDto programCategoryDto) {
+    public List<ProgramCategoryVo> selectByType(ProgramCategoryDto programCategoryDto) {
         LambdaQueryWrapper<ProgramCategory> lambdaQueryWrapper = Wrappers.lambdaQuery(ProgramCategory.class)
                 .eq(ProgramCategory::getType, programCategoryDto.getType());
+        List<ProgramCategory> programCategories = programCategoryMapper.selectList(lambdaQueryWrapper);
+        return BeanUtil.copyToList(programCategories,ProgramCategoryVo.class);
+    }
+    
+    public List<ProgramCategoryVo> selectByParentProgramCategoryId(ParentProgramCategoryDto parentProgramCategoryDto) {
+        LambdaQueryWrapper<ProgramCategory> lambdaQueryWrapper = Wrappers.lambdaQuery(ProgramCategory.class)
+                .eq(ProgramCategory::getParentId, parentProgramCategoryDto.getParentProgramCategoryId());
         List<ProgramCategory> programCategories = programCategoryMapper.selectList(lambdaQueryWrapper);
         return BeanUtil.copyToList(programCategories,ProgramCategoryVo.class);
     }

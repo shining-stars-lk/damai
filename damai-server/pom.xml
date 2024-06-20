@@ -22,7 +22,6 @@
         <module>damai-base-data-service</module>
         <module>damai-user-service</module>
         <module>damai-admin-service</module>
-        <module>damai-job-service</module>
         <module>damai-customize-service</module>
         <module>damai-program-service</module>
         <module>damai-pay-service</module>

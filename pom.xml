@@ -34,7 +34,7 @@
 
 	<modules>
 		<module>damai-common</module>
-		<module>damai-redis-framework</module>
+		<module>damai-redis-tool-framework</module>
 		<module>damai-elasticsearch-framework</module>
 		<module>damai-id-generator-framework</module>
 		<module>damai-spring-cloud-framework</module>

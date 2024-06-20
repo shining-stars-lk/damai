@@ -8,9 +8,9 @@ import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 用户注册 dto
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @Data
 @ApiModel(value="UserRegisterDto", description ="注册用户")
@@ -29,7 +29,12 @@ public class UserRegisterDto implements Serializable {
     private Integer gender;
     
     @ApiModelProperty(name ="password", dataType ="String", value ="密码",required = true)
+    @NotBlank
     private String password;
+    
+    @ApiModelProperty(name ="confirmPassword", dataType ="String", value ="二次确认的密码",required = true)
+    @NotBlank
+    private String confirmPassword;
     
     @ApiModelProperty(name ="mobile", dataType ="String", value ="手机号",required = true)
     @NotBlank
@@ -47,17 +52,12 @@ public class UserRegisterDto implements Serializable {
     @ApiModelProperty(name ="idNumber", dataType ="String", value ="身份证号码")
     private String idNumber;
     
-    @ApiModelProperty(name ="id", dataType ="captchaId", value ="captchaId 调用是否需要校验验证码接口返回")
+    @ApiModelProperty(name ="id", dataType ="captchaId", value ="captchaId 调用是否需要校验验证码接口返回",required = true)
     @NotBlank
     private String captchaId;
     
-    @ApiModelProperty(name ="captchaType", dataType ="String", value ="验证码类型:(clickWord,blockPuzzle)")
-    private String captchaType;
-    
-    @ApiModelProperty(name ="pointJson", dataType ="String", value ="点坐标(base64加密传输)")
-    private String pointJson;
-    
-    @ApiModelProperty(name ="token", dataType ="String", value ="UUID(每次请求的验证码唯一标识)")
-    private String token;
+    @ApiModelProperty(name ="captchaVerification", dataType ="String", value ="二次校验验证码 " +
+            "前端将 校验验证码返回的 token---pointJson 拼接后 使用AES加密 加密的秘钥使用获取验证码返回的secretKey")
+    private String captchaVerification;
     
 }

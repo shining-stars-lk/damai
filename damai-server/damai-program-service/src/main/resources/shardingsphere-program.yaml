@@ -2,16 +2,16 @@ dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
-    jdbcUrl: jdbc:mysql://127.0.0.1:3306/damai_program_0?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
+    jdbcUrl: jdbc:mysql://www.cookframe.com:3306/damai_program_0?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
     username: root
-    password: root
+    password: qazxsw890
 
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
-    jdbcUrl: jdbc:mysql://127.0.0.1:3306/damai_program_1?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
+    jdbcUrl: jdbc:mysql://www.cookframe.com:3306/damai_program_1?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
     username: root
-    password: root
+    password: qazxsw890
     
 rules:
   - !SHARDING
@@ -26,6 +26,16 @@ rules:
           standard:
             shardingColumn: id
             shardingAlgorithmName: tableProgramModModel
+      d_program_group:
+        actualDataNodes: ds_${0..1}.d_program_group_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: databaseProgramGroupModModel
+        tableStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: tableProgramGroupModModel
       d_program_show_time:
         actualDataNodes: ds_${0..1}.d_program_show_time_${0..1}
         databaseStrategy:
@@ -67,6 +77,14 @@ rules:
         type: MOD
         props:
           sharding-count: 2
+      databaseProgramGroupModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      tableProgramGroupModModel:
+        type: MOD
+        props:
+          sharding-count: 2    
       databaseProgramShowTimeModModel:
         type: MOD
         props:

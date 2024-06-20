@@ -10,22 +10,28 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.BusinessThreadPool;
+import com.damai.RedisStreamPushHandler;
 import com.damai.client.BaseDataClient;
+import com.damai.client.OrderClient;
 import com.damai.client.UserClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyManage;
+import com.damai.dto.AccountOrderCountDto;
 import com.damai.dto.AreaGetDto;
 import com.damai.dto.AreaSelectDto;
 import com.damai.dto.ProgramAddDto;
 import com.damai.dto.ProgramGetDto;
+import com.damai.dto.ProgramInvalidDto;
 import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramOperateDataDto;
 import com.damai.dto.ProgramPageListDto;
+import com.damai.dto.ProgramRecommendListDto;
 import com.damai.dto.ProgramResetExecuteDto;
 import com.damai.dto.ProgramSearchDto;
 import com.damai.dto.TicketUserListDto;
 import com.damai.entity.Program;
 import com.damai.entity.ProgramCategory;
+import com.damai.entity.ProgramGroup;
 import com.damai.entity.ProgramJoinShowTime;
 import com.damai.entity.ProgramShowTime;
 import com.damai.entity.Seat;
@@ -33,9 +39,12 @@ import com.damai.entity.TicketCategory;
 import com.damai.entity.TicketCategoryAggregate;
 import com.damai.enums.BaseCode;
 import com.damai.enums.BusinessStatus;
+import com.damai.enums.CompositeCheckType;
 import com.damai.enums.SellStatus;
 import com.damai.exception.DaMaiFrameException;
+import com.damai.initialize.impl.composite.CompositeContainer;
 import com.damai.mapper.ProgramCategoryMapper;
+import com.damai.mapper.ProgramGroupMapper;
 import com.damai.mapper.ProgramMapper;
 import com.damai.mapper.ProgramShowTimeMapper;
 import com.damai.mapper.SeatMapper;
@@ -45,26 +54,36 @@ import com.damai.page.PageVo;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.repeatexecutelimit.annotion.RepeatExecuteLimit;
+import com.damai.service.cache.local.LocalCacheProgram;
+import com.damai.service.cache.local.LocalCacheProgramCategory;
+import com.damai.service.cache.local.LocalCacheProgramGroup;
 import com.damai.service.constant.ProgramTimeType;
 import com.damai.service.es.ProgramEs;
+import com.damai.service.tool.TokenExpireManager;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.threadlocal.BaseParameterHolder;
 import com.damai.util.DateUtils;
+import com.damai.util.ServiceLockTool;
 import com.damai.util.StringUtil;
+import com.damai.vo.AccountOrderCountVo;
 import com.damai.vo.AreaVo;
+import com.damai.vo.ProgramGroupVo;
+import com.damai.vo.ProgramHomeVo;
 import com.damai.vo.ProgramListVo;
+import com.damai.vo.ProgramSimpleInfoVo;
 import com.damai.vo.ProgramVo;
-import com.damai.vo.SeatVo;
 import com.damai.vo.TicketCategoryVo;
 import com.damai.vo.TicketUserVo;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,15 +96,16 @@ import java.util.stream.Collectors;
 
 import static com.damai.constant.Constant.CODE;
 import static com.damai.constant.Constant.USER_ID;
+import static com.damai.core.DistributedLockConstants.GET_PROGRAM_LOCK;
+import static com.damai.core.DistributedLockConstants.PROGRAM_GROUP_LOCK;
 import static com.damai.core.DistributedLockConstants.PROGRAM_LOCK;
 import static com.damai.core.RepeatExecuteLimitConstants.CANCEL_PROGRAM_ORDER;
-import static com.damai.service.cache.ExpireTime.EXPIRE_TIME;
 import static com.damai.util.DateUtils.FORMAT_DATE;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 节目 service
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @Slf4j
 @Service
@@ -96,6 +116,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @Autowired
     private ProgramMapper programMapper;
+    
+    @Autowired
+    private ProgramGroupMapper programGroupMapper;
     
     @Autowired
     private ProgramShowTimeMapper programShowTimeMapper;
@@ -116,6 +139,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     private UserClient userClient;
     
     @Autowired
+    private OrderClient orderClient;
+    
+    @Autowired
     private RedisCache redisCache;
     
     @Autowired
@@ -125,13 +151,32 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     private ProgramShowTimeService programShowTimeService;
     
     @Autowired
-    private SeatService seatService;
-    
-    @Autowired
     private TicketCategoryService ticketCategoryService;
     
     @Autowired
     private ProgramEs programEs;
+    
+    @Autowired
+    private ServiceLockTool serviceLockTool;
+    
+    @Autowired
+    private RedisStreamPushHandler redisStreamPushHandler;
+    
+    @Autowired
+    private LocalCacheProgram localCacheProgram;
+    
+    @Autowired
+    private LocalCacheProgramGroup localCacheProgramGroup;
+    
+    @Autowired
+    private LocalCacheProgramCategory localCacheProgramCategory;
+    
+    @Autowired
+    private CompositeContainer compositeContainer;
+    
+    @Autowired
+    private TokenExpireManager tokenExpireManager;
+    
     
     public Long add(ProgramAddDto programAddDto){
         Program program = new Program();
@@ -145,22 +190,22 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         setQueryTime(programSearchDto);
         return programEs.search(programSearchDto);
     }
-    public Map<String,List<ProgramListVo>> selectHomeList(ProgramListDto programPageListDto) {
+    public List<ProgramHomeVo> selectHomeList(ProgramListDto programListDto) {
         
-        Map<String, List<ProgramListVo>> programListVoMap = programEs.selectHomeList(programPageListDto);
-        if (CollectionUtil.isNotEmpty(programListVoMap)) {
-            return programListVoMap;
+        List<ProgramHomeVo> programHomeVoList = programEs.selectHomeList(programListDto);
+        if (CollectionUtil.isNotEmpty(programHomeVoList)) {
+            return programHomeVoList;
         }
-        return dbSelectHomeList(programPageListDto);
+        return dbSelectHomeList(programListDto);
     }
     
-    private Map<String,List<ProgramListVo>> dbSelectHomeList(ProgramListDto programPageListDto){
-        Map<String,List<ProgramListVo>> programListVoMap = new HashMap<>(256);
+    private List<ProgramHomeVo> dbSelectHomeList(ProgramListDto programPageListDto){
+        List<ProgramHomeVo> programHomeVoList = new ArrayList<>();
         Map<Long, String> programCategoryMap = selectProgramCategoryMap(programPageListDto.getParentProgramCategoryIds());
         
         List<Program> programList = programMapper.selectHomeList(programPageListDto);
         if (CollectionUtil.isEmpty(programList)) {
-            return programListVoMap;
+            return programHomeVoList;
         }
         
         List<Long> programIdList = programList.stream().map(Program::getId).collect(Collectors.toList());
@@ -205,9 +250,12 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                         .map(TicketCategoryAggregate::getMinPrice).orElse(null));
                 programListVoList.add(programListVo);
             }
-            programListVoMap.put(programCategoryMap.get(key),programListVoList);
+            ProgramHomeVo programHomeVo = new ProgramHomeVo();
+            programHomeVo.setCategoryName(programCategoryMap.get(key));
+            programHomeVo.setProgramListVoList(programListVoList);
+            programHomeVoList.add(programHomeVo);
         }
-        return programListVoMap;
+        return programHomeVoList;
     }
     
     public void setQueryTime(ProgramPageListDto programPageListDto){
@@ -250,6 +298,12 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         }
         return dbSelectPage(programPageListDto);
     }
+    
+    public List<ProgramListVo> recommendList(ProgramRecommendListDto programRecommendListDto){
+        compositeContainer.execute(CompositeCheckType.PROGRAM_RECOMMEND_CHECK.getValue(),programRecommendListDto);
+        return programEs.recommendList(programRecommendListDto);
+    }
+    
     public PageVo<ProgramListVo> dbSelectPage(ProgramPageListDto programPageListDto) {
         IPage<ProgramJoinShowTime> iPage = 
                 programMapper.selectPage(PageUtil.getPageParams(programPageListDto), programPageListDto);
@@ -291,39 +345,146 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         });
     }
     
+    public ProgramVo detail(ProgramGetDto programGetDto) {
+        compositeContainer.execute(CompositeCheckType.PROGRAM_DETAIL_CHECK.getValue(),programGetDto);
+        return getDetailV2(programGetDto);
+    }
+    
+    public ProgramVo detailV1(ProgramGetDto programGetDto) {
+        compositeContainer.execute(CompositeCheckType.PROGRAM_DETAIL_CHECK.getValue(),programGetDto);
+        return getDetail(programGetDto);
+    }
+    
+    public ProgramVo detailV2(ProgramGetDto programGetDto) {
+        compositeContainer.execute(CompositeCheckType.PROGRAM_DETAIL_CHECK.getValue(),programGetDto);
+        return getDetailV2(programGetDto);
+    }
     
     public ProgramVo getDetail(ProgramGetDto programGetDto) {
-        ProgramVo redisProgramVo = programService.getById(programGetDto.getId());
+        ProgramShowTime programShowTime = programShowTimeService.selectProgramShowTimeByProgramId(programGetDto.getId());
+        ProgramVo programVo = programService.getById(programGetDto.getId(),DateUtils.countBetweenSecond(DateUtils.now(),
+                programShowTime.getShowTime()), TimeUnit.SECONDS);
+        programVo.setShowTime(programShowTime.getShowTime());
+        programVo.setShowDayTime(programShowTime.getShowDayTime());
+        programVo.setShowWeekTime(programShowTime.getShowWeekTime());
         
-        preloadTicketUserList(redisProgramVo.getHighHeat());
+        ProgramGroupVo programGroupVo = programService.getProgramGroup(programGetDto.getId());
+        programVo.setProgramGroupVo(programGroupVo);
         
-        setProgramCategoryData(redisProgramVo);
+        preloadTicketUserList(programVo.getHighHeat());
         
-        ProgramShowTime redisProgramShowTime = programShowTimeService.selectProgramShowTimeByProgramId(redisProgramVo.getId());
-        redisProgramVo.setShowTime(redisProgramShowTime.getShowTime());
-        redisProgramVo.setShowDayTime(redisProgramShowTime.getShowDayTime());
-        redisProgramVo.setShowWeekTime(redisProgramShowTime.getShowWeekTime());
+        preloadAccountOrderCount(programVo.getId());
         
-        List<SeatVo> redisSeatVoList = seatService.selectSeatByProgramId(redisProgramVo.getId());
-        if (Objects.equals(redisProgramVo.getPermitChooseSeat(), BusinessStatus.YES.getCode())) {
-            redisProgramVo.setSeatVoList(redisSeatVoList);
+        ProgramCategory programCategory = getProgramCategory(programVo.getProgramCategoryId());
+        if (Objects.nonNull(programCategory)) {
+            programVo.setProgramCategoryName(programCategory.getName());
+        }
+        ProgramCategory parentProgramCategory = getProgramCategory(programVo.getParentProgramCategoryId());
+        if (Objects.nonNull(parentProgramCategory)) {
+            programVo.setParentProgramCategoryName(parentProgramCategory.getName());
         }
         
-        List<TicketCategoryVo> ticketCategoryVoList = ticketCategoryService.selectTicketCategoryListByProgramId(redisProgramVo.getId());
-        redisProgramVo.setTicketCategoryVoList(ticketCategoryVoList);
+        List<TicketCategoryVo> ticketCategoryVoList =
+                ticketCategoryService.selectTicketCategoryListByProgramId(programVo.getId(),
+                        DateUtils.countBetweenSecond(DateUtils.now(),programShowTime.getShowTime()), TimeUnit.SECONDS);
+        programVo.setTicketCategoryVoList(ticketCategoryVoList);
+
+        ticketCategoryService.setRedisRemainNumber(programVo.getId());
         
-        ticketCategoryService.setRedisRemainNumber(redisProgramVo.getId());
+        return programVo;
+    }
+    
+    public ProgramVo getDetailV2(ProgramGetDto programGetDto) {
+        ProgramShowTime programShowTime =
+                programShowTimeService.selectProgramShowTimeByProgramIdMultipleCache(programGetDto.getId());
         
-        return redisProgramVo;
+        ProgramVo programVo = programService.getByIdMultipleCache(programGetDto.getId(),programShowTime.getShowTime());
+        
+        programVo.setShowTime(programShowTime.getShowTime());
+        programVo.setShowDayTime(programShowTime.getShowDayTime());
+        programVo.setShowWeekTime(programShowTime.getShowWeekTime());
+        
+        ProgramGroupVo programGroupVo = programService.getProgramGroupMultipleCache(programGetDto.getId());
+        programVo.setProgramGroupVo(programGroupVo);
+        
+        preloadTicketUserList(programVo.getHighHeat());
+        
+        preloadAccountOrderCount(programVo.getId());
+        
+        ProgramCategory programCategory = getProgramCategoryMultipleCache(programVo.getProgramCategoryId());
+        if (Objects.nonNull(programCategory)) {
+            programVo.setProgramCategoryName(programCategory.getName());
+        }
+        ProgramCategory parentProgramCategory = getProgramCategoryMultipleCache(programVo.getParentProgramCategoryId());
+        if (Objects.nonNull(parentProgramCategory)) {
+            programVo.setParentProgramCategoryName(parentProgramCategory.getName());
+        }
+        
+        List<TicketCategoryVo> ticketCategoryVoList = ticketCategoryService
+                .selectTicketCategoryListByProgramIdMultipleCache(programVo.getId(),programShowTime.getShowTime());
+        programVo.setTicketCategoryVoList(ticketCategoryVoList);
+        
+        ticketCategoryService.setRedisRemainNumber(programVo.getId());
+        
+        return programVo;
+    }
+    
+    public ProgramVo getByIdMultipleCache(Long programId, Date showTime){
+        return localCacheProgram.getCache(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId).getRelKey(),
+                key -> {
+                    ProgramVo programVo = getById(programId,DateUtils.countBetweenSecond(DateUtils.now(),showTime),
+                            TimeUnit.SECONDS);
+                    programVo.setShowTime(showTime);
+                    return programVo;
+                });
     }
     
     @ServiceLock(lockType= LockType.Read,name = PROGRAM_LOCK,keys = {"#programId"})
-    public ProgramVo getById(Long programId) {
-        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId)
-                ,ProgramVo.class,
-                () -> createProgramVo(programId)
-                ,EXPIRE_TIME, 
-                TimeUnit.DAYS);
+    public ProgramVo getById(Long programId,Long expireTime,TimeUnit timeUnit) {
+        ProgramVo programVo = 
+                redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId), ProgramVo.class);
+        if (Objects.nonNull(programVo)) {
+            return programVo;
+        }
+        RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_PROGRAM_LOCK, new String[]{String.valueOf(programId)});
+        lock.lock();
+        try {
+            return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId)
+                    ,ProgramVo.class,
+                    () -> createProgramVo(programId)
+                    ,expireTime,
+                    timeUnit);
+        }finally {
+            lock.unlock();
+        }
+    }
+    
+    public ProgramGroupVo getProgramGroupMultipleCache(Long programGroupId){
+        return localCacheProgramGroup.getCache(
+                RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_GROUP, programGroupId).getRelKey(),
+                key -> getProgramGroup(programGroupId));
+    }
+    @ServiceLock(lockType= LockType.Read,name = PROGRAM_GROUP_LOCK,keys = {"#programGroupId"})
+    public ProgramGroupVo getProgramGroup(Long programGroupId) {
+        ProgramGroupVo programGroupVo =
+                redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_GROUP, programGroupId), ProgramGroupVo.class);
+        if (Objects.nonNull(programGroupVo)) {
+            return programGroupVo;
+        }
+        RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_PROGRAM_LOCK, new String[]{String.valueOf(programGroupId)});
+        lock.lock();
+        try {
+            programGroupVo = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_GROUP, programGroupId), 
+                    ProgramGroupVo.class);
+            if (Objects.isNull(programGroupVo)) {
+                programGroupVo = createProgramGroupVo(programGroupId);
+                redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_GROUP, programGroupId),programGroupVo,
+                        DateUtils.countBetweenSecond(DateUtils.now(),programGroupVo.getRecentShowTime()),TimeUnit.SECONDS);
+            }
+            return programGroupVo;
+        }finally {
+            lock.unlock();
+        }
     }
     
     public Map<Long, String> selectProgramCategoryMap(Collection<Long> programCategoryIdList){
@@ -339,7 +500,8 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         List<TicketCategoryAggregate> ticketCategorieList = ticketCategoryMapper.selectAggregateList(programIdList);
         return ticketCategorieList
                 .stream()
-                .collect(Collectors.toMap(TicketCategoryAggregate::getProgramId, ticketCategory -> ticketCategory, (v1, v2) -> v2));
+                .collect(Collectors.toMap(TicketCategoryAggregate::getProgramId, 
+                        ticketCategory -> ticketCategory, (v1, v2) -> v2));
     }
     
     @RepeatExecuteLimit(name = CANCEL_PROGRAM_ORDER,keys = {"#programOperateDataDto.programId"})
@@ -371,7 +533,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         }
     }
     
-    private ProgramVo createProgramVo(long programId){
+    private ProgramVo createProgramVo(Long programId){
         ProgramVo programVo = new ProgramVo();
         Program program = 
                 Optional.ofNullable(programMapper.selectById(programId))
@@ -390,6 +552,17 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         return programVo;
     }
     
+    private ProgramGroupVo createProgramGroupVo(Long programGroupId){
+        ProgramGroupVo programGroupVo = new ProgramGroupVo();
+        ProgramGroup programGroup =
+                Optional.ofNullable(programGroupMapper.selectById(programGroupId))
+                        .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_GROUP_NOT_EXIST));
+        programGroupVo.setId(programGroup.getId());
+        programGroupVo.setProgramSimpleInfoVoList(JSON.parseArray(programGroup.getProgramJson(), ProgramSimpleInfoVo.class));
+        programGroupVo.setRecentShowTime(programGroup.getRecentShowTime());
+        return programGroupVo;
+    }
+    
     public List<Long> getAllProgramIdList(){
         LambdaQueryWrapper<Program> programLambdaQueryWrapper =
                 Wrappers.lambdaQuery(Program.class).eq(Program::getProgramStatus, BusinessStatus.YES.getCode())
@@ -401,7 +574,14 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     public ProgramVo getDetailFromDb(Long programId) {
         ProgramVo programVo = createProgramVo(programId);
         
-        setProgramCategoryData(programVo);
+        ProgramCategory programCategory = getProgramCategory(programVo.getProgramCategoryId());
+        if (Objects.nonNull(programCategory)) {
+            programVo.setProgramCategoryName(programCategory.getName());
+        }
+        ProgramCategory parentProgramCategory = getProgramCategory(programVo.getParentProgramCategoryId());
+        if (Objects.nonNull(parentProgramCategory)) {
+            programVo.setParentProgramCategoryName(parentProgramCategory.getName());
+        }
         
         LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
                 Wrappers.lambdaQuery(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programId);
@@ -424,43 +604,74 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(code)) {
             return;
         }
+        Boolean userLogin =
+                redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
+        if (!userLogin) {
+            return;
+        }
         BusinessThreadPool.execute(() -> {
             try {
-                Boolean userLogin = 
-                        redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
-                if (!userLogin) {
-                    return;
+                if (!redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.TICKET_USER_LIST,userId))) {
+                    TicketUserListDto ticketUserListDto = new TicketUserListDto();
+                    ticketUserListDto.setUserId(Long.parseLong(userId));
+                    ApiResponse<List<TicketUserVo>> apiResponse = userClient.list(ticketUserListDto);
+                    if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+                        Optional.ofNullable(apiResponse.getData()).filter(CollectionUtil::isNotEmpty)
+                                .ifPresent(ticketUserVoList -> redisCache.set(RedisKeyBuild.createRedisKey(
+                                        RedisKeyManage.TICKET_USER_LIST,userId),ticketUserVoList));
+                    }else {
+                        log.warn("userClient.select 调用失败 apiResponse : {}",JSON.toJSONString(apiResponse));
+                    }
                 }
-                if (redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.TICKET_USER_LIST,userId))) {
-                    return;
-                }
-                TicketUserListDto ticketUserListDto = new TicketUserListDto();
-                ticketUserListDto.setUserId(Long.parseLong(userId));
-                ApiResponse<List<TicketUserVo>> apiResponse = userClient.select(ticketUserListDto);
-                if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
-                    Optional.ofNullable(apiResponse.getData()).filter(CollectionUtil::isNotEmpty)
-                            .ifPresent(ticketUserVoList -> redisCache.set(RedisKeyBuild.createRedisKey(
-                                    RedisKeyManage.TICKET_USER_LIST,userId),ticketUserVoList));
-                }else {
-                    log.warn("userClient.select 调用失败 apiResponse : {}",JSON.toJSONString(apiResponse));
-                }
+                
             }catch (Exception e) {
-                log.error("预热加载投票人列表失败",e);
+                log.error("预热加载购票人列表失败",e);
             }
         });
     }
     
-    public void setProgramCategoryData(ProgramVo programVo){
-        ProgramCategory programCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
-                ,String.valueOf(programVo.getProgramCategoryId()),ProgramCategory.class);
-        if (Objects.nonNull(programCategory)) {
-            programVo.setProgramCategoryName(programCategory.getName());
+    private void preloadAccountOrderCount(Long programId){
+        String userId = BaseParameterHolder.getParameter(USER_ID);
+        String code = BaseParameterHolder.getParameter(CODE);
+        if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(code)) {
+            return;
         }
-        ProgramCategory parentProgramCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
-                ,String.valueOf(programVo.getParentProgramCategoryId()),ProgramCategory.class);
-        if (Objects.nonNull(parentProgramCategory)) {
-            programVo.setParentProgramCategoryName(parentProgramCategory.getName());
+        Boolean userLogin =
+                redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN, code, userId));
+        if (!userLogin) {
+            return;
         }
+        BusinessThreadPool.execute(() -> {
+            try {
+                if (!redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.ACCOUNT_ORDER_COUNT,userId,programId))) {
+                    AccountOrderCountDto accountOrderCountDto = new AccountOrderCountDto();
+                    accountOrderCountDto.setUserId(Long.parseLong(userId));
+                    accountOrderCountDto.setProgramId(programId);
+                    ApiResponse<AccountOrderCountVo> apiResponse = orderClient.accountOrderCount(accountOrderCountDto);
+                    if (Objects.equals(apiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+                        Optional.ofNullable(apiResponse.getData())
+                                .ifPresent(accountOrderCountVo -> redisCache.set(
+                                        RedisKeyBuild.createRedisKey(RedisKeyManage.ACCOUNT_ORDER_COUNT,userId,programId),
+                                        accountOrderCountVo.getCount(), tokenExpireManager.getTokenExpireTime() + 1,
+                                        TimeUnit.MINUTES));
+                    }else {
+                        log.warn("orderClient.accountOrderCount 调用失败 apiResponse : {}",JSON.toJSONString(apiResponse));
+                    }
+                }
+            }catch (Exception e) {
+                log.error("预热加载账户订单数量失败",e);
+            }
+        });
+    }
+    
+    public ProgramCategory getProgramCategoryMultipleCache(Long programCategoryId){
+        return localCacheProgramCategory.get(String.valueOf(programCategoryId),
+                key -> getProgramCategory(programCategoryId));
+    }
+    
+    public ProgramCategory getProgramCategory(Long programCategoryId){
+        return redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
+                ,String.valueOf(programCategoryId),ProgramCategory.class);
     }
     
     @Transactional(rollbackFor = Exception.class)
@@ -504,14 +715,31 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         return true;
     }
     
-    private void delRedisData(Long programId){
+    public void delRedisData(Long programId){
+        Program program = Optional.ofNullable(programMapper.selectById(programId))
+                .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId));
+        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_GROUP,program.getProgramGroupId()));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programId));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_CATEGORY_LIST, programId));
         redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId));
+    }
+    
+    public Boolean invalid(final ProgramInvalidDto programInvalidDto) {
+        Program program = new Program();
+        program.setId(programInvalidDto.getId());
+        program.setProgramStatus(BusinessStatus.NO.getCode());
+        int result = programMapper.updateById(program);
+        if (result > 0) {
+            delRedisData(programInvalidDto.getId());
+            redisStreamPushHandler.push(String.valueOf(programInvalidDto.getId()));
+            return true;
+        }else {
+            return false;
+        }
     }
 }
 

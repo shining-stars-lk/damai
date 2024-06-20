@@ -15,6 +15,7 @@ import com.damai.dto.UserUpdateMobileDto;
 import com.damai.dto.UserUpdatePasswordDto;
 import com.damai.service.UserService;
 import com.damai.vo.UserGetAndTicketUserListVo;
+import com.damai.vo.UserLoginVo;
 import com.damai.vo.UserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,9 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 用户 控制层
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @RestController
 @RequestMapping("/user")
@@ -53,9 +54,8 @@ public class UserController {
     
     @ApiOperation(value = "注册")
     @PostMapping(value = "/register")
-    public ApiResponse<Void> register(@Valid @RequestBody UserRegisterDto userRegisterDto){
-        userService.register(userRegisterDto);
-        return ApiResponse.ok();
+    public ApiResponse<Boolean> register(@Valid @RequestBody UserRegisterDto userRegisterDto){
+        return ApiResponse.ok(userService.register(userRegisterDto));
     }
     
     @ApiOperation(value = "是否存在")
@@ -67,15 +67,14 @@ public class UserController {
     
     @ApiOperation(value = "登录")
     @PostMapping(value = "/login")
-    public ApiResponse<String> login(@Valid @RequestBody UserLoginDto userLoginDto) {
+    public ApiResponse<UserLoginVo> login(@Valid @RequestBody UserLoginDto userLoginDto) {
         return ApiResponse.ok(userService.login(userLoginDto));
     }
     
     @ApiOperation(value = "退出登录")
     @PostMapping(value = "/logout")
-    public ApiResponse<Void> logout(@Valid @RequestBody UserLogoutDto userLogoutDto) {
-        userService.logout(userLogoutDto);
-        return ApiResponse.ok();
+    public ApiResponse<Boolean> logout(@Valid @RequestBody UserLogoutDto userLogoutDto) {
+        return ApiResponse.ok(userService.logout(userLogoutDto));
     }
     
     @ApiOperation(value = "修改个人信息")
