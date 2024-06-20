@@ -5,11 +5,12 @@ import com.damai.data.BaseTableData;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 节目 实体
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @Data
 @TableName("d_program")
@@ -21,6 +22,16 @@ public class Program extends BaseTableData implements Serializable {
      * 主键id
      */
     private Long id;
+    
+    /**
+     * 节目分组id
+     */
+    private Long programGroupId;
+    
+    /**
+     * 当属于同一个节目分组时 是否为主要节目 0:否 1:是
+     */
+    private Integer prime;
 
     /**
      * 所在区域id
@@ -56,6 +67,21 @@ public class Program extends BaseTableData implements Serializable {
      * 项目图片
      * */
     private String itemPicture;
+    
+    /**
+     * 预售 1:是 0:否
+     * */
+    private Integer preSell;
+    
+    /**
+     * 预售说明
+     * */
+    private String preSellInstruction;
+    
+    /**
+     * 重要通知
+     * */
+    private String importantNotice;
 
     /**
      * 项目详情
@@ -63,9 +89,14 @@ public class Program extends BaseTableData implements Serializable {
     private String detail;
 
     /**
-     * 限购规则
-     */
-    private String purchaseLimitRule;
+     * 每笔订单最多购买数量
+     * */
+    private Integer perOrderLimitPurchaseCount;
+    
+    /**
+     * 每个账号最多购买数量
+     * */
+    private Integer perAccountLimitPurchaseCount;
 
     /**
      * 退票/换票规则
@@ -148,9 +179,24 @@ public class Program extends BaseTableData implements Serializable {
     private Long totalCount;
     
     /**
-     * 是否允许退款 1:允许 0:不允许
+     * 是否允许退款  0:不支持退 1:条件退 2:全部退
      */
     private Integer permitRefund;
+    
+    /**
+     * 退款说明
+     * */
+    private String refundExplain;
+    
+    /**
+     * 实名制购票和入场 1:是 0:否
+     * */
+    private Integer relNameTicketEntrance;
+    
+    /**
+     * 实名制购票和入场说明
+     * */
+    private String relNameTicketEntranceExplain;
     
     /**
      * 是否允许选座 1:允许选座 0:不允许选座
@@ -158,14 +204,29 @@ public class Program extends BaseTableData implements Serializable {
     private Integer permitChooseSeat;
     
     /**
-     * 电子票/快递票 1:是 0:不是
+     * 选座说明
+     * */
+    private String chooseSeatExplain;
+    
+    /**
+     * 电子票/快递票 0:都没有1:电子票 2:快递票
      */
     private Integer electronicDeliveryTicket;
+    
+    /**
+     * 电子票说明
+     */
+    private String electronicDeliveryTicketExplain;
     
     /**
      * 电子发票 1:是 0:不是
      */
     private Integer electronicInvoice;
+    
+    /**
+     * 电子发票说明
+     */
+    private String electronicInvoiceExplain;
     
     /**
      * 高热度节目 0:否 1:是
@@ -176,4 +237,9 @@ public class Program extends BaseTableData implements Serializable {
      * 节目状态 1:上架 0:下架
      */
     private Integer programStatus;
+    
+    /**
+     * 上架发行时间
+     * */
+    private Date issueTime;
 }

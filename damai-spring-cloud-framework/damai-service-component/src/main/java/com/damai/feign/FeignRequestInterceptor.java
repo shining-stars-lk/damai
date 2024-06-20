@@ -1,6 +1,5 @@
 package com.damai.feign;
 
-import com.damai.balance.ExtraRibbonProperties;
 import com.damai.util.StringUtil;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -11,7 +10,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Objects;
 
 import static com.damai.constant.Constant.CODE;
@@ -20,16 +18,16 @@ import static com.damai.constant.Constant.TRACE_ID;
 
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: feign 参数传递
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 
 @Slf4j
 @AllArgsConstructor
 public class FeignRequestInterceptor implements RequestInterceptor {
     
-    private final ExtraRibbonProperties extraRibbonProperties;
+    private final String serverGray;
     
     @Override
     public void apply(RequestTemplate template) {
@@ -42,7 +40,7 @@ public class FeignRequestInterceptor implements RequestInterceptor {
                 String code = request.getHeader(CODE);
                 String gray = request.getHeader(GRAY_PARAMETER);
                 if (StringUtil.isEmpty(gray)) {
-                    gray = extraRibbonProperties.getGray();
+                    gray = serverGray;
                 }
                 template.header(TRACE_ID,traceId);
                 template.header(CODE,code);

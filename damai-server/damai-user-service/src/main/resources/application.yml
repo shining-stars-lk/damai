@@ -109,4 +109,5 @@ jasypt:
   encryptor:
     password: bgtjkjl!%^sdc
     algorithm: PBEWithMD5AndDES
+always_verify_captcha: 1
     

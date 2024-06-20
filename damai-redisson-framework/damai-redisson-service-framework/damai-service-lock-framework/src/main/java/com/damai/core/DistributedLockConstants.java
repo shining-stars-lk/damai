@@ -1,9 +1,9 @@
 package com.damai.core;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 分布式锁 业务名管理
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 public class DistributedLockConstants {
 
@@ -37,9 +37,59 @@ public class DistributedLockConstants {
     public final static String PROGRAM_LOCK = "d_program_lock";
     
     /**
+     * 节目分组
+     * */
+    public final static String PROGRAM_GROUP_LOCK = "d_program_group_lock";
+    
+    /**
+     * 查看节目
+     * */
+    public final static String GET_PROGRAM_LOCK = "d_get_program_lock";
+    
+    /**
+     * 节目演出时间
+     * */
+    public final static String PROGRAM_SHOW_TIME_LOCK = "d_program_show_time_lock";
+    
+    /**
+     * 查看节目演出时间
+     * */
+    public final static String GET_PROGRAM_SHOW_TIME_LOCK = "d_get_program_show_time_lock";
+    
+    /**
+     * 座位
+     * */
+    public final static String SEAT_LOCK = "d_seat_lock";
+    
+    /**
+     * 查看座位
+     * */
+    public final static String GET_SEAT_LOCK = "d_get_seat_lock";
+    
+    /**
+     * 票档类型
+     * */
+    public final static String TICKET_CATEGORY_LOCK = "d_ticket_category_lock";
+    
+    /**
+     * 查看票档类型
+     * */
+    public final static String GET_TICKET_CATEGORY_LOCK = "d_get_ticket_category_lock";
+    
+    /**
      * 节目类型
      * */
     public final static String PROGRAM_CATEGORY_LOCK = "d_program_category_lock";
+    
+    /**
+     * 余票数量
+     * */
+    public final static String REMAIN_NUMBER_LOCK = "d_remain_number_lock";
+    
+    /**
+     * 查看余票数量
+     * */
+    public final static String GET_REMAIN_NUMBER_LOCK = "d_get_remain_number_lock";
     
     /**
      * 取消订单

@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: String工具
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 public class StringUtil {
 	private final static Logger logger = LoggerFactory.getLogger(StringUtil.class);
@@ -39,15 +39,14 @@ public class StringUtil {
 	 * 将流转换为字符串
 	 * @param is 文件流
 	 * @return
-	 * @throws IOException
 	 */
-	public static String inputStream2String(InputStream is){
+	public static String inputStreamConvertString(InputStream is){
 		ByteArrayOutputStream baos = null;
 		String result = null;
 		try {
 			if(is != null) {
 				baos = new ByteArrayOutputStream();
-				int i = -1;
+				int i;
 				while ((i = is.read()) != -1) {
 					baos.write(i);
 				}

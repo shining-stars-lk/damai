@@ -12,9 +12,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 验证码处理器
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @AllArgsConstructor
 public class CaptchaHandle {
@@ -34,6 +34,10 @@ public class CaptchaHandle {
         assert requestAttributes != null;
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         captchaVO.setBrowserInfo(RemoteUtil.getRemoteId(request));
+        return captchaService.check(captchaVO);
+    }
+    
+    public ResponseModel verification(CaptchaVO captchaVO) {
         return captchaService.verification(captchaVO);
     }
 }

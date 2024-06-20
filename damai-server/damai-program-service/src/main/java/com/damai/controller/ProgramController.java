@@ -3,11 +3,14 @@ package com.damai.controller;
 import com.damai.common.ApiResponse;
 import com.damai.dto.ProgramAddDto;
 import com.damai.dto.ProgramGetDto;
+import com.damai.dto.ProgramInvalidDto;
 import com.damai.dto.ProgramListDto;
 import com.damai.dto.ProgramPageListDto;
+import com.damai.dto.ProgramRecommendListDto;
 import com.damai.dto.ProgramSearchDto;
 import com.damai.page.PageVo;
 import com.damai.service.ProgramService;
+import com.damai.vo.ProgramHomeVo;
 import com.damai.vo.ProgramListVo;
 import com.damai.vo.ProgramVo;
 import io.swagger.annotations.Api;
@@ -20,12 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 节目 控制层
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @RestController
 @RequestMapping("/program")
@@ -34,6 +36,7 @@ public class ProgramController {
     
     @Autowired
     private ProgramService programService;
+    
     
     @ApiOperation(value = "添加")
     @PostMapping(value = "/add")
@@ -49,8 +52,8 @@ public class ProgramController {
     
     @ApiOperation(value = "查询主页列表")
     @PostMapping(value = "/home/list")
-    public ApiResponse<Map<String,List<ProgramListVo>>> selectHomeList(@Valid @RequestBody ProgramListDto programPageListDto) {
-        return ApiResponse.ok(programService.selectHomeList(programPageListDto));
+    public ApiResponse<List<ProgramHomeVo>> selectHomeList(@Valid @RequestBody ProgramListDto programListDto) {
+        return ApiResponse.ok(programService.selectHomeList(programListDto));
     }
     
     @ApiOperation(value = "查询分页列表")
@@ -59,9 +62,33 @@ public class ProgramController {
         return ApiResponse.ok(programService.selectPage(programPageListDto));
     }
     
+    @ApiOperation(value = "查询推荐列表")
+    @PostMapping(value = "/recommend/list")
+    public ApiResponse<List<ProgramListVo>> recommendList(@Valid @RequestBody ProgramRecommendListDto programRecommendListDto) {
+        return ApiResponse.ok(programService.recommendList(programRecommendListDto));
+    }
+    
     @ApiOperation(value = "查询详情(根据id)")
     @PostMapping(value = "/detail")
     public ApiResponse<ProgramVo> getDetail(@Valid @RequestBody ProgramGetDto programGetDto) {
-        return ApiResponse.ok(programService.getDetail(programGetDto));
+        return ApiResponse.ok(programService.detail(programGetDto));
+    }
+    
+    @ApiOperation(value = "查询详情V1(根据id)")
+    @PostMapping(value = "/detail/v1")
+    public ApiResponse<ProgramVo> getDetailV1(@Valid @RequestBody ProgramGetDto programGetDto) {
+        return ApiResponse.ok(programService.detailV1(programGetDto));
+    }
+    
+    @ApiOperation(value = "查询详情V2(根据id)")
+    @PostMapping(value = "/detail/v2")
+    public ApiResponse<ProgramVo> getDetailV2(@Valid @RequestBody ProgramGetDto programGetDto) {
+        return ApiResponse.ok(programService.detailV2(programGetDto));
+    }
+    
+    @ApiOperation(value = "节目失效(根据id)")
+    @PostMapping(value = "/invalid")
+    public ApiResponse<Boolean> invalid(@Valid @RequestBody ProgramInvalidDto programInvalidDto) {
+        return ApiResponse.ok(programService.invalid(programInvalidDto));
     }
 }

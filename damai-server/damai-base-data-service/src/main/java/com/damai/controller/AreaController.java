@@ -17,9 +17,9 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 地区 控制层
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @RestController
 @RequestMapping("/area")
@@ -45,5 +45,17 @@ public class AreaController {
     @PostMapping(value = "/getById")
     public ApiResponse<AreaVo> getById(@Valid @RequestBody AreaGetDto areaGetDto){
         return ApiResponse.ok(areaService.getById(areaGetDto));
+    }
+    
+    @ApiOperation(value = "当前城市")
+    @PostMapping(value = "/current")
+    public ApiResponse<AreaVo> current(){
+        return ApiResponse.ok(areaService.current());
+    }
+    
+    @ApiOperation(value = "热门城市")
+    @PostMapping(value = "/hot")
+    public ApiResponse<List<AreaVo>> hot() {
+        return ApiResponse.ok(areaService.hot());
     }
 }

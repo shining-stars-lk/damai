@@ -46,9 +46,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: elasticsearch处理
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 @Slf4j
 @AllArgsConstructor
@@ -131,6 +131,8 @@ public class BusinessEsHandle {
             Request request = new Request("GET", path);
             request.addParameters(Collections.<String, String>emptyMap());
             Response response = restClient.performRequest(request);
+            String result = EntityUtils.toString(response.getEntity());
+            System.out.println(JSON.toJSONString(result));
             return "OK".equals(response.getStatusLine().getReasonPhrase());
         }catch (Exception e) {
             if (e instanceof ResponseException && ((ResponseException)e).getResponse().getStatusLine().getStatusCode() == RestStatus.NOT_FOUND.getStatus()) {

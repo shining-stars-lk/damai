@@ -1,9 +1,9 @@
 package com.damai.enums;
 
 /**
- * @program: 极度真实还原大麦网高并发实战项目。 添加 阿宽不是程序员 微信，添加时备注 damai 来获取项目的完整资料 
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 接口返回code码
- * @author: 阿宽不是程序员
+ * @author: 阿星不是程序员
  **/
 public enum BaseCode {
     /**
@@ -21,7 +21,7 @@ public enum BaseCode {
     
     VERIFY_CAPTCHA_ID_NOT_EXIST(503,"校验验证码id不存在"),
     
-    CAPTCHA_TYPE_EMPTY(504,"验证码类型为空"),
+    VERIFY_CAPTCHA_EMPTY(504,"二次校验验证码的参数为空"),
     
     POINT_JSON_EMPTY(505,"点坐标为空"),
     
@@ -30,6 +30,12 @@ public enum BaseCode {
     LOAD_BALANCER_NOT_EXIST(507,"负载均衡器不存在"),
     
     SERVER_LIST_NOT_EXIST(508,"服务列表不存在"),
+    
+    TWO_PASSWORDS_DIFFERENT(509,"两次输入的密码不同"),
+    
+    MESSAGE_CONSUMER_NOT_EXIST(510,"messageConsumer实现不存在"),
+    
+    REDIS_STREAM_CONSUMER_TYPE_NOT_EXIST(511,"redisStream消费方式不存在"),
     
     RSA_SIGN_ERROR(10000,"res签名验证失败"),
     
@@ -81,6 +87,8 @@ public enum BaseCode {
     GENERATE_STRATEGY_NOT_EXIST(30006,"执行的生成策略不存在"),
     
     REJECT_STRATEGY_NOT_EXIST(30007,"执行的拒绝策略不存在"),
+    
+    PROGRAM_GROUP_NOT_EXIST(30009,"节目分组不存在"),
     
     PROGRAM_NOT_EXIST(40000,"节目不存在"),
     
@@ -136,15 +144,15 @@ public enum BaseCode {
     
     SEAT_ID_EMPTY(40026,"座位id为空"),
     
-    SEAT_TICKET_CATEGORY_ID_EMPTY(40026,"座位的票档id为空"),
+    SEAT_TICKET_CATEGORY_ID_EMPTY(40027,"座位的票档id为空"),
     
-    SEAT_ROW_CODE_EMPTY(40026,"座位的rowCode为空"),
+    SEAT_ROW_CODE_EMPTY(40028,"座位的rowCode为空"),
     
-    SEAT_COL_CODE_EMPTY(40026,"座位的colCode为空"),
+    SEAT_COL_CODE_EMPTY(40029,"座位的colCode为空"),
     
-    SEAT_PRICE_EMPTY(40026,"座位价格为空"),
+    SEAT_PRICE_EMPTY(40030,"座位价格为空"),
     
-    SEAT_IS_NOT_NOT_SOLD(40027,"座位不是未售卖"),
+    SEAT_IS_NOT_NOT_SOLD(40031,"座位不是未售卖"),
     
     DELAY_QUEUE_CLIENT_NOT_EXIST(50001,"延迟队列客户端不存在"),
     
@@ -157,6 +165,12 @@ public enum BaseCode {
     END_DATE_TIME_NOT_EXIST(50005,"结束时间为空"),
     
     PROGRAM_NOT_ALLOW_CHOOSE_SEAT(50006,"此节目不允许选择座位"),
+    
+    PARAMETERS_CANNOT_BE_EMPTY(50007,"参数不允许都为空"),
+    
+    PER_ORDER_PURCHASE_COUNT_OVER_LIMIT(50008,"该订单购买数量大于限制"),
+    
+    PER_ACCOUNT_PURCHASE_COUNT_OVER_LIMIT(50009,"该账户购买数量大于限制"),
     
     USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
     
