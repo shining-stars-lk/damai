@@ -79,6 +79,7 @@ spring:
       retries: 1
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    topic: create_order
 
 bloom-filter:
   name: programDetail

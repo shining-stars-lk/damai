@@ -47,6 +47,7 @@ spring:
       auto-offset-reset: latest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      topic: create_order
       
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml

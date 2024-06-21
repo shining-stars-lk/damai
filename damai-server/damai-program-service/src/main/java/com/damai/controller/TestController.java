@@ -42,10 +42,4 @@ public class TestController {
     public ApiResponse<Boolean> reset(@Valid @RequestBody TestSendDto testSendDto) {
         return ApiResponse.ok(testService.reset(testSendDto));
     }
-    
-    @ApiOperation(value = "测试kafka消费")
-    @PostMapping(value = "/kafka/send")
-    public ApiResponse<Boolean> kafkaSend(@Valid @RequestBody TestSendDto testSendDto) {
-        return ApiResponse.ok(testService.kafkaSend(testSendDto));
-    }
 }
