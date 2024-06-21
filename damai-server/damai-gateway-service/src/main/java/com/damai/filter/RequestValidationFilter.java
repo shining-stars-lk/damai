@@ -259,13 +259,13 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     }
 
     public boolean skipCheckToken(String url){
-        for (String skipCheckTokenPath : gatewayProperty.getSkipCheckTokenPaths()) {
+        for (String skipCheckTokenPath : gatewayProperty.getCheckTokenPaths()) {
             PathMatcher matcher = new AntPathMatcher();
             if (matcher.match(skipCheckTokenPath, url)) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
     
     public boolean checkParameter(String originalBody,String noVerify){

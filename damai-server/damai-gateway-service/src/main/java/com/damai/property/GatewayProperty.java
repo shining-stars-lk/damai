@@ -18,6 +18,9 @@ public class GatewayProperty {
     @Value("${api.limit.paths:#{null}}")
     private String[] apiRestrictPaths;
     
-    @Value("${skip.check.token.paths:/**/user/register,/**/user/exist,/**/user/login,/**/token/data/add}")
-    private String[] skipCheckTokenPaths;
+    @Value("${skip.check.token.paths:/**/program/order/create/v1,/**/program/order/create/v2,/**/program/order/create/v3," +
+            "/**/ticket/user/add,/**/ticket/user/delete,/**/ticket/user/list,/**/user/authentication,/**/user/logout," +
+            "/**/user/update,/**/user/update/email,/**/user/update/mobile,/**/user/update/password,/**/order/cancel," +
+            "/**/order/create,/**/order/pay}")
+    private String[] checkTokenPaths;
 }
