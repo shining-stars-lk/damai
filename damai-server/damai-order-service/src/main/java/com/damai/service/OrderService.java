@@ -76,6 +76,7 @@ import static com.damai.constant.Constant.ALIPAY_NOTIFY_SUCCESS_RESULT;
 import static com.damai.core.DistributedLockConstants.ORDER_CANCEL_LOCK;
 import static com.damai.core.DistributedLockConstants.ORDER_PAY_CHECK;
 import static com.damai.core.RepeatExecuteLimitConstants.CANCEL_PROGRAM_ORDER;
+import static com.damai.core.RepeatExecuteLimitConstants.CREATE_PROGRAM_ORDER_MQ;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -487,5 +488,12 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         accountOrderCountVo.setCount(orderMapper.accountOrderCount(accountOrderCountDto.getUserId(),
                 accountOrderCountDto.getProgramId()));
         return accountOrderCountVo;
+    }
+    
+    
+    @RepeatExecuteLimit(name = CREATE_PROGRAM_ORDER_MQ,keys = {"#orderCreateDto.orderNumber"})
+    @Transactional(rollbackFor = Exception.class)
+    public String createByMq(OrderCreateDto orderCreateDto){
+        return create(orderCreateDto);
     }
 }

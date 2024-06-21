@@ -21,6 +21,8 @@ import com.damai.exception.DaMaiFrameException;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.service.delaysend.DelayOrderCancelSend;
+import com.damai.service.kafka.CreateOrderMqDomain;
+import com.damai.service.kafka.CreateOrderSend;
 import com.damai.service.lua.ProgramCacheCreateOrderData;
 import com.damai.service.lua.ProgramCacheCreateOrderOperate;
 import com.damai.service.lua.ProgramCacheOperate;
@@ -69,6 +71,9 @@ public class ProgramOrderService {
     
     @Autowired
     private DelayOrderCancelSend delayOrderCancelSend;
+    
+    @Autowired
+    private CreateOrderSend createOrderSend;
     
     
     public String create(ProgramOrderCreateDto programOrderCreateDto) {
@@ -169,6 +174,30 @@ public class ProgramOrderService {
     }
     
     private String doCreate(ProgramOrderCreateDto programOrderCreateDto,List<SeatVo> purchaseSeatList){
+        OrderCreateDto orderCreateDto = buildCreateOrderParam(programOrderCreateDto, purchaseSeatList);
+        
+        String orderNumber = createOrderByRpc(orderCreateDto,purchaseSeatList);
+        
+        DelayOrderCancelDto delayOrderCancelDto = new DelayOrderCancelDto();
+        delayOrderCancelDto.setOrderNumber(orderCreateDto.getOrderNumber());
+        delayOrderCancelSend.sendMessage(JSON.toJSONString(delayOrderCancelDto));
+        
+        return orderNumber;
+    }
+    
+    private String doCreateV2(ProgramOrderCreateDto programOrderCreateDto,List<SeatVo> purchaseSeatList){
+        OrderCreateDto orderCreateDto = buildCreateOrderParam(programOrderCreateDto, purchaseSeatList);
+        
+        String orderNumber = createOrderByMq(orderCreateDto,purchaseSeatList);
+        
+        DelayOrderCancelDto delayOrderCancelDto = new DelayOrderCancelDto();
+        delayOrderCancelDto.setOrderNumber(orderCreateDto.getOrderNumber());
+        delayOrderCancelSend.sendMessage(JSON.toJSONString(delayOrderCancelDto));
+        
+        return orderNumber;
+    }
+    
+    private OrderCreateDto buildCreateOrderParam(ProgramOrderCreateDto programOrderCreateDto,List<SeatVo> purchaseSeatList){
         Long programId = programOrderCreateDto.getProgramId();
         ProgramVo programVo = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId), ProgramVo.class);
         ProgramShowTime programShowTime = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME
@@ -182,7 +211,7 @@ public class ProgramOrderService {
         orderCreateDto.setProgramPlace(programVo.getPlace());
         orderCreateDto.setProgramShowTime(programShowTime.getShowTime());
         orderCreateDto.setProgramPermitChooseSeat(programVo.getPermitChooseSeat());
-        BigDecimal databaseOrderPrice = 
+        BigDecimal databaseOrderPrice =
                 purchaseSeatList.stream().map(SeatVo::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
         orderCreateDto.setOrderPrice(databaseOrderPrice);
         orderCreateDto.setCreateOrderTime(DateUtils.now());
@@ -196,7 +225,7 @@ public class ProgramOrderService {
             orderTicketUserCreateDto.setProgramId(programOrderCreateDto.getProgramId());
             orderTicketUserCreateDto.setUserId(programOrderCreateDto.getUserId());
             orderTicketUserCreateDto.setTicketUserId(ticketUserId);
-            SeatVo seatVo = 
+            SeatVo seatVo =
                     Optional.ofNullable(purchaseSeatList.get(i))
                             .orElseThrow(() -> new DaMaiFrameException(BaseCode.SEAT_NOT_EXIST));
             orderTicketUserCreateDto.setSeatId(seatVo.getId());
@@ -208,21 +237,35 @@ public class ProgramOrderService {
         
         orderCreateDto.setOrderTicketUserCreateDtoList(orderTicketUserCreateDtoList);
         
-        String orderNumber;
+        return orderCreateDto;
+    }
+    
+    private String createOrderByRpc(OrderCreateDto orderCreateDto,List<SeatVo> purchaseSeatList){
         ApiResponse<String> createOrderResponse = orderClient.create(orderCreateDto);
-        if (Objects.equals(createOrderResponse.getCode(), BaseCode.SUCCESS.getCode())) {
-            orderNumber = createOrderResponse.getData();
-        }else {
-            updateProgramCacheData(programId,purchaseSeatList,OrderStatus.CANCEL);
+        if (!Objects.equals(createOrderResponse.getCode(), BaseCode.SUCCESS.getCode())) {
             log.error("创建订单失败 需人工处理 orderCreateDto : {}",JSON.toJSONString(orderCreateDto));
+            updateProgramCacheData(orderCreateDto.getProgramId(),purchaseSeatList,OrderStatus.CANCEL);
             throw new DaMaiFrameException(createOrderResponse);
         }
-        
-        DelayOrderCancelDto delayOrderCancelDto = new DelayOrderCancelDto();
-        delayOrderCancelDto.setOrderNumber(orderCreateDto.getOrderNumber());
-        delayOrderCancelSend.sendMessage(JSON.toJSONString(delayOrderCancelDto));
-        
-        return orderNumber;
+        return createOrderResponse.getData();
+    }
+    
+    private String createOrderByMq(OrderCreateDto orderCreateDto,List<SeatVo> purchaseSeatList){
+        CreateOrderMqDomain createOrderMqDomain = new CreateOrderMqDomain();
+        createOrderSend.sendMessage(JSON.toJSONString(orderCreateDto),sendResult -> {
+            createOrderMqDomain.orderNumber = String.valueOf(orderCreateDto.getOrderNumber());
+            assert sendResult != null;
+            log.info("createOrderByMQ sendMessage success topic : {}",sendResult.getRecordMetadata().topic());
+        },ex -> {
+            log.error("createOrderByMQ sendMessage error",ex);
+            log.error("创建订单失败 需人工处理 orderCreateDto : {}",JSON.toJSONString(orderCreateDto));
+            updateProgramCacheData(orderCreateDto.getProgramId(),purchaseSeatList,OrderStatus.CANCEL);
+            createOrderMqDomain.daMaiFrameException = new DaMaiFrameException(ex);
+        });
+        if (Objects.nonNull(createOrderMqDomain.daMaiFrameException)) {
+            throw createOrderMqDomain.daMaiFrameException;
+        }
+        return createOrderMqDomain.orderNumber;
     }
     
     private void updateProgramCacheData(Long programId,List<SeatVo> seatVoList,OrderStatus orderStatus){
