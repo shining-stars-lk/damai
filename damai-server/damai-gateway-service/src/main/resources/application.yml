@@ -59,13 +59,16 @@ spring:
           args:
             fallbackUri: forward:/fallBackHandler
             name: fallbackcmd
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    producer:
+      retries: 1
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    topic: save_api_data
 api:
   limit:
-    paths: /**/customize/test/test
-kafka:
-  producer:
-    servers: 127.0.0.1:9092
-    topic: save_api_data    
+    paths: /**/customize/test/test   
 feign:
   sentinel:
     enabled: false

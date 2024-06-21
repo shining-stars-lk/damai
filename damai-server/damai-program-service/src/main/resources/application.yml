@@ -73,6 +73,13 @@ spring:
             dataType: json
             rule-type: flow
       eager: true
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    producer:
+      retries: 1
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
 bloom-filter:
   name: programDetail
   expectedInsertions: 1000

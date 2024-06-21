@@ -6,7 +6,9 @@ import com.damai.service.ApiDataService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
@@ -17,15 +19,17 @@ import java.util.Optional;
  **/
 @Slf4j
 @AllArgsConstructor
+@Component
 public class ApiDataMessageConsumer {
     
+    @Autowired
     private ApiDataService apiDataService;
     
-    @KafkaListener(topics = {"${kafka.consumer.topic:save_api_data}"},containerFactory = "kafkaListenerContainerFactory")
-    public void consumerApiDataMessage(ConsumerRecord consumerRecord){
+    @KafkaListener(topics = {"${spring.kafka.topic:save_api_data}"})
+    public void consumerOrderMessage(ConsumerRecord<String,String> consumerRecord){
         try {
             Optional.ofNullable(consumerRecord.value()).map(String::valueOf).ifPresent(value -> {
-                log.info("consumerApiDataMessage consumerRecord:{}",JSON.toJSONString(consumerRecord));
+                log.info("consumerOrderMessage message:{}",value);
                 ApiData apiData = JSON.parseObject(value, ApiData.class);
                 apiDataService.saveApiData(apiData);
             });
