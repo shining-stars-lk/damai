@@ -6,6 +6,7 @@ import com.damai.context.DelayQueueContext;
 import com.damai.dto.TestSendDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -20,10 +21,13 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class TestService {
     
+    AtomicLong count = new PaddedAtomicLong(0);
+    
     @Autowired
     private DelayQueueContext delayQueueContext;
     
-    AtomicLong count = new PaddedAtomicLong(0);
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
     
     public boolean testSend(TestSendDto testSendDto) {
         try {
@@ -42,6 +46,12 @@ public class TestService {
     
     public Boolean reset(final TestSendDto testSendDto) {
         count.set(0);
+        return true;
+    }
+    
+    public Boolean kafkaSend(TestSendDto testSendDto) {
+        testSendDto.setTime(System.currentTimeMillis());
+        kafkaTemplate.send("test-topic",JSON.toJSONString(testSendDto));
         return true;
     }
 }

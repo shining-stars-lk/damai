@@ -36,14 +36,24 @@ spring:
         server-addr: 127.0.0.1:8848
         username: nacos
         password: nacos
-kafka:
-  consumer:
-    servers: 127.0.0.1:9092
-    autoCommit: true
-    autoCommitIntervalMs: 2000
-    autoOffsetReset: latest
-    groupId: api_data
-    topic: save_api_data        
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    consumer:
+      #默认的消费组ID
+      group-id: api_data
+      #是否自动提交offset
+      enable-auto-commit: true
+      #提交offset延时
+      auto-commit-interval: 2000
+      # 当kafka中没有初始offset或offset超出范围时将自动重置offset
+      # earliest:重置为分区中最小的offset;
+      # latest:重置为分区中最新的offset(消费分区中新产生的数据);
+      # none:只要有一个分区不存在已提交的offset,就抛出异常;
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # 主题
+      topic: save_api_data   
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   global-config:

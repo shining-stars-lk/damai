@@ -1,11 +1,9 @@
 package com.damai.service.test;
 
 import com.alibaba.fastjson2.JSON;
-import com.damai.context.DelayQueueContext;
 import com.damai.core.ConsumerTask;
 import com.damai.dto.TestSendDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,9 +14,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class Test implements ConsumerTask {
-    
-    @Autowired
-    private DelayQueueContext delayQueueContext;
     
     
     @Override
