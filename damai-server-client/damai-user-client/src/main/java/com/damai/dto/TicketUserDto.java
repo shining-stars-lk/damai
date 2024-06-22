@@ -14,7 +14,7 @@ import java.io.Serializable;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="TicketUserVo", description ="购票人")
+@ApiModel(value="TicketUserDto", description ="购票人")
 public class TicketUserDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
