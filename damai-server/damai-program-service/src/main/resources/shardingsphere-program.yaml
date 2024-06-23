@@ -5,6 +5,8 @@ dataSources:
     jdbcUrl: jdbc:mysql://www.cookframe.com:3306/damai_program_0?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
     username: root
     password: qazxsw890
+    hikari:
+      max-lifetime: 60000
 
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
@@ -12,6 +14,8 @@ dataSources:
     jdbcUrl: jdbc:mysql://www.cookframe.com:3306/damai_program_1?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
     username: root
     password: qazxsw890
+    hikari:
+      max-lifetime: 60000
     
 rules:
   - !SHARDING

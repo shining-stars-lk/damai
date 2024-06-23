@@ -126,4 +126,12 @@ public class ProgramOrderLock {
         compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
         return programOrderService.createNew(programOrderCreateDto);
     }
+    
+    @RepeatExecuteLimit(
+            name = RepeatExecuteLimitConstants.CREATE_PROGRAM_ORDER,
+            keys = {"#programOrderCreateDto.userId","#programOrderCreateDto.programId"})
+    public String createV4(ProgramOrderCreateDto programOrderCreateDto) {
+        compositeContainer.execute(CompositeCheckType.PROGRAM_ORDER_CREATE_CHECK.getValue(),programOrderCreateDto);
+        return programOrderService.createNewAsync(programOrderCreateDto);
+    }
 }

@@ -134,6 +134,16 @@ public class ProgramOrderService {
     
     
     public String createNew(ProgramOrderCreateDto programOrderCreateDto) {
+        List<SeatVo> purchaseSeatList = createOrderOperateProgramCache(programOrderCreateDto);
+        return doCreate(programOrderCreateDto,purchaseSeatList);
+    }
+    
+    public String createNewAsync(ProgramOrderCreateDto programOrderCreateDto) {
+        List<SeatVo> purchaseSeatList = createOrderOperateProgramCache(programOrderCreateDto);
+        return doCreateV2(programOrderCreateDto,purchaseSeatList);
+    }
+    
+    public List<SeatVo> createOrderOperateProgramCache(ProgramOrderCreateDto programOrderCreateDto){
         Long programId = programOrderCreateDto.getProgramId();
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
         List<String> keys = new ArrayList<>();
@@ -169,8 +179,7 @@ public class ProgramOrderService {
         if (!Objects.equals(programCacheCreateOrderData.getCode(), BaseCode.SUCCESS.getCode())) {
             throw new DaMaiFrameException(Objects.requireNonNull(BaseCode.getRc(programCacheCreateOrderData.getCode())));
         }
-        List<SeatVo> purchaseSeatList = programCacheCreateOrderData.getPurchaseSeatList();
-        return doCreate(programOrderCreateDto,purchaseSeatList);
+        return programCacheCreateOrderData.getPurchaseSeatList();
     }
     
     private String doCreate(ProgramOrderCreateDto programOrderCreateDto,List<SeatVo> purchaseSeatList){
@@ -255,9 +264,9 @@ public class ProgramOrderService {
         createOrderSend.sendMessage(JSON.toJSONString(orderCreateDto),sendResult -> {
             createOrderMqDomain.orderNumber = String.valueOf(orderCreateDto.getOrderNumber());
             assert sendResult != null;
-            log.info("createOrderByMQ sendMessage success topic : {}",sendResult.getRecordMetadata().topic());
+            log.info("创建订单kafka发送消息成功 topic : {}",sendResult.getRecordMetadata().topic());
         },ex -> {
-            log.error("createOrderByMQ sendMessage error",ex);
+            log.error("创建订单kafka发送消息失败 error",ex);
             log.error("创建订单失败 需人工处理 orderCreateDto : {}",JSON.toJSONString(orderCreateDto));
             updateProgramCacheData(orderCreateDto.getProgramId(),purchaseSeatList,OrderStatus.CANCEL);
             createOrderMqDomain.daMaiFrameException = new DaMaiFrameException(ex);
