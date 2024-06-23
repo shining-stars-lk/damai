@@ -29,7 +29,7 @@ public class CreateOrderSend {
     
     public void sendMessage(String message, SuccessCallback<SendResult<String, String>> successCallback, 
                             FailureCallback failureCallback) {
-        log.info("sendMessage message : {}", message);
+        log.info("创建订单kafka发送消息 消息体 : {}", message);
         ListenableFuture<SendResult<String, String>> send = kafkaTemplate.send(kafkaTopic.getTopic(), message);
         send.addCallback(successCallback, failureCallback);
     }

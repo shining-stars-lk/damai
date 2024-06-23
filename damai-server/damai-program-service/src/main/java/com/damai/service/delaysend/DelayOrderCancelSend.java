@@ -24,6 +24,7 @@ public class DelayOrderCancelSend {
     
     public void sendMessage(String message){
         try {
+            log.info("延迟订单取消消息进行发送 消息体 : {}",message);
             delayQueueContext.sendMessage(SpringUtil.getPrefixDistinctionName() + "-" + DELAY_ORDER_CANCEL_TOPIC,
                     message, DELAY_ORDER_CANCEL_TIME, DELAY_ORDER_CANCEL_TIME_UNIT);
         }catch (Exception e) {
