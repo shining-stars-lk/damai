@@ -59,7 +59,7 @@ public class PayService {
     /**
      * 通用支付，用订单号加锁防止多次支付成功，不依赖第三方支付的幂等性
      * */
-    @ServiceLock(name = COMMON_PAY,keys = {"payDto.orderNumber"})
+    @ServiceLock(name = COMMON_PAY,keys = {"#payDto.orderNumber"})
     @Transactional(rollbackFor = Exception.class)
     public String commonPay(PayDto payDto) {
         LambdaQueryWrapper<PayBill> payBillLambdaQueryWrapper = 
