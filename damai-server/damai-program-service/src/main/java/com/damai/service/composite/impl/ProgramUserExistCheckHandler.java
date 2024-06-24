@@ -113,9 +113,9 @@ public class ProgramUserExistCheckHandler extends AbstractProgramCheckHandler {
         }else if (ticketCount != 0) {
             count = count + ticketCount;
         }
-        if (count > programVo.getPerAccountLimitPurchaseCount()) {
-            throw new DaMaiFrameException(BaseCode.PER_ACCOUNT_PURCHASE_COUNT_OVER_LIMIT);
-        }
+//        if (count > programVo.getPerAccountLimitPurchaseCount()) {
+//            throw new DaMaiFrameException(BaseCode.PER_ACCOUNT_PURCHASE_COUNT_OVER_LIMIT);
+//        }
     }
     
     @Override
