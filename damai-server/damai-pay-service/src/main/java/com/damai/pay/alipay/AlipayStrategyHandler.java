@@ -5,12 +5,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.AlipayConstants;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.internal.util.WebUtils;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
-import com.damai.enums.AlipayTradeStatus;
 import com.damai.entity.PayBill;
+import com.damai.enums.AlipayTradeStatus;
 import com.damai.enums.BaseCode;
 import com.damai.enums.PayBillStatus;
 import com.damai.enums.PayChannel;
@@ -128,6 +129,7 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
         try {
             //构建查询参数，将订单号放入，调用SDK查询
             AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+            WebUtils.setNeedCheckServerTrusted(false);
             JSONObject bizContent = new JSONObject();
             bizContent.put("out_trade_no", outTradeNo);
             request.setBizContent(bizContent.toString());
@@ -148,6 +150,8 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
                     tradeResult.setPayBillStatus(convertPayBillStatus(alipayTradeQueryResponse.getString("trade_status")));
                     return tradeResult;
                 }
+            }else {
+                log.error("支付宝交易查询结果失败 response : {}",JSON.toJSONString(response));
             }
         }catch (Exception e) {
             log.error("alipay trade query error",e);
