@@ -341,6 +341,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         List<SeatVo> seatVoList = 
                 redisCache.multiGetForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId), 
                         seatIdList, SeatVo.class);
+        log.info("--seatVoList:{}--",JSON.toJSONString(seatIdList));
         if (CollectionUtil.isEmpty(seatVoList)) {
             throw new DaMaiFrameException(BaseCode.LOCK_SEAT_LIST_EMPTY);
         }
