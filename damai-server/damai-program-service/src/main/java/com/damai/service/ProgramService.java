@@ -432,6 +432,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     public ProgramVo getByIdMultipleCache(Long programId, Date showTime){
         return localCacheProgram.getCache(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId).getRelKey(),
                 key -> {
+                    log.info("查询节目详情 从本地缓存没有查询到 节目id : {}",programId);
                     ProgramVo programVo = getById(programId,DateUtils.countBetweenSecond(DateUtils.now(),showTime),
                             TimeUnit.SECONDS);
                     programVo.setShowTime(showTime);
@@ -446,6 +447,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         if (Objects.nonNull(programVo)) {
             return programVo;
         }
+        log.info("查询节目详情 从Redis缓存没有查询到 节目id : {}",programId);
         RLock lock = serviceLockTool.getLock(LockType.Reentrant, GET_PROGRAM_LOCK, new String[]{String.valueOf(programId)});
         lock.lock();
         try {
