@@ -16,7 +16,7 @@ public class OrderProperties {
     /**
      * 支付成功后通知接口地址
      * */
-    @Value("${orderPayNotifyUrl:localhost:8081/#}")
+    @Value("${orderPayNotifyUrl:http:localhost:6085/pay/pay/notify}")
     private String orderPayNotifyUrl;
     
     /**
