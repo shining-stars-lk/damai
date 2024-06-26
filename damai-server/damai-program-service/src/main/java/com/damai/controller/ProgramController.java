@@ -91,4 +91,10 @@ public class ProgramController {
     public ApiResponse<Boolean> invalid(@Valid @RequestBody ProgramInvalidDto programInvalidDto) {
         return ApiResponse.ok(programService.invalid(programInvalidDto));
     }
+    
+    @ApiOperation(value = "查看节目详情本地缓存(根据id)")
+    @PostMapping(value = "/local/detail")
+    public ApiResponse<ProgramVo> localDetail(@Valid @RequestBody ProgramGetDto programGetDto) {
+        return ApiResponse.ok(programService.localDetail(programGetDto));
+    }
 }

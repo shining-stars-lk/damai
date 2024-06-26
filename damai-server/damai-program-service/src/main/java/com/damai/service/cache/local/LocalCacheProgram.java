@@ -67,6 +67,10 @@ public class LocalCacheProgram {
         return localCache.get(id,function);
     }
     
+    public ProgramVo getCache(String id) {
+        return localCache.getIfPresent(id);
+    }
+    
     public void del(String id){
         localCache.invalidate(id);
     }

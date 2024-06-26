@@ -57,6 +57,8 @@ import com.damai.repeatexecutelimit.annotion.RepeatExecuteLimit;
 import com.damai.service.cache.local.LocalCacheProgram;
 import com.damai.service.cache.local.LocalCacheProgramCategory;
 import com.damai.service.cache.local.LocalCacheProgramGroup;
+import com.damai.service.cache.local.LocalCacheProgramShowTime;
+import com.damai.service.cache.local.LocalCacheTicketCategory;
 import com.damai.service.constant.ProgramTimeType;
 import com.damai.service.es.ProgramEs;
 import com.damai.service.tool.TokenExpireManager;
@@ -170,6 +172,12 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @Autowired
     private LocalCacheProgramCategory localCacheProgramCategory;
+    
+    @Autowired
+    private LocalCacheProgramShowTime localCacheProgramShowTime;
+    
+    @Autowired
+    private LocalCacheTicketCategory localCacheTicketCategory;
     
     @Autowired
     private CompositeContainer compositeContainer;
@@ -438,6 +446,34 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                     programVo.setShowTime(showTime);
                     return programVo;
                 });
+    }
+    
+    public ProgramVo simpleGetByIdMultipleCache(Long programId){
+        ProgramVo programVoCache = localCacheProgram.getCache(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, 
+                programId).getRelKey());
+        if (Objects.nonNull(programVoCache)) {
+            return programVoCache;
+        }
+        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId), ProgramVo.class);
+    }
+    
+    public ProgramVo simpleGetProgramAndShowMultipleCache(Long programId){
+        ProgramShowTime programShowTime =
+                programShowTimeService.simpleSelectProgramShowTimeByProgramIdMultipleCache(programId);
+        if (Objects.isNull(programShowTime)) {
+            throw new DaMaiFrameException(BaseCode.PROGRAM_SHOW_TIME_NOT_EXIST);
+        }
+        
+        ProgramVo programVo = simpleGetByIdMultipleCache(programId);
+        if (Objects.isNull(programVo)) {
+            throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST);
+        }
+        
+        programVo.setShowTime(programShowTime.getShowTime());
+        programVo.setShowDayTime(programShowTime.getShowDayTime());
+        programVo.setShowWeekTime(programShowTime.getShowWeekTime());
+        
+        return programVo;
     }
     
     @ServiceLock(lockType= LockType.Read,name = PROGRAM_LOCK,keys = {"#programId"})
@@ -714,6 +750,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             }
         }
         delRedisData(programId);
+        delLocalCache(programId);
         return true;
     }
     
@@ -742,6 +779,18 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         }else {
             return false;
         }
+    }
+    
+    public ProgramVo localDetail(final ProgramGetDto programGetDto) {
+        return localCacheProgram.getCache(String.valueOf(programGetDto.getId()));
+    }
+    
+    public void delLocalCache(Long programId){
+        log.info("删除本地缓存 programId : {}",programId);
+        localCacheProgram.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId).getRelKey());
+        localCacheProgramGroup.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_GROUP, programId).getRelKey());
+        localCacheProgramShowTime.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME, programId).getRelKey());
+        localCacheTicketCategory.del(programId);
     }
 }
 
