@@ -23,4 +23,7 @@ public class GatewayProperty {
             "/**/user/update,/**/user/update/email,/**/user/update/mobile,/**/user/update/password,/**/order/cancel," +
             "/**/order/create,/**/order/pay}")
     private String[] checkTokenPaths;
+    
+    @Value("${skip.check.parmeter.paths:/**/pay/notify}")
+    private String[] checkSkipParmeterPaths;
 }
