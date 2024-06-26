@@ -2,9 +2,12 @@ package com.damai.redis;
 
 import com.alibaba.fastjson.util.ParameterizedTypeImpl;
 import com.damai.util.StringUtil;
+
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -121,4 +124,20 @@ public class CacheUtil {
         return list.stream().map(RedisKeyBuild::getRelKey).collect(Collectors.toList());
     }
 
+    public static <T> List<T> optimizeRedisList(List<T> list){
+        if (Objects.isNull(list)) {
+            return new ArrayList<>();
+        }
+        if (list.size() == 0 || Objects.isNull(list.get(0))) {
+            return new ArrayList<>();
+        }
+        return list;
+    }
+    
+    public static boolean checkRedisListIsEmpty(List<?> list){
+        if (Objects.isNull(list)) {
+            return true;
+        }
+        return list.size() == 0 || Objects.isNull(list.get(0));
+    }
 }
