@@ -170,7 +170,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         String userId = null;
         String url = request.getPath().value();
         String noVerify = request.getHeaders().getFirst(NO_VERIFY);
-        if (checkParameter(originalBody,noVerify)) {
+        if (checkParameter(originalBody,noVerify) && !skipCheckParameter(url)) {
 
             String encrypt = request.getHeaders().getFirst(ENCRYPT);
             //应用渠道
@@ -266,6 +266,16 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             }
         }
         return true;
+    }
+    
+    public boolean skipCheckParameter(String url){
+        for (String skipCheckTokenPath : gatewayProperty.getCheckSkipParmeterPaths()) {
+            PathMatcher matcher = new AntPathMatcher();
+            if (matcher.match(skipCheckTokenPath, url)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public boolean checkParameter(String originalBody,String noVerify){
