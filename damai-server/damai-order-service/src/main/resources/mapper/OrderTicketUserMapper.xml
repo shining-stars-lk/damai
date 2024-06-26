@@ -26,7 +26,7 @@
         <foreach collection='orderNumberList' item='orderNumber' index='index' open='(' close=')' separator=','>
             #{orderNumber,jdbcType=BIGINT}
         </foreach>
-        group by create_order_time desc
+        group by order_number
     </select>
 
 </mapper>
