@@ -98,7 +98,9 @@ public class RedisCacheImpl implements RedisCache {
     public List<String> getKeys(List<RedisKeyBuild> keyList) {
         CacheUtil.checkNotEmpty(keyList);
         List<String> batchKey = CacheUtil.getBatchKey(keyList);
-        return redisTemplate.opsForValue().multiGet(batchKey);
+        List<String> list = redisTemplate.opsForValue().multiGet(batchKey);
+        
+        return CacheUtil.optimizeRedisList(redisTemplate.opsForValue().multiGet(CacheUtil.optimizeRedisList(list)));
     }
 
     @Override
@@ -332,9 +334,12 @@ public class RedisCacheImpl implements RedisCache {
         CacheUtil.checkNotBlank(redisKeyBuild);
         CacheUtil.checkNotBlank(hashKeys);
         String key = redisKeyBuild.getRelKey();
-        List<Object> objHashKeys = new ArrayList<>();
-        objHashKeys.addAll(hashKeys);
+        List<Object> objHashKeys = new ArrayList<>(hashKeys);
         List<Object> multiGetObj = redisTemplate.opsForHash().multiGet(key, objHashKeys);
+        
+        if (CacheUtil.checkRedisListIsEmpty(multiGetObj)){
+            return new ArrayList<>();
+        }
         if (String.class.isAssignableFrom(clazz)) {
             return (List<T>) multiGetObj;
         }
@@ -347,6 +352,9 @@ public class RedisCacheImpl implements RedisCache {
         CacheUtil.checkNotBlank(redisKeyBuild);
         String key = redisKeyBuild.getRelKey();
         List<Object> valuesObj = redisTemplate.opsForHash().values(key);
+        if (CacheUtil.checkRedisListIsEmpty(valuesObj)){
+            return new ArrayList<>();
+        }
         if (String.class.isAssignableFrom(clazz)) {
             return (List<T>) valuesObj;
         }
@@ -530,6 +538,9 @@ public class RedisCacheImpl implements RedisCache {
         CacheUtil.checkNotBlank(redisKeyBuild);
         String key = redisKeyBuild.getRelKey();
         List list = redisTemplate.opsForList().range(key, 0, -1);
+        if (CacheUtil.checkRedisListIsEmpty(list)){
+            return new ArrayList<>();
+        }
         return parseObjects(list, clazz);
     }
 
@@ -538,6 +549,9 @@ public class RedisCacheImpl implements RedisCache {
         CacheUtil.checkNotBlank(redisKeyBuild);
         String key = redisKeyBuild.getRelKey();
         List range = redisTemplate.opsForList().range(key, start, end);
+        if (CacheUtil.checkRedisListIsEmpty(range)){
+            return new ArrayList<>();
+        }
         return parseObjects(range, clazz);
     }
 
@@ -863,6 +877,9 @@ public class RedisCacheImpl implements RedisCache {
         CacheUtil.checkNotBlank(redisKeyBuild);
         String key = redisKeyBuild.getRelKey();
         List list = redisTemplate.opsForSet().randomMembers(key, count);
+        if (CacheUtil.checkRedisListIsEmpty(list)){
+            return new ArrayList<>();
+        }
         return parseObjects(list,clazz);
     }
 
