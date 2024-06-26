@@ -67,6 +67,10 @@ public class LocalCacheProgramShowTime {
         return localCache.get(id,function);
     }
     
+    public ProgramShowTime getCache(String id){
+        return localCache.getIfPresent(id);
+    }
+    
     public void del(String id){
         localCache.invalidate(id);
     }

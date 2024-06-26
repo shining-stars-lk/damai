@@ -75,6 +75,16 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
                 key -> selectProgramShowTimeByProgramId(programId));
     }
     
+    public ProgramShowTime simpleSelectProgramShowTimeByProgramIdMultipleCache(Long programId){
+        ProgramShowTime programShowTimeCache = localCacheProgramShowTime.getCache(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.PROGRAM_SHOW_TIME, programId).getRelKey());
+        if (Objects.nonNull(programShowTimeCache)) {
+            return programShowTimeCache;
+        }
+        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,
+                programId), ProgramShowTime.class);
+    }
+    
     @ServiceLock(lockType= LockType.Read,name = PROGRAM_SHOW_TIME_LOCK,keys = {"#programId"})
     public ProgramShowTime selectProgramShowTimeByProgramId(Long programId){
         ProgramShowTime programShowTime = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME, 

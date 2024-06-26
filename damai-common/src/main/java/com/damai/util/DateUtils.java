@@ -746,7 +746,7 @@ public class DateUtils {
     }
     
     /**
-     * 获取两个日期相差的秒数（以日期为单位计算，不以24小时制计算，详见下面说明）<br>
+     * 获取两个日期相差的秒数
      *
      * @param date1 日期1
      * @param date2 日期2
@@ -756,42 +756,11 @@ public class DateUtils {
         if (Objects.isNull(date1) || Objects.isNull(date2)) {
             return -1;
         }
-        long t1 = getDateTimeNo(date1);
-        long t2 = getDateTimeNo(date2);
-        // 相差秒数
-        return Math.abs(t1 - t2);
+        // 直接计算毫秒差并转换为秒  
+        long diffInMilliseconds = Math.abs(date2.getTime() - date1.getTime());
+        return diffInMilliseconds / 1000;
     }
- 
-    /**
-     * 获取两个日期相差的天数（以日期为单位计算，不以24小时制计算，详见下面说明）<br>
-     * 
-     * 【说明】比如 2022-06-17 23:00:00 和 2022-06-17 01:00:00，两者虽然只相差 2 个小时，但也算相差 1 天 <br>
-     * 
-     * @param date1 日期1
-     * @param date2 日期2
-     * @return 相差天数（若返回 -1，则至少有一个日期存在为空，此时不能进行比较）
-     */
-    public static int countBetweenDays(Date date1, Date date2) {
-        if (Objects.isNull(date1) || Objects.isNull(date2)) {
-            return -1;
-        }
-        // 获取两个日期 0 点 0 时 0 分 0 秒 0 毫秒时的时间戳（毫秒级）
-        long t1 = Objects.requireNonNull(getDateStart(date1)).getTime();
-        long t2 = Objects.requireNonNull(getDateStart(date2)).getTime();
-        // 相差天数 = 相差的毫秒数 / 一天的毫秒数
-        return (int) (Math.abs(t1 - t2) / DAY_MILLISECONDS);
-    }
- 
-    /**
-     * 获取两个日期之间的所有日期
-     * 
-     * @param date1 日期1
-     * @param date2 日期2
-     * @return 两个日期之间的所有日期的开始时间
-     */
-    public static List<Date> getBetweenDateList(Date date1, Date date2) {
-        return getBetweenDateList(date1, date2, false);
-    }
+    
  
     /**
      * 获取两个日期之间的所有日期

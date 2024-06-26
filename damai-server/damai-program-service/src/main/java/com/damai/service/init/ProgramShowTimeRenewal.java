@@ -41,6 +41,7 @@ public class ProgramShowTimeRenewal extends AbstractApplicationPostConstructHand
                     ProgramDocumentParamName.INDEX_NAME);
             for (Long programId : programIdSet) {
                 programService.delRedisData(programId);
+                programService.delLocalCache(programId);
             }
         }
     }

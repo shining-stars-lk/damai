@@ -13,7 +13,6 @@ import com.damai.dto.OrderCreateDto;
 import com.damai.dto.OrderTicketUserCreateDto;
 import com.damai.dto.ProgramOrderCreateDto;
 import com.damai.dto.SeatDto;
-import com.damai.entity.ProgramShowTime;
 import com.damai.enums.BaseCode;
 import com.damai.enums.OrderStatus;
 import com.damai.enums.SellStatus;
@@ -74,6 +73,9 @@ public class ProgramOrderService {
     
     @Autowired
     private CreateOrderSend createOrderSend;
+    
+    @Autowired
+    private ProgramService programService;
     
     
     public String create(ProgramOrderCreateDto programOrderCreateDto) {
@@ -207,10 +209,7 @@ public class ProgramOrderService {
     }
     
     private OrderCreateDto buildCreateOrderParam(ProgramOrderCreateDto programOrderCreateDto,List<SeatVo> purchaseSeatList){
-        Long programId = programOrderCreateDto.getProgramId();
-        ProgramVo programVo = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM, programId), ProgramVo.class);
-        ProgramShowTime programShowTime = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME
-                ,programId),ProgramShowTime.class);
+        ProgramVo programVo = programService.simpleGetProgramAndShowMultipleCache(programOrderCreateDto.getProgramId());
         OrderCreateDto orderCreateDto = new OrderCreateDto();
         orderCreateDto.setOrderNumber(uidGenerator.getOrderNumber(programOrderCreateDto.getUserId(),ORDER_TABLE_COUNT));
         orderCreateDto.setProgramId(programOrderCreateDto.getProgramId());
@@ -218,7 +217,7 @@ public class ProgramOrderService {
         orderCreateDto.setUserId(programOrderCreateDto.getUserId());
         orderCreateDto.setProgramTitle(programVo.getTitle());
         orderCreateDto.setProgramPlace(programVo.getPlace());
-        orderCreateDto.setProgramShowTime(programShowTime.getShowTime());
+        orderCreateDto.setProgramShowTime(programVo.getShowTime());
         orderCreateDto.setProgramPermitChooseSeat(programVo.getPermitChooseSeat());
         BigDecimal databaseOrderPrice =
                 purchaseSeatList.stream().map(SeatVo::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
