@@ -82,7 +82,7 @@ spring:
     topic: create_order
 
 bloom-filter:
-  name: programDetail
+  name: program-detail-bloom-filter
   expectedInsertions: 1000
   falseProbability: 0.01
 mybatis-plus:
