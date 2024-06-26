@@ -22,6 +22,6 @@ public class OrderProperties {
     /**
      * 支付成功后跳转页面
      * */
-    @Value("${orderPayReturnUrl:http://localhost:5173/success}")
+    @Value("${orderPayReturnUrl:http://localhost:5173/order/paySuccess}")
     private String orderPayReturnUrl;
 }
