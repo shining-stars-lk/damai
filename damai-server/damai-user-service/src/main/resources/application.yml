@@ -32,7 +32,7 @@ spring:
         username: nacos
         password: nacos
 bloom-filter:
-  name: userRegister
+  name: user-register-bloom-filter
   expectedInsertions: 1000
   falseProbability: 0.01
 aj:

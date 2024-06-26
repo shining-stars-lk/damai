@@ -2,6 +2,7 @@ package com.damai.handler;
 
 
 import com.damai.config.BloomFilterProperties;
+import com.damai.core.SpringUtil;
 import org.redisson.api.RBloomFilter;
 import org.redisson.api.RedissonClient;
 
@@ -17,8 +18,10 @@ public class BloomFilterHandler {
     private final RBloomFilter<String> cachePenetrationBloomFilter;
     
     public BloomFilterHandler(RedissonClient redissonClient, BloomFilterProperties bloomFilterProperties){
-        RBloomFilter<String> cachePenetrationBloomFilter = redissonClient.getBloomFilter(bloomFilterProperties.getName());
-        cachePenetrationBloomFilter.tryInit(bloomFilterProperties.getExpectedInsertions(), bloomFilterProperties.getFalseProbability());
+        RBloomFilter<String> cachePenetrationBloomFilter = redissonClient.getBloomFilter(
+                SpringUtil.getPrefixDistinctionName() + "-" + bloomFilterProperties.getName());
+        cachePenetrationBloomFilter.tryInit(bloomFilterProperties.getExpectedInsertions(), 
+                bloomFilterProperties.getFalseProbability());
         this.cachePenetrationBloomFilter = cachePenetrationBloomFilter;
     }
     
