@@ -156,6 +156,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     private TicketCategoryService ticketCategoryService;
     
     @Autowired
+    private ProgramCategoryService programCategoryService;
+    
+    @Autowired
     private ProgramEs programEs;
     
     @Autowired
@@ -708,8 +711,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     }
     
     public ProgramCategory getProgramCategory(Long programCategoryId){
-        return redisCache.getForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH)
-                ,String.valueOf(programCategoryId),ProgramCategory.class);
+        return programCategoryService.getProgramCategory(programCategoryId);
     }
     
     @Transactional(rollbackFor = Exception.class)

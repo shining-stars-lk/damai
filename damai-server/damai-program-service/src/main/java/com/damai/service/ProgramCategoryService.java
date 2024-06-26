@@ -23,8 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.damai.core.DistributedLockConstants.PROGRAM_CATEGORY_LOCK;
@@ -83,5 +85,28 @@ public class ProgramCategoryService extends ServiceImpl<ProgramCategoryMapper, P
             redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH),programCategoryMap);
         }
         
+    }
+    
+    public ProgramCategory getProgramCategory(Long programCategoryId){
+        ProgramCategory programCategory = redisCache.getForHash(RedisKeyBuild.createRedisKey(
+                RedisKeyManage.PROGRAM_CATEGORY_HASH), String.valueOf(programCategoryId), ProgramCategory.class);
+        if (Objects.isNull(programCategory)) {
+            Map<String, ProgramCategory> programCategoryMap = programCategoryRedisDataInit();
+            return programCategoryMap.get(String.valueOf(programCategoryId));
+        }
+        return null;
+    }
+    
+    @ServiceLock(lockType= LockType.Write,name = PROGRAM_CATEGORY_LOCK,keys = {"#all"})
+    public Map<String, ProgramCategory> programCategoryRedisDataInit(){
+        Map<String, ProgramCategory> programCategoryMap = new HashMap<>(64);
+        QueryWrapper<ProgramCategory> lambdaQueryWrapper = Wrappers.emptyWrapper();
+        List<ProgramCategory> programCategoryList = programCategoryMapper.selectList(lambdaQueryWrapper);
+        if (CollectionUtil.isNotEmpty(programCategoryList)) {
+            programCategoryMap = programCategoryList.stream().collect(
+                    Collectors.toMap(p -> String.valueOf(p.getId()), p -> p, (v1, v2) -> v2));
+            redisCache.putHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_CATEGORY_HASH),programCategoryMap);
+        }
+        return programCategoryMap;
     }
 }
