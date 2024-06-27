@@ -33,7 +33,11 @@ public interface TicketCategoryMapper extends BaseMapper<TicketCategory> {
     /**
      * 批量更新数量
      * @param ticketCategoryCountDtoList 参数
+     * @param programId 参数
      * @return 结果
      * */
-    int batchUpdateRemainNumber(@Param("ticketCategoryCountDtoList") List<TicketCategoryCountDto> ticketCategoryCountDtoList);
+    int batchUpdateRemainNumber(@Param("ticketCategoryCountDtoList") 
+                                List<TicketCategoryCountDto> ticketCategoryCountDtoList,
+                                @Param("programId")
+                                Long programId);
 }

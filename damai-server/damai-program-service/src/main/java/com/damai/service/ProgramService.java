@@ -552,10 +552,15 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         List<TicketCategoryCountDto> ticketCategoryCountDtoList = programOperateDataDto.getTicketCategoryCountDtoList();
         List<Long> seatIdList = programOperateDataDto.getSeatIdList();
         LambdaQueryWrapper<Seat> seatLambdaQueryWrapper = 
-                Wrappers.lambdaQuery(Seat.class).in(Seat::getId, seatIdList);
+                Wrappers.lambdaQuery(Seat.class)
+                        .eq(Seat::getProgramId,programOperateDataDto.getProgramId())
+                        .in(Seat::getId, seatIdList);
         List<Seat> seatList = seatMapper.selectList(seatLambdaQueryWrapper);
-        if (CollectionUtil.isEmpty(seatList) || seatList.size() != seatIdList.size()) {
+        if (CollectionUtil.isEmpty(seatList)) {
             throw new DaMaiFrameException(BaseCode.SEAT_NOT_EXIST);
+        }
+        if (seatList.size() != seatIdList.size()) {
+            throw new DaMaiFrameException(BaseCode.SEAT_UPDATE_REL_COUNT_NOT_EQUAL_PRESET_COUNT);
         }
         for (Seat seat : seatList) {
             if (Objects.equals(seat.getSellStatus(), SellStatus.SOLD.getCode())) {
@@ -563,13 +568,15 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             }
         }
         LambdaUpdateWrapper<Seat> seatLambdaUpdateWrapper = 
-                Wrappers.lambdaUpdate(Seat.class).in(Seat::getId, seatIdList);
+                Wrappers.lambdaUpdate(Seat.class)
+                        .eq(Seat::getProgramId,programOperateDataDto.getProgramId())
+                        .in(Seat::getId, seatIdList);
         Seat updateSeat = new Seat();
         updateSeat.setSellStatus(SellStatus.SOLD.getCode());
         seatMapper.update(updateSeat,seatLambdaUpdateWrapper);
         
         int updateRemainNumberCount = 
-                ticketCategoryMapper.batchUpdateRemainNumber(ticketCategoryCountDtoList);
+                ticketCategoryMapper.batchUpdateRemainNumber(ticketCategoryCountDtoList,programOperateDataDto.getProgramId());
         if (updateRemainNumberCount != ticketCategoryCountDtoList.size()) {
             throw new DaMaiFrameException(BaseCode.UPDATE_TICKET_CATEGORY_COUNT_NOT_CORRECT);
         }
