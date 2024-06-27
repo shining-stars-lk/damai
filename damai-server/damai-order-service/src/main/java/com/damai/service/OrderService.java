@@ -43,10 +43,14 @@ import com.damai.mapper.OrderTicketUserMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.repeatexecutelimit.annotion.RepeatExecuteLimit;
+import com.damai.request.CustomizeRequestWrapper;
 import com.damai.service.delaysend.DelayOperateProgramDataSend;
 import com.damai.service.properties.OrderProperties;
+import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.util.DateUtils;
+import com.damai.util.ServiceLockTool;
+import com.damai.util.StringUtil;
 import com.damai.vo.AccountOrderCountVo;
 import com.damai.vo.NotifyVo;
 import com.damai.vo.OrderGetVo;
@@ -61,12 +65,15 @@ import com.damai.vo.UserAndTicketUserInfoVo;
 import com.damai.vo.UserGetAndTicketUserListVo;
 import com.damai.vo.UserInfoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -77,6 +84,7 @@ import java.util.stream.Collectors;
 import static com.damai.constant.Constant.ALIPAY_NOTIFY_SUCCESS_RESULT;
 import static com.damai.core.DistributedLockConstants.ORDER_CANCEL_LOCK;
 import static com.damai.core.DistributedLockConstants.ORDER_PAY_CHECK;
+import static com.damai.core.DistributedLockConstants.ORDER_PAY_NOTIFY_CHECK;
 import static com.damai.core.RepeatExecuteLimitConstants.CANCEL_PROGRAM_ORDER;
 import static com.damai.core.RepeatExecuteLimitConstants.CREATE_PROGRAM_ORDER_MQ;
 import static com.damai.core.RepeatExecuteLimitConstants.PROGRAM_CACHE_REVERSE_MQ;
@@ -122,6 +130,9 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     
     @Autowired
     private DelayOperateProgramDataSend delayOperateProgramDataSend;
+    
+    @Autowired
+    private ServiceLockTool serviceLockTool;
     
     @Transactional(rollbackFor = Exception.class)
     public String create(OrderCreateDto orderCreateDto) {
@@ -251,24 +262,43 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     }
     
     
-    @ServiceLock(name = ORDER_CANCEL_LOCK,keys = {"#outTradeNo"})
-    public String alipayNotify(Map<String, String> params, String outTradeNo){
-        NotifyDto notifyDto = new NotifyDto();
-        notifyDto.setChannel(PayChannel.ALIPAY.getValue());
-        notifyDto.setParams(params);
-        ApiResponse<NotifyVo> notifyResponse = payClient.notify(notifyDto);
-        if (!Objects.equals(notifyResponse.getCode(), BaseCode.SUCCESS.getCode())) {
-            throw new DaMaiFrameException(notifyResponse);
+    public String alipayNotify(HttpServletRequest request){
+        Map<String, String> params = new HashMap<>(256);
+        if (request instanceof CustomizeRequestWrapper) {
+            CustomizeRequestWrapper customizeRequestWrapper = (CustomizeRequestWrapper)request;
+            String requestBody = customizeRequestWrapper.getRequestBody();
+            params = StringUtil.convertQueryStringToMap(requestBody);
         }
-        if (ALIPAY_NOTIFY_SUCCESS_RESULT.equals(notifyResponse.getData().getPayResult())) {
-            try {
-                orderService.updateOrderRelatedData(Long.parseLong(notifyResponse.getData().getOutTradeNo())
-                        ,OrderStatus.PAY);
-            }catch (Exception e) {
-                log.warn("updateOrderRelatedData warn message",e);
+        
+        String outTradeNo = params.get("out_trade_no");
+        if (StringUtil.isEmpty(outTradeNo)) {
+            return "failure";
+        }
+        
+        RLock lock = serviceLockTool.getLock(LockType.Reentrant, ORDER_PAY_NOTIFY_CHECK,
+                new String[]{outTradeNo});
+        lock.lock();
+        try {
+            NotifyDto notifyDto = new NotifyDto();
+            notifyDto.setChannel(PayChannel.ALIPAY.getValue());
+            notifyDto.setParams(params);
+            ApiResponse<NotifyVo> notifyResponse = payClient.notify(notifyDto);
+            if (!Objects.equals(notifyResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+                throw new DaMaiFrameException(notifyResponse);
             }
+            if (ALIPAY_NOTIFY_SUCCESS_RESULT.equals(notifyResponse.getData().getPayResult())) {
+                try {
+                    orderService.updateOrderRelatedData(Long.parseLong(notifyResponse.getData().getOutTradeNo())
+                            ,OrderStatus.PAY);
+                }catch (Exception e) {
+                    log.warn("updateOrderRelatedData warn message",e);
+                }
+            }
+            return notifyResponse.getData().getPayResult();
+        }finally {
+            lock.unlock();
         }
-        return notifyResponse.getData().getPayResult();
+        
     }
     
     /**

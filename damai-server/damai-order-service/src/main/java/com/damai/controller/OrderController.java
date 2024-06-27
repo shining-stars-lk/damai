@@ -19,12 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -59,8 +58,8 @@ public class OrderController {
     
     @ApiOperation(value = "支付宝支付后回调通知")
     @PostMapping(value = "/alipay/notify")
-    public String alipayNotify(@RequestParam Map<String, String> params) {
-        return orderService.alipayNotify(params,params.get("out_trade_no"));
+    public String alipayNotify(HttpServletRequest request) {
+        return orderService.alipayNotify(request);
     }
     
     @ApiOperation(value = "订单取消")

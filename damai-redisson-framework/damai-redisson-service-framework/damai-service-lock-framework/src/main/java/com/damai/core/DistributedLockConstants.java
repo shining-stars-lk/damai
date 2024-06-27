@@ -121,4 +121,9 @@ public class DistributedLockConstants {
      * 订单服务的订单支付后状态检查
      * */
     public final static String ORDER_PAY_CHECK = "d_order_pay_check_lock";
+    
+    /**
+     * 订单服务的订单支付后回调通知
+     * */
+    public final static String ORDER_PAY_NOTIFY_CHECK = "d_order_pay_notify_check_lock";
 }
