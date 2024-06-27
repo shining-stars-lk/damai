@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -64,5 +66,26 @@ public class StringUtil {
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * 将URL参数转成map
+	 * */
+	public static Map<String, String> convertQueryStringToMap(String queryString) {
+		Map<String, String> resultMap = new HashMap<>(256);
+		String[] params = queryString.split("&");
+		for (String param : params) {
+			String[] keyValue = param.split("=");
+			if (keyValue.length == 2) {
+				try {
+					String key = java.net.URLDecoder.decode(keyValue[0], "UTF-8");
+					String value = java.net.URLDecoder.decode(keyValue[1], "UTF-8");
+					resultMap.put(key, value);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return resultMap;
 	}
 }

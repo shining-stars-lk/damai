@@ -24,6 +24,6 @@ public class GatewayProperty {
             "/**/order/create,/**/order/pay}")
     private String[] checkTokenPaths;
     
-    @Value("${skip.check.parmeter.paths:/**/pay/notify}")
+    @Value("${skip.check.parmeter.paths:/**/alipay/notify}")
     private String[] checkSkipParmeterPaths;
 }
