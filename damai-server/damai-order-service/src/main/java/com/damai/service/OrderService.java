@@ -25,6 +25,7 @@ import com.damai.dto.OrderPayDto;
 import com.damai.dto.OrderTicketUserCreateDto;
 import com.damai.dto.PayDto;
 import com.damai.dto.ProgramOperateDataDto;
+import com.damai.dto.TicketCategoryCountDto;
 import com.damai.dto.TradeCheckDto;
 import com.damai.dto.UserGetAndTicketUserListDto;
 import com.damai.entity.Order;
@@ -342,7 +343,6 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         List<SeatVo> seatVoList = 
                 redisCache.multiGetForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId), 
                         seatIdList, SeatVo.class);
-        log.info("--seatVoList:{}--",JSON.toJSONString(seatIdList));
         if (CollectionUtil.isEmpty(seatVoList)) {
             throw new DaMaiFrameException(BaseCode.LOCK_SEAT_LIST_EMPTY);
         }
@@ -368,14 +368,21 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         data[0] = JSON.toJSONString(unLockSeatIdList);
         data[1] = JSON.toJSONString(seatDataList);
         
-        Map<Long, Long> ticketCategoryCountMap = 
-                seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, Collectors.counting()));
+        Map<Long, Long> ticketCategoryCountMap =
+                seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, 
+                        Collectors.counting()));
         JSONArray jsonArray = new JSONArray();
+        List<TicketCategoryCountDto> ticketCategoryCountDtoList = new ArrayList<>(ticketCategoryCountMap.size());
         ticketCategoryCountMap.forEach((k,v) -> {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("ticketCategoryId",String.valueOf(k));
             jsonObject.put("count",v);
             jsonArray.add(jsonObject);
+            
+            TicketCategoryCountDto ticketCategoryCountDto = new TicketCategoryCountDto();
+            ticketCategoryCountDto.setTicketCategoryId(k);
+            ticketCategoryCountDto.setCount(v);
+            ticketCategoryCountDtoList.add(ticketCategoryCountDto);
         });
         
         if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
@@ -393,7 +400,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             ProgramOperateDataDto programOperateDataDto = new ProgramOperateDataDto();
             programOperateDataDto.setProgramId(programId);
             programOperateDataDto.setSeatIdList(JSON.parseArray((String)data[0],Long.class));
-            programOperateDataDto.setTicketCategoryCountMap(ticketCategoryCountMap);
+            programOperateDataDto.setTicketCategoryCountDtoList(ticketCategoryCountDtoList);
             programOperateDataDto.setSellStatus(SellStatus.SOLD.getCode());
             delayOperateProgramDataSend.sendMessage(JSON.toJSONString(programOperateDataDto));
         }
