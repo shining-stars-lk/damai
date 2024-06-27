@@ -172,6 +172,8 @@ public enum BaseCode {
     
     PER_ACCOUNT_PURCHASE_COUNT_OVER_LIMIT(50009,"该账户购买数量大于限制"),
     
+    SEAT_UPDATE_REL_COUNT_NOT_EQUAL_PRESET_COUNT(50010,"座位数据更新数量与预设数量不一致"),
+    
     USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
     
     USER_LOG_IN(60002,"用户已登录"),
