@@ -6,7 +6,6 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -21,10 +20,9 @@ public class ProgramOperateDataDto {
     @NotNull
     private Long programId;
     
-    @ApiModelProperty(name ="ticketCategoryCountMap", dataType ="Map<Long,Long>", 
-            value ="节目票档map key:票档id value:票档数量",required = true)
+    @ApiModelProperty(name ="ticketCategoryCountMap", dataType ="List<TicketCategoryCountDto>",required = true)
     @NotNull
-    private Map<Long,Long> ticketCategoryCountMap;
+    private List<TicketCategoryCountDto> ticketCategoryCountDtoList;
     
     @ApiModelProperty(name ="seatIdList", dataType ="List<Long>", value ="座位id集合",required = true)
     @NotNull
