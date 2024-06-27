@@ -86,4 +86,10 @@ public class OrderController {
     public ApiResponse<AccountOrderCountVo> accountOrderCount(@Valid @RequestBody AccountOrderCountDto accountOrderCountDto) {
         return ApiResponse.ok(orderService.accountOrderCount(accountOrderCountDto));
     }
+    
+    @ApiOperation(value = "查看缓存中的订单")
+    @PostMapping(value = "/get/cache")
+    public ApiResponse<String> getCache(@Valid @RequestBody OrderGetDto orderGetDto) {
+        return ApiResponse.ok(orderService.getCache(orderGetDto));
+    }
 }

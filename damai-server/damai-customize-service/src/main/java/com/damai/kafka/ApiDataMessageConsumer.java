@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+import static com.damai.constant.Constant.SPRING_INJECT_PREFIX_DISTINCTION_NAME;
+
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: kafka 消费
@@ -25,7 +27,7 @@ public class ApiDataMessageConsumer {
     @Autowired
     private ApiDataService apiDataService;
     
-    @KafkaListener(topics = {"${spring.kafka.topic:save_api_data}"})
+    @KafkaListener(topics = {SPRING_INJECT_PREFIX_DISTINCTION_NAME+"-"+"${spring.kafka.topic:save_api_data}"})
     public void consumerOrderMessage(ConsumerRecord<String,String> consumerRecord){
         try {
             Optional.ofNullable(consumerRecord.value()).map(String::valueOf).ifPresent(value -> {

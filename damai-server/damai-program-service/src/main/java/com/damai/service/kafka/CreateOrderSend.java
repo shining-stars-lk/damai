@@ -1,5 +1,6 @@
 package com.damai.service.kafka;
 
+import com.damai.core.SpringUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,8 @@ public class CreateOrderSend {
     public void sendMessage(String message, SuccessCallback<SendResult<String, String>> successCallback, 
                             FailureCallback failureCallback) {
         log.info("创建订单kafka发送消息 消息体 : {}", message);
-        ListenableFuture<SendResult<String, String>> send = kafkaTemplate.send(kafkaTopic.getTopic(), message);
+        ListenableFuture<SendResult<String, String>> send = kafkaTemplate.send(
+                SpringUtil.getPrefixDistinctionName() + "-" + kafkaTopic.getTopic(), message);
         send.addCallback(successCallback, failureCallback);
     }
 }

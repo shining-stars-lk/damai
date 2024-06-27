@@ -70,6 +70,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.damai.constant.Constant.ALIPAY_NOTIFY_SUCCESS_RESULT;
@@ -233,10 +234,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
                 try {
                     if (Objects.equals(payBillStatus, PayBillStatus.PAY.getCode())) {
                         orderPayCheckVo.setPayOrderTime(DateUtils.now());
-                        orderService.updateOrderRelatedData(order.getId(),OrderStatus.PAY);
+                        orderService.updateOrderRelatedData(order.getOrderNumber(),OrderStatus.PAY);
                     }else if (Objects.equals(payBillStatus, PayBillStatus.CANCEL.getCode())) {
                         orderPayCheckVo.setCancelOrderTime(DateUtils.now());
-                        orderService.updateOrderRelatedData(order.getId(),OrderStatus.CANCEL);
+                        orderService.updateOrderRelatedData(order.getOrderNumber(),OrderStatus.CANCEL);
                     }
                 }catch (Exception e) {
                     log.warn("updateOrderRelatedData warn message",e);
@@ -383,6 +384,8 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             data[2] = JSON.toJSONString(jsonArray);
         }else if (Objects.equals(orderStatus.getCode(), OrderStatus.PAY.getCode())) {
             keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId).getRelKey());
+            keys.add("#");
+            data[2] = "#";
         }
         orderProgramCacheOperate.programCacheReverseOperate(keys,data);
         
@@ -498,11 +501,17 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     @RepeatExecuteLimit(name = CREATE_PROGRAM_ORDER_MQ,keys = {"#orderCreateDto.orderNumber"})
     @Transactional(rollbackFor = Exception.class)
     public String createMq(OrderCreateDto orderCreateDto){
-        return create(orderCreateDto);
+        String orderNumber = create(orderCreateDto);
+        redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.ORDER_MQ,orderNumber),orderNumber,5, TimeUnit.MINUTES);
+        return orderNumber;
     }
     
     @RepeatExecuteLimit(name = PROGRAM_CACHE_REVERSE_MQ,keys = {"#programId"})
     public void updateProgramRelatedDataMq(Long programId,List<String> seatIdList,OrderStatus orderStatus){
         updateProgramRelatedData(programId,seatIdList,orderStatus);
+    }
+    
+    public String getCache(OrderGetDto orderGetDto) {
+        return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.ORDER_MQ,orderGetDto.getOrderNumber()),String.class);
     }
 }
