@@ -79,6 +79,8 @@ public enum RedisKeyManage {
     TICKET_USER_LIST("d_mai_ticket_user_list_%S","购票人列表的key","购票人列表","k"),
     
     ACCOUNT_ORDER_COUNT("d_mai_account_order_count_%S_%S","账户下订单数量的key","账户下订单数量","k"),
+    
+    ORDER_MQ("d_mai_order_mq_%S","使用mq创建的订单的订单编号","使用mq创建的订单的订单编号","k")
     ;
 
     /**

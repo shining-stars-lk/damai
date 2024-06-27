@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import static com.damai.service.constant.ProgramOrderConstant.ORDER_TABLE_COUNT;
@@ -260,16 +261,25 @@ public class ProgramOrderService {
     
     private String createOrderByMq(OrderCreateDto orderCreateDto,List<SeatVo> purchaseSeatList){
         CreateOrderMqDomain createOrderMqDomain = new CreateOrderMqDomain();
+        CountDownLatch latch = new CountDownLatch(1);
         createOrderSend.sendMessage(JSON.toJSONString(orderCreateDto),sendResult -> {
             createOrderMqDomain.orderNumber = String.valueOf(orderCreateDto.getOrderNumber());
             assert sendResult != null;
             log.info("创建订单kafka发送消息成功 topic : {}",sendResult.getRecordMetadata().topic());
+            latch.countDown();
         },ex -> {
             log.error("创建订单kafka发送消息失败 error",ex);
             log.error("创建订单失败 需人工处理 orderCreateDto : {}",JSON.toJSONString(orderCreateDto));
             updateProgramCacheData(orderCreateDto.getProgramId(),purchaseSeatList,OrderStatus.CANCEL);
             createOrderMqDomain.daMaiFrameException = new DaMaiFrameException(ex);
+            latch.countDown();
         });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            log.error("createOrderByMq InterruptedException",e);
+            throw new DaMaiFrameException(e);
+        }
         if (Objects.nonNull(createOrderMqDomain.daMaiFrameException)) {
             throw createOrderMqDomain.daMaiFrameException;
         }

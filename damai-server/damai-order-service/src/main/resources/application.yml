@@ -35,11 +35,11 @@ spring:
     bootstrap-servers: 127.0.0.1:9092
     consumer:
       #默认的消费组ID
-      group-id: api_data
+      group-id: create_order_data
       #是否自动提交offset
       enable-auto-commit: true
       #提交offset延时
-      auto-commit-interval: 2000
+      auto-commit-interval: 200
       # 当kafka中没有初始offset或offset超出范围时将自动重置offset
       # earliest:重置为分区中最小的offset;
       # latest:重置为分区中最新的offset(消费分区中新产生的数据);

@@ -1,5 +1,6 @@
 package com.damai.kafka;
 
+import com.damai.core.SpringUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,6 +20,6 @@ public class ApiDataMessageSend {
     
     public void sendMessage(String message) {
         log.info("sendMessage message : {}", message);
-        kafkaTemplate.send(topic,message);
+        kafkaTemplate.send(SpringUtil.getPrefixDistinctionName() + "-" + topic,message);
     }
 }
