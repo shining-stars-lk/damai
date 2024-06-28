@@ -4,6 +4,7 @@ import com.damai.common.ApiResponse;
 import com.damai.dto.TestDto;
 import com.damai.dto.TestSendDto;
 import com.damai.service.TestService;
+import com.damai.service.scheduletask.ProgramDataTask;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +26,10 @@ public class TestController {
     @Autowired
     private TestService testService;
     
+    @Autowired
+    private ProgramDataTask programDataTask;
+    
+    
     @ApiOperation(value = "测试get")
     @PostMapping(value = "/get")
     public ApiResponse<Long> get(@Valid @RequestBody TestDto testDto) {
@@ -41,5 +46,12 @@ public class TestController {
     @PostMapping(value = "/reset")
     public ApiResponse<Boolean> reset(@Valid @RequestBody TestSendDto testSendDto) {
         return ApiResponse.ok(testService.reset(testSendDto));
+    }
+    
+    @ApiOperation(value = "定时任务逻辑执行")
+    @PostMapping(value = "/task/execute")
+    public ApiResponse<Boolean> taskExecute() {
+        programDataTask.executeTask();
+        return ApiResponse.ok();
     }
 }
