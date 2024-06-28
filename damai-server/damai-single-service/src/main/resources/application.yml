@@ -144,3 +144,5 @@ jasypt:
   encryptor:
     password: bgtjkjl!%^sdc
     algorithm: PBEWithMD5AndDES
+# 支付宝回调地址
+orderPayNotifyUrl: https://16c4-123-124-21-34.ngrok-free.app/damai/order/order/alipay/notify
