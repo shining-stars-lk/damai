@@ -2,6 +2,8 @@ package com.damai.service;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -9,9 +11,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.damai.core.RedisKeyManage;
 import com.damai.dto.ProgramShowTimeAddDto;
+import com.damai.entity.Program;
+import com.damai.entity.ProgramGroup;
 import com.damai.entity.ProgramShowTime;
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
+import com.damai.mapper.ProgramGroupMapper;
+import com.damai.mapper.ProgramMapper;
 import com.damai.mapper.ProgramShowTimeMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
@@ -25,9 +31,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -51,7 +60,13 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
     private RedisCache redisCache;
     
     @Autowired
+    private ProgramMapper programMapper;
+    
+    @Autowired
     private ProgramShowTimeMapper programShowTimeMapper;
+    
+    @Autowired
+    private ProgramGroupMapper programGroupMapper;
     
     @Autowired
     private ServiceLockTool serviceLockTool;
@@ -117,8 +132,11 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
         Set<Long> programIdSet = new HashSet<>();
         LambdaQueryWrapper<ProgramShowTime> programShowTimeLambdaQueryWrapper =
                 Wrappers.lambdaQuery(ProgramShowTime.class).
-                        le(ProgramShowTime::getShowTime, DateUtils.addDay(DateUtils.now(), 1));
+                        le(ProgramShowTime::getShowTime, DateUtils.addDay(DateUtils.now(), 2));
         List<ProgramShowTime> programShowTimes = programShowTimeMapper.selectList(programShowTimeLambdaQueryWrapper);
+        
+        List<ProgramShowTime> newProgramShowTimes = new ArrayList<>(programShowTimes.size());
+        
         for (ProgramShowTime programShowTime : programShowTimes) {
             programIdSet.add(programShowTime.getProgramId());
             Date oldShowTime = programShowTime.getShowTime();
@@ -133,9 +151,45 @@ public class ProgramShowTimeService extends ServiceImpl<ProgramShowTimeMapper, P
             updateProgramShowTime.setShowDayTime(newShowDayTime);
             updateProgramShowTime.setShowWeekTime(DateUtils.getWeekStr(newShowTime));
             LambdaUpdateWrapper<ProgramShowTime> programShowTimeLambdaUpdateWrapper =
-                    Wrappers.lambdaUpdate(ProgramShowTime.class).eq(ProgramShowTime::getProgramId, programShowTime.getProgramId());
+                    Wrappers.lambdaUpdate(ProgramShowTime.class)
+                            .eq(ProgramShowTime::getProgramId, programShowTime.getProgramId())
+                            .eq(ProgramShowTime::getId,programShowTime.getId());
+                    
             programShowTimeMapper.update(updateProgramShowTime,programShowTimeLambdaUpdateWrapper);
+            
+            ProgramShowTime newProgramShowTime = new ProgramShowTime();
+            newProgramShowTime.setProgramId(programShowTime.getProgramId());
+            newProgramShowTime.setShowTime(newShowTime);
+            newProgramShowTimes.add(newProgramShowTime);
         }
+        Map<Long,Date> programGroupMap = new HashMap<>(newProgramShowTimes.size());
+        for (ProgramShowTime newProgramShowTime : newProgramShowTimes) {
+            Program program = programMapper.selectById(newProgramShowTime.getProgramId());
+            if (Objects.isNull(program)) {
+                continue;
+            }
+            Long programGroupId = program.getProgramGroupId();
+            Date showTime = programGroupMap.get(programGroupId);
+            if (Objects.isNull(showTime)) {
+                programGroupMap.put(programGroupId,newProgramShowTime.getShowTime());
+            }else {
+                if (DateUtil.compare(newProgramShowTime.getShowTime(),showTime) < 0) {
+                    programGroupMap.put(programGroupId,newProgramShowTime.getShowTime());
+                }
+            }
+        }
+        if (CollectionUtil.isNotEmpty(programGroupMap)) {
+            programGroupMap.forEach((k,v) -> {
+                ProgramGroup programGroup = new ProgramGroup();
+                programGroup.setRecentShowTime(v);
+                
+                LambdaUpdateWrapper<ProgramGroup> programGroupLambdaUpdateWrapper =
+                        Wrappers.lambdaUpdate(ProgramGroup.class)
+                                .eq(ProgramGroup::getId,k);
+                programGroupMapper.update(programGroup,programGroupLambdaUpdateWrapper);
+            });
+        }
+        
         return programIdSet;
     }
 }
