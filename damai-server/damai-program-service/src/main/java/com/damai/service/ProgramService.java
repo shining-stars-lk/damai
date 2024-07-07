@@ -264,6 +264,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
             }
             ProgramHomeVo programHomeVo = new ProgramHomeVo();
             programHomeVo.setCategoryName(programCategoryMap.get(key));
+            programHomeVo.setCategoryId(key);
             programHomeVo.setProgramListVoList(programListVoList);
             programHomeVoList.add(programHomeVo);
         }
