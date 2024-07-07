@@ -381,7 +381,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         programVo.setShowDayTime(programShowTime.getShowDayTime());
         programVo.setShowWeekTime(programShowTime.getShowWeekTime());
         
-        ProgramGroupVo programGroupVo = programService.getProgramGroup(programGetDto.getId());
+        ProgramGroupVo programGroupVo = programService.getProgramGroup(programVo.getProgramGroupId());
         programVo.setProgramGroupVo(programGroupVo);
         
         preloadTicketUserList(programVo.getHighHeat());
@@ -417,7 +417,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         programVo.setShowDayTime(programShowTime.getShowDayTime());
         programVo.setShowWeekTime(programShowTime.getShowWeekTime());
         
-        ProgramGroupVo programGroupVo = programService.getProgramGroupMultipleCache(programGetDto.getId());
+        ProgramGroupVo programGroupVo = programService.getProgramGroupMultipleCache(programVo.getProgramGroupId());
         programVo.setProgramGroupVo(programGroupVo);
         
         preloadTicketUserList(programVo.getHighHeat());
