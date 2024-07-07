@@ -78,9 +78,9 @@ public class ProgramEs {
                         SpringUtil.getPrefixDistinctionName() + "-" + ProgramDocumentParamName.INDEX_NAME,
                         ProgramDocumentParamName.INDEX_TYPE, programEsQueryDto, 1, 7, ProgramListVo.class);
                 if (!pageInfo.getList().isEmpty()) {
-                    String parentProgramCategoryName = pageInfo.getList().get(0).getParentProgramCategoryName();
                     ProgramHomeVo programHomeVo = new ProgramHomeVo();
-                    programHomeVo.setCategoryName(parentProgramCategoryName);
+                    programHomeVo.setCategoryName(pageInfo.getList().get(0).getParentProgramCategoryName());
+                    programHomeVo.setCategoryId(pageInfo.getList().get(0).getParentProgramCategoryId());
                     programHomeVo.setProgramListVoList(pageInfo.getList());
                     programHomeVoList.add(programHomeVo);
                 }

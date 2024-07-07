@@ -13,13 +13,16 @@ import java.util.List;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramListVo", description ="节目主页列表")
+@ApiModel(value="ProgramHomeVo", description ="节目主页列表")
 public class ProgramHomeVo implements Serializable  {
     
     private static final long serialVersionUID = 1L;
     
     @ApiModelProperty(name ="categoryName", dataType ="String", value ="类型名字")
     private String categoryName;
+    
+    @ApiModelProperty(name ="categoryId", dataType ="Long", value ="类型id")
+    private Long categoryId;
     
     @ApiModelProperty(name ="programListVoList", dataType ="array", value ="节目列表")
     private List<ProgramListVo> programListVoList;
