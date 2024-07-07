@@ -94,7 +94,7 @@ public class ProgramCategoryService extends ServiceImpl<ProgramCategoryMapper, P
             Map<String, ProgramCategory> programCategoryMap = programCategoryRedisDataInit();
             return programCategoryMap.get(String.valueOf(programCategoryId));
         }
-        return null;
+        return programCategory;
     }
     
     @ServiceLock(lockType= LockType.Write,name = PROGRAM_CATEGORY_LOCK,keys = {"#all"})
