@@ -25,6 +25,7 @@ import com.damai.dto.OrderPayDto;
 import com.damai.dto.OrderTicketUserCreateDto;
 import com.damai.dto.PayDto;
 import com.damai.dto.ProgramOperateDataDto;
+import com.damai.dto.RefundDto;
 import com.damai.dto.TicketCategoryCountDto;
 import com.damai.dto.TradeCheckDto;
 import com.damai.dto.UserGetAndTicketUserListDto;
@@ -228,6 +229,26 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
             throw new DaMaiFrameException(BaseCode.ORDER_NOT_EXIST);
         }
         BeanUtil.copyProperties(order,orderPayCheckVo);
+        if (Objects.equals(order.getOrderStatus(), OrderStatus.CANCEL.getCode())) {
+            RefundDto refundDto = new RefundDto();
+            refundDto.setOrderNumber(String.valueOf(order.getOrderNumber()));
+            refundDto.setAmount(order.getOrderPrice());
+            refundDto.setChannel("alipay");
+            refundDto.setReason("延迟订单关闭");
+            ApiResponse<String> response = payClient.refund(refundDto);
+            if (response.getCode().equals(BaseCode.SUCCESS.getCode())) {
+                Order updateOrder = new Order();
+                updateOrder.setEditTime(DateUtils.now());
+                updateOrder.setOrderStatus(OrderStatus.REFUND.getCode());
+                orderMapper.update(updateOrder,Wrappers.lambdaUpdate(Order.class).eq(Order::getOrderNumber, order.getOrderNumber()));
+            }else {
+                log.error("pay服务退款失败 dto : {} response : {}",JSON.toJSONString(refundDto),JSON.toJSONString(response));
+            }
+            orderPayCheckVo.setOrderStatus(OrderStatus.REFUND.getCode());
+            orderPayCheckVo.setCancelOrderTime(DateUtils.now());
+            return orderPayCheckVo;
+        }
+        
         TradeCheckDto tradeCheckDto = new TradeCheckDto();
         tradeCheckDto.setOutTradeNo(String.valueOf(orderPayCheckDto.getOrderNumber()));
         tradeCheckDto.setChannel(Optional.ofNullable(PayChannel.getRc(orderPayCheckDto.getPayChannelType()))
@@ -279,6 +300,29 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
                 new String[]{outTradeNo});
         lock.lock();
         try {
+            Order order = orderMapper.selectOne(Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, outTradeNo));
+            if (Objects.isNull(order)) {
+                throw new DaMaiFrameException(BaseCode.ORDER_NOT_EXIST);
+            }
+            if (Objects.equals(order.getOrderStatus(), OrderStatus.CANCEL.getCode())) {
+                RefundDto refundDto = new RefundDto();
+                refundDto.setOrderNumber(outTradeNo);
+                refundDto.setAmount(order.getOrderPrice());
+                refundDto.setChannel("alipay");
+                refundDto.setReason("延迟订单关闭");
+                ApiResponse<String> response = payClient.refund(refundDto);
+                if (response.getCode().equals(BaseCode.SUCCESS.getCode())) {
+                    Order updateOrder = new Order();
+                    updateOrder.setEditTime(DateUtils.now());
+                    updateOrder.setOrderStatus(OrderStatus.REFUND.getCode());
+                    orderMapper.update(updateOrder,Wrappers.lambdaUpdate(Order.class).eq(Order::getOrderNumber, outTradeNo));
+                }else {
+                    log.error("pay服务退款失败 dto : {} response : {}",JSON.toJSONString(refundDto),JSON.toJSONString(response));
+                }
+                return ALIPAY_NOTIFY_SUCCESS_RESULT;
+            }
+          
+            
             NotifyDto notifyDto = new NotifyDto();
             notifyDto.setChannel(PayChannel.ALIPAY.getValue());
             notifyDto.setParams(params);

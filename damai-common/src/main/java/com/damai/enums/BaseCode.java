@@ -216,6 +216,12 @@ public enum BaseCode {
     
     TICKET_USER_COUNT_UNEQUAL_SEAT_COUNT(60021,"购票人数量和要购买的座位数量不相等"),
     
+    REFUND_ERROR(60022,"退款异常"),
+    
+    PAY_BILL_IS_NOT_PAY_STATUS(60023,"账单不是已支付状态"),
+    
+    REFUND_AMOUNT_GREATER_THAN_PAY_AMOUNT(60024,"退款金额大于支付金额"),
+    
     ORDER_NUMBER_NOT_EXIST(70000,"order_number的值不存在"),
     
     USER_ID_NOT_EXIST(70001,"user_id的值不存在"),

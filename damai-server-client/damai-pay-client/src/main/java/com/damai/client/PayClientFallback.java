@@ -3,6 +3,7 @@ package com.damai.client;
 import com.damai.common.ApiResponse;
 import com.damai.dto.NotifyDto;
 import com.damai.dto.PayDto;
+import com.damai.dto.RefundDto;
 import com.damai.dto.TradeCheckDto;
 import com.damai.enums.BaseCode;
 import com.damai.vo.NotifyVo;
@@ -29,6 +30,11 @@ public class PayClientFallback implements PayClient{
     
     @Override
     public ApiResponse<TradeCheckVo> tradeCheck(final TradeCheckDto tradeCheckDto) {
+        return ApiResponse.error(BaseCode.SYSTEM_ERROR);
+    }
+    
+    @Override
+    public ApiResponse<String> refund(final RefundDto dto) {
         return ApiResponse.error(BaseCode.SYSTEM_ERROR);
     }
 }

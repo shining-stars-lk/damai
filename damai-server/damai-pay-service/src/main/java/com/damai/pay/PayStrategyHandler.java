@@ -45,6 +45,15 @@ public interface PayStrategyHandler {
     TradeResult queryTrade(String outTradeNo);
     
     /**
+     * 退款
+     * @param outTradeNo 订单号
+     * @param price 支付价格
+     * @param reason 原因
+     * @return 结果
+     * */
+    RefundResult refund(String outTradeNo, BigDecimal price, String reason);
+    
+    /**
      * 支付渠道
      * @return 结果
      * */
