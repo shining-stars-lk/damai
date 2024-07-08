@@ -2,7 +2,6 @@ package com.damai.controller;
 
 import com.damai.common.ApiResponse;
 import com.damai.dto.AccountOrderCountDto;
-import com.damai.dto.OrderCancelDto;
 import com.damai.dto.OrderCreateDto;
 import com.damai.dto.OrderGetDto;
 import com.damai.dto.OrderListDto;
@@ -60,12 +59,6 @@ public class OrderController {
     @PostMapping(value = "/alipay/notify")
     public String alipayNotify(HttpServletRequest request) {
         return orderService.alipayNotify(request);
-    }
-    
-    @ApiOperation(value = "订单取消")
-    @PostMapping(value = "/cancel")
-    public ApiResponse<Boolean> cancel(@Valid @RequestBody OrderCancelDto orderCancelDto) {
-        return ApiResponse.ok(orderService.cancel(orderCancelDto));
     }
     
     @ApiOperation(value = "查看订单列表")

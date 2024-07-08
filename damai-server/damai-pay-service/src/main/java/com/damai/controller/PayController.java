@@ -4,6 +4,7 @@ import com.damai.common.ApiResponse;
 import com.damai.dto.NotifyDto;
 import com.damai.dto.PayBillDto;
 import com.damai.dto.PayDto;
+import com.damai.dto.RefundDto;
 import com.damai.dto.TradeCheckDto;
 import com.damai.service.PayService;
 import com.damai.vo.NotifyVo;
@@ -48,6 +49,12 @@ public class PayController {
     @PostMapping(value = "/trade/check")
     public ApiResponse<TradeCheckVo> tradeCheck(@Valid @RequestBody TradeCheckDto tradeCheckDto) {
         return ApiResponse.ok(payService.tradeCheck(tradeCheckDto));
+    }
+    
+    @ApiOperation(value = "退款")
+    @PostMapping(value = "/refund")
+    public ApiResponse<String> refund(@Valid @RequestBody RefundDto refundDto) {
+        return ApiResponse.ok(payService.refund(refundDto));
     }
     
     @ApiOperation(value = "账单详情查询")

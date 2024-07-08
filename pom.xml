@@ -87,6 +87,8 @@
 		<snakeyaml.version>1.33</snakeyaml.version>
 		<spring-boot-starter-captcha.version>1.3.0</spring-boot-starter-captcha.version>
 		<caffeine.version>2.9.3</caffeine.version>
+		<jaxb.version>2.3.0</jaxb.version>
+		<activation.version>1.1.1</activation.version>
 		<spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
 	</properties>
 	<dependencies>

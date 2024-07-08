@@ -2,14 +2,17 @@ package com.damai.pay.alipay;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.AlipayConstants;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.internal.util.WebUtils;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.damai.entity.PayBill;
 import com.damai.enums.AlipayTradeStatus;
 import com.damai.enums.BaseCode;
@@ -18,6 +21,7 @@ import com.damai.enums.PayChannel;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.pay.PayResult;
 import com.damai.pay.PayStrategyHandler;
+import com.damai.pay.RefundResult;
 import com.damai.pay.TradeResult;
 import com.damai.pay.alipay.config.AlipayProperties;
 import lombok.AllArgsConstructor;
@@ -157,6 +161,24 @@ public class AlipayStrategyHandler implements PayStrategyHandler {
             log.error("alipay trade query error",e);
         }
         return tradeResult;
+    }
+    
+    @Override
+    public RefundResult refund(String outTradeNo, BigDecimal price, String reason) {
+        AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+        JSONObject bizContent = new JSONObject();
+        bizContent.put("out_trade_no", outTradeNo);
+        bizContent.put("refund_amount", price);
+        bizContent.put("refund_reason", reason);
+        
+        request.setBizContent(bizContent.toString());
+        try {
+            AlipayTradeRefundResponse response = alipayClient.execute(request);
+            return new RefundResult(response.isSuccess(),response.getBody(),response.getMsg());
+        } catch (AlipayApiException e) {
+            log.error("alipay refund error",e);
+            throw new DaMaiFrameException(BaseCode.REFUND_ERROR);
+        }
     }
     
     @Override

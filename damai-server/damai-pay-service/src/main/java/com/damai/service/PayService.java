@@ -9,15 +9,19 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.damai.dto.NotifyDto;
 import com.damai.dto.PayBillDto;
 import com.damai.dto.PayDto;
+import com.damai.dto.RefundDto;
 import com.damai.dto.TradeCheckDto;
 import com.damai.entity.PayBill;
+import com.damai.entity.RefundBill;
 import com.damai.enums.BaseCode;
 import com.damai.enums.PayBillStatus;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.PayBillMapper;
+import com.damai.mapper.RefundBillMapper;
 import com.damai.pay.PayResult;
 import com.damai.pay.PayStrategyContext;
 import com.damai.pay.PayStrategyHandler;
+import com.damai.pay.RefundResult;
 import com.damai.pay.TradeResult;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.util.DateUtils;
@@ -49,6 +53,9 @@ public class PayService {
     
     @Autowired
     private PayBillMapper payBillMapper;
+    
+    @Autowired
+    private RefundBillMapper refundBillMapper;
     
     @Autowired
     private PayStrategyContext payStrategyContext;
@@ -178,6 +185,40 @@ public class PayService {
             return tradeCheckVo;
         }
         return tradeCheckVo;
+    }
+    
+    public String refund(RefundDto refundDto) {
+        PayBill payBill = payBillMapper.selectOne(Wrappers.lambdaQuery(PayBill.class)
+                .eq(PayBill::getOutOrderNo, refundDto.getOrderNumber()));
+        if (Objects.isNull(payBill)) {
+            throw new DaMaiFrameException(BaseCode.PAY_BILL_NOT_EXIST);
+        }
+        
+        if (!Objects.equals(payBill.getPayBillStatus(), PayBillStatus.PAY.getCode())) {
+            throw new DaMaiFrameException(BaseCode.PAY_BILL_IS_NOT_PAY_STATUS);
+        }
+        
+        if (refundDto.getAmount().compareTo(payBill.getPayAmount()) > 0) {
+            throw new DaMaiFrameException(BaseCode.REFUND_AMOUNT_GREATER_THAN_PAY_AMOUNT);
+        }
+        
+        PayStrategyHandler payStrategyHandler = payStrategyContext.get(refundDto.getChannel());
+        RefundResult refundResult = 
+                payStrategyHandler.refund(refundDto.getOrderNumber(), refundDto.getAmount(), refundDto.getReason());
+        if (refundResult.isSuccess()) {
+            RefundBill refundBill = new RefundBill();
+            refundBill.setId(uidGenerator.getUid());
+            refundBill.setOutOrderNo(payBill.getOutOrderNo());
+            refundBill.setPayBillId(payBill.getId());
+            refundBill.setRefundAmount(refundDto.getAmount());
+            refundBill.setRefundStatus(1);
+            refundBill.setRefundTime(DateUtils.now());
+            refundBill.setReason(refundDto.getReason());
+            refundBillMapper.insert(refundBill);
+            return refundBill.getOutOrderNo();
+        }else {
+            throw new DaMaiFrameException(refundResult.getMessage());
+        }
     }
     
     public PayBillVo detail(PayBillDto payBillDto) {

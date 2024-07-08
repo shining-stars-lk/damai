@@ -3,6 +3,7 @@ package com.damai.client;
 import com.damai.common.ApiResponse;
 import com.damai.dto.NotifyDto;
 import com.damai.dto.PayDto;
+import com.damai.dto.RefundDto;
 import com.damai.dto.TradeCheckDto;
 import com.damai.vo.NotifyVo;
 import com.damai.vo.TradeCheckVo;
@@ -41,4 +42,11 @@ public interface PayClient {
      * */
     @PostMapping(value = "/pay/trade/check")
     ApiResponse<TradeCheckVo> tradeCheck(TradeCheckDto dto);
+    /**
+     * 退款
+     * @param dto 参数
+     * @return 结果
+     * */
+    @PostMapping(value = "/pay/refund")
+    ApiResponse<String> refund(RefundDto dto);
 }

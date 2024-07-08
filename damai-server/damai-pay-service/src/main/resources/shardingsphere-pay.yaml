@@ -35,6 +35,24 @@ rules:
             shardingColumn: out_order_no
             # 用out_order_no列使用hash取模作为分表算法
             shardingAlgorithmName: tablePayHashModModel
+      # 对d_refund_bill表进行分库分表
+      d_refund_bill:
+        # 库为damai_pay_0 damai_pay_1 表为d_refund_bill_0 至 d_refund_bill_1
+        actualDataNodes: ds_${0..1}.d_refund_bill_${0..1}
+        # 分库策略
+        databaseStrategy:
+          standard:
+            # 使用out_order_no作为分片键
+            shardingColumn: out_order_no
+            # 用out_order_no列使用hash取模作为分库算法
+            shardingAlgorithmName: databaseRefundHashModModel
+        # 分表策略      
+        tableStrategy:
+          standard:
+            # 使用out_order_no作为分片键
+            shardingColumn: out_order_no
+            # 用out_order_no列使用hash取模作为分表算法
+            shardingAlgorithmName: tableRefundHashModModel
     # 具体的算法        
     shardingAlgorithms:
       # d_pay_bill表分库算法
@@ -45,6 +63,18 @@ rules:
           sharding-count: 2
       # d_pay_bill表分表算法
       tablePayHashModModel:
+        type: HASH_MOD
+        props:
+          # 分表数量
+          sharding-count: 2
+      # d_refund_bill表分库算法
+      databaseRefundHashModModel:
+        type: HASH_MOD
+        props:
+          # 分库数量
+          sharding-count: 2
+      # d_refund_bill表分表算法
+      tableRefundHashModModel:
         type: HASH_MOD
         props:
           # 分表数量
