@@ -728,7 +728,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         Long programId = programResetExecuteDto.getProgramId();
         LambdaQueryWrapper<Seat> seatQueryWrapper =
                 Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, programId)
-                        .in(Seat::getSellStatus,SellStatus.LOCK,SellStatus.SOLD);
+                        .in(Seat::getSellStatus,SellStatus.LOCK.getCode(),SellStatus.SOLD.getCode());
         List<Seat> seatList = seatMapper.selectList(seatQueryWrapper);
         if (CollectionUtil.isEmpty(seatList)) {
             return true;
@@ -745,7 +745,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         for (TicketCategory ticketCategory : ticketCategories) {
             Long remainNumber = ticketCategory.getRemainNumber();
             Long totalNumber = ticketCategory.getTotalNumber();
-            if (!remainNumber.equals(totalNumber)) {
+            if (!(remainNumber.equals(totalNumber))) {
                 TicketCategory ticketCategoryUpdate = new TicketCategory();
                 ticketCategoryUpdate.setRemainNumber(totalNumber);
                 
