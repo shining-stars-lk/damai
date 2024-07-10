@@ -186,7 +186,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             }
             boolean checkFlag = RsaSignTool.verifyRsaSign256(bodyContent, channelDataVo.getSignPublicKey());
             if (!checkFlag) {
-                throw new DaMaiFrameException(BaseCode.CHANNEL_DATA);
+                throw new DaMaiFrameException(BaseCode.RSA_SIGN_ERROR);
             }
 
             boolean skipCheckTokenResult = skipCheckToken(url);

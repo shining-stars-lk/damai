@@ -9,6 +9,7 @@ import com.damai.dto.GetChannelDataByCodeDto;
 import com.damai.entity.ChannelTableData;
 import com.damai.enums.Status;
 import com.damai.mapper.ChannelDataMapper;
+import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.util.DateUtils;
 import com.damai.vo.GetChannelDataVo;
@@ -17,7 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.damai.redis.RedisCache;
+
 import javax.annotation.Resource;
 import java.util.Optional;
 
