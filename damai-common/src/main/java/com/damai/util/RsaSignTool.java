@@ -180,13 +180,13 @@ public class RsaSignTool {
         //v1加密版本
         parameterTransferV1();
         //v2加密版本
-        parameterTransferV2();
+        //parameterTransferV2();
     }
     
     public static void parameterTransferV1() {
         Map<String, String> map = new HashMap<>(8);
         //基础参数
-        map.put("code", "1234");
+        map.put("code", "0001");
         //业务参数
         map.put("businessBody", "{\"id\":\"1111\",\"sleepTime\":10}");
         //签名
@@ -201,7 +201,7 @@ public class RsaSignTool {
     public static void parameterTransferV2() {
         Map<String, String> map = new HashMap<>(8);
         //基础参数
-        map.put("code","1234");
+        map.put("code","0001");
         
         //参数加密后再签名
         Map<String, Object> businessMap = new HashMap<>(8);

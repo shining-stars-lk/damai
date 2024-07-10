@@ -3,8 +3,6 @@ package com.damai.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.Date;
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: 渠道数据 vo
@@ -25,9 +23,6 @@ public class GetChannelDataVo {
     
     @ApiModelProperty(name ="introduce", dataType ="String", value ="介绍", required =true)
     private String introduce;
-    
-    @ApiModelProperty(name ="createTime", dataType ="Date", value ="创建时间", required =true)
-    private Date createTime;
     
     @ApiModelProperty(name ="status", dataType ="Integer", value ="装填 1:正常 0:禁用", required =true)
     private Integer status;
