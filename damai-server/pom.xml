@@ -25,7 +25,6 @@
         <module>damai-customize-service</module>
         <module>damai-program-service</module>
         <module>damai-pay-service</module>
-        <module>damai-single-service</module>
         <module>damai-mybatis-puls-service</module>
     </modules>
 </project>
