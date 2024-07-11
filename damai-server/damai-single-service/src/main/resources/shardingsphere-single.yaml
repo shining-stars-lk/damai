@@ -56,8 +56,8 @@ rules:
             shardingAlgorithmName: tableTicketUserModModel
       # 对d_order表进行分表
       d_order:
-        # 库为damai 表为d_order_0 至 d_user_order_3
-        actualDataNodes: ds.d_order_${0..3}
+        # 库为damai 表为d_order_0 至 d_user_order_4
+        actualDataNodes: ds.d_order_${0..4}
         # 分表策略
         tableStrategy:
           complex:
@@ -67,8 +67,8 @@ rules:
             shardingAlgorithmName: tableOrderComplexGeneArithmetic
       # 对d_order_ticket_user表进行分表
       d_order_ticket_user:
-        # 库为damai 表为d_order_ticket_user_0 至 d_order_ticket_user_3
-        actualDataNodes: ds.d_order_ticket_user_${0..3}
+        # 库为damai 表为d_order_ticket_user_0 至 d_order_ticket_user_4
+        actualDataNodes: ds.d_order_ticket_user_${0..4}
         # 分表策略
         tableStrategy:
           complex:
@@ -142,6 +142,17 @@ rules:
             shardingColumn: out_order_no
             # 用out_order_no列使用hash取模作为分表算法
             shardingAlgorithmName: tablePayHashModModel
+      # 对d_refund_bill表进行分表
+      d_refund_bill:
+        # 库为damai 表为d_refund_bill_0 至 d_refund_bill_1
+        actualDataNodes: ds.d_refund_bill_${0..1}
+        # 分表策略
+        tableStrategy:
+          standard:
+            # 使用out_order_no作为分片键
+            shardingColumn: out_order_no
+            # 用out_order_no列使用hash取模作为分表算法
+            shardingAlgorithmName: tableRefundHashModModel
     # 绑定表        
     bindingTables:
       - d_order,d_order_ticket_user
@@ -180,7 +191,7 @@ rules:
         type: CLASS_BASED
         props:
           # 分表数量
-          sharding-count: 4
+          sharding-count: 5
           # 分表策略，复合多分片
           strategy: complex
           # 具体的分表逻辑在此自定义类中
@@ -191,7 +202,7 @@ rules:
         type: CLASS_BASED
         props:
           # 分表数量
-          sharding-count: 4
+          sharding-count: 5
           # 分表策略，复合多分片
           strategy: complex
           # 具体的分表逻辑在此自定义类中
@@ -228,6 +239,12 @@ rules:
           sharding-count: 2
       # d_pay_bill表分表算法
       tablePayHashModModel:
+        type: HASH_MOD
+        props:
+          # 分表数量
+          sharding-count: 2
+      # d_refund_bill表分表算法    
+      tableRefundHashModModel:
         type: HASH_MOD
         props:
           # 分表数量
