@@ -50,7 +50,7 @@ public enum RedisKeyManage {
     
     PLATFORM_NOTICE_FLAG("platform_notice_flag","platform_notice_flag的key","platform_notice_flag的value","k"),
     
-    CHANNEL_DATA("channel_data:%s","channel_data的key","channel_data的value","k"),
+    CHANNEL_DATA("channel_data_%s","channel_data的key","channel_data的value","k"),
     
     PROGRAM("d_mai_program_%S","节目id","节目","k"),
     
