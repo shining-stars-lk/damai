@@ -1,0 +1,72 @@
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/damai_order_0?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
+    username: root
+    password: root
+    hikari:
+      max-lifetime: 60000
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1.com:3306/damai_order_1?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
+    username: root
+    password: root
+    hikari:
+      max-lifetime: 60000
+
+rules:
+  - !SHARDING
+    tables:
+      d_order:
+        actualDataNodes: ds_${0..1}.d_order_${0..4}
+        databaseStrategy:
+          complex:
+            shardingColumns: order_number,user_id
+            shardingAlgorithmName: databaseOrderComplexGeneArithmetic
+        tableStrategy:
+          complex:
+            shardingColumns: order_number,user_id
+            shardingAlgorithmName: tableOrderComplexGeneArithmetic
+      d_order_ticket_user:
+        actualDataNodes: ds_${0..1}.d_order_ticket_user_${0..4}
+        databaseStrategy:
+          complex:
+            shardingColumns: order_number,user_id
+            shardingAlgorithmName: databaseOrderTicketUserComplexGeneArithmetic
+        tableStrategy:
+          complex:
+            shardingColumns: order_number,user_id
+            shardingAlgorithmName: tableOrderTicketUserComplexGeneArithmetic
+    bindingTables:
+      - d_order,d_order_ticket_user
+    shardingAlgorithms:
+      databaseOrderComplexGeneArithmetic:
+        type: CLASS_BASED
+        props:
+          sharding-count: 2
+          table-sharding-count: 5
+          strategy: complex
+          algorithmClassName: com.damai.shardingsphere.DatabaseOrderComplexGeneArithmetic
+      tableOrderComplexGeneArithmetic:
+        type: CLASS_BASED
+        props:
+          sharding-count: 5
+          strategy: complex
+          algorithmClassName: com.damai.shardingsphere.TableOrderComplexGeneArithmetic
+      databaseOrderTicketUserComplexGeneArithmetic:
+        type: CLASS_BASED
+        props:
+          sharding-count: 2
+          table-sharding-count: 5
+          strategy: complex
+          algorithmClassName: com.damai.shardingsphere.DatabaseOrderComplexGeneArithmetic
+      tableOrderTicketUserComplexGeneArithmetic:
+        type: CLASS_BASED
+        props:
+          sharding-count: 5
+          strategy: complex
+          algorithmClassName: com.damai.shardingsphere.TableOrderComplexGeneArithmetic
+props:
+  sql-show: true

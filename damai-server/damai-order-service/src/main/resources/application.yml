@@ -3,6 +3,8 @@ server:
   port: 8081
 # 应用名称
 spring:
+  profiles:
+    active: local
   application:
     name: ${prefix.distinction.name:damai}-order-service
   main:
@@ -19,7 +21,7 @@ spring:
         WRITE_NUMBERS_AS_STRINGS: true
   datasource:
     driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
-    url: jdbc:shardingsphere:classpath:shardingsphere-order.yaml
+    url: jdbc:shardingsphere:classpath:shardingsphere-order-${spring.profiles.active}.yaml
   redis:
     database: 0
     host: 127.0.0.1

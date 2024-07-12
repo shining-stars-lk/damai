@@ -6,19 +6,10 @@ server:
       charset: UTF-8
       enabled: true
       force: true
-  tomcat:
-    uri-encoding: UTF-8
-    threads:
-      # 最大线程数(默认200)
-      max: 200
-      # 最小工作空闲线程数(默认10)
-      min-spare: 10
-    # 最大连接数  (默认8192)
-    max-connections: 10000
-    # 等待队列长度，默认(100)
-    accept-count: 200
 # 应用名称
 spring:
+  profiles:
+    active: local
   application:
     name: ${prefix.distinction.name:damai}-program-service
   main:
@@ -35,7 +26,7 @@ spring:
         WRITE_NUMBERS_AS_STRINGS: true
   datasource:
     driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
-    url: jdbc:shardingsphere:classpath:shardingsphere-program.yaml
+    url: jdbc:shardingsphere:classpath:shardingsphere-program-${spring.profiles.active}.yaml
   redis:
     database: 0
     host: 127.0.0.1
