@@ -53,12 +53,17 @@ public class ChannelDataService {
         GetChannelDataVo channelDataVo = getChannelDataByRedis(code);
         if (Objects.isNull(channelDataVo)) {
             channelDataVo = getChannelDataByClient(code);
+            setChannelDataRedis(code,channelDataVo);
         }
         return channelDataVo;
     }
     
     private GetChannelDataVo getChannelDataByRedis(String code){
         return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.CHANNEL_DATA,code),GetChannelDataVo.class);
+    }
+    
+    private void setChannelDataRedis(String code,GetChannelDataVo getChannelDataVo){
+        redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.CHANNEL_DATA,code),getChannelDataVo);
     }
     
     private GetChannelDataVo getChannelDataByClient(String code){

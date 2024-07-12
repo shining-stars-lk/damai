@@ -47,7 +47,7 @@ public class RsaTool {
 	/**
 	 * 生成公私钥
 	 */
-	public Map<String, String> getKey() {
+	public static Map<String, String> getKey() {
 		Map<String, String> pubPriKey = new HashMap<>(8);
 		KeyPair keyPair = KeyUtil.generateKeyPair(KEY_ALGORITHM, KEY_SIZE);
 		String publicKeyStr = java.util.Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
