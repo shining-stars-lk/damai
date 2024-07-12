@@ -1,0 +1,117 @@
+dataSources: 
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/damai_program_0?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
+    username: root
+    password: root
+    hikari:
+      max-lifetime: 60000
+
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/damai_program_1?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai&autoReconnect=true
+    username: root
+    password: root
+    hikari:
+      max-lifetime: 60000
+    
+rules:
+  - !SHARDING
+    tables:
+      d_program:
+        actualDataNodes: ds_${0..1}.d_program_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: databaseProgramModModel
+        tableStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: tableProgramModModel
+      d_program_group:
+        actualDataNodes: ds_${0..1}.d_program_group_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: databaseProgramGroupModModel
+        tableStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: tableProgramGroupModModel
+      d_program_show_time:
+        actualDataNodes: ds_${0..1}.d_program_show_time_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: program_id
+            shardingAlgorithmName: databaseProgramShowTimeModModel
+        tableStrategy:
+          standard:
+            shardingColumn: program_id
+            shardingAlgorithmName: tableProgramShowTimeModModel
+      d_seat:
+        actualDataNodes: ds_${0..1}.d_seat_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: program_id
+            shardingAlgorithmName: databaseSeatModModel
+        tableStrategy:
+          standard:
+            shardingColumn: program_id
+            shardingAlgorithmName: tableSeatModModel
+      d_ticket_category:
+        actualDataNodes: ds_${0..1}.d_ticket_category_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: program_id
+            shardingAlgorithmName: databaseTicketCategoryModModel
+        tableStrategy:
+          standard:
+            shardingColumn: program_id
+            shardingAlgorithmName: tableTicketCategoryModModel      
+    broadcastTables:
+      - d_program_category
+    shardingAlgorithms:
+      databaseProgramModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      tableProgramModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      databaseProgramGroupModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      tableProgramGroupModModel:
+        type: MOD
+        props:
+          sharding-count: 2    
+      databaseProgramShowTimeModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      tableProgramShowTimeModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      databaseSeatModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      tableSeatModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      databaseTicketCategoryModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      tableTicketCategoryModModel:
+        type: MOD
+        props:
+          sharding-count: 2    
+props:
+  sql-show: true

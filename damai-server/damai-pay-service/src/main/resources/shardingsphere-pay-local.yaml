@@ -1,0 +1,59 @@
+dataSources:    
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/damai_pay_0?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/damai_pay_1?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    
+rules:
+  # 分库分表规则
+  - !SHARDING
+    tables:    
+      d_pay_bill:
+        actualDataNodes: ds_${0..1}.d_pay_bill_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: out_order_no
+            shardingAlgorithmName: databasePayHashModModel   
+        tableStrategy:
+          standard:
+            shardingColumn: out_order_no
+            shardingAlgorithmName: tablePayHashModModel
+      d_refund_bill:
+        actualDataNodes: ds_${0..1}.d_refund_bill_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: out_order_no
+            shardingAlgorithmName: databaseRefundHashModModel
+        tableStrategy:
+          standard:
+            shardingColumn: out_order_no
+            shardingAlgorithmName: tableRefundHashModModel      
+    shardingAlgorithms:
+      databasePayHashModModel:
+        type: HASH_MOD
+        props:
+          sharding-count: 2
+      tablePayHashModModel:
+        type: HASH_MOD
+        props:
+          sharding-count: 2
+      databaseRefundHashModModel:
+        type: HASH_MOD
+        props:
+          sharding-count: 2
+      tableRefundHashModModel:
+        type: HASH_MOD
+        props:
+          sharding-count: 2
+props:
+  sql-show: true      
+      

@@ -1,0 +1,124 @@
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/damai_user_0?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/damai_user_1?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    
+rules:
+  - !SHARDING
+    tables:
+      d_user_mobile:
+        actualDataNodes: ds_${0..1}.d_user_mobile_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: mobile
+            shardingAlgorithmName: databaseUserMobileHashModModel     
+        tableStrategy:
+          standard:
+            shardingColumn: mobile
+            shardingAlgorithmName: tableUserMobileHashMod
+      d_user_email:
+        actualDataNodes: ds_${0..1}.d_user_email_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: email
+            shardingAlgorithmName: databaseUserEmailHashModModel     
+        tableStrategy:
+          standard:
+            shardingColumn: email
+            shardingAlgorithmName: tableUserEmailHashMod      
+      d_user:
+        actualDataNodes: ds_${0..1}.d_user_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: databaseUserModModel 
+        tableStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: tableUserModModel
+      d_ticket_user:
+        actualDataNodes: ds_${0..1}.d_ticket_user_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: databaseTicketUserModModel    
+        tableStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: tableTicketUserModModel            
+    shardingAlgorithms:
+      databaseUserMobileHashModModel:
+        type: HASH_MOD
+        props:
+          sharding-count: 2
+      tableUserMobileHashMod:
+        type: HASH_MOD
+        props:
+          sharding-count: 2
+      databaseUserEmailHashModModel:
+        type: HASH_MOD
+        props:
+          sharding-count: 2
+      tableUserEmailHashMod:
+        type: HASH_MOD
+        props:
+          sharding-count: 2    
+      databaseUserModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      tableUserModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      databaseTicketUserModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+      tableTicketUserModModel:
+        type: MOD
+        props:
+          sharding-count: 2
+  - !ENCRYPT
+    tables:
+      d_user:
+        columns:
+          mobile:
+            cipherColumn: mobile
+            encryptorName: user_encryption_algorithm
+          password:
+            cipherColumn: password
+            encryptorName: user_encryption_algorithm
+          id_number:
+            cipherColumn: id_number
+            encryptorName: user_encryption_algorithm  
+      d_user_mobile:
+        columns:
+          mobile:
+            cipherColumn: mobile
+            encryptorName: user_encryption_algorithm
+      d_ticket_user:
+        columns:
+          id_number:
+            cipherColumn: id_number
+            encryptorName: user_encryption_algorithm      
+    encryptors:
+      user_encryption_algorithm:
+        type: SM4
+        props:
+          sm4-key: d3ecdaa11d6ab89e1987870186073eaa
+          sm4-mode: CBC
+          sm4-iv: 1afc7fdce9ebc393f693cd3d23e35ed2
+          sm4-padding: PKCS7Padding
+props:
+  sql-show: true      
+      
