@@ -7,7 +7,7 @@ spring:
     name: ${prefix.distinction.name:damai}-gateway-service
   profiles:
     # 微服务调用
-    active: cloud
+    active: pro
     # 单体服务调用
 #    active: single
   main:
