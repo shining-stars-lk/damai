@@ -583,7 +583,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     @Transactional(rollbackFor = Exception.class)
     public String createMq(OrderCreateDto orderCreateDto){
         String orderNumber = create(orderCreateDto);
-        redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.ORDER_MQ,orderNumber),orderNumber,5, TimeUnit.MINUTES);
+        redisCache.set(RedisKeyBuild.createRedisKey(RedisKeyManage.ORDER_MQ,orderNumber),orderNumber,1, TimeUnit.MINUTES);
         return orderNumber;
     }
     
