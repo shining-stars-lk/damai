@@ -168,10 +168,6 @@ public class UserService extends ServiceImpl<UserMapper, User> {
             userId = userEmail.getUserId();
         }
         
-        Boolean loginResult = redisCache.hasKey(RedisKeyBuild.createRedisKey(RedisKeyManage.USER_LOGIN,code,userId));
-        if (loginResult) {
-            throw new DaMaiFrameException(BaseCode.USER_LOG_IN);
-        }
         LambdaQueryWrapper<User> queryUserWrapper = Wrappers.lambdaQuery(User.class)
                 .eq(User::getId, userId).eq(User::getPassword, password);
         User user = userMapper.selectOne(queryUserWrapper);
