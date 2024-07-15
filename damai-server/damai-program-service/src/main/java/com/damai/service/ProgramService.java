@@ -782,6 +782,7 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         if (result > 0) {
             delRedisData(programInvalidDto.getId());
             redisStreamPushHandler.push(String.valueOf(programInvalidDto.getId()));
+            programEs.deleteByProgramId(programInvalidDto.getId());
             return true;
         }else {
             return false;
