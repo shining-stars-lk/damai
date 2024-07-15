@@ -519,6 +519,7 @@ public class BusinessEsHandle {
             if (Objects.isNull(data)) {
                 continue;
             }
+            String esId = data.getString("_id");
             JSONObject jsonObject = data.getJSONObject("_source");
             JSONArray jsonArray = data.getJSONArray("sort");
             if (Objects.nonNull(jsonArray) && !jsonArray.isEmpty()) {
@@ -535,7 +536,24 @@ public class BusinessEsHandle {
                     jsonObject.put(highLightFieldName,highLightFieldValue.get(0));
                 }
             }
+            if (StringUtil.isNotEmpty(esId)) {
+                jsonObject.put("esId",esId);
+            }
             list.add(JSONObject.parseObject(jsonObject.toJSONString(),clazz));
+        }
+    }
+    
+    public void deleteByDocumentId(String index,String documentId) {
+        if (!esSwitch) {
+            return;
+        }
+        try {
+            Request request = new Request("DELETE", "/" + index + "/_doc/" + documentId);
+            request.addParameters(Collections.<String, String>emptyMap());
+            Response response = restClient.performRequest(request);
+            log.info("deleteByDocumentId result : {}",response.getStatusLine().getReasonPhrase());
+        }catch (Exception e) {
+            log.error("deleteData error",e);
         }
     }
 }

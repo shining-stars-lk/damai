@@ -66,4 +66,9 @@ public class ProgramListVo implements Serializable {
     
     @ApiModelProperty(name ="maxPrice", dataType ="BigDecimal", value ="最高价格")
     private BigDecimal maxPrice;
+    
+    /**
+     * es中的文档id
+     * */
+    private String esId;
 }
