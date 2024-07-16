@@ -5,15 +5,15 @@ import com.damai.dto.AreaGetDto;
 import com.damai.dto.AreaSelectDto;
 import com.damai.service.AreaService;
 import com.damai.vo.AreaVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 /**
@@ -23,37 +23,37 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/area")
-@Api(tags = "area", value = "区域")
+@Tag(name = "area", description = "区域")
 public class AreaController {
     
     @Autowired
     private AreaService areaService;
     
-    @ApiOperation(value = "查询市区以及直辖市数据")
+    @Operation(summary  = "查询市区以及直辖市数据")
     @PostMapping(value = "/selectCityData")
     public ApiResponse<List<AreaVo>> selectCityData() {
         return ApiResponse.ok(areaService.selectCityData());
     }
     
-    @ApiOperation(value = "查询数据根据id集合")
+    @Operation(summary  = "查询数据根据id集合")
     @PostMapping(value = "/selectByIdList")
     public ApiResponse<List<AreaVo>> selectByIdList(@Valid @RequestBody AreaSelectDto areaSelectDto) {
         return ApiResponse.ok(areaService.selectByIdList(areaSelectDto));
     }
     
-    @ApiOperation(value = "查询数据根据id")
+    @Operation(summary  = "查询数据根据id")
     @PostMapping(value = "/getById")
     public ApiResponse<AreaVo> getById(@Valid @RequestBody AreaGetDto areaGetDto){
         return ApiResponse.ok(areaService.getById(areaGetDto));
     }
     
-    @ApiOperation(value = "当前城市")
+    @Operation(summary  = "当前城市")
     @PostMapping(value = "/current")
     public ApiResponse<AreaVo> current(){
         return ApiResponse.ok(areaService.current());
     }
     
-    @ApiOperation(value = "热门城市")
+    @Operation(summary  = "热门城市")
     @PostMapping(value = "/hot")
     public ApiResponse<List<AreaVo>> hot() {
         return ApiResponse.ok(areaService.hot());

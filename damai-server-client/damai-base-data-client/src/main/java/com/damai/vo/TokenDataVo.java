@@ -1,7 +1,6 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,21 +11,21 @@ import java.util.Date;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="TokenDataVo", description ="token数据")
+@Schema(title="TokenDataVo", description ="token数据")
 public class TokenDataVo {
     
-    @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
+    @Schema(name ="id", type ="String", description ="id")
     private Long id;
     
-    @ApiModelProperty(name ="name", dataType ="String", value ="名称", required =true)
+    @Schema(name ="name", type ="String", description ="名称")
     private String name;
     
-    @ApiModelProperty(name ="secret", dataType ="String", value ="秘钥", required =true)
+    @Schema(name ="secret", type ="String", description ="秘钥")
     private String secret;
     
-    @ApiModelProperty(name ="status", dataType ="Integer", value ="装填 1:正常 0:禁用", required =true)
+    @Schema(name ="status", type ="Integer", description ="装填 1:正常 0:禁用")
     private Integer status;
     
-    @ApiModelProperty(name ="createTime", dataType ="Date", value ="创建时间", required =true)
+    @Schema(name ="createTime", type ="Date", description ="创建时间")
     private Date createTime;
 }

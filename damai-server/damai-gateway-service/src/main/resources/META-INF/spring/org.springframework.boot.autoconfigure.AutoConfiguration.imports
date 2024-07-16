@@ -1,2 +1,2 @@
-com.damai.conf.swagger.SwaggerConfig
 com.damai.kafka.ProducerConfig
+com.damai.conf.Config

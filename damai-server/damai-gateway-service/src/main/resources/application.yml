@@ -1,6 +1,9 @@
 #服务端口
 server:
   port: 6085
+
+  http2:
+    enabled: false
 # 应用名称
 spring:
   application:
@@ -12,6 +15,7 @@ spring:
 #    active: single
   main:
     allow-bean-definition-overriding: true
+    web-application-type: none
   data:
     redis:
       database: 0
@@ -86,33 +90,6 @@ feign:
       min-request-size: 512
     response:
       enabled: true
-hystrix:
-  command:
-    default:
-      execution:
-        timeout:
-          enabled: true
-        isolation:
-          thread:
-            timeoutInMilliseconds: 10000
-    fallbackcmd:
-      execution:
-        isolation:
-          strategy: SEMAPHORE
-          semaphore:
-            maxConcurrentRequests: 200
-  # 此配置是hystrix线程池隔离模式，目前生效的是信号量模式，此线程配置不生效
-  # 如果生效的话，需要把上面的SEMAPHORE修改为THREAD
-  threadpool:
-    default:
-      coreSize: 100
-      maximumSize: 300
-      allowMaximumSizeToDivergeFromCoreSize: true
-ribbon:
-  ReadTimeout: 60000
-  ConnectTimeout: 60000
-  MaxAutoRetries: 0
-  MaxAutoRetriesNextServer: 1
 management:
   endpoints:
     web:
@@ -129,3 +106,13 @@ jasypt:
   encryptor:
     password: bgtjkjl!%^sdc
     algorithm: PBEWithMD5AndDES
+# knife4j 网关聚合
+knife4j:
+  gateway:
+    enabled: true
+    # 指定服务发现的模式聚合微服务文档，并且是默认 default 分组
+    strategy: discover
+    discover:
+      # OpenAPI 3.0 规范 
+      version: openapi3
+      enabled: true

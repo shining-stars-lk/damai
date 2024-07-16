@@ -3,7 +3,6 @@ package com.damai.service;
 import com.damai.client.BaseDataClient;
 import com.damai.common.ApiResponse;
 import com.damai.core.RedisKeyManage;
-import com.damai.util.StringUtil;
 import com.damai.dto.GetChannelDataByCodeDto;
 import com.damai.enums.BaseCode;
 import com.damai.exception.ArgumentError;
@@ -11,8 +10,10 @@ import com.damai.exception.ArgumentException;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
+import com.damai.util.StringUtil;
 import com.damai.vo.GetChannelDataVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,7 +31,8 @@ import static com.damai.constant.GatewayConstant.CODE;
 public class ChannelDataService {
     
     private final static String EXCEPTION_MESSAGE = "code参数为空";
-
+    
+    @Lazy
     @Autowired
     private BaseDataClient baseDataClient;
     

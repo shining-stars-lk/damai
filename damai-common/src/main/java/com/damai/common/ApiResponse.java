@@ -1,8 +1,7 @@
 package com.damai.common;
 
 import com.damai.enums.BaseCode;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,16 +12,16 @@ import java.io.Serializable;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ApiResponse",description="数据响应规范结构")
+@Schema(title="ApiResponse", description ="数据响应规范结构")
 public class ApiResponse<T> implements Serializable {
     
-    @ApiModelProperty(name="code", dataType = "Integer", value="响应码 0:成功 其余:失败")
+    @Schema(name ="code", type ="Integer", description ="响应码 0:成功 其余:失败")
     private Integer code;
     
-    @ApiModelProperty(name="message", dataType = "String", value="错误信息")
+    @Schema(name ="message", type ="String", description ="错误信息")
     private String message;
     
-    @ApiModelProperty(name="data", value="响应的具体数据")
+    @Schema(name ="data", description ="响应的具体数据")
     private T data;
     
     private ApiResponse() {}

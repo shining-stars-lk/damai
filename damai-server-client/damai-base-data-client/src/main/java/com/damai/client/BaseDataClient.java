@@ -21,7 +21,7 @@ import static com.damai.constant.Constant.SPRING_INJECT_PREFIX_DISTINCTION_NAME;
  * @author: 阿星不是程序员
  **/
 @Component
-@FeignClient(value = SPRING_INJECT_PREFIX_DISTINCTION_NAME+"-"+"base-data-service",fallbackFactory  = BaseDataClientFallbackFactory.class)
+@FeignClient(value = SPRING_INJECT_PREFIX_DISTINCTION_NAME+"-"+"base-data-service",fallback  = BaseDataClientFallback.class)
 public interface BaseDataClient {
     /**
      * 根据code查询数据
