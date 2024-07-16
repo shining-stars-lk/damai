@@ -12,11 +12,12 @@ spring:
 #    active: single
   main:
     allow-bean-definition-overriding: true
-  redis:
-    database: 0
-    host: 127.0.0.1
-    port: 6379
-    timeout: 3000
+  data:
+    redis:
+      database: 0
+      host: 127.0.0.1
+      port: 6379
+      timeout: 3000
   cloud:
     nacos:
       discovery:

@@ -19,11 +19,12 @@ spring:
       date-format: yyyy-MM-dd HH:mm:ss
       generator:
         WRITE_NUMBERS_AS_STRINGS: true
-  redis:
-    database: 0
-    host: 127.0.0.1
-    port: 6379
-    timeout: 3000
+  data:      
+    redis:
+      database: 0
+      host: 127.0.0.1
+      port: 6379
+      timeout: 3000
   cloud:
     nacos:
       discovery:

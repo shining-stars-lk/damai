@@ -1,5 +1,3 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.damai.config.DaMaiCommonAutoConfig
 org.springframework.boot.env.EnvironmentPostProcessor=\
   com.damai.environment.SpringEnvironment
 org.springframework.context.ApplicationContextInitializer=\
