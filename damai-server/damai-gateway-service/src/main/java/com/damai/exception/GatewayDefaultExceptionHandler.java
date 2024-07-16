@@ -38,9 +38,9 @@ public class GatewayDefaultExceptionHandler implements ErrorWebExceptionHandler 
         RequestTemporaryWrapper requestTemporaryWrapper = new RequestTemporaryWrapper();
         if (ex instanceof ResponseStatusException) {
             ResponseStatusException responseStatusException = (ResponseStatusException)ex;
-            if (responseStatusException.getStatus() == HttpStatus.NOT_FOUND) {
+            if (responseStatusException.getStatusCode() == HttpStatus.NOT_FOUND) {
                 String path = exchange.getRequest().getPath().value();
-                String methodValue = exchange.getRequest().getMethodValue();
+                String methodValue = exchange.getRequest().getMethod().name();
                 ApiResponse.error(BaseCode.NOT_FOUND.getCode(),String.format(BaseCode.NOT_FOUND.getMsg(),methodValue,path));
             }
         }else if (ex instanceof DaMaiFrameException) {

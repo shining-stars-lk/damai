@@ -1,6 +1,6 @@
 package com.damai.initialize.base;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import static com.damai.initialize.constant.InitializeHandlerType.APPLICATION_POST_CONSTRUCT;
 
