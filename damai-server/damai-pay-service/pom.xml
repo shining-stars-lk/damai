@@ -66,13 +66,6 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
-        <!-- spring-cloud-starter-alibaba-nacos-discovery源码中nacos-common optional为true,所以这里要将common引入 -->
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-common</artifactId>
-            <version>${nacos.version}</version>
-        </dependency>
-        <!-- nacos end -->
         <dependency>
             <groupId>com.example</groupId>
             <artifactId>damai-pay-client</artifactId>

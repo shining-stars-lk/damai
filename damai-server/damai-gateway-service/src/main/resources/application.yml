@@ -15,7 +15,6 @@ spring:
 #    active: single
   main:
     allow-bean-definition-overriding: true
-    web-application-type: none
   data:
     redis:
       database: 0
@@ -60,10 +59,6 @@ spring:
             allowedMethods: '*'
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
-        - name: FineGritHystrix  
-          args:
-            fallbackUri: forward:/fallBackHandler
-            name: fallbackcmd
   kafka:
     bootstrap-servers: 127.0.0.1:9092
     producer:

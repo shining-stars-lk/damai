@@ -33,7 +33,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.example</groupId>
             <artifactId>damai-service-component</artifactId>
             <version>${revision}</version>
@@ -43,7 +43,7 @@
                     <artifactId>spring-boot-starter-web</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.example</groupId>
             <artifactId>damai-id-generator-framework</artifactId>
@@ -53,23 +53,11 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-web</artifactId>
                 </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-common</artifactId>
-            <version>${revision}</version>
-            <exclusions>
                 <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
+                    <artifactId>damai-common</artifactId>
+                    <groupId>com.example</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-thread-pool-framework</artifactId>
-            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
@@ -79,6 +67,10 @@
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>damai-common</artifactId>
+                    <groupId>com.example</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -90,18 +82,10 @@
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-okhttp</artifactId>
         </dependency>
-        <!-- nacos start -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
-        <!-- spring-cloud-starter-alibaba-nacos-discovery源码中nacos-common optional为true,所以这里要将common引入 -->
-        <!--<dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-common</artifactId>
-            <version>${nacos.version}</version>
-        </dependency>-->
-        <!-- nacos end -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
@@ -113,6 +97,17 @@
         <dependency>
             <groupId>com.example</groupId>
             <artifactId>damai-base-data-client</artifactId>
+            <version>${revision}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.example</groupId>
+                    <artifactId>damai-common</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-common</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
@@ -133,6 +128,12 @@
             <groupId>com.example</groupId>
             <artifactId>damai-service-gray-transition-gateway-framework</artifactId>
             <version>${revision}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>damai-common</artifactId>
+                    <groupId>com.example</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>com.alibaba.cloud</groupId>-->
@@ -163,10 +164,10 @@
 <!--            <artifactId>activation</artifactId>-->
 <!--            <version>${activation.version}</version>-->
 <!--        </dependency>-->
-        <dependency>
+        <!--<dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
