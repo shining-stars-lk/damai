@@ -37,6 +37,12 @@ public enum BaseCode {
     
     REDIS_STREAM_CONSUMER_TYPE_NOT_EXIST(511,"redisStream消费方式不存在"),
     
+    CHANNEL_DATA_NOT_EXIST(512,"没有找到ChannelData"),
+    
+    OPERATION_IS_TOO_FREQUENT_PLEASE_TRY_AGAIN_LATER(513,"操作太频繁，请稍后再试"),
+    
+    THREAD_INTERRUPTED(514,"线程中断错误"),
+    
     RSA_SIGN_ERROR(10000,"rsa签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"rsa解密失败"),

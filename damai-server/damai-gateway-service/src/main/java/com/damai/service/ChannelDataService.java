@@ -75,6 +75,6 @@ public class ChannelDataService {
         if (Objects.equals(getChannelDataApiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
             return getChannelDataApiResponse.getData();
         }
-        throw new DaMaiFrameException("没有找到ChannelData");
+        throw new DaMaiFrameException(BaseCode.CHANNEL_DATA_NOT_EXIST);
     }
 }
