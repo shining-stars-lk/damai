@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class PayApplication {
 
     public static void main(String[] args) {
+        System.setProperty("nacos.logging.default.config.enabled","false");
         SpringApplication.run(PayApplication.class, args);
     }
 

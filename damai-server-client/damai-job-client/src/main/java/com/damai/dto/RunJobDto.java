@@ -12,10 +12,10 @@ import jakarta.validation.constraints.NotNull;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="RunJobDto", description ="RunJobDto")
+@Schema(title="RunJobDto", description ="RunJobDto")
 public class RunJobDto {
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="任务id", required =true)
+    @Schema(name ="id", type ="Long", description ="任务id", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long id;
 }

@@ -1,9 +1,9 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -14,17 +14,18 @@ import java.util.List;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramGroupVo", description ="节目分组")
+@Schema(title="ProgramGroupVo", description ="节目分组")
 public class ProgramGroupVo implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="主键id")
+    @Schema(name ="id", type ="Long", description ="主键id")
     private Long id;
     
-    @ApiModelProperty(name ="programSimpleInfoVoList", dataType ="List<ProgramSimpleInfoVo>", value ="节目简单信息集合")
+    @Schema(name ="programSimpleInfoVoList", type ="List<ProgramSimpleInfoVo>", description ="节目简单信息集合")
     private List<ProgramSimpleInfoVo> programSimpleInfoVoList;
     
-    @ApiModelProperty(name ="recentShowTime", dataType ="Date", value ="最近的节目演出时间")
+    @Schema(name ="recentShowTime", type ="Date", description ="最近的节目演出时间")
     private Date recentShowTime;
 }

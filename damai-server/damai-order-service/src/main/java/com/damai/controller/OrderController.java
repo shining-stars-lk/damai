@@ -12,16 +12,16 @@ import com.damai.vo.AccountOrderCountVo;
 import com.damai.vo.OrderGetVo;
 import com.damai.vo.OrderListVo;
 import com.damai.vo.OrderPayCheckVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import java.util.List;
 
 /**
@@ -31,55 +31,55 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/order")
-@Api(tags = "order", value = "订单")
+@Tag(name = "order", description = "订单")
 public class OrderController {
     
     @Autowired
     private OrderService orderService;
     
-    @ApiOperation(value = "订单创建(不提供给前端调用，只允许内部program服务调用)")
+    @Operation(summary  = "订单创建(不提供给前端调用，只允许内部program服务调用)")
     @PostMapping(value = "/create")
     public ApiResponse<String> create(@Valid @RequestBody OrderCreateDto orderCreateDto) {
         return ApiResponse.ok(orderService.create(orderCreateDto));
     }
     
-    @ApiOperation(value = "订单支付")
+    @Operation(summary  = "订单支付")
     @PostMapping(value = "/pay")
     public ApiResponse<String> pay(@Valid @RequestBody OrderPayDto orderPayDto) {
         return ApiResponse.ok(orderService.pay(orderPayDto));
     }
     
-    @ApiOperation(value = "订单支付后状态检查")
+    @Operation(summary  = "订单支付后状态检查")
     @PostMapping(value = "/pay/check")
     public ApiResponse<OrderPayCheckVo> payCheck(@Valid @RequestBody OrderPayCheckDto orderPayCheckDto) {
         return ApiResponse.ok(orderService.payCheck(orderPayCheckDto));
     }
     
-    @ApiOperation(value = "支付宝支付后回调通知")
+    @Operation(summary  = "支付宝支付后回调通知")
     @PostMapping(value = "/alipay/notify")
     public String alipayNotify(HttpServletRequest request) {
         return orderService.alipayNotify(request);
     }
     
-    @ApiOperation(value = "查看订单列表")
+    @Operation(summary  = "查看订单列表")
     @PostMapping(value = "/select/list")
     public ApiResponse<List<OrderListVo>> selectList(@Valid @RequestBody OrderListDto orderListDto) {
         return ApiResponse.ok(orderService.selectList(orderListDto));
     }
     
-    @ApiOperation(value = "查看订单详情")
+    @Operation(summary  = "查看订单详情")
     @PostMapping(value = "/get")
     public ApiResponse<OrderGetVo> get(@Valid @RequestBody OrderGetDto orderGetDto) {
         return ApiResponse.ok(orderService.get(orderGetDto));
     }
     
-    @ApiOperation(value = "账户下某个节目的订单数量(不提供给前端调用，只允许内部program服务调用)")
+    @Operation(summary  = "账户下某个节目的订单数量(不提供给前端调用，只允许内部program服务调用)")
     @PostMapping(value = "/account/order/count")
     public ApiResponse<AccountOrderCountVo> accountOrderCount(@Valid @RequestBody AccountOrderCountDto accountOrderCountDto) {
         return ApiResponse.ok(orderService.accountOrderCount(accountOrderCountDto));
     }
     
-    @ApiOperation(value = "查看缓存中的订单")
+    @Operation(summary  = "查看缓存中的订单")
     @PostMapping(value = "/get/cache")
     public ApiResponse<String> getCache(@Valid @RequestBody OrderGetDto orderGetDto) {
         return ApiResponse.ok(orderService.getCache(orderGetDto));

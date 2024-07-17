@@ -1,10 +1,10 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -13,30 +13,30 @@ import java.math.BigDecimal;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="SeatAddDto", description ="节目座位添加")
+@Schema(title="SeatAddDto", description ="节目座位添加")
 public class SeatAddDto {
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id",required = true)
+    @Schema(name ="programId", type ="Long", description ="节目表id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long programId;
     
-    @ApiModelProperty(name ="ticketCategoryId", dataType ="Long", value ="节目票档id",required = true)
+    @Schema(name ="ticketCategoryId", type ="Long", description ="节目票档id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long ticketCategoryId;
     
-    @ApiModelProperty(name ="rowCode", dataType ="Integer", value ="排号",required = true)
+    @Schema(name ="rowCode", type ="Integer", description ="排号",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer rowCode;
     
-    @ApiModelProperty(name ="colCode", dataType ="Integer", value ="列号",required = true)
+    @Schema(name ="colCode", type ="Integer", description ="列号",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer colCode;
     
-    @ApiModelProperty(name ="seatType", dataType ="Integer", value ="座位类型 详见seatType枚举",required = true)
+    @Schema(name ="seatType", type ="Integer", description ="座位类型 详见seatType枚举",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer seatType;
     
-    @ApiModelProperty(name ="price", dataType ="BigDecimal", value ="座位价格",required = true)
+    @Schema(name ="price", type ="BigDecimal", description ="座位价格",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private BigDecimal price;
 }

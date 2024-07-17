@@ -1,7 +1,6 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -10,12 +9,12 @@ import lombok.Data;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="CheckNeedCaptchaDataVo", description ="是否需要进行校验验证码")
+@Schema(title="CheckNeedCaptchaDataVo", description ="是否需要进行校验验证码")
 public class CheckNeedCaptchaDataVo {
     
-    @ApiModelProperty(name ="verifyCaptcha", dataType ="Boolean", value ="是否需要验证码 true:是 false:否")
+    @Schema(name ="verifyCaptcha", type ="Boolean", description ="是否需要验证码 true:是 false:否")
     private Boolean verifyCaptcha;
     
-    @ApiModelProperty(name ="id", dataType ="captchaId", value ="唯一标识id，用户注册接口需要传入此id")
+    @Schema(name ="id", type ="captchaId", description ="唯一标识id，用户注册接口需要传入此id")
     private Long captchaId;
 }

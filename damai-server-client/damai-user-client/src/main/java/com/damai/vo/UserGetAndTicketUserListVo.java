@@ -1,8 +1,7 @@
 package com.damai.vo;
 
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
@@ -12,12 +11,12 @@ import java.util.List;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="UserGetAndTicketUserListVo", description ="用户和购票人集合数据")
+@Schema(title="UserGetAndTicketUserListVo", description ="用户和购票人集合数据")
 public class UserGetAndTicketUserListVo {
     
-    @ApiModelProperty(name ="userVo", dataType ="UserVo", value ="用户")
+    @Schema(name ="userVo", type ="UserVo", description ="用户")
     private UserVo userVo;
     
-    @ApiModelProperty(name ="ticketUserVoList", dataType ="List<TicketUserVo>", value ="购票人集合")
+    @Schema(name ="ticketUserVoList", type ="List<TicketUserVo>", description ="购票人集合")
     private List<TicketUserVo> ticketUserVoList;
 }

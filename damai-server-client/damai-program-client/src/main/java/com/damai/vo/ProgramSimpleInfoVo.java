@@ -1,9 +1,9 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -12,18 +12,19 @@ import java.io.Serializable;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramSimpleInfoVo", description ="节目简单信息")
+@Schema(title="ProgramSimpleInfoVo", description ="节目简单信息")
 public class ProgramSimpleInfoVo implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="主键id")
+    @Schema(name ="id", type ="Long", description ="主键id")
     private Long programId;
     
-    @ApiModelProperty(name ="areaId", dataType ="Long", value ="地区id")
+    @Schema(name ="areaId", type ="Long", description ="地区id")
     private Long areaId;
     
-    @ApiModelProperty(name ="areaIdName", dataType ="String", value ="地区名字")
+    @Schema(name ="areaIdName", type ="String", description ="地区名字")
     private String areaIdName;
 }
 

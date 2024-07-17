@@ -1,7 +1,6 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -10,12 +9,12 @@ import lombok.Data;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="UserLoginVo", description ="用户登录返回实体")
+@Schema(title="UserLoginVo", description ="用户登录返回实体")
 public class UserLoginVo {
     
-    @ApiModelProperty(name ="userId", dataType ="Long", value ="用户id")
+    @Schema(name ="userId", type ="Long", description ="用户id")
     private Long userId;
     
-    @ApiModelProperty(name ="token", dataType ="String", value ="token")
+    @Schema(name ="token", type ="String", description ="token")
     private String token;
 }

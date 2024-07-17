@@ -34,21 +34,21 @@ spring:
       transport:
         port: 8768
         dashboard: 127.0.0.1:8082
-      datasource:
-        degrade:
-          nacos:
-            server-addr: ${spring.cloud.nacos.discovery.server-addr}
-            dataId: ${spring.application.name}-degrade-rules
-            groupId: SENTINEL_GROUP
-            dataType: json
-            rule-type: degrade
-        flow:
-          nacos:
-            server-addr: ${spring.cloud.nacos.discovery.server-addr}
-            dataId: ${spring.application.name}-flow-rules
-            groupId: SENTINEL_GROUP
-            dataType: json
-            rule-type: flow
+#      datasource:
+#        degrade:
+#          nacos:
+#            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+#            dataId: ${spring.application.name}-degrade-rules
+#            groupId: SENTINEL_GROUP
+#            dataType: json
+#            rule-type: degrade
+#        flow:
+#          nacos:
+#            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+#            dataId: ${spring.application.name}-flow-rules
+#            groupId: SENTINEL_GROUP
+#            dataType: json
+#            rule-type: flow
     gateway:
       globalcors:
         corsConfigurations:

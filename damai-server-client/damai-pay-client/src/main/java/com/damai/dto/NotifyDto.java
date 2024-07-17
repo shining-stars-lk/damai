@@ -1,10 +1,11 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import jakarta.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -14,17 +15,18 @@ import java.util.Map;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="NotifyDto", description ="支付回调通知")
+@Schema(title="NotifyDto", description ="支付回调通知")
 public class NotifyDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
     
-    @ApiModelProperty(name ="channel", dataType ="Integer", value ="支付渠道 alipay：支付宝 wx：微信",required = true)
+    @Schema(name ="channel", type ="Integer", description ="支付渠道 alipay：支付宝 wx：微信",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private String channel;
 
-    @ApiModelProperty(name ="params", dataType ="Map<String, String>", value ="回调参数",required = true)
+    @Schema(name ="params", type ="Map<String, String>", description ="回调参数",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Map<String, String> params;
 }

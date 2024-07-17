@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.damai.data.BaseTableData;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 @TableName("d_seat")
 public class Seat extends BaseTableData implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

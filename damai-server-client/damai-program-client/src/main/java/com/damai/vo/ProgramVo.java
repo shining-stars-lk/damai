@@ -1,9 +1,9 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -14,170 +14,171 @@ import java.util.List;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramVo", description ="节目")
+@Schema(title="ProgramVo", description ="节目")
 public class ProgramVo implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="主键id")
+    @Schema(name ="id", type ="Long", description ="主键id")
     private Long id;
     
-    @ApiModelProperty(name ="programGroupId", dataType ="Long", value ="节目分组id")
+    @Schema(name ="programGroupId", type ="Long", description ="节目分组id")
     private Long programGroupId;
     
-    @ApiModelProperty(name ="prime", dataType ="Integer", value ="当属于同一个节目分组时 是否为主要节目 0:否 1:是")
+    @Schema(name ="prime", type ="Integer", description ="当属于同一个节目分组时 是否为主要节目 0:否 1:是")
     private Integer prime;
     
-    @ApiModelProperty(name ="programGroupVo", dataType ="ProgramGroupVo", value ="节目分组")
+    @Schema(name ="programGroupVo", type ="ProgramGroupVo", description ="节目分组")
     private ProgramGroupVo programGroupVo;
     
-    @ApiModelProperty(name ="title", dataType ="Long", value ="标题")
+    @Schema(name ="title", type ="Long", description ="标题")
     private String title;
     
-    @ApiModelProperty(name ="actor", dataType ="Long", value ="艺人")
+    @Schema(name ="actor", type ="Long", description ="艺人")
     private String actor;
     
-    @ApiModelProperty(name ="place", dataType ="String", value ="地点")
+    @Schema(name ="place", type ="String", description ="地点")
     private String place;
     
-    @ApiModelProperty(name ="itemPicture", dataType ="String", value ="图片介绍")
+    @Schema(name ="itemPicture", type ="String", description ="图片介绍")
     private String itemPicture;
     
-    @ApiModelProperty(name ="preSell", dataType ="Integer", value ="预售 1:是 0:否")
+    @Schema(name ="preSell", type ="Integer", description ="预售 1:是 0:否")
     private Integer preSell;
     
-    @ApiModelProperty(name ="preSellInstruction", dataType ="String", value ="预售说明")
+    @Schema(name ="preSellInstruction", type ="String", description ="预售说明")
     private String preSellInstruction;
     
-    @ApiModelProperty(name ="importantNotice", dataType ="String", value ="重要通知")
+    @Schema(name ="importantNotice", type ="String", description ="重要通知")
     private String importantNotice;
     
-    @ApiModelProperty(name ="areaId", dataType ="Long", value ="区域id")
+    @Schema(name ="areaId", type ="Long", description ="区域id")
     private Long areaId;
 
-    @ApiModelProperty(name ="areaName", dataType ="Long", value ="区域名字")
+    @Schema(name ="areaName", type ="Long", description ="区域名字")
     private String areaName;
     
-    @ApiModelProperty(name ="programCategoryId", dataType ="Long", value ="节目类型表id")
+    @Schema(name ="programCategoryId", type ="Long", description ="节目类型表id")
     private Long programCategoryId;
     
-    @ApiModelProperty(name ="programCategoryName", dataType ="Long", value ="节目类型表名字")
+    @Schema(name ="programCategoryName", type ="Long", description ="节目类型表名字")
     private String programCategoryName;
     
-    @ApiModelProperty(name ="parentProgramCategoryId", dataType ="Long", value ="父节目类型表id")
+    @Schema(name ="parentProgramCategoryId", type ="Long", description ="父节目类型表id")
     private Long parentProgramCategoryId;
     
-    @ApiModelProperty(name ="parentProgramCategoryName", dataType ="String", value ="父节目类型名字")
+    @Schema(name ="parentProgramCategoryName", type ="String", description ="父节目类型名字")
     private String parentProgramCategoryName;
     
-    @ApiModelProperty(name ="detail", dataType ="String", value ="项目详情")
+    @Schema(name ="detail", type ="String", description ="项目详情")
     private String detail;
     
-    @ApiModelProperty(name ="perOrderLimitPurchaseCount", dataType ="Integer", value ="每笔订单最多购买数量")
+    @Schema(name ="perOrderLimitPurchaseCount", type ="Integer", description ="每笔订单最多购买数量")
     private Integer perOrderLimitPurchaseCount;
     
-    @ApiModelProperty(name ="perAccountLimitPurchaseCount", dataType ="Integer", value ="每个账号最多购买数量")
+    @Schema(name ="perAccountLimitPurchaseCount", type ="Integer", description ="每个账号最多购买数量")
     private Integer perAccountLimitPurchaseCount;
     
-    @ApiModelProperty(name ="refundTicketRule", dataType ="String", value ="退票/换票规则")
+    @Schema(name ="refundTicketRule", type ="String", description ="退票/换票规则")
     private String refundTicketRule;
     
-    @ApiModelProperty(name ="deliveryInstruction", dataType ="String", value ="配送信息说明")
+    @Schema(name ="deliveryInstruction", type ="String", description ="配送信息说明")
     private String deliveryInstruction;
     
-    @ApiModelProperty(name ="entryRule", dataType ="String", value ="入场规则")
+    @Schema(name ="entryRule", type ="String", description ="入场规则")
     private String entryRule;
     
-    @ApiModelProperty(name ="childPurchase", dataType ="String", value ="儿童购票")
+    @Schema(name ="childPurchase", type ="String", description ="儿童购票")
     private String childPurchase;
     
-    @ApiModelProperty(name ="invoiceSpecification", dataType ="String", value ="发票说明")
+    @Schema(name ="invoiceSpecification", type ="String", description ="发票说明")
     private String invoiceSpecification;
     
-    @ApiModelProperty(name ="realTicketPurchaseRule", dataType ="String", value ="实名购票规则")
+    @Schema(name ="realTicketPurchaseRule", type ="String", description ="实名购票规则")
     private String realTicketPurchaseRule;
     
-    @ApiModelProperty(name ="abnormalOrderDescription", dataType ="String", value ="异常排单说明")
+    @Schema(name ="abnormalOrderDescription", type ="String", description ="异常排单说明")
     private String abnormalOrderDescription;
     
-    @ApiModelProperty(name ="kindReminder", dataType ="String", value ="温馨提示")
+    @Schema(name ="kindReminder", type ="String", description ="温馨提示")
     private String kindReminder;
     
-    @ApiModelProperty(name ="performanceDuration", dataType ="String", value ="演出时长")
+    @Schema(name ="performanceDuration", type ="String", description ="演出时长")
     private String performanceDuration;
     
-    @ApiModelProperty(name ="entryTime", dataType ="String", value ="入场时间")
+    @Schema(name ="entryTime", type ="String", description ="入场时间")
     private String entryTime;
     
-    @ApiModelProperty(name ="minPerformanceCount", dataType ="Integer", value ="最低演出曲目")
+    @Schema(name ="minPerformanceCount", type ="Integer", description ="最低演出曲目")
     private Integer minPerformanceCount;
     
-    @ApiModelProperty(name ="mainActor", dataType ="String", value ="主要演员")
+    @Schema(name ="mainActor", type ="String", description ="主要演员")
     private String mainActor;
 
-    @ApiModelProperty(name ="minPerformanceDuration", dataType ="String", value ="最低演出时长")
+    @Schema(name ="minPerformanceDuration", type ="String", description ="最低演出时长")
     private String minPerformanceDuration;
     
-    @ApiModelProperty(name ="prohibitedItem", dataType ="String", value ="禁止携带物品")
+    @Schema(name ="prohibitedItem", type ="String", description ="禁止携带物品")
     private String prohibitedItem;
     
-    @ApiModelProperty(name ="depositSpecification", dataType ="String", value ="寄存说明")
+    @Schema(name ="depositSpecification", type ="String", description ="寄存说明")
     private String depositSpecification;
     
-    @ApiModelProperty(name ="totalCount", dataType ="Long", value ="大麦网初始开售时全场可售门票总张数")
+    @Schema(name ="totalCount", type ="Long", description ="大麦网初始开售时全场可售门票总张数")
     private Long totalCount;
     
-    @ApiModelProperty(name ="permitRefund", dataType ="Integer", value ="是否允许退款  0:不支持退 1:条件退 2:全部退")
+    @Schema(name ="permitRefund", type ="Integer", description ="是否允许退款  0:不支持退 1:条件退 2:全部退")
     private Integer permitRefund;
     
-    @ApiModelProperty(name ="refundExplain", dataType ="String", value ="退款说明")
+    @Schema(name ="refundExplain", type ="String", description ="退款说明")
     private String refundExplain;
     
-    @ApiModelProperty(name ="relNameTicketEntrance", dataType ="Integer", value ="实名制购票和入场 1:是 0:否")
+    @Schema(name ="relNameTicketEntrance", type ="Integer", description ="实名制购票和入场 1:是 0:否")
     private Integer relNameTicketEntrance;
     
-    @ApiModelProperty(name ="relNameTicketEntranceExplain", dataType ="String", value ="实名制购票和入场说明")
+    @Schema(name ="relNameTicketEntranceExplain", type ="String", description ="实名制购票和入场说明")
     private String relNameTicketEntranceExplain;
     
-    @ApiModelProperty(name ="permitChooseSeat", dataType ="Integer", value ="是否允许选座 1:允许选座 0:不允许选座")
+    @Schema(name ="permitChooseSeat", type ="Integer", description ="是否允许选座 1:允许选座 0:不允许选座")
     private Integer permitChooseSeat;
     
-    @ApiModelProperty(name ="chooseSeatExplain", dataType ="String", value ="选座说明")
+    @Schema(name ="chooseSeatExplain", type ="String", description ="选座说明")
     private String chooseSeatExplain;
 
-    @ApiModelProperty(name ="electronicDeliveryTicket", dataType ="Integer", value ="电子票/快递票 0:都没有 1:电子票 2:快递票")
+    @Schema(name ="electronicDeliveryTicket", type ="Integer", description ="电子票/快递票 0:都没有 1:电子票 2:快递票")
     private Integer electronicDeliveryTicket;
     
-    @ApiModelProperty(name ="electronicDeliveryTicketExplain", dataType ="String", value ="电子票说明")
+    @Schema(name ="electronicDeliveryTicketExplain", type ="String", description ="电子票说明")
     private String electronicDeliveryTicketExplain;
     
-    @ApiModelProperty(name ="electronicInvoice", dataType ="Integer", value ="电子发票 1:是 0:不是")
+    @Schema(name ="electronicInvoice", type ="Integer", description ="电子发票 1:是 0:不是")
     private Integer electronicInvoice;
     
-    @ApiModelProperty(name ="electronicInvoiceExplain", dataType ="String", value ="电子发票说明")
+    @Schema(name ="electronicInvoiceExplain", type ="String", description ="电子发票说明")
     private String electronicInvoiceExplain;
 
-    @ApiModelProperty(name ="highHeat", dataType ="Integer", value ="高热度节目 0:否 1:是")
+    @Schema(name ="highHeat", type ="Integer", description ="高热度节目 0:否 1:是")
     private Integer highHeat;
     
-    @ApiModelProperty(name ="programStatus", dataType ="Integer", value ="节目状态 1:上架 0:下架")
+    @Schema(name ="programStatus", type ="Integer", description ="节目状态 1:上架 0:下架")
     private Integer programStatus;
     
-    @ApiModelProperty(name ="issueTime", dataType ="Date", value ="上架发行时间")
+    @Schema(name ="issueTime", type ="Date", description ="上架发行时间")
     private Integer issueTime;
     
     /**
      * 业务字段
      * */
-    @ApiModelProperty(name ="showTime", dataType ="Date", value ="演出时间")
+    @Schema(name ="showTime", type ="Date", description ="演出时间")
     private Date showTime;
     
-    @ApiModelProperty(name ="showDayTime", dataType ="Date", value ="演出时间(精确到天)")
+    @Schema(name ="showDayTime", type ="Date", description ="演出时间(精确到天)")
     private Date showDayTime;
     
-    @ApiModelProperty(name ="showWeekTime", dataType ="String", value ="演出时间所在的星期")
+    @Schema(name ="showWeekTime", type ="String", description ="演出时间所在的星期")
     private String showWeekTime;
     
-    @ApiModelProperty(name ="ticketCategoryVoList", dataType ="List<TicketCategoryVo>", value ="节目票档")
+    @Schema(name ="ticketCategoryVoList", type ="List<TicketCategoryVo>", description ="节目票档")
     private List<TicketCategoryVo> ticketCategoryVoList;
 }

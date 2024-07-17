@@ -1,10 +1,11 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import jakarta.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -13,28 +14,29 @@ import java.io.Serializable;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="UserUpdateDto", description ="修改用户")
+@Schema(title="UserUpdateDto", description ="修改用户")
 public class UserUpdateDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="用户id",required = true)
+    @Schema(name ="id", type ="Long", description ="用户id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long id;
     
-    @ApiModelProperty(name ="name", dataType ="String", value ="用户名字")
+    @Schema(name ="name", type ="String", description ="用户名字")
     private String name;
 
-    @ApiModelProperty(name ="relName", dataType ="String", value ="用户真实名字")
+    @Schema(name ="relName", type ="String", description ="用户真实名字")
     private String relName;
     
-    @ApiModelProperty(name ="gender", dataType ="Integer", value ="性别 1:男 2:女")
+    @Schema(name ="gender", type ="Integer", description ="性别 1:男 2:女")
     private Integer gender;
     
-    @ApiModelProperty(name ="mobile", dataType ="String", value ="手机号")
+    @Schema(name ="mobile", type ="String", description ="手机号")
     private String mobile;
     
-    @ApiModelProperty(name ="idNumber", dataType ="String", value ="身份证号码")
+    @Schema(name ="idNumber", type ="String", description ="身份证号码")
     private String idNumber;
     
 }

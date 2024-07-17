@@ -17,6 +17,11 @@
     
     <dependencies>
         <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-service-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
@@ -39,11 +44,6 @@
         <dependency>
             <groupId>com.example</groupId>
             <artifactId>damai-service-initialize</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-service-common</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
@@ -118,11 +118,6 @@
             <version>${jasypt.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>${snakeyaml.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.example</groupId>
             <artifactId>damai-service-gray-transition-webmvc-framework</artifactId>
             <version>${revision}</version>
@@ -146,6 +141,10 @@
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
             <version>${activation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
     </dependencies>
 

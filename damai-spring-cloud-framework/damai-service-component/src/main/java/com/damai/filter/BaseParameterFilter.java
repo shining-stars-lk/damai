@@ -32,7 +32,7 @@ public class BaseParameterFilter extends OncePerRequestFilter {
         if (StringUtil.isNotEmpty(requestBody)) {
             requestBody = requestBody.replaceAll(" ", "").replaceAll("\r\n","");
         }
-        //log.info("current api : {} requestBody : {}",request.getRequestURI(), requestBody);
+        log.info("current api : {} requestBody : {}",request.getRequestURI(), requestBody);
         String traceId = request.getHeader(TRACE_ID);
         String gray = request.getHeader(GRAY_PARAMETER);
         String userId = request.getHeader(USER_ID);

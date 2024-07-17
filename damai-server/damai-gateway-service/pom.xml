@@ -33,17 +33,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--<dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-service-component</artifactId>
-            <version>${revision}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
         <dependency>
             <groupId>com.example</groupId>
             <artifactId>damai-id-generator-framework</artifactId>
@@ -52,10 +41,6 @@
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>damai-common</artifactId>
-                    <groupId>com.example</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -67,10 +52,6 @@
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>damai-common</artifactId>
-                    <groupId>com.example</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -98,12 +79,6 @@
             <groupId>com.example</groupId>
             <artifactId>damai-base-data-client</artifactId>
             <version>${revision}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.example</groupId>
-                    <artifactId>damai-common</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
@@ -128,25 +103,19 @@
             <groupId>com.example</groupId>
             <artifactId>damai-service-gray-transition-gateway-framework</artifactId>
             <version>${revision}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>damai-common</artifactId>
-                    <groupId>com.example</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.csp</groupId>-->
-<!--            <artifactId>sentinel-spring-cloud-gateway-adapter</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.alibaba.csp</groupId>-->
-<!--            <artifactId>sentinel-datasource-nacos</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-spring-cloud-gateway-adapter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-datasource-nacos</artifactId>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>javax.xml.bind</groupId>-->
 <!--            <artifactId>jaxb-api</artifactId>-->

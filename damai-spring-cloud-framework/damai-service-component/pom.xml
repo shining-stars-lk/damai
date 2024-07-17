@@ -58,5 +58,10 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 </project>

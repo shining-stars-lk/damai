@@ -12,14 +12,14 @@ import jakarta.validation.constraints.NotNull;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="JobInfoPageDto", description ="job任务查询")
+@Schema(title="JobInfoPageDto", description ="job任务查询")
 public class JobInfoPageDto {
     
-    @ApiModelProperty(name ="pageSize", dataType ="Integer", value ="页码", required =true)
+    @Schema(name ="pageSize", type ="Integer", description ="页码", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer pageSize;
     
-    @ApiModelProperty(name ="pageNo", dataType ="Integer", value ="页容量", required =true)
+    @Schema(name ="pageNo", type ="Integer", description ="页容量", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer pageNo;
 }

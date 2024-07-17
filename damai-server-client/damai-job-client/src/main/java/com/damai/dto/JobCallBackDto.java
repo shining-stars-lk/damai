@@ -1,11 +1,10 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -13,25 +12,25 @@ import jakarta.validation.constraints.NotNull;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="JobCallBackDto", description ="job回调")
+@Schema(title="JobCallBackDto", description ="job回调")
 public class JobCallBackDto {
     
-    @ApiModelProperty(name ="id", dataType ="String", value ="id", required =true)
+    @Schema(name ="id", type ="String", description ="id", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long id;
     
-    @ApiModelProperty(name ="jobId", dataType ="String", value ="任务id", required =true)
+    @Schema(name ="jobId", type ="String", description ="任务id", requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String jobId;
     
-    @ApiModelProperty(name ="runInfo", dataType ="String", value ="执行成功或失败信息", required =true)
+    @Schema(name ="runInfo", type ="String", description ="执行成功或失败信息", requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String runInfo;
     
-    @ApiModelProperty(name ="runStatus", dataType ="Integer", value ="执行结果状态 1:新建 2:执行完成 3:执行失败 JobRunStatus", required =true)
+    @Schema(name ="runStatus", type ="Integer", description ="执行结果状态 1:新建 2:执行完成 3:执行失败 JobRunStatus", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer runStatus;
     
-    @ApiModelProperty(name ="currentResidueRetryNumber", dataType ="String", value ="重试次数")
+    @Schema(name ="currentResidueRetryNumber", type ="String", description ="重试次数")
     private Integer currentResidueRetryNumber;
 }

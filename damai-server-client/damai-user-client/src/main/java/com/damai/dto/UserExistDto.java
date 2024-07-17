@@ -1,10 +1,11 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import jakarta.validation.constraints.NotBlank;
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -13,12 +14,13 @@ import java.io.Serializable;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="UserExistDto", description ="用户是否存在")
+@Schema(title="UserExistDto", description ="用户是否存在")
 public class UserExistDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="mobile", dataType ="String", value ="手机号",required = true)
+    @Schema(name ="mobile", type ="String", description ="手机号",requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String mobile;
     

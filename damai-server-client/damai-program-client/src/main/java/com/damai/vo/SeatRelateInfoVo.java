@@ -1,9 +1,9 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -15,28 +15,29 @@ import java.util.Map;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="SeatRelateInfoVo", description ="座位相关信息")
+@Schema(title="SeatRelateInfoVo", description ="座位相关信息")
 public class SeatRelateInfoVo implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id")
+    @Schema(name ="programId", type ="Long", description ="节目表id")
     private Long programId;
     
-    @ApiModelProperty(name ="place", dataType ="String", value ="地点")
+    @Schema(name ="place", type ="String", description ="地点")
     private String place;
     
-    @ApiModelProperty(name ="showTime", dataType ="Date", value ="演出时间")
+    @Schema(name ="showTime", type ="Date", description ="演出时间")
     private Date showTime;
     
-    @ApiModelProperty(name ="showWeekTime", dataType ="String", value ="演出时间所在的星期")
+    @Schema(name ="showWeekTime", type ="String", description ="演出时间所在的星期")
     private String showWeekTime;
     
-    @ApiModelProperty(name ="priceList", dataType ="List<String>", value ="价格集合")
+    @Schema(name ="priceList", type ="List<String>", description ="价格集合")
     private List<String> priceList;
     
-    @ApiModelProperty(name ="seatVoMap", dataType ="Map<String,List<SeatVo>>", value ="座位集合")
+    @Schema(name ="seatVoMap", type ="Map<String,List<SeatVo>>", description ="座位集合")
     private Map<String,List<SeatVo>> seatVoMap;
    
 }

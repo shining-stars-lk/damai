@@ -1,11 +1,11 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -16,56 +16,56 @@ import java.util.List;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="OrderCreateDto", description ="订单创建")
+@Schema(title="OrderCreateDto", description ="订单创建")
 public class OrderCreateDto {
     
-    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单编号", required =true)
+    @Schema(name ="orderNumber", type ="Long", description ="订单编号", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long orderNumber;
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id", required =true)
+    @Schema(name ="programId", type ="Long", description ="节目表id", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long programId;
     
-    @ApiModelProperty(name ="programItemPicture", dataType ="String", value ="节目图片介绍", required =true)
+    @Schema(name ="programItemPicture", type ="String", description ="节目图片介绍", requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String programItemPicture;
     
-    @ApiModelProperty(name ="userId", dataType ="Long", value ="用户id", required =true)
+    @Schema(name ="userId", type ="Long", description ="用户id", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long userId;
     
-    @ApiModelProperty(name ="programTitle", dataType ="String", value ="节目标题", required =true)
+    @Schema(name ="programTitle", type ="String", description ="节目标题", requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String programTitle;
     
-    @ApiModelProperty(name ="programPlace", dataType ="String", value ="节目地点", required =true)
+    @Schema(name ="programPlace", type ="String", description ="节目地点", requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String programPlace;
     
-    @ApiModelProperty(name ="programShowTime", dataType ="Date", value ="节目演出时间", required =true)
+    @Schema(name ="programShowTime", type ="Date", description ="节目演出时间", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Date programShowTime;
     
-    @ApiModelProperty(name ="programPermitChooseSeat", dataType ="Integer", value ="节目是否允许选座 1:允许选座 0:不允许选座", required =true)
+    @Schema(name ="programPermitChooseSeat", type ="Integer", description ="节目是否允许选座 1:允许选座 0:不允许选座", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer programPermitChooseSeat;
     
-    @ApiModelProperty(name ="distributionMode", dataType ="String", value ="配送方式")
+    @Schema(name ="distributionMode", type ="String", description ="配送方式")
     private String distributionMode;
     
-    @ApiModelProperty(name ="takeTicketMode", dataType ="String", value ="取票方式")
+    @Schema(name ="takeTicketMode", type ="String", description ="取票方式")
     private String takeTicketMode;
     
-    @ApiModelProperty(name ="orderPrice", dataType ="BigDecimal", value ="订单价格", required =true)
+    @Schema(name ="orderPrice", type ="BigDecimal", description ="订单价格", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private BigDecimal orderPrice;
     
-    @ApiModelProperty(name ="createOrderTime", dataType ="Date", value ="生成订单时间", required =true)
+    @Schema(name ="createOrderTime", type ="Date", description ="生成订单时间", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Date createOrderTime;
     
-    @ApiModelProperty(name ="orderTicketUserCreateDtoList", dataType ="List<OrderTicketUserCreateDto>", value ="购票人订单集合", required =true)
+    @Schema(name ="orderTicketUserCreateDtoList", type ="List<OrderTicketUserCreateDto>", description ="购票人订单集合", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private List<OrderTicketUserCreateDto> orderTicketUserCreateDtoList;
     

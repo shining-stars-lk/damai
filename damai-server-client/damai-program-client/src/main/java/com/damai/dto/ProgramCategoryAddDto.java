@@ -1,10 +1,11 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import jakarta.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -13,30 +14,31 @@ import java.io.Serializable;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramCategoryAddDto", description ="节目类型")
+@Schema(title="ProgramCategoryAddDto", description ="节目类型")
 public class ProgramCategoryAddDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
 
     /**
      * 父区域id
      */
-    @ApiModelProperty(name ="parentId", dataType ="Long", value ="父区域id",required = true)
+    @Schema(name ="parentId", type ="Long", description ="父区域id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long parentId;
 
     /**
      * 区域名字
      */
-    @ApiModelProperty(name ="name", dataType ="String", value ="区域名字",required = true)
+    @Schema(name ="name", type ="String", description ="区域名字",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private String name;
 
     /**
      * 1:一级种类 2:二级种类
      */
-    @ApiModelProperty(name ="type", dataType ="Integer", value ="1:一级种类 2:二级种类",required = true)
+    @Schema(name ="type", type ="Integer", description ="1:一级种类 2:二级种类",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer type;
 }

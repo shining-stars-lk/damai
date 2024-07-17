@@ -1,7 +1,6 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -13,33 +12,33 @@ import java.util.Date;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="OrderPayCheckVo", description ="订单支付后状态检查")
+@Schema(title="OrderPayCheckVo", description ="订单支付后状态检查")
 public class OrderPayCheckVo {
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="订单id")
+    @Schema(name ="id", type ="Long", description ="订单id")
     private Long id;
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id")
+    @Schema(name ="programId", type ="Long", description ="节目表id")
     private Long programId;
 
-    @ApiModelProperty(name ="userId", dataType ="Long", value ="用户id")
+    @Schema(name ="userId", type ="Long", description ="用户id")
     private Long userId;
 
-    @ApiModelProperty(name ="orderPrice", dataType ="BigDecimal", value ="订单价格")
+    @Schema(name ="orderPrice", type ="BigDecimal", description ="订单价格")
     private BigDecimal orderPrice;
     
-    @ApiModelProperty(name ="payOrderType", dataType ="Integer", value ="支付订单方式")
+    @Schema(name ="payOrderType", type ="Integer", description ="支付订单方式")
     private Integer payOrderType;
     
-    @ApiModelProperty(name ="orderStatus", dataType ="Integer", value ="订单状态 1:未支付 2:已取消 3:已支付 4:已退单")
+    @Schema(name ="orderStatus", type ="Integer", description ="订单状态 1:未支付 2:已取消 3:已支付 4:已退单")
     private Integer orderStatus;
     
-    @ApiModelProperty(name ="createOrderTime", dataType ="Date", value ="生成订单时间")
+    @Schema(name ="createOrderTime", type ="Date", description ="生成订单时间")
     private Date createOrderTime;
     
-    @ApiModelProperty(name ="cancelOrderTime", dataType ="Date", value ="取消订单时间")
+    @Schema(name ="cancelOrderTime", type ="Date", description ="取消订单时间")
     private Date cancelOrderTime;
     
-    @ApiModelProperty(name ="payOrderTime", dataType ="Date", value ="支付订单时间")
+    @Schema(name ="payOrderTime", type ="Date", description ="支付订单时间")
     private Date payOrderTime;
 }

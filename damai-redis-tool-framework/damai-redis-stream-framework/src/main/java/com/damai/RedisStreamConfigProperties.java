@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = RedisStreamConfigProperties.PREFIX)
 public class RedisStreamConfigProperties {
     
-    public static final String PREFIX = "spring.redis.stream";
+    public static final String PREFIX = "spring.data.redis.stream";
     
     /**
      * stream名字

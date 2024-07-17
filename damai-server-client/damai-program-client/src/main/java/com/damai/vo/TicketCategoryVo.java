@@ -1,9 +1,9 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -13,26 +13,27 @@ import java.math.BigDecimal;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="TicketCategoryVo", description ="票档")
+@Schema(title="TicketCategoryVo", description ="票档")
 public class TicketCategoryVo implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
      * 主键id
      */
-    @ApiModelProperty(name ="id", dataType ="Long", value ="主键id")
+    @Schema(name ="id", type ="Long", description ="主键id")
     private Long id;
 
     /**
      * 介绍
      */
-    @ApiModelProperty(name ="introduce", dataType ="String", value ="介绍")
+    @Schema(name ="introduce", type ="String", description ="介绍")
     private String introduce;
 
     /**
      * 价格
      */
-    @ApiModelProperty(name ="price", dataType ="BigDecimal", value ="价格")
+    @Schema(name ="price", type ="BigDecimal", description ="价格")
     private BigDecimal price;
 }

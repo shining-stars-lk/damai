@@ -87,8 +87,6 @@ springdoc:
       paths-to-match: '/**'
       #生成文档所需的扫包路径，一般为启动类目录
       packages-to-scan: com.damai.controller
-
-
 #knife4j配置
 knife4j:
   #是否启用增强设置

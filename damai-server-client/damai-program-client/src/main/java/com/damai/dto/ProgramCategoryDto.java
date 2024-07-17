@@ -1,10 +1,9 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -12,10 +11,10 @@ import jakarta.validation.constraints.NotNull;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramCategoryDto", description ="节目类型")
+@Schema(title="ProgramCategoryDto", description ="节目类型")
 public class ProgramCategoryDto {
     
-    @ApiModelProperty(name ="type", dataType ="Integer", value ="1:一级种类 2:二级种类", required =true)
+    @Schema(name ="type", type ="Integer", description ="1:一级种类 2:二级种类", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer type;
 }

@@ -13,15 +13,15 @@ import com.damai.service.ProgramService;
 import com.damai.vo.ProgramHomeVo;
 import com.damai.vo.ProgramListVo;
 import com.damai.vo.ProgramVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 /**
@@ -31,68 +31,68 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/program")
-@Api(tags = "program", value = "节目")
+@Tag(name = "program", description = "节目")
 public class ProgramController {
     
     @Autowired
     private ProgramService programService;
     
     
-    @ApiOperation(value = "添加")
+    @Operation(summary  = "添加")
     @PostMapping(value = "/add")
     public ApiResponse<Long> add(@Valid @RequestBody ProgramAddDto programAddDto) {
         return ApiResponse.ok(programService.add(programAddDto));
     }
     
-    @ApiOperation(value = "搜索")
+    @Operation(summary  = "搜索")
     @PostMapping(value = "/search")
     public ApiResponse<PageVo<ProgramListVo>> search(@Valid @RequestBody ProgramSearchDto programSearchDto) {
         return ApiResponse.ok(programService.search(programSearchDto));
     }
     
-    @ApiOperation(value = "查询主页列表")
+    @Operation(summary  = "查询主页列表")
     @PostMapping(value = "/home/list")
     public ApiResponse<List<ProgramHomeVo>> selectHomeList(@Valid @RequestBody ProgramListDto programListDto) {
         return ApiResponse.ok(programService.selectHomeList(programListDto));
     }
     
-    @ApiOperation(value = "查询分页列表")
+    @Operation(summary  = "查询分页列表")
     @PostMapping(value = "/page")
     public ApiResponse<PageVo<ProgramListVo>> selectPage(@Valid @RequestBody ProgramPageListDto programPageListDto) {
         return ApiResponse.ok(programService.selectPage(programPageListDto));
     }
     
-    @ApiOperation(value = "查询推荐列表")
+    @Operation(summary  = "查询推荐列表")
     @PostMapping(value = "/recommend/list")
     public ApiResponse<List<ProgramListVo>> recommendList(@Valid @RequestBody ProgramRecommendListDto programRecommendListDto) {
         return ApiResponse.ok(programService.recommendList(programRecommendListDto));
     }
     
-    @ApiOperation(value = "查询详情(根据id)")
+    @Operation(summary  = "查询详情(根据id)")
     @PostMapping(value = "/detail")
     public ApiResponse<ProgramVo> getDetail(@Valid @RequestBody ProgramGetDto programGetDto) {
         return ApiResponse.ok(programService.detail(programGetDto));
     }
     
-    @ApiOperation(value = "查询详情V1(根据id)")
+    @Operation(summary  = "查询详情V1(根据id)")
     @PostMapping(value = "/detail/v1")
     public ApiResponse<ProgramVo> getDetailV1(@Valid @RequestBody ProgramGetDto programGetDto) {
         return ApiResponse.ok(programService.detailV1(programGetDto));
     }
     
-    @ApiOperation(value = "查询详情V2(根据id)")
+    @Operation(summary  = "查询详情V2(根据id)")
     @PostMapping(value = "/detail/v2")
     public ApiResponse<ProgramVo> getDetailV2(@Valid @RequestBody ProgramGetDto programGetDto) {
         return ApiResponse.ok(programService.detailV2(programGetDto));
     }
     
-    @ApiOperation(value = "节目失效(根据id)")
+    @Operation(summary  = "节目失效(根据id)")
     @PostMapping(value = "/invalid")
     public ApiResponse<Boolean> invalid(@Valid @RequestBody ProgramInvalidDto programInvalidDto) {
         return ApiResponse.ok(programService.invalid(programInvalidDto));
     }
     
-    @ApiOperation(value = "查看节目详情本地缓存(根据id)")
+    @Operation(summary  = "查看节目详情本地缓存(根据id)")
     @PostMapping(value = "/local/detail")
     public ApiResponse<ProgramVo> localDetail(@Valid @RequestBody ProgramGetDto programGetDto) {
         return ApiResponse.ok(programService.localDetail(programGetDto));
