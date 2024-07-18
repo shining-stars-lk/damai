@@ -37,6 +37,8 @@ public enum BaseCode {
     
     REDIS_STREAM_CONSUMER_TYPE_NOT_EXIST(511,"redisStream消费方式不存在"),
     
+    LOGIN_USER_NOT_EXIST(516,"用户没有登录"),
+    
     RSA_SIGN_ERROR(10000,"rsa签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"rsa解密失败"),
