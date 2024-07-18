@@ -1,10 +1,9 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -12,10 +11,10 @@ import javax.validation.constraints.NotNull;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="RunJobDto", description ="RunJobDto")
+@Schema(title="RunJobDto", description ="RunJobDto")
 public class RunJobDto {
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="任务id", required =true)
+    @Schema(name ="id", type ="Long", description ="任务id", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long id;
 }

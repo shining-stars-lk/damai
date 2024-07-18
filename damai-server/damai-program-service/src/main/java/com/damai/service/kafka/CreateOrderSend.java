@@ -8,8 +8,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.FailureCallback;
-import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.SuccessCallback;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -31,8 +32,8 @@ public class CreateOrderSend {
     public void sendMessage(String message, SuccessCallback<SendResult<String, String>> successCallback, 
                             FailureCallback failureCallback) {
         log.info("创建订单kafka发送消息 消息体 : {}", message);
-        ListenableFuture<SendResult<String, String>> send = kafkaTemplate.send(
-                SpringUtil.getPrefixDistinctionName() + "-" + kafkaTopic.getTopic(), message);
-        send.addCallback(successCallback, failureCallback);
+        CompletableFuture<SendResult<String, String>> completableFuture = 
+                kafkaTemplate.send(SpringUtil.getPrefixDistinctionName() + "-" + kafkaTopic.getTopic(), message);
+        //TODO
     }
 }

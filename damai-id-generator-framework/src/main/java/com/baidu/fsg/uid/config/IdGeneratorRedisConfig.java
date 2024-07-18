@@ -17,7 +17,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * @create: 2023-05-23
  **/
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty("spring.redis.host")
+@ConditionalOnProperty("spring.data.redis.host")
 public class IdGeneratorRedisConfig {
     
     @Bean("idGeneratorRedisTemplate")

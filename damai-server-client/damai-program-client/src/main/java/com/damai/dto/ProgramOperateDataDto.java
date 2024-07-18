@@ -1,10 +1,10 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -13,22 +13,22 @@ import java.util.List;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramOperateDataDto", description ="节目数据操作")
+@Schema(title="ProgramOperateDataDto", description ="节目数据操作")
 public class ProgramOperateDataDto {
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目id",required = true)
+    @Schema(name ="programId", type ="Long", description ="节目id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long programId;
     
-    @ApiModelProperty(name ="ticketCategoryCountMap", dataType ="List<TicketCategoryCountDto>",required = true)
+    @Schema(name ="ticketCategoryCountMap", type ="List<TicketCategoryCountDto>",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private List<TicketCategoryCountDto> ticketCategoryCountDtoList;
     
-    @ApiModelProperty(name ="seatIdList", dataType ="List<Long>", value ="座位id集合",required = true)
+    @Schema(name ="seatIdList", type ="List<Long>", description ="座位id集合",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private List<Long> seatIdList;
     
-    @ApiModelProperty(name ="sellStatus", dataType ="Long", value ="座位状态",required = true)
+    @Schema(name ="sellStatus", type ="Long", description ="座位状态",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer sellStatus;
 }

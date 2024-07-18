@@ -1,7 +1,6 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -11,24 +10,24 @@ import lombok.Data;
  **/
 
 @Data
-@ApiModel(value="UserInfoVo", description ="用户数据")
+@Schema(title="UserInfoVo", description ="用户数据")
 public class UserInfoVo {
     
-    @ApiModelProperty(name ="id", dataType ="String", value ="用户id")
+    @Schema(name ="id", type ="String", description ="用户id")
     private Long id;
     
-    @ApiModelProperty(name ="name", dataType ="String", value ="用户名字")
+    @Schema(name ="name", type ="String", description ="用户名字")
     private String name;
     
-    @ApiModelProperty(name ="relName", dataType ="String", value ="用户真实名字")
+    @Schema(name ="relName", type ="String", description ="用户真实名字")
     private String relName;
     
-    @ApiModelProperty(name ="gender", dataType ="Integer", value ="1:男 2:女")
+    @Schema(name ="gender", type ="Integer", description ="1:男 2:女")
     private Integer gender;
     
-    @ApiModelProperty(name ="name", dataType ="String", value ="用户手机号")
+    @Schema(name ="name", type ="String", description ="用户手机号")
     private String mobile;
     
-    @ApiModelProperty(name ="address", dataType ="String", value ="收货地址")
+    @Schema(name ="address", type ="String", description ="收货地址")
     private String address;
 }

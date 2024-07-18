@@ -1,7 +1,6 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,22 +11,22 @@ import java.math.BigDecimal;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="OrderTicketInfoVo", description ="购票订单信息")
+@Schema(title="OrderTicketInfoVo", description ="购票订单信息")
 public class OrderTicketInfoVo {
     
-    @ApiModelProperty(name ="seatInfo", dataType ="String", value ="座位信息")
+    @Schema(name ="seatInfo", type ="String", description ="座位信息")
     private String seatInfo;
     
-    @ApiModelProperty(name ="price", dataType ="BigDecimal", value ="单价")
+    @Schema(name ="price", type ="BigDecimal", description ="单价")
     private BigDecimal price;
     
-    @ApiModelProperty(name ="quantity", dataType ="Integer", value ="数量")
+    @Schema(name ="quantity", type ="Integer", description ="数量")
     private Integer quantity;
     
-    @ApiModelProperty(name ="favourablePrice", dataType ="BigDecimal", value ="优惠")
+    @Schema(name ="favourablePrice", type ="BigDecimal", description ="优惠")
     private BigDecimal favourablePrice;
     
-    @ApiModelProperty(name ="relPrice", dataType ="BigDecimal", value ="小计")
+    @Schema(name ="relPrice", type ="BigDecimal", description ="小计")
     private BigDecimal relPrice;
     
 }

@@ -1,4 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.baidu.fsg.uid.config.WorkerNodeConfig,\
-  com.baidu.fsg.uid.config.IdGeneratorRedisConfig,\
-  com.damai.config.IdGeneratorAutoConfig

@@ -1,7 +1,7 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,22 +12,22 @@ import java.math.BigDecimal;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="TicketCategoryDetailVo", description ="节目票档详情")
+@Schema(title="TicketCategoryDetailVo", description ="节目票档详情")
 public class TicketCategoryDetailVo {
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id",required = true)
+    @Schema(name ="programId", type ="Long", description ="节目表id",requiredMode= RequiredMode.REQUIRED)
     private Long programId;
     
-    @ApiModelProperty(name ="introduce", dataType ="String", value ="介绍",required = true)
+    @Schema(name ="introduce", type ="String", description ="介绍",requiredMode= RequiredMode.REQUIRED)
     private String introduce;
     
-    @ApiModelProperty(name ="price", dataType ="BigDecimal", value ="价格",required = true)
+    @Schema(name ="price", type ="BigDecimal", description ="价格",requiredMode= RequiredMode.REQUIRED)
     private BigDecimal price;
     
-    @ApiModelProperty(name ="totalNumber", dataType ="Long", value ="总数量",required = true)
+    @Schema(name ="totalNumber", type ="Long", description ="总数量",requiredMode= RequiredMode.REQUIRED)
     private Long totalNumber;
     
-    @ApiModelProperty(name ="remainNumber", dataType ="Long", value ="剩余数量",required = true)
+    @Schema(name ="remainNumber", type ="Long", description ="剩余数量",requiredMode= RequiredMode.REQUIRED)
     private Long remainNumber;
     
     

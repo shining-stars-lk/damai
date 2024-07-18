@@ -6,15 +6,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsWebFilter;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
-import org.springframework.web.util.pattern.PathPatternParser;
+import org.springframework.web.reactive.config.CorsRegistry;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -22,8 +23,9 @@ import java.util.stream.Collectors;
  * @description: 通用配置
  * @author: 阿星不是程序员
  **/
-@Configuration
-public class Config {
+public class Config implements WebFluxConfigurer {
+    
+    private final AtomicInteger threadCount = new AtomicInteger(1);
     
     @Bean
     RestTemplate restTemplate(){
@@ -42,19 +44,26 @@ public class Config {
         return new GatewayDefaultExceptionHandler();
     }
     
+    
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600L);
+    }
+    
     @Bean
-    public CorsWebFilter corsWebFilter(){
-        CorsConfiguration config = new CorsConfiguration();
-        //设置是否允许cookie进行跨域
-        config.setAllowCredentials(true);
-        //允许跨域访问任何请求方式：post get put delete
-        config.addAllowedMethod("*");
-        //springboot2.4之前的使用
-        config.addAllowedOrigin("*");
-        //允许哪种请求来源
-        config.addAllowedHeader("*");
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(new PathPatternParser());
-        source.registerCorsConfiguration("/**", config);
-        return new CorsWebFilter(source);
+    public ThreadPoolExecutor threadPoolExecutor(){
+        return new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
+                Runtime.getRuntime().availableProcessors()+10,
+                60,
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(),
+                r -> new Thread(
+                        Thread.currentThread().getThreadGroup(), r,
+                        "listen-start-thread-" + threadCount.getAndIncrement()));
     }
 }

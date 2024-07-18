@@ -1,9 +1,9 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -12,32 +12,33 @@ import java.io.Serializable;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramCategoryVo", description ="节目种类")
+@Schema(title="ProgramCategoryVo", description ="节目种类")
 public class ProgramCategoryVo implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
      * 主键id
      */
-    @ApiModelProperty(name ="id", dataType ="Long", value ="区域id")
+    @Schema(name ="id", type ="Long", description ="区域id")
     private Long id;
 
     /**
      * 父id
      */
-    @ApiModelProperty(name ="parentId", dataType ="Long", value ="父区域id")
+    @Schema(name ="parentId", type ="Long", description ="父区域id")
     private Long parentId;
 
     /**
      * 名字
      */
-    @ApiModelProperty(name ="name", dataType ="String", value ="区域名字")
+    @Schema(name ="name", type ="String", description ="区域名字")
     private String name;
 
     /**
      * 1:一级种类 2:二级种类
      */
-    @ApiModelProperty(name ="type", dataType ="Integer", value ="1:一级种类 2:二级种类")
+    @Schema(name ="type", type ="Integer", description ="1:一级种类 2:二级种类")
     private Integer type;
 }

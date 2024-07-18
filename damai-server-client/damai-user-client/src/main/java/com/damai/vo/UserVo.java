@@ -2,8 +2,7 @@ package com.damai.vo;
 
 import cn.hutool.core.util.DesensitizedUtil;
 import com.damai.util.StringUtil;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -13,37 +12,37 @@ import lombok.Data;
  **/
 
 @Data
-@ApiModel(value="UserVo", description ="用户数据")
+@Schema(title="UserVo", description ="用户数据")
 public class UserVo {
     
-    @ApiModelProperty(name ="id", dataType ="String", value ="用户id")
+    @Schema(name ="id", type ="String", description ="用户id")
     private Long id;
     
-    @ApiModelProperty(name ="name", dataType ="String", value ="用户名字")
+    @Schema(name ="name", type ="String", description ="用户名字")
     private String name;
     
-    @ApiModelProperty(name ="relName", dataType ="String", value ="用户真实名字")
+    @Schema(name ="relName", type ="String", description ="用户真实名字")
     private String relName;
     
-    @ApiModelProperty(name ="gender", dataType ="Integer", value ="1:男 2:女")
+    @Schema(name ="gender", type ="Integer", description ="1:男 2:女")
     private Integer gender;
     
-    @ApiModelProperty(name ="name", dataType ="String", value ="用户手机号")
+    @Schema(name ="name", type ="String", description ="用户手机号")
     private String mobile;
     
-    @ApiModelProperty(name ="emailStatus", dataType ="Integer", value ="是否邮箱认证 1:已验证 0:未验证")
+    @Schema(name ="emailStatus", type ="Integer", description ="是否邮箱认证 1:已验证 0:未验证")
     private Integer emailStatus;
     
-    @ApiModelProperty(name ="email", dataType ="String", value ="邮箱地址")
+    @Schema(name ="email", type ="String", description ="邮箱地址")
     private String email;
     
-    @ApiModelProperty(name ="relAuthenticationStatus", dataType ="Integer", value ="是否实名认证 1:已验证 0:未验证")
+    @Schema(name ="relAuthenticationStatus", type ="Integer", description ="是否实名认证 1:已验证 0:未验证")
     private Integer relAuthenticationStatus;
     
-    @ApiModelProperty(name ="idNumber", dataType ="String", value ="身份证号码")
+    @Schema(name ="idNumber", type ="String", description ="身份证号码")
     private String idNumber;
     
-    @ApiModelProperty(name ="address", dataType ="String", value ="收货地址")
+    @Schema(name ="address", type ="String", description ="收货地址")
     private String address;
     
     public String getIdNumber() {

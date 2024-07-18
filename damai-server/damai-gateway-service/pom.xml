@@ -25,15 +25,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-service-component</artifactId>
-            <version>${revision}</version>
             <exclusions>
+                <!--去除spring boot自带的 -->
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -47,22 +43,6 @@
                     <artifactId>spring-boot-starter-web</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-common</artifactId>
-            <version>${revision}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-thread-pool-framework</artifactId>
-            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
@@ -84,32 +64,9 @@
             <artifactId>feign-okhttp</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-service-hystrix</artifactId>
-            <version>${revision}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-web</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- nacos start -->
-        <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
-        <!-- spring-cloud-starter-alibaba-nacos-discovery源码中nacos-common optional为true,所以这里要将common引入 -->
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-common</artifactId>
-            <version>${nacos.version}</version>
-        </dependency>
-        <!-- nacos end -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
@@ -119,12 +76,13 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>com.example</groupId>
+            <artifactId>damai-base-data-client</artifactId>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>damai-base-data-client</artifactId>
+            <artifactId>damai-common</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
@@ -132,24 +90,9 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${springfox-swagger2.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <artifactId>knife4j-gateway-spring-boot-starter</artifactId>
             <version>${knife4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>${swagger.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-models</artifactId>
-            <version>${swagger.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
@@ -192,6 +135,14 @@
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
             <version>${activation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
     </dependencies>
 

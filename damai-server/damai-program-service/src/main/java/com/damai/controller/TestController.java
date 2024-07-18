@@ -4,14 +4,13 @@ import com.damai.common.ApiResponse;
 import com.damai.dto.TestSendDto;
 import com.damai.service.TestService;
 import com.damai.service.scheduletask.ProgramDataTask;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -21,20 +20,20 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/test")
 public class TestController {
-    
+
     @Autowired
     private TestService testService;
-    
+
     @Autowired
     private ProgramDataTask programDataTask;
-    
-    @ApiOperation(value = "重置消息计数器")
+
+    @Operation(summary  = "重置消息计数器")
     @PostMapping(value = "/reset")
     public ApiResponse<Boolean> reset(@Valid @RequestBody TestSendDto testSendDto) {
         return ApiResponse.ok(testService.reset(testSendDto));
     }
-    
-    @ApiOperation(value = "定时任务逻辑执行")
+
+    @Operation(summary  = "定时任务逻辑执行")
     @PostMapping(value = "/task/execute")
     public ApiResponse<Boolean> taskExecute() {
         programDataTask.executeTask();

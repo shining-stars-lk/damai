@@ -6,11 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static com.damai.constant.Constant.CODE;
@@ -32,7 +32,7 @@ public class BaseParameterFilter extends OncePerRequestFilter {
         if (StringUtil.isNotEmpty(requestBody)) {
             requestBody = requestBody.replaceAll(" ", "").replaceAll("\r\n","");
         }
-        //log.info("current api : {} requestBody : {}",request.getRequestURI(), requestBody);
+        log.info("current api : {} requestBody : {}",request.getRequestURI(), requestBody);
         String traceId = request.getHeader(TRACE_ID);
         String gray = request.getHeader(GRAY_PARAMETER);
         String userId = request.getHeader(USER_ID);

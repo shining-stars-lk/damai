@@ -1,9 +1,9 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,57 +14,58 @@ import java.util.Date;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramListVo", description ="节目列表")
+@Schema(title="ProgramListVo", description ="节目列表")
 public class ProgramListVo implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="主键id")
+    @Schema(name ="id", type ="Long", description ="主键id")
     private Long id;
     
-    @ApiModelProperty(name ="title", dataType ="Long", value ="标题")
+    @Schema(name ="title", type ="Long", description ="标题")
     private String title;
     
-    @ApiModelProperty(name ="actor", dataType ="Long", value ="艺人")
+    @Schema(name ="actor", type ="Long", description ="艺人")
     private String actor;
     
-    @ApiModelProperty(name ="place", dataType ="String", value ="地点")
+    @Schema(name ="place", type ="String", description ="地点")
     private String place;
     
-    @ApiModelProperty(name ="itemPicture", dataType ="itemPicture", value ="图片介绍")
+    @Schema(name ="itemPicture", type ="itemPicture", description ="图片介绍")
     private String itemPicture;
     
-    @ApiModelProperty(name ="areaId", dataType ="Long", value ="区域id")
+    @Schema(name ="areaId", type ="Long", description ="区域id")
     private Long areaId;
 
-    @ApiModelProperty(name ="areaName", dataType ="Long", value ="区域名字")
+    @Schema(name ="areaName", type ="Long", description ="区域名字")
     private String areaName;
     
-    @ApiModelProperty(name ="programCategoryId", dataType ="Long", value ="节目类型表id")
+    @Schema(name ="programCategoryId", type ="Long", description ="节目类型表id")
     private Long programCategoryId;
     
-    @ApiModelProperty(name ="programCategoryName", dataType ="Long", value ="节目类型表名字")
+    @Schema(name ="programCategoryName", type ="Long", description ="节目类型表名字")
     private String programCategoryName;
     
-    @ApiModelProperty(name ="parentProgramCategoryId", dataType ="Long", value ="父节目类型表id")
+    @Schema(name ="parentProgramCategoryId", type ="Long", description ="父节目类型表id")
     private Long parentProgramCategoryId;
     
-    @ApiModelProperty(name ="parentProgramCategoryName", dataType ="Long", value ="父节目类型表名字")
+    @Schema(name ="parentProgramCategoryName", type ="Long", description ="父节目类型表名字")
     private String parentProgramCategoryName;
     
-    @ApiModelProperty(name ="showTime", dataType ="Date", value ="演出时间")
+    @Schema(name ="showTime", type ="Date", description ="演出时间")
     private Date showTime;
     
-    @ApiModelProperty(name ="showDayTime", dataType ="Date", value ="演出时间(精确到天)")
+    @Schema(name ="showDayTime", type ="Date", description ="演出时间(精确到天)")
     private Date showDayTime;
     
-    @ApiModelProperty(name ="showWeekTime", dataType ="String", value ="演出时间所在的星期")
+    @Schema(name ="showWeekTime", type ="String", description ="演出时间所在的星期")
     private String showWeekTime;
     
-    @ApiModelProperty(name ="minPrice", dataType ="BigDecimal", value ="最低价格")
+    @Schema(name ="minPrice", type ="BigDecimal", description ="最低价格")
     private BigDecimal minPrice;
     
-    @ApiModelProperty(name ="maxPrice", dataType ="BigDecimal", value ="最高价格")
+    @Schema(name ="maxPrice", type ="BigDecimal", description ="最高价格")
     private BigDecimal maxPrice;
     
     /**

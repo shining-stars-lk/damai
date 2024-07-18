@@ -1,9 +1,9 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -13,36 +13,37 @@ import java.math.BigDecimal;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="SeatVo", description ="座位")
+@Schema(title="SeatVo", description ="座位")
 public class SeatVo implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="座位id")
+    @Schema(name ="id", type ="Long", description ="座位id")
     private Long id;
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id")
+    @Schema(name ="programId", type ="Long", description ="节目表id")
     private Long programId;
     
-    @ApiModelProperty(name ="ticketCategoryId", dataType ="Long", value ="节目票档id")
+    @Schema(name ="ticketCategoryId", type ="Long", description ="节目票档id")
     private Long ticketCategoryId;
     
-    @ApiModelProperty(name ="rowCode", dataType ="Integer", value ="排号")
+    @Schema(name ="rowCode", type ="Integer", description ="排号")
     private Integer rowCode;
   
-    @ApiModelProperty(name ="colCode", dataType ="Integer", value ="列号")
+    @Schema(name ="colCode", type ="Integer", description ="列号")
     private Integer colCode;
     
-    @ApiModelProperty(name ="seatType", dataType ="Integer", value ="座位类型")
+    @Schema(name ="seatType", type ="Integer", description ="座位类型")
     private Integer seatType;
     
-    @ApiModelProperty(name ="seatTypeName", dataType ="String", value ="座位类型名")
+    @Schema(name ="seatTypeName", type ="String", description ="座位类型名")
     private String seatTypeName;
     
-    @ApiModelProperty(name ="price", dataType ="BigDecimal", value ="座位价格")
+    @Schema(name ="price", type ="BigDecimal", description ="座位价格")
     private BigDecimal price;
     
-    @ApiModelProperty(name ="sellStatus", dataType ="Integer", value ="1未售卖 2锁定 3已售卖")
+    @Schema(name ="sellStatus", type ="Integer", description ="1未售卖 2锁定 3已售卖")
     private Integer sellStatus;
 }

@@ -1,4 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.damai.config.CaptchaAutoConfig
-org.springframework.boot.env.EnvironmentPostProcessor=\
-  com.damai.config.CaptchaEnvironment

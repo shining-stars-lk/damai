@@ -1,0 +1,3 @@
+com.damai.captcha.service.impl.BlockPuzzleCaptchaServiceImpl
+com.damai.captcha.service.impl.ClickWordCaptchaServiceImpl
+com.damai.captcha.service.impl.DefaultCaptchaServiceImpl

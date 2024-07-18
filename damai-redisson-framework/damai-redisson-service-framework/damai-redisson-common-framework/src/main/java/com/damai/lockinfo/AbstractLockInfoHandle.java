@@ -2,12 +2,12 @@ package com.damai.lockinfo;
 
 
 import com.damai.core.SpringUtil;
+import com.damai.parser.ExtParameterNameDiscoverer;
 import com.damai.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.expression.MethodBasedEvaluationContext;
-import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionParser;
@@ -30,7 +30,7 @@ public abstract class AbstractLockInfoHandle implements LockInfoHandle {
     
     private static final String LOCK_DISTRIBUTE_ID_NAME_PREFIX = "LOCK_DISTRIBUTE_ID";
 
-    private final ParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
+    private final ParameterNameDiscoverer nameDiscoverer = new ExtParameterNameDiscoverer();
 
     private final ExpressionParser parser = new SpelExpressionParser();
     

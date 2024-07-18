@@ -1,9 +1,9 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -13,20 +13,21 @@ import java.math.BigDecimal;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="TradeCheckVo", description ="交易状态结果")
+@Schema(title="TradeCheckVo", description ="交易状态结果")
 public class TradeCheckVo implements Serializable {
     
+    @Serial
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="success", dataType ="boolean", value ="是否成功")
+    @Schema(name ="success", type ="boolean", description ="是否成功")
     private boolean success;
     
-    @ApiModelProperty(name ="payBillStatus", dataType ="Integer", value ="支付账单状态")
+    @Schema(name ="payBillStatus", type ="Integer", description ="支付账单状态")
     private Integer payBillStatus;
     
-    @ApiModelProperty(name ="outTradeNo", dataType ="String", value ="商户订单号")
+    @Schema(name ="outTradeNo", type ="String", description ="商户订单号")
     private String outTradeNo;
     
-    @ApiModelProperty(name ="totalAmount", dataType ="BigDecimal", value ="支付金额")
+    @Schema(name ="totalAmount", type ="BigDecimal", description ="支付金额")
     private BigDecimal totalAmount;
 }

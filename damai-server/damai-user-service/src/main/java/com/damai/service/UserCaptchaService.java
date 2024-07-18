@@ -1,7 +1,7 @@
 package com.damai.service;
 
-import com.anji.captcha.model.common.ResponseModel;
-import com.anji.captcha.model.vo.CaptchaVO;
+import com.damai.captcha.model.common.ResponseModel;
+import com.damai.captcha.model.vo.CaptchaVO;
 import com.baidu.fsg.uid.UidGenerator;
 import com.damai.core.RedisKeyManage;
 import com.damai.redis.RedisKeyBuild;

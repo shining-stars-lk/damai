@@ -1,11 +1,11 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -14,22 +14,22 @@ import java.util.Date;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramShowTimeAddDto", description ="节目演出时间添加")
+@Schema(title="ProgramShowTimeAddDto", description ="节目演出时间添加")
 public class ProgramShowTimeAddDto {
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id",required = true)
+    @Schema(name ="programId", type ="Long", description ="节目表id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long programId;
     
-    @ApiModelProperty(name ="showTime", dataType ="Date", value ="演出时间",required = true)
+    @Schema(name ="showTime", type ="Date", description ="演出时间",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Date showTime;
     
-    @ApiModelProperty(name ="showDayTime", dataType ="Date", value ="演出时间(精确到天)",required = true)
+    @Schema(name ="showDayTime", type ="Date", description ="演出时间(精确到天)",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Date showDayTime;
     
-    @ApiModelProperty(name ="showWeekTime", dataType ="String", value ="演出时间所在的星期",required = true)
+    @Schema(name ="showWeekTime", type ="String", description ="演出时间所在的星期",requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String showWeekTime;
 }

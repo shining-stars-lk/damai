@@ -65,13 +65,14 @@ import com.damai.vo.TradeCheckVo;
 import com.damai.vo.UserAndTicketUserInfoVo;
 import com.damai.vo.UserGetAndTicketUserListVo;
 import com.damai.vo.UserInfoVo;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -126,6 +127,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     @Autowired
     private OrderProperties orderProperties;
     
+    @Lazy
     @Autowired
     private OrderService orderService;
     

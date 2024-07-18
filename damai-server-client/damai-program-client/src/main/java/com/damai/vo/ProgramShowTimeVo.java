@@ -1,7 +1,6 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,37 +11,37 @@ import java.util.Date;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramShowTimeVo", description ="节目演出时间")
+@Schema(title="ProgramShowTimeVo", description ="节目演出时间")
 public class ProgramShowTimeVo {
     
 
     /**
      * 主键id
      */
-    @ApiModelProperty(name ="id", dataType ="Long", value ="主键id")
+    @Schema(name ="id", type ="Long", description ="主键id")
     private Long id;
 
     /**
      * 节目表id
      */
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id")
+    @Schema(name ="programId", type ="Long", description ="节目表id")
     private Long programId;
 
     /**
      * 演出时间
      */
-    @ApiModelProperty(name ="showTime", dataType ="Date", value ="演出时间")
+    @Schema(name ="showTime", type ="Date", description ="演出时间")
     private Date showTime;
     
     /**
      * 演出时间(精确到天)
      */
-    @ApiModelProperty(name ="showDayTime", dataType ="Date", value ="演出时间(精确到天)")
+    @Schema(name ="showDayTime", type ="Date", description ="演出时间(精确到天)")
     private Date showDayTime;
 
     /**
      * 演出时间所在的星期
      */
-    @ApiModelProperty(name ="showWeekTime", dataType ="String", value ="演出时间所在的星期")
+    @Schema(name ="showWeekTime", type ="String", description ="演出时间所在的星期")
     private String showWeekTime;
 }

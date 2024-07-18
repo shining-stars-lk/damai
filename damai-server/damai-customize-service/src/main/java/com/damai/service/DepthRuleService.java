@@ -4,7 +4,6 @@ import cn.hutool.core.date.DateUtil;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.damai.util.StringUtil;
 import com.damai.dto.DepthRuleDto;
 import com.damai.dto.DepthRuleStatusDto;
 import com.damai.dto.DepthRuleUpdateDto;
@@ -14,13 +13,13 @@ import com.damai.enums.RuleStatus;
 import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.DepthRuleMapper;
 import com.damai.util.DateUtils;
+import com.damai.util.StringUtil;
 import com.damai.vo.DepthRuleVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +36,7 @@ public class DepthRuleService {
     
     @Autowired
     private RuleService ruleService;
-    @Resource
+    @Autowired
     private UidGenerator uidGenerator;
     
     @Transactional(rollbackFor = Exception.class)

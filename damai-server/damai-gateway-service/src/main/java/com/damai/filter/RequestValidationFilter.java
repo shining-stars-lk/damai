@@ -5,11 +5,12 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.baidu.fsg.uid.UidGenerator;
 import com.damai.conf.RequestTemporaryWrapper;
-import com.damai.util.StringUtil;
 import com.damai.enums.BaseCode;
 import com.damai.exception.ArgumentError;
 import com.damai.exception.ArgumentException;
 import com.damai.exception.DaMaiFrameException;
+import com.damai.pro.limit.RateLimiter;
+import com.damai.pro.limit.RateLimiterProperty;
 import com.damai.property.GatewayProperty;
 import com.damai.service.ApiRestrictService;
 import com.damai.service.ChannelDataService;
@@ -17,6 +18,7 @@ import com.damai.service.TokenService;
 import com.damai.threadlocal.BaseParameterHolder;
 import com.damai.util.RsaSignTool;
 import com.damai.util.RsaTool;
+import com.damai.util.StringUtil;
 import com.damai.vo.GetChannelDataVo;
 import com.damai.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
@@ -90,9 +92,31 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     @Autowired
     private UidGenerator uidGenerator;
     
+    @Autowired
+    private RateLimiterProperty rateLimiterProperty;
+    
+    @Autowired
+    private RateLimiter rateLimiter;
+    
 
     @Override
     public Mono<Void> filter(final ServerWebExchange exchange, final GatewayFilterChain chain) {
+        if (rateLimiterProperty.getRateSwitch()) {
+            try {
+                rateLimiter.acquire();
+                return doFilter(exchange,chain);
+            } catch (InterruptedException e) {
+                log.error("interrupted error",e);
+                throw new DaMaiFrameException(BaseCode.THREAD_INTERRUPTED);
+            } finally {
+                rateLimiter.release();
+            }
+        }else{
+            return doFilter(exchange, chain);
+        }
+    }
+    
+    public Mono<Void> doFilter(final ServerWebExchange exchange, final GatewayFilterChain chain){
         ServerHttpRequest request = exchange.getRequest();
         String traceId = request.getHeaders().getFirst(TRACE_ID);
         String gray = request.getHeaders().getFirst(GRAY_PARAMETER);
@@ -122,7 +146,7 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
             });
             return chain.filter(exchange);
         }
-    }
+    } 
 
     private Mono<Void> readBody(ServerWebExchange exchange, GatewayFilterChain chain, Map<String,String> headMap){
         log.info("current thread readBody : {}",Thread.currentThread().getName());

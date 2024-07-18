@@ -1,11 +1,11 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -14,21 +14,21 @@ import java.math.BigDecimal;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="RefundDto", description ="退款")
+@Schema(title="RefundDto", description ="退款")
 public class RefundDto {
     
-    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单号",required = true)
+    @Schema(name ="orderNumber", type ="Long", description ="订单号",requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String orderNumber;
     
-    @ApiModelProperty(name ="amount", dataType ="BigDecimal", value ="退款金额",required = true)
+    @Schema(name ="amount", type ="BigDecimal", description ="退款金额",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private BigDecimal amount;
     
-    @ApiModelProperty(name ="channel", dataType ="Integer", value ="退款渠道 alipay：支付宝 wx：微信",required = true)
+    @Schema(name ="channel", type ="Integer", description ="退款渠道 alipay：支付宝 wx：微信",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private String channel;
     
-    @ApiModelProperty(name ="reason", dataType ="String", value ="退款原因")
+    @Schema(name ="reason", type ="String", description ="退款原因")
     private String reason;
 }

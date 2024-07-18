@@ -1,7 +1,6 @@
 package com.damai.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -13,42 +12,42 @@ import java.util.Date;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="OrderListVo", description ="订单列表")
+@Schema(title="OrderListVo", description ="订单列表")
 public class OrderListVo {
     
-    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单编号")
+    @Schema(name ="orderNumber", type ="Long", description ="订单编号")
     private Long orderNumber;
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id")
+    @Schema(name ="programId", type ="Long", description ="节目表id")
     private Long programId;
     
-    @ApiModelProperty(name ="programItemPicture", dataType ="String", value ="节目图片介绍")
+    @Schema(name ="programItemPicture", type ="String", description ="节目图片介绍")
     private String programItemPicture;
 
-    @ApiModelProperty(name ="userId", dataType ="Long", value ="用户id")
+    @Schema(name ="userId", type ="Long", description ="用户id")
     private Long userId;
     
-    @ApiModelProperty(name ="programTitle", dataType ="String", value ="节目标题")
+    @Schema(name ="programTitle", type ="String", description ="节目标题")
     private String programTitle;
     
-    @ApiModelProperty(name ="programPlace", dataType ="String", value ="节目地点")
+    @Schema(name ="programPlace", type ="String", description ="节目地点")
     private String programPlace;
     
-    @ApiModelProperty(name ="programShowTime", dataType ="Date", value ="节目演出时间")
+    @Schema(name ="programShowTime", type ="Date", description ="节目演出时间")
     private Date programShowTime;
 
-    @ApiModelProperty(name ="orderPrice", dataType ="BigDecimal", value ="订单价格")
+    @Schema(name ="orderPrice", type ="BigDecimal", description ="订单价格")
     private BigDecimal orderPrice;
     
-    @ApiModelProperty(name ="payOrderType", dataType ="Integer", value ="支付订单方式")
+    @Schema(name ="payOrderType", type ="Integer", description ="支付订单方式")
     private Integer payOrderType;
     
-    @ApiModelProperty(name ="orderStatus", dataType ="Integer", value ="订单状态 1:未支付 2:已取消 3:已支付 4:已退单")
+    @Schema(name ="orderStatus", type ="Integer", description ="订单状态 1:未支付 2:已取消 3:已支付 4:已退单")
     private Integer orderStatus;
     
-    @ApiModelProperty(name ="createOrderTime", dataType ="Date", value ="生成订单时间")
+    @Schema(name ="createOrderTime", type ="Date", description ="生成订单时间")
     private Date createOrderTime;
     
-    @ApiModelProperty(name ="ticketCount", dataType ="Integer", value ="票品张数")
+    @Schema(name ="ticketCount", type ="Integer", description ="票品张数")
     private Integer ticketCount;
 }

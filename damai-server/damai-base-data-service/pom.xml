@@ -17,6 +17,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-service-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
@@ -43,11 +48,6 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>damai-service-common</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
             <artifactId>damai-base-data-client</artifactId>
             <version>${revision}</version>
         </dependency>
@@ -61,13 +61,6 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
-        <!-- spring-cloud-starter-alibaba-nacos-discovery源码中nacos-common optional为true,所以这里要将common引入 -->
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-common</artifactId>
-            <version>${nacos.version}</version>
-        </dependency>
-        <!-- nacos end -->
         <dependency>
             <groupId>com.example</groupId>
             <artifactId>damai-id-generator-framework</artifactId>
@@ -75,7 +68,7 @@
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
             <version>${mybatis-plus.version}</version>
         </dependency>
         <dependency>
@@ -87,17 +80,8 @@
             <artifactId>feign-okhttp</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-service-hystrix</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -125,6 +109,10 @@
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-datasource-nacos</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
     </dependencies>
 

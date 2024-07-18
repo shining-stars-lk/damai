@@ -1,6 +1,9 @@
 #服务端口
 server:
   port: 6085
+
+  http2:
+    enabled: false
 # 应用名称
 spring:
   application:
@@ -12,11 +15,12 @@ spring:
 #    active: single
   main:
     allow-bean-definition-overriding: true
-  redis:
-    database: 0
-    host: 127.0.0.1
-    port: 6379
-    timeout: 3000
+  data:
+    redis:
+      database: 0
+      host: 127.0.0.1
+      port: 6379
+      timeout: 3000
   cloud:
     nacos:
       discovery:
@@ -30,35 +34,24 @@ spring:
       transport:
         port: 8768
         dashboard: 127.0.0.1:8082
-      datasource:
-        degrade:
-          nacos:
-            server-addr: ${spring.cloud.nacos.discovery.server-addr}
-            dataId: ${spring.application.name}-degrade-rules
-            groupId: SENTINEL_GROUP
-            dataType: json
-            rule-type: degrade
-        flow:
-          nacos:
-            server-addr: ${spring.cloud.nacos.discovery.server-addr}
-            dataId: ${spring.application.name}-flow-rules
-            groupId: SENTINEL_GROUP
-            dataType: json
-            rule-type: flow
+#      datasource:
+#        degrade:
+#          nacos:
+#            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+#            dataId: ${spring.application.name}-degrade-rules
+#            groupId: SENTINEL_GROUP
+#            dataType: json
+#            rule-type: degrade
+#        flow:
+#          nacos:
+#            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+#            dataId: ${spring.application.name}-flow-rules
+#            groupId: SENTINEL_GROUP
+#            dataType: json
+#            rule-type: flow
     gateway:
-      globalcors:
-        corsConfigurations:
-          [/**]:
-            allowedHeaders: '*'
-            allowedOrigins: '*'
-            allowCredentials: true
-            allowedMethods: '*'
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
-        - name: FineGritHystrix  
-          args:
-            fallbackUri: forward:/fallBackHandler
-            name: fallbackcmd
   kafka:
     bootstrap-servers: 127.0.0.1:9092
     producer:
@@ -85,33 +78,6 @@ feign:
       min-request-size: 512
     response:
       enabled: true
-hystrix:
-  command:
-    default:
-      execution:
-        timeout:
-          enabled: true
-        isolation:
-          thread:
-            timeoutInMilliseconds: 10000
-    fallbackcmd:
-      execution:
-        isolation:
-          strategy: SEMAPHORE
-          semaphore:
-            maxConcurrentRequests: 200
-  # 此配置是hystrix线程池隔离模式，目前生效的是信号量模式，此线程配置不生效
-  # 如果生效的话，需要把上面的SEMAPHORE修改为THREAD
-  threadpool:
-    default:
-      coreSize: 100
-      maximumSize: 300
-      allowMaximumSizeToDivergeFromCoreSize: true
-ribbon:
-  ReadTimeout: 60000
-  ConnectTimeout: 60000
-  MaxAutoRetries: 0
-  MaxAutoRetriesNextServer: 1
 management:
   endpoints:
     web:
@@ -128,3 +94,13 @@ jasypt:
   encryptor:
     password: bgtjkjl!%^sdc
     algorithm: PBEWithMD5AndDES
+# knife4j 网关聚合
+knife4j:
+  gateway:
+    enabled: true
+    # 指定服务发现的模式聚合微服务文档，并且是默认 default 分组
+    strategy: discover
+    discover:
+      # OpenAPI 3.0 规范 
+      version: openapi3
+      enabled: true

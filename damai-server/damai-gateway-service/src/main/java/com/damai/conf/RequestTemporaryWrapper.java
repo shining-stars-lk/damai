@@ -15,5 +15,5 @@ public class RequestTemporaryWrapper {
     
     private Map<String,String> map;
     
-    private ApiResponse apiResponse;
+    private ApiResponse<?> apiResponse;
 }

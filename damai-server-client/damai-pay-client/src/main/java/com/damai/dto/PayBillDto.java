@@ -1,10 +1,11 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -13,12 +14,13 @@ import java.io.Serializable;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="PayDto", description ="支付")
+@Schema(title="PayDto", description ="支付")
 public class PayBillDto implements Serializable {
     
+    @Serial
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="orderNumber", dataType ="Long", value ="订单号",required = true)
+    @Schema(name ="orderNumber", type ="Long", description ="订单号",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private String orderNumber;
 }

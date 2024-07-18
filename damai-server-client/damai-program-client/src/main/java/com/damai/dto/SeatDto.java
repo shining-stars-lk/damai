@@ -1,10 +1,11 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -14,31 +15,32 @@ import java.math.BigDecimal;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="SeatDto", description ="座位")
+@Schema(title="SeatDto", description ="座位")
 public class SeatDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="座位id",required = true)
+    @Schema(name ="id", type ="Long", description ="座位id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long id;
     
-    @ApiModelProperty(name ="ticketCategoryId", dataType ="Long", value ="节目票档id",required = true)
+    @Schema(name ="ticketCategoryId", type ="Long", description ="节目票档id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long ticketCategoryId;
     
-    @ApiModelProperty(name ="rowCode", dataType ="String", value ="排号",required = true)
+    @Schema(name ="rowCode", type ="String", description ="排号",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer rowCode;
     
-    @ApiModelProperty(name ="colCode", dataType ="String", value ="列号",required = true)
+    @Schema(name ="colCode", type ="String", description ="列号",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer colCode;
     
-    @ApiModelProperty(name ="seatType", dataType ="Integer", value ="座位类型")
+    @Schema(name ="seatType", type ="Integer", description ="座位类型")
     private Integer seatType;
     
-    @ApiModelProperty(name ="price", dataType ="BigDecimal", value ="座位价格",required = true)
+    @Schema(name ="price", type ="BigDecimal", description ="座位价格",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private BigDecimal price;
 }

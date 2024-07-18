@@ -1,11 +1,10 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -13,34 +12,34 @@ import javax.validation.constraints.NotNull;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="JobInfoDto", description ="job任务")
+@Schema(title="JobInfoDto", description ="job任务")
 public class JobInfoDto {
     
-    @ApiModelProperty(name ="name", dataType ="String", value ="job任务名字", required =true)
+    @Schema(name ="name", type ="String", description ="job任务名字", requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String name;
     
-    @ApiModelProperty(name ="name", dataType ="String", value ="job任务描述")
+    @Schema(name ="name", type ="String", description ="job任务描述")
     private String description;
     
-    @ApiModelProperty(name ="url", dataType ="String", value ="job任务路径", required =true)
+    @Schema(name ="url", type ="String", description ="job任务路径", requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String url;
     
-    @ApiModelProperty(name ="headers", dataType ="String", value ="job任务请求头信息", required =true)
+    @Schema(name ="headers", type ="String", description ="job任务请求头信息", requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String headers;
     
-    @ApiModelProperty(name ="method", dataType ="Integer", value ="job任务方法 1:get 2:post 3:put", required =true)
+    @Schema(name ="method", type ="Integer", description ="job任务方法 1:get 2:post 3:put", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer method;
     
-    @ApiModelProperty(name ="params", dataType ="String", value ="job任务请求参数")
+    @Schema(name ="params", type ="String", description ="job任务请求参数")
     private String params;
     
-    @ApiModelProperty(name ="retry", dataType ="Integer", value ="是否重试 1是 0否")
+    @Schema(name ="retry", type ="Integer", description ="是否重试 1是 0否")
     private Integer retry;
     
-    @ApiModelProperty(name ="retryNumber", dataType ="Integer", value ="重试次数")
+    @Schema(name ="retryNumber", type ="Integer", description ="重试次数")
     private Integer retryNumber;
 }

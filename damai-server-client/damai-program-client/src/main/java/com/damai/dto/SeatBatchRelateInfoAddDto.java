@@ -1,11 +1,11 @@
 
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -14,18 +14,18 @@ import java.math.BigDecimal;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="SeatBatchRelateInfoAddDto", description ="节目座位相关信息批量添加")
+@Schema(title="SeatBatchRelateInfoAddDto", description ="节目座位相关信息批量添加")
 public class SeatBatchRelateInfoAddDto {
     
-    @ApiModelProperty(name ="ticketCategoryId", dataType ="Long", value ="节目票档id",required = true)
+    @Schema(name ="ticketCategoryId", type ="Long", description ="节目票档id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long ticketCategoryId;
     
-    @ApiModelProperty(name ="price", dataType ="BigDecimal", value ="座位价格",required = true)
+    @Schema(name ="price", type ="BigDecimal", description ="座位价格",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private BigDecimal price;
     
-    @ApiModelProperty(name ="count", dataType ="Integer", value ="添加的座位数量",required = true)
+    @Schema(name ="count", type ="Integer", description ="添加的座位数量",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Integer count;
 }

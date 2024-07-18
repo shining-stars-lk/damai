@@ -2,7 +2,6 @@ package com.damai.redis.config;
 
 import com.damai.redis.RedisCacheImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
@@ -11,7 +10,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * @description: redis封装实现配置
  * @author: 阿星不是程序员
  **/
-@ConditionalOnProperty("spring.redis.host")
 public class RedisCacheAutoConfig {
     
     @Bean

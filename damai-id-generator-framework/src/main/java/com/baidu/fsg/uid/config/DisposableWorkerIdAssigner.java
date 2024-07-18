@@ -33,7 +33,7 @@
 //public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
 //    private static final Logger LOGGER = LoggerFactory.getLogger(DisposableWorkerIdAssigner.class);
 //
-//    @Resource
+//    @Autowired
 //    private WorkerNodeMapper workerNodeMapper;
 //
 //    /**

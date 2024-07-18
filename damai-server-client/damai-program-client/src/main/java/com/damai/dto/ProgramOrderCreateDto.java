@@ -1,10 +1,10 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -13,27 +13,27 @@ import java.util.List;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="ProgramOrderCreateDto", description ="节目订单创建")
+@Schema(title="ProgramOrderCreateDto", description ="节目订单创建")
 public class ProgramOrderCreateDto {
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目id",required = true)
+    @Schema(name ="programId", type ="Long", description ="节目id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long programId;
     
-    @ApiModelProperty(name ="userId", dataType ="Long", value ="用户id",required = true)
+    @Schema(name ="userId", type ="Long", description ="用户id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long userId;
     
-    @ApiModelProperty(name ="ticketUserIdList", dataType ="List<Long>", value ="购票人id集合",required = true)
+    @Schema(name ="ticketUserIdList", type ="List<Long>", description ="购票人id集合",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private List<Long> ticketUserIdList;
     
-    @ApiModelProperty(name ="seatDtoList", dataType ="List<SeatDto>", value = "座位")
+    @Schema(name ="seatDtoList", type ="List<SeatDto>", description = "座位")
     private List<SeatDto> seatDtoList;
     
-    @ApiModelProperty(name ="ticketCategoryId", dataType ="Long", value = "节目票档id(如果不选座位，那么票档id必填)")
+    @Schema(name ="ticketCategoryId", type ="Long", description = "节目票档id(如果不选座位，那么票档id必填)")
     private Long ticketCategoryId;
     
-    @ApiModelProperty(name ="ticketCount", dataType ="Integer", value = "购买票数量(如果不选座位，那么购买票数量必填)")
+    @Schema(name ="ticketCount", type ="Integer", description = "购买票数量(如果不选座位，那么购买票数量必填)")
     private Integer ticketCount;
 }

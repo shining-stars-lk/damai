@@ -1,11 +1,11 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -14,26 +14,26 @@ import java.math.BigDecimal;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="TicketCategoryAddDto", description ="节目票档添加")
+@Schema(title="TicketCategoryAddDto", description ="节目票档添加")
 public class TicketCategoryAddDto {
     
-    @ApiModelProperty(name ="programId", dataType ="Long", value ="节目表id",required = true)
+    @Schema(name ="programId", type ="Long", description ="节目表id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long programId;
     
-    @ApiModelProperty(name ="introduce", dataType ="String", value ="介绍",required = true)
+    @Schema(name ="introduce", type ="String", description ="介绍",requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String introduce;
     
-    @ApiModelProperty(name ="price", dataType ="BigDecimal", value ="价格",required = true)
+    @Schema(name ="price", type ="BigDecimal", description ="价格",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private BigDecimal price;
     
-    @ApiModelProperty(name ="totalNumber", dataType ="Long", value ="总数量",required = true)
+    @Schema(name ="totalNumber", type ="Long", description ="总数量",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long totalNumber;
     
-    @ApiModelProperty(name ="remainNumber", dataType ="Long", value ="剩余数量",required = true)
+    @Schema(name ="remainNumber", type ="Long", description ="剩余数量",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long remainNumber;
     

@@ -1,11 +1,12 @@
 package com.damai.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -14,16 +15,17 @@ import java.io.Serializable;
  * @author: 阿星不是程序员
  **/
 @Data
-@ApiModel(value="UserUpdateMobileDto", description ="修改用户手机号")
+@Schema(title="UserUpdateMobileDto", description ="修改用户手机号")
 public class UserUpdateMobileDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     
-    @ApiModelProperty(name ="id", dataType ="Long", value ="用户id",required = true)
+    @Schema(name ="id", type ="Long", description ="用户id",requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private Long id;
     
-    @ApiModelProperty(name ="mobile", dataType ="String", value ="手机号",required = true)
+    @Schema(name ="mobile", type ="String", description ="手机号",requiredMode= RequiredMode.REQUIRED)
     @NotBlank
     private String mobile;
     
