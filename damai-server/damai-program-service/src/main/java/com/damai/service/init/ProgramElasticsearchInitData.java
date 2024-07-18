@@ -94,7 +94,8 @@ public class ProgramElasticsearchInitData extends AbstractApplicationPostConstru
         boolean result = businessEsHandle.checkIndex(SpringUtil.getPrefixDistinctionName() + "-" +
                 ProgramDocumentParamName.INDEX_NAME, ProgramDocumentParamName.INDEX_TYPE);
         if (result) {
-            return false;
+            businessEsHandle.deleteIndex(SpringUtil.getPrefixDistinctionName() + "-" +
+                    ProgramDocumentParamName.INDEX_NAME);
         }
         try {
             businessEsHandle.createIndex(SpringUtil.getPrefixDistinctionName() + "-" +
