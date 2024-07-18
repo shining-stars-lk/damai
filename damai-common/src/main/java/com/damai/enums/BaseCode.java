@@ -45,6 +45,8 @@ public enum BaseCode {
     
     EXECUTE_TIME_OUT(515,"执行超时"),
     
+    LOGIN_USER_NOT_EXIST(516,"用户没有登录"),
+    
     RSA_SIGN_ERROR(10000,"rsa签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"rsa解密失败"),
