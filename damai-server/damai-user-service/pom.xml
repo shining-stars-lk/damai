@@ -163,6 +163,11 @@
             <artifactId>activation</artifactId>
             <version>${activation.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-thread-pool-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 
     <build>
