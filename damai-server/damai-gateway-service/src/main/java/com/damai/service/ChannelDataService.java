@@ -12,6 +12,7 @@ import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.util.StringUtil;
 import com.damai.vo.GetChannelDataVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,11 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static com.damai.constant.GatewayConstant.CODE;
 
@@ -27,6 +33,7 @@ import static com.damai.constant.GatewayConstant.CODE;
  * @description: 渠道数据获取
  * @author: 阿星不是程序员
  **/
+@Slf4j
 @Service
 public class ChannelDataService {
     
@@ -38,6 +45,9 @@ public class ChannelDataService {
     
     @Autowired
     private RedisCache redisCache;
+    
+    @Autowired
+    private ThreadPoolExecutor threadPoolExecutor;
     
     public void checkCode(String code){
         if (StringUtil.isEmpty(code)) {
@@ -71,10 +81,25 @@ public class ChannelDataService {
     private GetChannelDataVo getChannelDataByClient(String code){
         GetChannelDataByCodeDto getChannelDataByCodeDto = new GetChannelDataByCodeDto();
         getChannelDataByCodeDto.setCode(code);
-        ApiResponse<GetChannelDataVo> getChannelDataApiResponse = baseDataClient.getByCode(getChannelDataByCodeDto);
-        if (Objects.equals(getChannelDataApiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
-            return getChannelDataApiResponse.getData();
+        
+        Future<ApiResponse<GetChannelDataVo>> future = 
+                threadPoolExecutor.submit(() -> baseDataClient.getByCode(getChannelDataByCodeDto));
+        try {
+            ApiResponse<GetChannelDataVo> getChannelDataApiResponse = future.get(10, TimeUnit.SECONDS);
+            if (Objects.equals(getChannelDataApiResponse.getCode(), BaseCode.SUCCESS.getCode())) {
+                return getChannelDataApiResponse.getData();
+            }
+        } catch (InterruptedException e) {
+            log.error("baseDataClient getByCode Interrupted",e);
+            throw new DaMaiFrameException(BaseCode.THREAD_INTERRUPTED);
+        } catch (ExecutionException e) {
+            log.error("baseDataClient getByCode execution exception",e);
+            throw new DaMaiFrameException(BaseCode.SYSTEM_ERROR);
+        } catch (TimeoutException e) {
+            log.error("baseDataClient getByCode timeout exception",e);
+            throw new DaMaiFrameException(BaseCode.EXECUTE_TIME_OUT);
         }
+        
         throw new DaMaiFrameException(BaseCode.CHANNEL_DATA_NOT_EXIST);
     }
 }

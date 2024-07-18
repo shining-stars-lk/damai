@@ -20,7 +20,7 @@ rules:
   - !SHARDING
     tables:
       d_order:
-        actualDataNodes: ds_${0..1}.d_order_${0..4}
+        actualDataNodes: ds_${0..1}.d_order_${0..3}
         databaseStrategy:
           complex:
             shardingColumns: order_number,user_id
@@ -30,7 +30,7 @@ rules:
             shardingColumns: order_number,user_id
             shardingAlgorithmName: tableOrderComplexGeneArithmetic
       d_order_ticket_user:
-        actualDataNodes: ds_${0..1}.d_order_ticket_user_${0..4}
+        actualDataNodes: ds_${0..1}.d_order_ticket_user_${0..3}
         databaseStrategy:
           complex:
             shardingColumns: order_number,user_id
@@ -46,26 +46,26 @@ rules:
         type: CLASS_BASED
         props:
           sharding-count: 2
-          table-sharding-count: 5
+          table-sharding-count: 4
           strategy: complex
           algorithmClassName: com.damai.shardingsphere.DatabaseOrderComplexGeneArithmetic
       tableOrderComplexGeneArithmetic:
         type: CLASS_BASED
         props:
-          sharding-count: 5
+          sharding-count: 4
           strategy: complex
           algorithmClassName: com.damai.shardingsphere.TableOrderComplexGeneArithmetic
       databaseOrderTicketUserComplexGeneArithmetic:
         type: CLASS_BASED
         props:
           sharding-count: 2
-          table-sharding-count: 5
+          table-sharding-count: 4
           strategy: complex
           algorithmClassName: com.damai.shardingsphere.DatabaseOrderComplexGeneArithmetic
       tableOrderTicketUserComplexGeneArithmetic:
         type: CLASS_BASED
         props:
-          sharding-count: 5
+          sharding-count: 4
           strategy: complex
           algorithmClassName: com.damai.shardingsphere.TableOrderComplexGeneArithmetic
 props:

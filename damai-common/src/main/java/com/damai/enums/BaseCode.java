@@ -11,7 +11,7 @@ public enum BaseCode {
      * */
     SUCCESS(0, "OK"),
     
-    SYSTEM_ERROR(-1,"系统异常"),
+    SYSTEM_ERROR(-1,"系统异常，请稍后重试"),
     
     UID_WORK_ID_ERROR(500,"uid_work_id设置失败"),
     
@@ -42,6 +42,8 @@ public enum BaseCode {
     OPERATION_IS_TOO_FREQUENT_PLEASE_TRY_AGAIN_LATER(513,"操作太频繁，请稍后再试"),
     
     THREAD_INTERRUPTED(514,"线程中断错误"),
+    
+    EXECUTE_TIME_OUT(515,"执行超时"),
     
     RSA_SIGN_ERROR(10000,"rsa签名验证失败"),
     
