@@ -1,0 +1,2 @@
+# 支付宝回调地址
+orderPayNotifyUrl: http://damai-javaup.chat:6085/damai/order/order/alipay/notify

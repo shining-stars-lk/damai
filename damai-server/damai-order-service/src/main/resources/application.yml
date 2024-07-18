@@ -124,5 +124,3 @@ knife4j:
     language: zh_cn
     enable-version: true
     enable-swagger-models: true
-# 支付宝回调地址
-orderPayNotifyUrl: https://16c4-123-124-21-34.ngrok-free.app/damai/order/order/alipay/notify
