@@ -17,5 +17,5 @@ public class ProgramOrderConstant {
     
     public static final String DELAY_OPERATE_PROGRAM_DATA_TOPIC = "d_delay_operate_program_data_topic";
     
-    public static final Long ORDER_TABLE_COUNT = 4L;
+    public static final Long ORDER_TABLE_COUNT = 5L;
 }
