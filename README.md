@@ -82,7 +82,7 @@
 
 通过此业务结构图进一步详细的介绍项目中的服务配置、技术选型、核心业务、基础组件、中间件的使用、监控方式等各个方面，方便大家能够对大麦项目的整体架构和设计有一个清晰的认知
 
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E6%9E%B6%E6%9E%84%E5%9B%BE%2F%E9%A1%B9%E7%9B%AE%E4%B8%9A%E5%8A%A1%E7%BB%93%E6%9E%84%E5%9B%BE.png)
+![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E6%9E%B6%E6%9E%84%E5%9B%BE%2F%E9%A1%B9%E7%9B%AE%E4%B8%9A%E5%8A%A1%E7%9A%84%E7%BB%93%E6%9E%84%E5%9B%BE.png)
 
 ## 技术选型
 
