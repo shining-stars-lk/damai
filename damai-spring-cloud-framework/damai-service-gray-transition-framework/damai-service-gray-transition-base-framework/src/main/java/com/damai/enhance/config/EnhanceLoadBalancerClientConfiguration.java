@@ -80,16 +80,18 @@ public class EnhanceLoadBalancerClientConfiguration {
 		@ConditionalOnBean(ReactiveDiscoveryClient.class)
 		@Conditional(DefaultConfigurationCondition.class)
 		public ServiceInstanceListSupplier discoveryClientServiceInstanceListSupplier(
-				ConfigurableApplicationContext context) {
-			return ServiceInstanceListSupplier.builder().withDiscoveryClient().withCaching().build(context);
+				ConfigurableApplicationContext context,
+				FilterLoadBalance filterLoadBalance) {
+			return new EnhanceServiceInstanceListSupplierBuilder(filterLoadBalance).withDiscoveryClient().withCaching().build(context);
 		}
 
 		@Bean
 		@ConditionalOnBean(ReactiveDiscoveryClient.class)
 		@Conditional(ZonePreferenceConfigurationCondition.class)
 		public ServiceInstanceListSupplier zonePreferenceDiscoveryClientServiceInstanceListSupplier(
-				ConfigurableApplicationContext context) {
-			return ServiceInstanceListSupplier.builder().withDiscoveryClient().withCaching().withZonePreference()
+				ConfigurableApplicationContext context,
+				FilterLoadBalance filterLoadBalance) {
+			return new EnhanceServiceInstanceListSupplierBuilder(filterLoadBalance).withDiscoveryClient().withCaching().withZonePreference()
 					.build(context);
 		}
 
@@ -103,16 +105,18 @@ public class EnhanceLoadBalancerClientConfiguration {
 		@ConditionalOnBean({ ReactiveDiscoveryClient.class, WebClient.Builder.class })
 		@Conditional(HealthCheckConfigurationCondition.class)
 		public ServiceInstanceListSupplier healthCheckDiscoveryClientServiceInstanceListSupplier(
-				ConfigurableApplicationContext context) {
-			return ServiceInstanceListSupplier.builder().withDiscoveryClient().withHealthChecks().build(context);
+				ConfigurableApplicationContext context,
+				FilterLoadBalance filterLoadBalance) {
+			return new EnhanceServiceInstanceListSupplierBuilder(filterLoadBalance).withDiscoveryClient().withHealthChecks().build(context);
 		}
 
 		@Bean
 		@ConditionalOnBean(ReactiveDiscoveryClient.class)
 		@Conditional(RequestBasedStickySessionConfigurationCondition.class)
 		public ServiceInstanceListSupplier requestBasedStickySessionDiscoveryClientServiceInstanceListSupplier(
-				ConfigurableApplicationContext context) {
-			return ServiceInstanceListSupplier.builder().withDiscoveryClient().withCaching()
+				ConfigurableApplicationContext context,
+				FilterLoadBalance filterLoadBalance) {
+			return new EnhanceServiceInstanceListSupplierBuilder(filterLoadBalance).withDiscoveryClient().withCaching()
 					.withRequestBasedStickySession().build(context);
 		}
 

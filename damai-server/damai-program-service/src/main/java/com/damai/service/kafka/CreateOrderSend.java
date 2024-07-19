@@ -1,15 +1,16 @@
 package com.damai.service.kafka;
 
 import com.damai.core.SpringUtil;
+import com.damai.mq.callback.FailureCallback;
+import com.damai.mq.callback.SuccessCallback;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
-import org.springframework.util.concurrent.FailureCallback;
-import org.springframework.util.concurrent.SuccessCallback;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -34,6 +35,12 @@ public class CreateOrderSend {
         log.info("创建订单kafka发送消息 消息体 : {}", message);
         CompletableFuture<SendResult<String, String>> completableFuture = 
                 kafkaTemplate.send(SpringUtil.getPrefixDistinctionName() + "-" + kafkaTopic.getTopic(), message);
-        //TODO
+        completableFuture.whenComplete((result,ex) -> {
+            if (Objects.isNull(ex)) {
+                successCallback.onSuccess(result);
+            }else {
+                failureCallback.onFailure(ex);
+            }
+        });
     }
 }

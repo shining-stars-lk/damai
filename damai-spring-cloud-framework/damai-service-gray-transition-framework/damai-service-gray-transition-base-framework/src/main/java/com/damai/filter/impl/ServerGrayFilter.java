@@ -33,6 +33,9 @@ import static com.damai.constant.Constant.SERVER_GRAY;
 @Slf4j
 public class ServerGrayFilter extends AbstractServerFilter {
     
+    /**
+     * 此服务的灰度标识
+     * */
     @Value(SERVER_GRAY)
     private String serverGray;
     

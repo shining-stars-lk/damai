@@ -3,6 +3,8 @@ package com.damai.captcha.service.impl;
 import com.damai.captcha.service.CaptchaCacheService;
 import com.damai.captcha.util.CacheUtil;
 
+import java.util.Objects;
+
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -35,8 +37,8 @@ public class CaptchaCacheServiceMemImpl implements CaptchaCacheService {
 
 	@Override
 	public Long increment(String key, long val) {
-    	Long ret = Long.valueOf(CacheUtil.get(key))+val;
-		CacheUtil.set(key,ret+"",0);
+    	Long ret = Long.parseLong(Objects.requireNonNull(CacheUtil.get(key)))+val;
+		CacheUtil.set(key, String.valueOf(ret),0);
 		return ret;
 	}
 
