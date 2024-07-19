@@ -11,7 +11,7 @@ public enum BaseCode {
      * */
     SUCCESS(0, "OK"),
     
-    SYSTEM_ERROR(-1,"系统异常"),
+    SYSTEM_ERROR(-1,"系统异常，请稍后重试"),
     
     UID_WORK_ID_ERROR(500,"uid_work_id设置失败"),
     
@@ -36,6 +36,14 @@ public enum BaseCode {
     MESSAGE_CONSUMER_NOT_EXIST(510,"messageConsumer实现不存在"),
     
     REDIS_STREAM_CONSUMER_TYPE_NOT_EXIST(511,"redisStream消费方式不存在"),
+    
+    CHANNEL_DATA_NOT_EXIST(512,"没有找到ChannelData"),
+    
+    OPERATION_IS_TOO_FREQUENT_PLEASE_TRY_AGAIN_LATER(513,"操作太频繁，请稍后再试"),
+    
+    THREAD_INTERRUPTED(514,"线程中断错误"),
+    
+    EXECUTE_TIME_OUT(515,"执行超时"),
     
     LOGIN_USER_NOT_EXIST(516,"用户没有登录"),
     
@@ -155,6 +163,8 @@ public enum BaseCode {
     SEAT_PRICE_EMPTY(40030,"座位价格为空"),
     
     SEAT_IS_NOT_NOT_SOLD(40031,"座位不是未售卖"),
+    
+    CAN_NOT_CANCEL(40032,"订单不是未支付状态不能取消"),
     
     DELAY_QUEUE_CLIENT_NOT_EXIST(50001,"延迟队列客户端不存在"),
     
