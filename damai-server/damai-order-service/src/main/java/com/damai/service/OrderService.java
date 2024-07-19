@@ -597,4 +597,21 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     public String getCache(OrderGetDto orderGetDto) {
         return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.ORDER_MQ,orderGetDto.getOrderNumber()),String.class);
     }
+    
+    @RepeatExecuteLimit(name = CANCEL_PROGRAM_ORDER,keys = {"#orderCancelDto.orderNumber"})
+    @ServiceLock(name = ORDER_CANCEL_LOCK,keys = {"#orderCancelDto.orderNumber"})
+    @Transactional(rollbackFor = Exception.class)
+    public boolean initiateCancel(OrderCancelDto orderCancelDto){
+        Order order = orderMapper.selectOne(Wrappers.lambdaQuery(Order.class)
+                .eq(Order::getOrderNumber, orderCancelDto.getOrderNumber()));
+        if (Objects.isNull(order)) {
+            if (Objects.isNull(order)) {
+                throw new DaMaiFrameException(BaseCode.ORDER_NOT_EXIST);
+            }
+            if (!Objects.equals(order.getOrderStatus(), OrderStatus.NO_PAY.getCode())) {
+                throw new DaMaiFrameException(BaseCode.CAN_NOT_CANCEL);
+            }
+        }
+        return cancel(orderCancelDto);
+    }
 }
