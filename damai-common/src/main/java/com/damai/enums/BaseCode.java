@@ -47,6 +47,8 @@ public enum BaseCode {
     
     LOGIN_USER_NOT_EXIST(516,"用户没有登录"),
     
+    ONLY_SIGNATURE_ACCESS_IS_ALLOWED(517,"只允许签名访问"),
+    
     RSA_SIGN_ERROR(10000,"rsa签名验证失败"),
     
     RSA_DECRYPT_ERROR(10001,"rsa解密失败"),

@@ -194,6 +194,10 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
         String userId = null;
         String url = request.getPath().value();
         String noVerify = request.getHeaders().getFirst(NO_VERIFY);
+        boolean allowNormalAccess = gatewayProperty.isAllowNormalAccess();
+        if ((!allowNormalAccess) && (VERIFY_VALUE.equals(noVerify))) {
+            throw new DaMaiFrameException(BaseCode.ONLY_SIGNATURE_ACCESS_IS_ALLOWED);
+        }
         if (checkParameter(originalBody,noVerify) && !skipCheckParameter(url)) {
 
             String encrypt = request.getHeaders().getFirst(ENCRYPT);
