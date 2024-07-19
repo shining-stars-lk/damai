@@ -28,7 +28,8 @@ spring:
         username: nacos
         password: nacos
         metadata:
-          gray: true
+          # true表示灰度服务/false表示生产服务(默认)
+          gray: false
     sentinel:
       eager: true
       transport:

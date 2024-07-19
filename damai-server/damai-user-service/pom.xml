@@ -117,11 +117,11 @@
             <artifactId>jasypt-spring-boot-starter</artifactId>
             <version>${jasypt.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>damai-service-gray-transition-webmvc-framework</artifactId>
-            <version>${revision}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.example</groupId>-->
+<!--            <artifactId>damai-service-gray-transition-webmvc-framework</artifactId>-->
+<!--            <version>${revision}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>

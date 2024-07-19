@@ -1,1 +1,1 @@
-com.damai.balance.config.ExtraRibbonAutoConfiguration
+com.damai.balance.config.GrayLoadBalanceAutoConfiguration
