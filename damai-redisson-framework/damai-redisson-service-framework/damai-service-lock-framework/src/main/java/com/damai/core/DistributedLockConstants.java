@@ -113,6 +113,16 @@ public class DistributedLockConstants {
     public final static String PROGRAM_ORDER_CREATE_V2 = "d_program_order_create_v2_lock";
     
     /**
+     * 节目服务订单创建V3
+     * */
+    public final static String PROGRAM_ORDER_CREATE_V3 = "d_program_order_create_v3_lock";
+    
+    /**
+     * 节目服务订单创建V4
+     * */
+    public final static String PROGRAM_ORDER_CREATE_V4 = "d_program_order_create_v4_lock";
+    
+    /**
      * 支付服务的通用支付
      * */
     public final static String COMMON_PAY = "d_common_pay_lock";
