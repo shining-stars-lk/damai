@@ -10,7 +10,7 @@
     </parent>
 
 
-    <artifactId>damai-mybatis-puls-service</artifactId>
+    <artifactId>damai-mybatis-plus-service</artifactId>
 
     <name>mybatis-puls-service</name>
     <description>mybatisPlus操作</description>
