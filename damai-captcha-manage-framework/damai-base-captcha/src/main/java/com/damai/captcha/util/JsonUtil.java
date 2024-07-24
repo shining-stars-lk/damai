@@ -44,7 +44,7 @@ public class JsonUtil {
 		return null;
 	}
 
-	public static String toJSONString(Object object) {
+	public static String toJsonString(Object object) {
 		if(object == null) {
 			return "{}";
 		}

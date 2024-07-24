@@ -211,8 +211,8 @@ public class BlockPuzzleCaptchaServiceImpl extends AbstractCaptchaService {
             
             //将坐标信息存入redis中
             String codeKey = String.format(REDIS_CAPTCHA_KEY, dataVO.getToken());
-            CaptchaServiceFactory.getCache(cacheType).set(codeKey, JsonUtil.toJSONString(point), EXPIRE_SIN_SECONDS);
-            logger.debug("token：{},point:{}", dataVO.getToken(), JsonUtil.toJSONString(point));
+            CaptchaServiceFactory.getCache(cacheType).set(codeKey, JsonUtil.toJsonString(point), EXPIRE_SIN_SECONDS);
+            logger.debug("token：{},point:{}", dataVO.getToken(), JsonUtil.toJsonString(point));
             return dataVO;
         } catch (Exception e) {
             e.printStackTrace();

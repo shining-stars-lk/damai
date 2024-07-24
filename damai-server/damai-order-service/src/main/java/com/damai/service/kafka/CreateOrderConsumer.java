@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,9 +53,13 @@ public class CreateOrderConsumer {
                 if (currentTimeTimestamp - createOrderTimeTimestamp > MESSAGE_DELAY_TIME) {
                     log.info("消费到kafka的创建订单消息延迟时间大于了 {} 毫秒 此订单消息被丢弃 订单号 : {}",
                             delayTime,orderCreateDto.getOrderNumber());
-                    List<String> seatIdList = orderCreateDto.getOrderTicketUserCreateDtoList().stream()
-                            .map(OrderTicketUserCreateDto::getSeatId).map(String::valueOf).collect(Collectors.toList());
-                    orderService.updateProgramRelatedDataMq(orderCreateDto.getProgramId(),seatIdList, OrderStatus.CANCEL);
+                    Map<Long, List<OrderTicketUserCreateDto>> orderTicketUserSeatList =
+                            orderCreateDto.getOrderTicketUserCreateDtoList().stream().collect(Collectors.groupingBy(OrderTicketUserCreateDto::getTicketCategoryId));
+                    Map<Long,List<Long>> seatMap = new HashMap<>(orderTicketUserSeatList.size());
+                    orderTicketUserSeatList.forEach((k,v) -> {
+                        seatMap.put(k,v.stream().map(OrderTicketUserCreateDto::getSeatId).collect(Collectors.toList()));
+                    });
+                    orderService.updateProgramRelatedDataMq(orderCreateDto.getProgramId(),seatMap, OrderStatus.CANCEL);
                 }else {
                     String orderNumber = orderService.createMq(orderCreateDto);
                     log.info("消费到kafka的创建订单消息 创建订单成功 订单号 : {}",orderNumber);

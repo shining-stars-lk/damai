@@ -42,6 +42,10 @@ public class OrderTicketUserCreateDto {
     @NotBlank
     private String seatInfo;
     
+    @Schema(name ="ticketCategoryId", type ="Long", description ="节目票档id", requiredMode= RequiredMode.REQUIRED)
+    @NotNull
+    private Long ticketCategoryId;
+    
     @Schema(name ="orderPrice", type ="BigDecimal", description ="订单价格", requiredMode= RequiredMode.REQUIRED)
     @NotNull
     private BigDecimal orderPrice;

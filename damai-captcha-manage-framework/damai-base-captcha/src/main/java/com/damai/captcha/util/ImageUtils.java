@@ -90,7 +90,7 @@ public class ImageUtils {
         FILE_NAME_MAP.put(CaptchaBaseMapEnum.PIC_CLICK.getCodeValue(), PIC_CLICK_CACHE_MAP.keySet().toArray(new String[0]));
         FILE_NAME_MAP.put(CaptchaBaseMapEnum.ROTATE.getCodeValue(), ORIGINAL_ROTATE_CACHE_MAP.keySet().toArray(new String[0]));
         FILE_NAME_MAP.put(CaptchaBaseMapEnum.ROTATE_BLOCK.getCodeValue(), ROTATE_BLOCK_CACHE_MAP.keySet().toArray(new String[0]));
-        logger.info("初始化底图:{}", JsonUtil.toJSONString(FILE_NAME_MAP));
+        logger.info("初始化底图:{}", JsonUtil.toJsonString(FILE_NAME_MAP));
     }
 
     public static void cacheBootImage(Map<String, String> originalMap, Map<String, String> slidingBlockMap, Map<String, String> picClickMap) {
@@ -100,7 +100,7 @@ public class ImageUtils {
         FILE_NAME_MAP.put(CaptchaBaseMapEnum.ORIGINAL.getCodeValue(), ORIGINAL_CACHE_MAP.keySet().toArray(new String[0]));
         FILE_NAME_MAP.put(CaptchaBaseMapEnum.SLIDING_BLOCK.getCodeValue(), SLIDING_BLOCK_CACHE_MAP.keySet().toArray(new String[0]));
         FILE_NAME_MAP.put(CaptchaBaseMapEnum.PIC_CLICK.getCodeValue(), PIC_CLICK_CACHE_MAP.keySet().toArray(new String[0]));
-        logger.info("自定义resource底图:{}", JsonUtil.toJSONString(FILE_NAME_MAP));
+        logger.info("自定义resource底图:{}", JsonUtil.toJsonString(FILE_NAME_MAP));
     }
 
     public static BufferedImage getRotate() {

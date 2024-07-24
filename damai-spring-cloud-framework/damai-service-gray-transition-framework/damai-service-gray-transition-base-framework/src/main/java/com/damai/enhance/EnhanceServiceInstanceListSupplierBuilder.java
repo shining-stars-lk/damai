@@ -392,7 +392,7 @@ public final class EnhanceServiceInstanceListSupplierBuilder {
 				(serviceInstance, healthCheckPath) -> webClient.get()
 						.uri(UriComponentsBuilder.fromUriString(getUri(serviceInstance, healthCheckPath)).build()
 								.toUri())
-						.exchange().flatMap(clientResponse -> clientResponse.releaseBody()
+						.exchangeToMono(clientResponse -> clientResponse.releaseBody()
 								.thenReturn(HttpStatus.OK.equals(clientResponse.statusCode()))));
 	}
 

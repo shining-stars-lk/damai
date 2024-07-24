@@ -130,6 +130,6 @@ public class ProgramUserExistCheckHandler extends AbstractProgramCheckHandler {
     
     @Override
     public Integer executeOrder() {
-        return 3;
+        return 2;
     }
 }

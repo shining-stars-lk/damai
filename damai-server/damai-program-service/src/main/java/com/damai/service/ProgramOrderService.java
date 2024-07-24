@@ -13,34 +13,38 @@ import com.damai.dto.OrderCreateDto;
 import com.damai.dto.OrderTicketUserCreateDto;
 import com.damai.dto.ProgramOrderCreateDto;
 import com.damai.dto.SeatDto;
+import com.damai.entity.ProgramShowTime;
 import com.damai.enums.BaseCode;
 import com.damai.enums.OrderStatus;
 import com.damai.enums.SellStatus;
 import com.damai.exception.DaMaiFrameException;
-import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
 import com.damai.service.delaysend.DelayOrderCancelSend;
 import com.damai.service.kafka.CreateOrderMqDomain;
 import com.damai.service.kafka.CreateOrderSend;
 import com.damai.service.lua.ProgramCacheCreateOrderData;
-import com.damai.service.lua.ProgramCacheCreateOrderOperate;
-import com.damai.service.lua.ProgramCacheOperate;
+import com.damai.service.lua.ProgramCacheCreateOrderResolutionOperate;
+import com.damai.service.lua.ProgramCacheResolutionOperate;
 import com.damai.service.tool.SeatMatch;
 import com.damai.util.DateUtils;
 import com.damai.vo.ProgramVo;
 import com.damai.vo.SeatVo;
+import com.damai.vo.TicketCategoryVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.damai.service.constant.ProgramOrderConstant.ORDER_TABLE_COUNT;
@@ -61,13 +65,10 @@ public class ProgramOrderService {
     private UidGenerator uidGenerator;
     
     @Autowired
-    private RedisCache redisCache;
+    private ProgramCacheResolutionOperate programCacheResolutionOperate;
     
     @Autowired
-    private ProgramCacheOperate programCacheOperate;
-    
-    @Autowired
-    private ProgramCacheCreateOrderOperate programCacheCreateOrderOperate;
+    ProgramCacheCreateOrderResolutionOperate programCacheCreateOrderResolutionOperate;
     
     @Autowired
     private DelayOrderCancelSend delayOrderCancelSend;
@@ -78,19 +79,64 @@ public class ProgramOrderService {
     @Autowired
     private ProgramService programService;
     
+    @Autowired
+    private ProgramShowTimeService programShowTimeService;
+    
+    @Autowired
+    private TicketCategoryService ticketCategoryService;
+    
+    @Autowired
+    private SeatService seatService;
+    
+    public List<TicketCategoryVo> getTicketCategoryList(ProgramOrderCreateDto programOrderCreateDto, Date showTime){
+        List<TicketCategoryVo> getTicketCategoryVoList = new ArrayList<>();
+        List<TicketCategoryVo> ticketCategoryVoList =
+                ticketCategoryService.selectTicketCategoryListByProgramIdMultipleCache(programOrderCreateDto.getProgramId(),
+                        showTime);
+        Map<Long, TicketCategoryVo> ticketCategoryVoMap =
+                ticketCategoryVoList.stream()
+                        .collect(Collectors.toMap(TicketCategoryVo::getId, ticketCategoryVo -> ticketCategoryVo));
+        List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
+        if (CollectionUtil.isNotEmpty(seatDtoList)) {
+            for (SeatDto seatDto : seatDtoList) {
+                TicketCategoryVo ticketCategoryVo = ticketCategoryVoMap.get(seatDto.getTicketCategoryId());
+                if (Objects.nonNull(ticketCategoryVo)) {
+                    getTicketCategoryVoList.add(ticketCategoryVo);
+                }else {
+                    throw new DaMaiFrameException(BaseCode.TICKET_CATEGORY_NOT_EXIST_V2);
+                }
+            }
+        } else {
+            TicketCategoryVo ticketCategoryVo = ticketCategoryVoMap.get(programOrderCreateDto.getTicketCategoryId());
+            if (Objects.nonNull(ticketCategoryVo)) {
+                getTicketCategoryVoList.add(ticketCategoryVo);
+            }else {
+                throw new DaMaiFrameException(BaseCode.TICKET_CATEGORY_NOT_EXIST_V2);
+            }
+        }
+        return getTicketCategoryVoList;
+    }
     
     public String create(ProgramOrderCreateDto programOrderCreateDto) {
-        Long programId = programOrderCreateDto.getProgramId();
+        ProgramShowTime programShowTime =
+                programShowTimeService.selectProgramShowTimeByProgramIdMultipleCache(programOrderCreateDto.getProgramId());
+        List<TicketCategoryVo> getTicketCategoryList = 
+                getTicketCategoryList(programOrderCreateDto,programShowTime.getShowTime());
         BigDecimal parameterOrderPrice = new BigDecimal("0");
         BigDecimal databaseOrderPrice = new BigDecimal("0");
         List<SeatVo> purchaseSeatList = new ArrayList<>();
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
-        List<SeatVo> seatVoList = 
-                redisCache.getAllForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, 
-                        programOrderCreateDto.getProgramId()), SeatVo.class);
-        Map<String, Long> ticketCategoryRemainNumber = 
-                redisCache.getAllMapForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, 
-                        programOrderCreateDto.getProgramId()), Long.class);
+        List<SeatVo> seatVoList = new ArrayList<>();
+        Map<String, Long> ticketCategoryRemainNumber = new HashMap<>(16);
+        for (TicketCategoryVo ticketCategory : getTicketCategoryList) {
+            List<SeatVo> allSeatVoList = 
+                    seatService.selectSeatResolution(programOrderCreateDto.getProgramId(), ticketCategory.getId(), 
+                            DateUtils.countBetweenSecond(DateUtils.now(), programShowTime.getShowTime()), TimeUnit.SECONDS);
+            seatVoList.addAll(allSeatVoList.stream().
+                    filter(seatVo -> seatVo.getSellStatus().equals(SellStatus.NO_SOLD.getCode())).toList());
+            ticketCategoryRemainNumber.putAll(ticketCategoryService.getRedisRemainNumberResolution(
+                    programOrderCreateDto.getProgramId(),ticketCategory.getId()));
+        }
         if (CollectionUtil.isNotEmpty(seatDtoList)) {
             Map<Long, Long> seatTicketCategoryDtoCount = seatDtoList.stream()
                     .collect(Collectors.groupingBy(SeatDto::getTicketCategoryId, Collectors.counting()));
@@ -125,60 +171,84 @@ public class ProgramOrderService {
             if (ticketCount > remainNumber) {
                 throw new DaMaiFrameException(BaseCode.TICKET_REMAIN_NUMBER_NOT_SUFFICIENT);
             }
-            purchaseSeatList = SeatMatch.findAdjacentSeatVos(seatVoList.stream().filter(seatVo -> 
+            purchaseSeatList = SeatMatch.findAdjacentSeatVos(seatVoList.stream().filter(seatVo ->
                     Objects.equals(seatVo.getTicketCategoryId(), ticketCategoryId)).collect(Collectors.toList()), ticketCount);
             if (purchaseSeatList.size() < ticketCount) {
                 throw new DaMaiFrameException(BaseCode.SEAT_OCCUPY);
             }
         }
-        updateProgramCacheData(programId,purchaseSeatList,OrderStatus.NO_PAY);
+        updateProgramCacheDataResolution(programOrderCreateDto.getProgramId(),purchaseSeatList,OrderStatus.NO_PAY);
         return doCreate(programOrderCreateDto,purchaseSeatList);
     }
     
     
     public String createNew(ProgramOrderCreateDto programOrderCreateDto) {
-        List<SeatVo> purchaseSeatList = createOrderOperateProgramCache(programOrderCreateDto);
+        List<SeatVo> purchaseSeatList = createOrderOperateProgramCacheResolution(programOrderCreateDto);
         return doCreate(programOrderCreateDto,purchaseSeatList);
     }
     
     public String createNewAsync(ProgramOrderCreateDto programOrderCreateDto) {
-        List<SeatVo> purchaseSeatList = createOrderOperateProgramCache(programOrderCreateDto);
+        List<SeatVo> purchaseSeatList = createOrderOperateProgramCacheResolution(programOrderCreateDto);
         return doCreateV2(programOrderCreateDto,purchaseSeatList);
     }
     
-    public List<SeatVo> createOrderOperateProgramCache(ProgramOrderCreateDto programOrderCreateDto){
+    public List<SeatVo> createOrderOperateProgramCacheResolution(ProgramOrderCreateDto programOrderCreateDto){
+        ProgramShowTime programShowTime =
+                programShowTimeService.selectProgramShowTimeByProgramIdMultipleCache(programOrderCreateDto.getProgramId());
+        List<TicketCategoryVo> getTicketCategoryList =
+                getTicketCategoryList(programOrderCreateDto,programShowTime.getShowTime());
+        for (TicketCategoryVo ticketCategory : getTicketCategoryList) {
+            seatService.selectSeatResolution(programOrderCreateDto.getProgramId(), ticketCategory.getId(),
+                            DateUtils.countBetweenSecond(DateUtils.now(), programShowTime.getShowTime()), TimeUnit.SECONDS);
+            ticketCategoryService.getRedisRemainNumberResolution(
+                    programOrderCreateDto.getProgramId(),ticketCategory.getId());
+        }
         Long programId = programOrderCreateDto.getProgramId();
         List<SeatDto> seatDtoList = programOrderCreateDto.getSeatDtoList();
         List<String> keys = new ArrayList<>();
-        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
-        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
-        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
         String[] data = new String[2];
         JSONArray jsonArray = new JSONArray();
+        JSONArray addSeatDatajsonArray = new JSONArray();
         if (CollectionUtil.isNotEmpty(seatDtoList)) {
             keys.add("1");
-            Map<Long, Long> seatTicketCategoryDtoCount = seatDtoList.stream()
-                    .collect(Collectors.groupingBy(SeatDto::getTicketCategoryId, Collectors.counting()));
-            for (Entry<Long, Long> entry : seatTicketCategoryDtoCount.entrySet()) {
+            Map<Long, List<SeatDto>> seatTicketCategoryDtoCount = seatDtoList.stream()
+                    .collect(Collectors.groupingBy(SeatDto::getTicketCategoryId));
+            for (Entry<Long, List<SeatDto>> entry : seatTicketCategoryDtoCount.entrySet()) {
                 Long ticketCategoryId = entry.getKey();
-                Long ticketCount = entry.getValue();
+                int ticketCount = entry.getValue().size();
                 JSONObject jsonObject = new JSONObject();
+                jsonObject.put("programTicketRemainNumberHashKey",RedisKeyBuild.createRedisKey(
+                        RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH_RESOLUTION, programId, ticketCategoryId).getRelKey());
                 jsonObject.put("ticketCategoryId",ticketCategoryId);
                 jsonObject.put("ticketCount",ticketCount);
                 jsonArray.add(jsonObject);
+                
+                JSONObject seatDatajsonObject = new JSONObject();
+                seatDatajsonObject.put("seatNoSoldHashKey",RedisKeyBuild.createRedisKey(
+                        RedisKeyManage.PROGRAM_SEAT_NO_SOLD_RESOLUTION_HASH, programId, ticketCategoryId).getRelKey());
+                seatDatajsonObject.put("seatDataList",JSON.toJSONString(seatDtoList));
+                addSeatDatajsonArray.add(seatDatajsonObject);
             }
         }else {
             keys.add("2");
             Long ticketCategoryId = programOrderCreateDto.getTicketCategoryId();
             Integer ticketCount = programOrderCreateDto.getTicketCount();
             JSONObject jsonObject = new JSONObject();
+            jsonObject.put("programTicketRemainNumberHashKey",RedisKeyBuild.createRedisKey(
+                    RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH_RESOLUTION, programId, ticketCategoryId).getRelKey());
             jsonObject.put("ticketCategoryId",ticketCategoryId);
             jsonObject.put("ticketCount",ticketCount);
+            jsonObject.put("seatNoSoldHashKey",RedisKeyBuild.createRedisKey(
+                    RedisKeyManage.PROGRAM_SEAT_NO_SOLD_RESOLUTION_HASH, programId, ticketCategoryId).getRelKey());
             jsonArray.add(jsonObject);
         }
+        keys.add(RedisKeyBuild.getRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_RESOLUTION_HASH));
+        keys.add(RedisKeyBuild.getRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_RESOLUTION_HASH));
+        keys.add(String.valueOf(programOrderCreateDto.getProgramId()));
         data[0] = JSON.toJSONString(jsonArray);
-        data[1] = JSON.toJSONString(seatDtoList);
-        ProgramCacheCreateOrderData programCacheCreateOrderData = programCacheCreateOrderOperate.programCacheOperate(keys, data);
+        data[1] = JSON.toJSONString(addSeatDatajsonArray);
+        ProgramCacheCreateOrderData programCacheCreateOrderData = 
+                programCacheCreateOrderResolutionOperate.programCacheOperate(keys, data);
         if (!Objects.equals(programCacheCreateOrderData.getCode(), BaseCode.SUCCESS.getCode())) {
             throw new DaMaiFrameException(Objects.requireNonNull(BaseCode.getRc(programCacheCreateOrderData.getCode())));
         }
@@ -239,6 +309,7 @@ public class ProgramOrderService {
                             .orElseThrow(() -> new DaMaiFrameException(BaseCode.SEAT_NOT_EXIST));
             orderTicketUserCreateDto.setSeatId(seatVo.getId());
             orderTicketUserCreateDto.setSeatInfo(seatVo.getRowCode()+"排"+seatVo.getColCode()+"列");
+            orderTicketUserCreateDto.setTicketCategoryId(seatVo.getTicketCategoryId());
             orderTicketUserCreateDto.setOrderPrice(seatVo.getPrice());
             orderTicketUserCreateDto.setCreateOrderTime(DateUtils.now());
             orderTicketUserCreateDtoList.add(orderTicketUserCreateDto);
@@ -253,7 +324,7 @@ public class ProgramOrderService {
         ApiResponse<String> createOrderResponse = orderClient.create(orderCreateDto);
         if (!Objects.equals(createOrderResponse.getCode(), BaseCode.SUCCESS.getCode())) {
             log.error("创建订单失败 需人工处理 orderCreateDto : {}",JSON.toJSONString(orderCreateDto));
-            updateProgramCacheData(orderCreateDto.getProgramId(),purchaseSeatList,OrderStatus.CANCEL);
+            updateProgramCacheDataResolution(orderCreateDto.getProgramId(),purchaseSeatList,OrderStatus.CANCEL);
             throw new DaMaiFrameException(createOrderResponse);
         }
         return createOrderResponse.getData();
@@ -270,7 +341,7 @@ public class ProgramOrderService {
         },ex -> {
             log.error("创建订单kafka发送消息失败 error",ex);
             log.error("创建订单失败 需人工处理 orderCreateDto : {}",JSON.toJSONString(orderCreateDto));
-            updateProgramCacheData(orderCreateDto.getProgramId(),purchaseSeatList,OrderStatus.CANCEL);
+            updateProgramCacheDataResolution(orderCreateDto.getProgramId(),purchaseSeatList,OrderStatus.CANCEL);
             createOrderMqDomain.daMaiFrameException = new DaMaiFrameException(ex);
             latch.countDown();
         });
@@ -286,33 +357,22 @@ public class ProgramOrderService {
         return createOrderMqDomain.orderNumber;
     }
     
-    private void updateProgramCacheData(Long programId,List<SeatVo> seatVoList,OrderStatus orderStatus){
+    private void updateProgramCacheDataResolution(Long programId,List<SeatVo> seatVoList,OrderStatus orderStatus){
         if (!(Objects.equals(orderStatus.getCode(), OrderStatus.NO_PAY.getCode()) ||
                 Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode()))) {
             throw new DaMaiFrameException(BaseCode.OPERATE_ORDER_STATUS_NOT_PERMIT);
         }
-        List<String> seatIdList = seatVoList.stream().map(SeatVo::getId).map(String::valueOf).collect(Collectors.toList());
-        Map<String, SeatVo> seatVoMap = seatVoList.stream().collect(Collectors
-                .toMap(seatVo -> String.valueOf(seatVo.getId()), seatVo -> seatVo, (v1, v2) -> v2));
-        List<String> seatDataList = new ArrayList<>();
-        seatVoMap.forEach((k,v) -> {
-            seatDataList.add(k);
-            if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())){
-                v.setSellStatus(SellStatus.NO_SOLD.getCode());
-            }else if (Objects.equals(orderStatus.getCode(), OrderStatus.NO_PAY.getCode())) {
-                v.setSellStatus(SellStatus.LOCK.getCode());
-            }
-            seatDataList.add(JSON.toJSONString(v));
-        });
         List<String> keys = new ArrayList<>();
-        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId).getRelKey());
+        keys.add("#");
         
         String[] data = new String[3];
-        Map<Long, Long> ticketCategoryCountMap = 
+        Map<Long, Long> ticketCategoryCountMap =
                 seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId, Collectors.counting()));
         JSONArray jsonArray = new JSONArray();
         ticketCategoryCountMap.forEach((k,v) -> {
             JSONObject jsonObject = new JSONObject();
+            jsonObject.put("programTicketRemainNumberHashKey",RedisKeyBuild.createRedisKey(
+                    RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH_RESOLUTION, programId, k).getRelKey());
             jsonObject.put("ticketCategoryId",String.valueOf(k));
             if (Objects.equals(orderStatus.getCode(), OrderStatus.NO_PAY.getCode())) {
                 jsonObject.put("count","-" + v);
@@ -321,18 +381,44 @@ public class ProgramOrderService {
             }
             jsonArray.add(jsonObject);
         });
+        Map<Long, List<SeatVo>> seatVoMap = 
+                seatVoList.stream().collect(Collectors.groupingBy(SeatVo::getTicketCategoryId));
+        JSONArray delSeatIdjsonArray = new JSONArray();
+        JSONArray addSeatDatajsonArray = new JSONArray();
+        seatVoMap.forEach((k,v) -> {
+            JSONObject delSeatIdjsonObject = new JSONObject();
+            JSONObject seatDatajsonObject = new JSONObject();
+            String seatHashKeyDel = "";
+            String seatHashKeyAdd = "";
+            if (Objects.equals(orderStatus.getCode(), OrderStatus.NO_PAY.getCode())) {
+                seatHashKeyDel = (RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_RESOLUTION_HASH, programId, k).getRelKey());
+                seatHashKeyAdd = (RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_RESOLUTION_HASH, programId, k).getRelKey());
+                for (SeatVo seatVo : v) {
+                    seatVo.setSellStatus(SellStatus.LOCK.getCode());
+                }
+            } else if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
+                seatHashKeyDel = (RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_RESOLUTION_HASH, programId, k).getRelKey());
+                seatHashKeyAdd = (RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_RESOLUTION_HASH, programId, k).getRelKey());
+                for (SeatVo seatVo : v) {
+                    seatVo.setSellStatus(SellStatus.NO_SOLD.getCode());
+                }
+            }
+            delSeatIdjsonObject.put("seatHashKeyDel",seatHashKeyDel);
+            delSeatIdjsonObject.put("seatIdList",v.stream().map(SeatVo::getId).map(String::valueOf).collect(Collectors.toList()));
+            delSeatIdjsonArray.add(delSeatIdjsonObject);
+            seatDatajsonObject.put("seatHashKeyAdd",seatHashKeyAdd);
+            List<String> seatDataList = new ArrayList<>();
+            for (SeatVo seatVo : v) {
+                seatDataList.add(String.valueOf(seatVo.getId()));
+                seatDataList.add(JSON.toJSONString(seatVo));
+            }
+            seatDatajsonObject.put("seatDataList",seatDataList);
+            addSeatDatajsonArray.add(seatDatajsonObject);
+        });
         
         data[0] = JSON.toJSONString(jsonArray);
-        data[1] = JSON.toJSONString(seatIdList);
-        data[2] = JSON.toJSONString(seatDataList);
-     
-        if (Objects.equals(orderStatus.getCode(), OrderStatus.NO_PAY.getCode())) {
-            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
-            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
-        } else if (Objects.equals(orderStatus.getCode(), OrderStatus.CANCEL.getCode())) {
-            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId).getRelKey());
-            keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId).getRelKey());
-        }
-        programCacheOperate.programCacheOperate(keys,data);
+        data[1] = JSON.toJSONString(delSeatIdjsonArray);
+        data[2] = JSON.toJSONString(addSeatDatajsonArray);
+        programCacheResolutionOperate.programCacheOperate(keys,data);
     }
 }

@@ -31,7 +31,9 @@ public enum CaptchaBaseMapEnum {
         return this.codeDesc;
     }
 
-    //根据codeValue获取枚举
+    /**
+     * 根据codeValue获取枚举
+     * */
     public static CaptchaBaseMapEnum parseFromCodeValue(String codeValue) {
         for (CaptchaBaseMapEnum e : CaptchaBaseMapEnum.values()) {
             if (e.codeValue.equals(codeValue)) {

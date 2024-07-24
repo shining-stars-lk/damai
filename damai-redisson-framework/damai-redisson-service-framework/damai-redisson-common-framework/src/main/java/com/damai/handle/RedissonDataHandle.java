@@ -3,6 +3,7 @@ package com.damai.handle;
 import lombok.AllArgsConstructor;
 import org.redisson.api.RedissonClient;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,6 +25,27 @@ public class RedissonDataHandle {
     }
     
     public void set(String key,String value,long timeToLive, TimeUnit timeUnit){
-        redissonClient.getBucket(key).set(value,timeToLive,timeUnit);
+        redissonClient.getBucket(key).set(value,getDuration(timeToLive,timeUnit));
+    }
+    
+    public Duration getDuration(long timeToLive, TimeUnit timeUnit){
+        switch (timeUnit) {
+            
+            case MINUTES -> {
+                return Duration.ofMinutes(timeToLive);
+            }
+            
+            case HOURS -> {
+                return Duration.ofHours(timeToLive);
+            }
+            
+            case DAYS -> {
+                return Duration.ofDays(timeToLive);
+            }
+            
+            default -> {
+                return Duration.ofSeconds(timeToLive);
+            }
+        }
     }
 }

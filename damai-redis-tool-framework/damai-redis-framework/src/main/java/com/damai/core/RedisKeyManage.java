@@ -16,7 +16,7 @@ public enum RedisKeyManage {
     
     USER_LOGIN("user_login_%s_%s","user_login","value为UserVo类型","k"),
     
-    PRODUCT_STOCK("product_stock:%S","商品库存id","value为库存","k"),
+    PRODUCT_STOCK("product_stock:%s","商品库存id","value为库存","k"),
     
     //分布式datacenter_id
     DISTRIBUTED_DATACENTER_ID("distributed_datacenter_id:%s","分布式datacenter_id","分布式datacenter_id的值","lk"),
@@ -52,31 +52,29 @@ public enum RedisKeyManage {
     
     CHANNEL_DATA("channel_data_%s","channel_data的key","channel_data的value","k"),
     
-    PROGRAM("d_mai_program_%S","节目id","节目","k"),
+    PROGRAM("d_mai_program_%s","节目id","节目","k"),
     
-    PROGRAM_GROUP("d_mai_program_group_%S","节目分组id","节目分组","k"),
+    PROGRAM_GROUP("d_mai_program_group_%s","节目分组id","节目分组","k"),
     
-    PROGRAM_SHOW_TIME("d_mai_program_show_time_%S","节目演出时间id","节目演出时间","k"),
+    PROGRAM_SHOW_TIME("d_mai_program_show_time_%s","节目演出时间id","节目演出时间","k"),
     
-    PROGRAM_SEAT_NO_SOLD_HASH("d_mai_program_seat_no_sold_hash_%S","节目座位未售卖集合id","节目座位未售卖集合","k"),
+    PROGRAM_SEAT_NO_SOLD_HASH("d_mai_program_seat_no_sold_hash_%s_*","节目座位未售卖集合id","节目座位未售卖集合","k"),
     
-    PROGRAM_SEAT_NO_SOLD_RESOLUTION_HASH("d_mai_program_seat_no_sold_resolution_hash_%S_%S","节目座位未售卖集合_节目id_节目类型id","节目座位未售卖集合","k"),
+    PROGRAM_SEAT_NO_SOLD_RESOLUTION_HASH("d_mai_program_seat_no_sold_resolution_hash_%s_%s","节目座位未售卖集合_节目id_节目类型id","节目座位未售卖集合","k"),
     
-    PROGRAM_SEAT_LOCK_HASH("d_mai_program_seat_lock_hash_%S","节目座位锁定集合id","节目座位锁定集合","k"),
+    PROGRAM_SEAT_LOCK_HASH("d_mai_program_seat_lock_hash_%s_*","节目座位锁定集合id","节目座位锁定集合","k"),
     
-    PROGRAM_SEAT_LOCK_RESOLUTION_HASH("d_mai_program_seat_lock_resolution_hash_%S","节目座位锁定集合_节目id_节目类型id","节目座位锁定集合","k"),
+    PROGRAM_SEAT_LOCK_RESOLUTION_HASH("d_mai_program_seat_lock_resolution_hash_%s_%s","节目座位锁定集合_节目id_节目类型id","节目座位锁定集合","k"),
     
-    PROGRAM_SEAT_SOLD_HASH("d_mai_program_seat_sold_hash_%S","节目座位已售卖集合id","节目座位已售卖集合","k"),
+    PROGRAM_SEAT_SOLD_HASH("d_mai_program_seat_sold_hash_%s_*","节目座位已售卖集合id","节目座位已售卖集合","k"),
     
-    PROGRAM_SEAT_SOLD_RESOLUTION_HASH("d_mai_program_seat_sold_resolution_hash_%S","节目座位已售卖集合_节目id_节目类型id","节目座位已售卖集合","k"),
+    PROGRAM_SEAT_SOLD_RESOLUTION_HASH("d_mai_program_seat_sold_resolution_hash_%s_%s","节目座位已售卖集合_节目id_节目类型id","节目座位已售卖集合","k"),
     
-    PROGRAM_TICKET_CATEGORY_LIST("d_mai_program_ticket_category_list_%S","节目票档集合id","节目票档集合","k"),
+    PROGRAM_TICKET_CATEGORY_LIST("d_mai_program_ticket_category_list_%s","节目票档集合id","节目票档集合","k"),
     
-    PROGRAM_TICKET_REMAIN_NUMBER_HASH("d_mai_program_ticket_remain_number_hash_%S","节目余票数量hash集合id","节目余票数量hash集合","k"),
+    PROGRAM_TICKET_REMAIN_NUMBER_HASH("d_mai_program_ticket_remain_number_hash_%s_*","节目余票数量hash集合id","节目余票数量hash集合","k"),
     
-    PROGRAM_TICKET_REMAIN_NUMBER_FUZZY("d_mai_program_ticket_remain_number_resolution_%S*","节目余票数量_节目id*","节目余票数量","k"),
-    
-    PROGRAM_TICKET_REMAIN_NUMBER_RESOLUTION("d_mai_program_ticket_remain_number_resolution_%S_%S","节目余票数量_节目id_节目票档id","节目余票数量","k"),
+    PROGRAM_TICKET_REMAIN_NUMBER_HASH_RESOLUTION("d_mai_program_ticket_remain_number_hash_resolution_%s_%s","节目余票数量_节目id_节目票档id","节目余票数量","k"),
     
     PROGRAM_CATEGORY_HASH("d_mai_program_category_hash","节目类型hash集合","节目类型hash集合","k"),
     
@@ -84,13 +82,13 @@ public enum RedisKeyManage {
     
     COUNTER_TIMESTAMP("d_mai_counter_timestamp","计数器的时间戳的key","计数器的时间戳","k"),
     
-    VERIFY_CAPTCHA_ID("d_mai_verify_captcha_id_%S","校验验证码id的key","校验验证码id","k"),
+    VERIFY_CAPTCHA_ID("d_mai_verify_captcha_id_%s","校验验证码id的key","校验验证码id","k"),
     
-    TICKET_USER_LIST("d_mai_ticket_user_list_%S","购票人列表的key","购票人列表","k"),
+    TICKET_USER_LIST("d_mai_ticket_user_list_%s","购票人列表的key","购票人列表","k"),
     
-    ACCOUNT_ORDER_COUNT("d_mai_account_order_count_%S_%S","账户下订单数量的key","账户下订单数量","k"),
+    ACCOUNT_ORDER_COUNT("d_mai_account_order_count_%s_%s","账户下订单数量的key","账户下订单数量","k"),
     
-    ORDER_MQ("d_mai_order_mq_%S","使用mq创建的订单的订单编号","使用mq创建的订单的订单编号","k")
+    ORDER_MQ("d_mai_order_mq_%s","使用mq创建的订单的订单编号","使用mq创建的订单的订单编号","k")
     ;
 
     /**

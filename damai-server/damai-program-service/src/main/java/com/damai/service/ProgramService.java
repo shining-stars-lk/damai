@@ -403,8 +403,6 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 ticketCategoryService.selectTicketCategoryListByProgramId(programVo.getId(),
                         DateUtils.countBetweenSecond(DateUtils.now(),programShowTime.getShowTime()), TimeUnit.SECONDS);
         programVo.setTicketCategoryVoList(ticketCategoryVoList);
-
-        ticketCategoryService.setRedisRemainNumber(programVo.getId());
         
         return programVo;
     }
@@ -438,8 +436,6 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
         List<TicketCategoryVo> ticketCategoryVoList = ticketCategoryService
                 .selectTicketCategoryListByProgramIdMultipleCache(programVo.getId(),programShowTime.getShowTime());
         programVo.setTicketCategoryVoList(ticketCategoryVoList);
-        
-        ticketCategoryService.setRedisRemainNumber(programVo.getId());
         
         return programVo;
     }

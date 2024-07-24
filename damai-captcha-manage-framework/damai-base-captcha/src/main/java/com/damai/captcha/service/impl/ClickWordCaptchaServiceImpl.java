@@ -271,7 +271,7 @@ public class ClickWordCaptchaServiceImpl extends AbstractCaptchaService {
         dataVO.setSecretKey(secretKey);
         //将坐标信息存入redis中
         String codeKey = String.format(REDIS_CAPTCHA_KEY, dataVO.getToken());
-        CaptchaServiceFactory.getCache(cacheType).set(codeKey, JsonUtil.toJSONString(pointList), EXPIRE_SIN_SECONDS);
+        CaptchaServiceFactory.getCache(cacheType).set(codeKey, JsonUtil.toJsonString(pointList), EXPIRE_SIN_SECONDS);
         //        base64StrToImage(getImageToBase64Str(backgroundImage), "D:\\点击.png");
         return dataVO;
     }
