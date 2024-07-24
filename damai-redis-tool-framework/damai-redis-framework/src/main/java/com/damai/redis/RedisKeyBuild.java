@@ -30,6 +30,10 @@ public final class RedisKeyBuild {
         String redisRelKey = String.format(redisKeyManage.getKey(),args);
         return new RedisKeyBuild(SpringUtil.getPrefixDistinctionName() + "-" + redisRelKey);
     }
+    
+    public static String getRedisKey(RedisKeyManage redisKeyManage) {
+        return SpringUtil.getPrefixDistinctionName() + "-" + redisKeyManage.getKey();
+    }
 
     public String getRelKey() {
         return relKey;

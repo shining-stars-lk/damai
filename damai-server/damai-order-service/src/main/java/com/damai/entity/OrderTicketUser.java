@@ -16,7 +16,7 @@ import java.util.Date;
 @Data
 @TableName("d_order_ticket_user")
 public class OrderTicketUser extends BaseTableData implements Serializable {
-
+    
     private static final long serialVersionUID = 1L;
 
     /**
@@ -53,6 +53,11 @@ public class OrderTicketUser extends BaseTableData implements Serializable {
      * 座位信息
      * */
     private String seatInfo;
+    
+    /**
+     * 节目票档id
+     * */
+    private Long ticketCategoryId;
 
     /**
      * 订单价格

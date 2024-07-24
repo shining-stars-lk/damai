@@ -1,4 +1,4 @@
-package com.damai.service;
+package com.damai.service.lua;
 
 import com.damai.redis.RedisCache;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +13,12 @@ import java.util.List;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
- * @description: program 缓存数据
+ * @description: 节目缓存操作
  * @author: 阿星不是程序员
  **/
 @Slf4j
 @Component
-public class OrderProgramCacheOperate {
+public class ProgramCacheResolutionOperate {
     
     @Autowired
     private RedisCache redisCache;
@@ -29,14 +29,14 @@ public class OrderProgramCacheOperate {
     public void init(){
         try {
             redisScript = new DefaultRedisScript<>();
-            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/OrderProgramData.lua")));
+            redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/programDataResolution.lua")));
             redisScript.setResultType(Integer.class);
         } catch (Exception e) {
             log.error("redisScript init lua error",e);
         }
     }
     
-    public void programCacheReverseOperate(List<String> keys, Object... args){
+    public void programCacheOperate(List<String> keys, String[] args){
         redisCache.getInstance().execute(redisScript, keys, args);
     }
 }

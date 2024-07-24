@@ -42,6 +42,10 @@ public class OrderTicketUserCreateDto {
     @NotBlank
     private String seatInfo;
     
+    @ApiModelProperty(name ="ticketCategoryId", dataType ="Long", value ="节目票档id", required =true)
+    @NotNull
+    private Long ticketCategoryId;
+    
     @ApiModelProperty(name ="orderPrice", dataType ="BigDecimal", value ="订单价格", required =true)
     @NotNull
     private BigDecimal orderPrice;
