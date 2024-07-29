@@ -11,7 +11,7 @@ dataSources:
     jdbcUrl: jdbc:mysql://127.0.0.1:3306/damai_user_1?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
     username: root
     password: root
-    
+
 rules:
   - !SHARDING
     tables:
@@ -20,7 +20,7 @@ rules:
         databaseStrategy:
           standard:
             shardingColumn: mobile
-            shardingAlgorithmName: databaseUserMobileHashModModel     
+            shardingAlgorithmName: databaseUserMobileHashModModel    
         tableStrategy:
           standard:
             shardingColumn: mobile
@@ -34,13 +34,13 @@ rules:
         tableStrategy:
           standard:
             shardingColumn: email
-            shardingAlgorithmName: tableUserEmailHashMod      
+            shardingAlgorithmName: tableUserEmailHashMod
       d_user:
         actualDataNodes: ds_${0..1}.d_user_${0..1}
         databaseStrategy:
           standard:
             shardingColumn: id
-            shardingAlgorithmName: databaseUserModModel 
+            shardingAlgorithmName: databaseUserModModel    
         tableStrategy:
           standard:
             shardingColumn: id
@@ -50,11 +50,11 @@ rules:
         databaseStrategy:
           standard:
             shardingColumn: user_id
-            shardingAlgorithmName: databaseTicketUserModModel    
+            shardingAlgorithmName: databaseTicketUserModModel     
         tableStrategy:
           standard:
             shardingColumn: user_id
-            shardingAlgorithmName: tableTicketUserModModel            
+            shardingAlgorithmName: tableTicketUserModModel    
     shardingAlgorithms:
       databaseUserMobileHashModModel:
         type: HASH_MOD
@@ -71,7 +71,7 @@ rules:
       tableUserEmailHashMod:
         type: HASH_MOD
         props:
-          sharding-count: 2    
+          sharding-count: 2
       databaseUserModModel:
         type: MOD
         props:
@@ -87,7 +87,7 @@ rules:
       tableTicketUserModModel:
         type: MOD
         props:
-          sharding-count: 2
+          sharding-count: 2    
   - !ENCRYPT
     tables:
       d_user:
@@ -100,17 +100,12 @@ rules:
             encryptorName: user_encryption_algorithm
           id_number:
             cipherColumn: id_number
-            encryptorName: user_encryption_algorithm  
+            encryptorName: user_encryption_algorithm
       d_user_mobile:
         columns:
           mobile:
             cipherColumn: mobile
             encryptorName: user_encryption_algorithm
-      d_ticket_user:
-        columns:
-          id_number:
-            cipherColumn: id_number
-            encryptorName: user_encryption_algorithm      
     encryptors:
       user_encryption_algorithm:
         type: SM4
@@ -120,5 +115,4 @@ rules:
           sm4-iv: 1afc7fdce9ebc393f693cd3d23e35ed2
           sm4-padding: PKCS7Padding
 props:
-  sql-show: true      
-      
+  sql-show: true
