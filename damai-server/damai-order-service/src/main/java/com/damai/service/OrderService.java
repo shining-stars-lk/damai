@@ -286,12 +286,13 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     
     
     public String alipayNotify(HttpServletRequest request){
+        
         Map<String, String> params = new HashMap<>(256);
         if (request instanceof final CustomizeRequestWrapper customizeRequestWrapper) {
             String requestBody = customizeRequestWrapper.getRequestBody();
             params = StringUtil.convertQueryStringToMap(requestBody);
         }
-        
+        log.info("收到支付宝回调通知 params : {}",JSON.toJSONString(params));
         String outTradeNo = params.get("out_trade_no");
         if (StringUtil.isEmpty(outTradeNo)) {
             return "failure";
@@ -301,7 +302,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
                 new String[]{outTradeNo});
         lock.lock();
         try {
-            Order order = orderMapper.selectOne(Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, outTradeNo));
+            Order order = orderMapper.selectOne(Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, Long.parseLong(outTradeNo)));
             if (Objects.isNull(order)) {
                 throw new DaMaiFrameException(BaseCode.ORDER_NOT_EXIST);
             }
