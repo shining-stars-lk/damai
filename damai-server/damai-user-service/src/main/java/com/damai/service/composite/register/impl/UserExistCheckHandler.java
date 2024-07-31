@@ -29,11 +29,11 @@ public class UserExistCheckHandler extends AbstractUserRegisterCheckHandler {
     
     @Override
     public Integer executeTier() {
-        return 3;
+        return 2;
     }
 
     @Override
     public Integer executeOrder() {
-        return 1;
+        return 2;
     }
 }
