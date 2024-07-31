@@ -494,7 +494,9 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
     public List<OrderListVo> selectList(OrderListDto orderListDto) {
         List<OrderListVo> orderListVos = new ArrayList<>();
         LambdaQueryWrapper<Order> orderLambdaQueryWrapper = 
-                Wrappers.lambdaQuery(Order.class).eq(Order::getUserId, orderListDto.getUserId());
+                Wrappers.lambdaQuery(Order.class)
+                        .eq(Order::getUserId, orderListDto.getUserId())
+                        .orderByDesc(Order::getCreateOrderTime);
         List<Order> orderList = orderMapper.selectList(orderLambdaQueryWrapper);
         if (CollectionUtil.isEmpty(orderList)) {
             return orderListVos;
