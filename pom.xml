@@ -27,7 +27,7 @@
 
 	<name>${project.artifactId}</name>
 	<description>
-		诚意推荐 真实还原生产环境的微服务企业级高并发项目
+		诚意推荐!!   真实还原生产环境的微服务企业级高并发项目!!
 		SpringBoot + SpringCloudAlibaba + 多线程 + Redis + Kafka + ELK + Docker + Sentinel 等技术
 		包括完整的各种组件配置、高并发下的支付订单解决方案、使用设计模式进行解耦、完整的配套文档和视频
 	</description>
