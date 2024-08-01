@@ -144,6 +144,11 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         }
     }
     
+    /**
+     * 登录
+     * @param userLoginDto 登录入参
+     * @return 用户信息
+     * */
     public UserLoginVo login(UserLoginDto userLoginDto) {
         UserLoginVo userLoginVo = new UserLoginVo();
         String code = userLoginDto.getCode();
@@ -155,7 +160,8 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         }
         Long userId;
         if (StringUtil.isNotEmpty(mobile)) {
-            String errorCountStr = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.LOGIN_USER_MOBILE_ERROR, mobile), String.class);
+            String errorCountStr = 
+                    redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.LOGIN_USER_MOBILE_ERROR, mobile), String.class);
             if (StringUtil.isNotEmpty(errorCountStr) && Integer.parseInt(errorCountStr) >= ERROR_COUNT_THRESHOLD) {
                 throw new DaMaiFrameException(BaseCode.MOBILE_ERROR_COUNT_TOO_MANY);
             }
@@ -169,7 +175,8 @@ public class UserService extends ServiceImpl<UserMapper, User> {
             }
             userId = userMobile.getUserId();
         }else {
-            String errorCountStr = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.LOGIN_USER_EMAIL_ERROR, email), String.class);
+            String errorCountStr = 
+                    redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.LOGIN_USER_EMAIL_ERROR, email), String.class);
             if (StringUtil.isNotEmpty(errorCountStr) && Integer.parseInt(errorCountStr) >= ERROR_COUNT_THRESHOLD) {
                 throw new DaMaiFrameException(BaseCode.EMAIL_ERROR_COUNT_TOO_MANY);
             }
@@ -183,7 +190,6 @@ public class UserService extends ServiceImpl<UserMapper, User> {
             }
             userId = userEmail.getUserId();
         }
-        
         LambdaQueryWrapper<User> queryUserWrapper = Wrappers.lambdaQuery(User.class)
                 .eq(User::getId, userId).eq(User::getPassword, password);
         User user = userMapper.selectOne(queryUserWrapper);
