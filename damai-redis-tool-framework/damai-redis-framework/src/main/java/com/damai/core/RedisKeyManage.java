@@ -1,11 +1,14 @@
 package com.damai.core;
 
 
+import lombok.Getter;
+
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
  * @description: redis key管理
  * @author: 阿星不是程序员
  **/
+@Getter
 public enum RedisKeyManage {
     /**
      * redis 缓存 key管理
@@ -88,28 +91,32 @@ public enum RedisKeyManage {
     
     ACCOUNT_ORDER_COUNT("d_mai_account_order_count_%s_%s","账户下订单数量的key","账户下订单数量","k"),
     
-    ORDER_MQ("d_mai_order_mq_%s","使用mq创建的订单的订单编号","使用mq创建的订单的订单编号","k")
+    ORDER_MQ("d_mai_order_mq_%s","使用mq创建的订单的订单编号","使用mq创建的订单的订单编号","k"),
+    
+    LOGIN_USER_MOBILE_ERROR("d_mai_login_user_mobile_error_%s","登录错误的用户手机号key","登录错误的用户手机号次数","k"),
+    
+    LOGIN_USER_EMAIL_ERROR("d_mai_login_user_email_error_%s","登录错误的用户邮箱key","登录错误的用户邮箱次数","k"),
     ;
 
     /**
      * key值
      * */
-    private String key;
+    private final String key;
 
     /**
      * key的说明
      * */
-    private String keyIntroduce;
+    private final String keyIntroduce;
 
     /**
      * value的说明
      * */
-    private String valueIntroduce;
+    private final String valueIntroduce;
 
     /**
      * 作者
      * */
-    private String author;
+    private final String author;
 
     RedisKeyManage(String key, String keyIntroduce, String valueIntroduce, String author){
         this.key = key;
@@ -126,36 +133,5 @@ public enum RedisKeyManage {
         }
         return null;
     }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getKeyIntroduce() {
-        return keyIntroduce;
-    }
-
-    public void setKeyIntroduce(String keyIntroduce) {
-        this.keyIntroduce = keyIntroduce;
-    }
-
-    public String getValueIntroduce() {
-        return valueIntroduce;
-    }
-
-    public void setValueIntroduce(String valueIntroduce) {
-        this.valueIntroduce = valueIntroduce;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
+    
 }
