@@ -49,9 +49,9 @@ public enum BaseCode {
     
     ONLY_SIGNATURE_ACCESS_IS_ALLOWED(517,"只允许签名访问"),
     
-    MOBILE_ERROR_COUNT_TOO_MANY(518,"手机号输入次数过多，请稍后重试"),
+    MOBILE_ERROR_COUNT_TOO_MANY(518,"手机号输入错误次数过多，请稍后重试"),
     
-    EMAIL_ERROR_COUNT_TOO_MANY(519,"邮箱输入次数过多，请稍后重试"),
+    EMAIL_ERROR_COUNT_TOO_MANY(519,"邮箱输入错误次数过多，请稍后重试"),
     
     RSA_SIGN_ERROR(10000,"rsa签名验证失败"),
     
