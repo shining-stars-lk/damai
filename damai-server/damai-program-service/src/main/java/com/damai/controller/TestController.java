@@ -1,15 +1,13 @@
 package com.damai.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.damai.client.BaseDataClient;
 import com.damai.common.ApiResponse;
-import com.damai.dto.AreaGetDto;
 import com.damai.dto.TestDto;
 import com.damai.dto.TestSendDto;
 import com.damai.service.TestService;
 import com.damai.service.scheduletask.ProgramDataTask;
-import com.damai.vo.AreaVo;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,11 +47,8 @@ public class TestController {
     }
     
     @PostMapping(value = "/test")
-    public ApiResponse<Void> test(@Valid @RequestBody TestDto testDto){
-        AreaGetDto areaGetDto = new AreaGetDto();
-        areaGetDto.setId(testDto.getId());
-        ApiResponse<AreaVo> apiResponse = baseDataClient.getById(areaGetDto);
-        JSON.toJSONString(apiResponse);
+    public ApiResponse<Void> test(@Valid @RequestBody TestDto testDto, HttpServletRequest request){
+        testService.test(testDto,request);
         return ApiResponse.ok();
     }
 }

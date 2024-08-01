@@ -105,6 +105,8 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     @Value("${token.expire.time:40}")
     private Long tokenExpireTime;
     
+    private static final Integer ERROR_COUNT_THRESHOLD = 5;
+    
     @Transactional(rollbackFor = Exception.class)
     @ServiceLock(lockType= LockType.Write,name = REGISTER_USER_LOCK,keys = {"#userRegisterDto.mobile"})
     public Boolean register(UserRegisterDto userRegisterDto) {
@@ -153,18 +155,30 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         }
         Long userId;
         if (StringUtil.isNotEmpty(mobile)) {
+            String errorCountStr = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.LOGIN_USER_MOBILE_ERROR, mobile), String.class);
+            if (StringUtil.isNotEmpty(errorCountStr) && Integer.parseInt(errorCountStr) >= ERROR_COUNT_THRESHOLD) {
+                throw new DaMaiFrameException(BaseCode.MOBILE_ERROR_COUNT_TOO_MANY);
+            }
             LambdaQueryWrapper<UserMobile> queryWrapper = Wrappers.lambdaQuery(UserMobile.class)
                     .eq(UserMobile::getMobile, mobile);
             UserMobile userMobile = userMobileMapper.selectOne(queryWrapper);
             if (Objects.isNull(userMobile)) {
+                redisCache.incrBy(RedisKeyBuild.createRedisKey(RedisKeyManage.LOGIN_USER_MOBILE_ERROR,mobile),1);
+                redisCache.expire(RedisKeyBuild.createRedisKey(RedisKeyManage.LOGIN_USER_MOBILE_ERROR,mobile),1,TimeUnit.MINUTES);
                 throw new DaMaiFrameException(BaseCode.USER_MOBILE_EMPTY);
             }
             userId = userMobile.getUserId();
         }else {
+            String errorCountStr = redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.LOGIN_USER_EMAIL_ERROR, email), String.class);
+            if (StringUtil.isNotEmpty(errorCountStr) && Integer.parseInt(errorCountStr) >= ERROR_COUNT_THRESHOLD) {
+                throw new DaMaiFrameException(BaseCode.EMAIL_ERROR_COUNT_TOO_MANY);
+            }
             LambdaQueryWrapper<UserEmail> queryWrapper = Wrappers.lambdaQuery(UserEmail.class)
                     .eq(UserEmail::getEmail, email);
             UserEmail userEmail = userEmailMapper.selectOne(queryWrapper);
             if (Objects.isNull(userEmail)) {
+                redisCache.incrBy(RedisKeyBuild.createRedisKey(RedisKeyManage.LOGIN_USER_EMAIL_ERROR,email),1);
+                redisCache.expire(RedisKeyBuild.createRedisKey(RedisKeyManage.LOGIN_USER_EMAIL_ERROR,email),1,TimeUnit.MINUTES);
                 throw new DaMaiFrameException(BaseCode.USER_EMAIL_NOT_EXIST);
             }
             userId = userEmail.getUserId();
@@ -182,6 +196,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         userLoginVo.setToken(createToken(user.getId(),getChannelDataByCode(code).getTokenSecret()));
         return userLoginVo;
     }
+    
     private GetChannelDataVo getChannelDataByRedis(String code){
         return redisCache.get(RedisKeyBuild.createRedisKey(RedisKeyManage.CHANNEL_DATA,code),GetChannelDataVo.class);
     }
