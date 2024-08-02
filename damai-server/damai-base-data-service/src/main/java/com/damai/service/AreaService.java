@@ -1,6 +1,7 @@
 package com.damai.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,6 +12,7 @@ import com.damai.enums.AreaType;
 import com.damai.enums.BusinessStatus;
 import com.damai.mapper.AreaMapper;
 import com.damai.vo.AreaVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import java.util.Objects;
  * @description: 地区 service
  * @author: 阿星不是程序员
  **/
+@Slf4j
 @Service
 public class AreaService extends ServiceImpl<AreaMapper, Area> {
     
@@ -46,6 +49,7 @@ public class AreaService extends ServiceImpl<AreaMapper, Area> {
     }
     
     public AreaVo getById(AreaGetDto areaGetDto) {
+        log.info("基础服务调用 getById:{}", JSON.toJSONString(areaGetDto));
         final LambdaQueryWrapper<Area> lambdaQueryWrapper = Wrappers.lambdaQuery(Area.class)
                 .eq(Area::getId, areaGetDto.getId());
         Area area = areaMapper.selectOne(lambdaQueryWrapper);

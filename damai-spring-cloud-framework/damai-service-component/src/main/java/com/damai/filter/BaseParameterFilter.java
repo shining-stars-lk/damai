@@ -32,7 +32,6 @@ public class BaseParameterFilter extends OncePerRequestFilter {
         if (StringUtil.isNotEmpty(requestBody)) {
             requestBody = requestBody.replaceAll(" ", "").replaceAll("\r\n","");
         }
-        log.info("current api : {} requestBody : {}",request.getRequestURI(), requestBody);
         String traceId = request.getHeader(TRACE_ID);
         String gray = request.getHeader(GRAY_PARAMETER);
         String userId = request.getHeader(USER_ID);
@@ -55,6 +54,7 @@ public class BaseParameterFilter extends OncePerRequestFilter {
                 BaseParameterHolder.setParameter(CODE,code);
                 MDC.put(CODE,code);
             }
+            log.info("current api : {} requestBody : {}",request.getRequestURI(), requestBody);
             filterChain.doFilter(request, response);
         }finally {
             BaseParameterHolder.removeParameter(TRACE_ID);
