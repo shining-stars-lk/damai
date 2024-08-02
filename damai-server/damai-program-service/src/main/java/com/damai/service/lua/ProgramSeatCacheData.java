@@ -1,5 +1,6 @@
 package com.damai.service.lua;
 
+import com.alibaba.fastjson.JSON;
 import com.damai.redis.RedisCache;
 import com.damai.vo.SeatVo;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
@@ -28,6 +30,9 @@ public class ProgramSeatCacheData {
     
     private DefaultRedisScript redisScript;
     
+    private static final Integer THRESHOLD_VALUE = 2000;
+    
+    
     @PostConstruct
     public void init(){
         try {
@@ -40,10 +45,18 @@ public class ProgramSeatCacheData {
     }
     
     public List<SeatVo> getData(List<String> keys, String[] args){
-        List<SeatVo> list = new ArrayList<>();
+        List<SeatVo> list;
         Object object = redisCache.getInstance().execute(redisScript, keys, args);
+        List<String> seatVoStrlist = new ArrayList<>();
         if (Objects.nonNull(object) && object instanceof ArrayList) {
-            list = (ArrayList<SeatVo>)object;
+            seatVoStrlist = (ArrayList<String>)object;
+        }
+        if (seatVoStrlist.size() > THRESHOLD_VALUE) {
+            list = seatVoStrlist.parallelStream()
+                    .map(seatVoStr -> JSON.parseObject(seatVoStr,SeatVo.class)).collect(Collectors.toList());
+        }else {
+            list = seatVoStrlist.stream()
+                    .map(seatVoStr -> JSON.parseObject(seatVoStr,SeatVo.class)).collect(Collectors.toList());
         }
         return list;
     }
