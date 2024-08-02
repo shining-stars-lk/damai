@@ -22,6 +22,7 @@ import com.damai.exception.DaMaiFrameException;
 import com.damai.mapper.SeatMapper;
 import com.damai.redis.RedisCache;
 import com.damai.redis.RedisKeyBuild;
+import com.damai.service.lua.ProgramSeatCacheData;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
 import com.damai.util.DateUtils;
@@ -75,6 +76,9 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
     
     @Autowired
     private TicketCategoryService ticketCategoryService;
+    
+    @Autowired
+    private ProgramSeatCacheData programSeatCacheData;
     
     /**
      * 添加座位
@@ -150,15 +154,15 @@ public class SeatService extends ServiceImpl<SeatMapper, Seat> {
         }
     }
     
-    private List<SeatVo> getSeatVoListByCacheResolution(Long programId,Long ticketCategoryId){
-        List<SeatVo> seatVoList = 
-                redisCache.getAllForHash(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_RESOLUTION_HASH, 
-                        programId, ticketCategoryId), SeatVo.class);
-        seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
-                RedisKeyManage.PROGRAM_SEAT_LOCK_RESOLUTION_HASH, programId, ticketCategoryId),SeatVo.class));
-        seatVoList.addAll(redisCache.getAllForHash(RedisKeyBuild.createRedisKey(
-                RedisKeyManage.PROGRAM_SEAT_SOLD_RESOLUTION_HASH, programId, ticketCategoryId),SeatVo.class));
-        return seatVoList;
+    public List<SeatVo> getSeatVoListByCacheResolution(Long programId,Long ticketCategoryId){
+        List<String> keys = new ArrayList<>(4);
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_RESOLUTION_HASH,
+                programId, ticketCategoryId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_RESOLUTION_HASH,
+                programId, ticketCategoryId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_RESOLUTION_HASH,
+                programId, ticketCategoryId).getRelKey());
+        return programSeatCacheData.getData(keys, new String[]{});
     }
     
     public SeatRelateInfoVo relateInfo(SeatListDto seatListDto) {
