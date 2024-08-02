@@ -245,6 +245,8 @@ public enum BaseCode {
     USER_ID_NOT_EXIST(70001,"user_id的值不存在"),
     
     USER_EMAIL_NOT_EXIST(70002,"用户邮箱不存在"),
+    
+    NOT_FOUND_GENE(70003,"没有找到基因"),
     ;
     
     private final Integer code;
