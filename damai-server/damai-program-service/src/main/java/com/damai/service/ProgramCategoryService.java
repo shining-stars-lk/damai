@@ -48,6 +48,9 @@ public class ProgramCategoryService extends ServiceImpl<ProgramCategoryMapper, P
     @Autowired
     private RedisCache redisCache;
     
+    /**
+     * 查询所有节目类型
+     * */
     public List<ProgramCategoryVo> selectAll(){
         QueryWrapper<ProgramCategory> lambdaQueryWrapper = Wrappers.emptyWrapper();
         List<ProgramCategory> programCategoryList = programCategoryMapper.selectList(lambdaQueryWrapper);
