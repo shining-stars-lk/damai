@@ -225,7 +225,7 @@
 在项目中的学习过程中遇到了什么问题或者有哪些建议，欢迎添加本人wx，备注：**大麦**  来领取详细的项目学习资料
 
 <div align=left>
-<img src="https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E4%B8%AA%E4%BA%BA%2F%E5%BE%AE%E4%BF%A1%2F%E5%BE%AE%E4%BF%A1%E4%BA%8C%E7%BB%B4%E7%A0%81.JPG#pic_left"  width="20%">
+<img src="https://multimedia-javaup.cn/%E4%B8%AA%E4%BA%BA%2F%E5%BE%AE%E4%BF%A1%2F%E5%BE%AE%E4%BF%A1%E4%BA%8C%E7%BB%B4%E7%A0%81.JPG#pic_left"  width="20%">
 </div>
 
 ## 小伙伴的疑惑
