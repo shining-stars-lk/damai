@@ -61,21 +61,13 @@ public enum RedisKeyManage {
     
     PROGRAM_SHOW_TIME("d_mai_program_show_time_%s","节目演出时间id","节目演出时间","k"),
     
-    PROGRAM_SEAT_NO_SOLD_HASH("d_mai_program_seat_no_sold_hash_%s_*","节目座位未售卖集合id","节目座位未售卖集合","k"),
-    
     PROGRAM_SEAT_NO_SOLD_RESOLUTION_HASH("d_mai_program_seat_no_sold_resolution_hash_%s_%s","节目座位未售卖集合_节目id_节目类型id","节目座位未售卖集合","k"),
     
-    PROGRAM_SEAT_LOCK_HASH("d_mai_program_seat_lock_hash_%s_*","节目座位锁定集合id","节目座位锁定集合","k"),
-    
     PROGRAM_SEAT_LOCK_RESOLUTION_HASH("d_mai_program_seat_lock_resolution_hash_%s_%s","节目座位锁定集合_节目id_节目类型id","节目座位锁定集合","k"),
-    
-    PROGRAM_SEAT_SOLD_HASH("d_mai_program_seat_sold_hash_%s_*","节目座位已售卖集合id","节目座位已售卖集合","k"),
     
     PROGRAM_SEAT_SOLD_RESOLUTION_HASH("d_mai_program_seat_sold_resolution_hash_%s_%s","节目座位已售卖集合_节目id_节目类型id","节目座位已售卖集合","k"),
     
     PROGRAM_TICKET_CATEGORY_LIST("d_mai_program_ticket_category_list_%s","节目票档集合id","节目票档集合","k"),
-    
-    PROGRAM_TICKET_REMAIN_NUMBER_HASH("d_mai_program_ticket_remain_number_hash_%s_*","节目余票数量hash集合id","节目余票数量hash集合","k"),
     
     PROGRAM_TICKET_REMAIN_NUMBER_HASH_RESOLUTION("d_mai_program_ticket_remain_number_hash_resolution_%s_%s","节目余票数量_节目id_节目票档id","节目余票数量","k"),
     

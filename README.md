@@ -76,13 +76,13 @@
 
 通过以上设计，来实现应对高并发、高吞吐的能力，以及海量数据的存储和服务状态的监控
 
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E6%9E%B6%E6%9E%84%E5%9B%BE/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E5%9B%BE%28%E9%AB%98%E5%88%86%E8%BE%A8%E7%8E%87%29.jpg)
+![](https://multimedia-javaup.cn/%E6%9E%B6%E6%9E%84%E5%9B%BE/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E5%9B%BE%28%E5%8E%8B%E7%BC%A9%E5%90%8E%29.jpg)
 
 ## 业务结构
 
 通过此业务结构图进一步详细的介绍项目中的服务配置、技术选型、核心业务、基础组件、中间件的使用、监控方式等各个方面，方便大家能够对大麦项目的整体架构和设计有一个清晰的认知
 
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E6%9E%B6%E6%9E%84%E5%9B%BE%2F%E9%A1%B9%E7%9B%AE%E4%B8%9A%E5%8A%A1%E7%9A%84%E7%BB%93%E6%9E%84%E5%9B%BE.png)
+![](https://multimedia-javaup.cn/%E6%9E%B6%E6%9E%84%E5%9B%BE%2F%E9%A1%B9%E7%9B%AE%E4%B8%9A%E5%8A%A1%E7%9A%84%E7%BB%93%E6%9E%84%E5%9B%BE.png)
 
 ## 技术选型
 
@@ -126,13 +126,13 @@
 
 除了组件库外，还有对**异常的处理、数据的封装格式、多线程的使用等等也都要进行相应的封装设计**，这些在项目中同样具备
 
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E6%9E%B6%E6%9E%84%E5%9B%BE%2F%E7%BB%84%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%9B%BE.png)
+![](https://multimedia-javaup.cn/%E6%9E%B6%E6%9E%84%E5%9B%BE%2F%E7%BB%84%E4%BB%B6%E6%9E%B6%E6%9E%84%E5%9B%BE.png)
 
 ## 业务流程
 
 对于大麦项目来说，核心的业务就是用户选择节目然后进行购票功能了，项目中不仅完整了对整个业务流程的完整闭环，而且考虑到既然设计此项目是为了应对高并发的特点，那么在从业务的角度上也做了很多的优化设计
 
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E6%9E%B6%E6%9E%84%E5%9B%BE%2F%E4%B8%9A%E5%8A%A1%E5%9B%BE.png)	
+![](https://multimedia-javaup.cn/%E6%9E%B6%E6%9E%84%E5%9B%BE%2F%E4%B8%9A%E5%8A%A1%E5%9B%BE.png)	
 
 ## 项目的亮点质量高吗
 
@@ -166,7 +166,7 @@
 
 - **节目详情要怎么设计缓存？有了Redis就可以了吗？突发性流量激增的问题怎么解决？**
 
-- **如何设计多级缓存来应对几十万，甚至几百万的访问压力？如何发生了缓存雪崩要解决解决和提前预防？**
+- **如何设计多级缓存来应对几十万，甚至几百万的访问压力？如果发生了缓存雪崩要如何解决和提前预防？**
 
   
 
@@ -207,17 +207,17 @@
 为了尽可能的还原，本项目尽可能贴近官网的页面设计和业务流程，小伙伴可以通过前端项目一边来学习业务，一边体会业务中调取了哪些后端接口，这种学习方式是简单且高效的，也建议小伙伴在学习公司的业务时也使用这种方式
 
 ### 主页列表
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E4%B8%BB%E9%A1%B5%E5%88%97%E8%A1%A8.jpg)
+![](https://multimedia-javaup.cn/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E4%B8%BB%E9%A1%B5%E5%88%97%E8%A1%A8.jpg)
 ### 分类列表
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E5%88%86%E7%B1%BB%E5%88%97%E8%A1%A8.jpg)
+![](https://multimedia-javaup.cn/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E5%88%86%E7%B1%BB%E5%88%97%E8%A1%A8.jpg)
 ### 节目详情
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E8%8A%82%E7%9B%AE%E8%AF%A6%E6%83%85.jpg)
+![](https://multimedia-javaup.cn/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E8%8A%82%E7%9B%AE%E8%AF%A6%E6%83%85.jpg)
 ### 生成订单
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E6%8F%90%E4%BA%A4%E8%AE%A2%E5%8D%95.jpg)
+![](https://multimedia-javaup.cn/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E6%8F%90%E4%BA%A4%E8%AE%A2%E5%8D%95.jpg)
 ### 订单列表
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E8%AE%A2%E5%8D%95%E5%88%97%E8%A1%A8.jpg)
+![](https://multimedia-javaup.cn/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E8%AE%A2%E5%8D%95%E5%88%97%E8%A1%A8.jpg)
 ### 订单详情
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E8%AE%A2%E5%8D%95%E8%AF%A6%E6%83%85.jpg)
+![](https://multimedia-javaup.cn/%E5%A4%A7%E9%BA%A6%E9%A1%B9%E7%9B%AE%E6%88%AA%E5%9B%BE%2F%E8%AE%A2%E5%8D%95%E8%AF%A6%E6%83%85.jpg)
 ## 欢迎联系我
 
 小伙伴想要实时关心大麦项目更新的进展情况的话，可以关注公众号：**阿星不是程序员**
@@ -225,7 +225,7 @@
 在项目中的学习过程中遇到了什么问题或者有哪些建议，欢迎添加本人wx，备注：**大麦**  来领取详细的项目学习资料
 
 <div align=left>
-<img src="https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E4%B8%AA%E4%BA%BA%2F%E5%BE%AE%E4%BF%A1%2F%E5%BE%AE%E4%BF%A1%E4%BA%8C%E7%BB%B4%E7%A0%81.JPG#pic_left"  width="20%">
+<img src="https://multimedia-javaup.cn/%E4%B8%AA%E4%BA%BA%2F%E5%BE%AE%E4%BF%A1%2F%E5%BE%AE%E4%BF%A1%E4%BA%8C%E7%BB%B4%E7%A0%81.JPG#pic_left"  width="20%">
 </div>
 
 ## 小伙伴的疑惑
@@ -247,5 +247,5 @@
 包括对 **项目从0到1的讲解**、**项目的细节和亮点总结**、**遇到的面试真题**、**详细的各种优化后的压测报告**、**如何将项目有亮点的写到简历上**。并且提供后续的答疑解惑，小伙伴在学习项目时遇到没有理解的问题，或者面试过程中遇到的问题都可以在社区中进行反馈，本人会进行详细的分析解答
 
 ## 项目文档目录
-![](https://picture-1306508146.cos.ap-beijing.myqcloud.com/%E6%9E%B6%E6%9E%84%E5%9B%BE/%E6%96%87%E6%A1%A3%E7%9B%AE%E5%BD%95.png)
+![](https://multimedia-javaup.cn/%E6%9E%B6%E6%9E%84%E5%9B%BE/%E6%96%87%E6%A1%A3%E7%9B%AE%E5%BD%95%28%E5%8E%8B%E7%BC%A9%E5%90%8E%29.jpg)
 

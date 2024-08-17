@@ -62,6 +62,7 @@ import com.damai.service.cache.local.LocalCacheProgramShowTime;
 import com.damai.service.cache.local.LocalCacheTicketCategory;
 import com.damai.service.constant.ProgramTimeType;
 import com.damai.service.es.ProgramEs;
+import com.damai.service.lua.ProgramDelCacheData;
 import com.damai.service.tool.TokenExpireManager;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.annotion.ServiceLock;
@@ -190,6 +191,9 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     
     @Autowired
     private TokenExpireManager tokenExpireManager;
+    
+    @Autowired
+    private ProgramDelCacheData programDelCacheData;
     
     /**
      * 添加节目
@@ -834,14 +838,16 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
     public void delRedisData(Long programId){
         Program program = Optional.ofNullable(programMapper.selectById(programId))
                 .orElseThrow(() -> new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST));
-        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId));
-        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_GROUP,program.getProgramGroupId()));
-        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programId));
-        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_HASH, programId));
-        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_HASH, programId));
-        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_HASH, programId));
-        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_CATEGORY_LIST, programId));
-        redisCache.del(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH, programId));
+        List<String> keys = new ArrayList<>();
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM,programId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_GROUP,program.getProgramGroupId()).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SHOW_TIME,programId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_NO_SOLD_RESOLUTION_HASH, programId,"*").getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_LOCK_RESOLUTION_HASH, programId,"*").getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_SEAT_SOLD_RESOLUTION_HASH, programId,"*").getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_CATEGORY_LIST, programId).getRelKey());
+        keys.add(RedisKeyBuild.createRedisKey(RedisKeyManage.PROGRAM_TICKET_REMAIN_NUMBER_HASH_RESOLUTION, programId,"*").getRelKey());
+        programDelCacheData.del(keys,new String[]{});
     }
     
     public Boolean invalid(final ProgramInvalidDto programInvalidDto) {
