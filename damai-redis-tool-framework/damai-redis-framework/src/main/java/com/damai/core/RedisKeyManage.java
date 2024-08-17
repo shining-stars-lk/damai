@@ -96,6 +96,8 @@ public enum RedisKeyManage {
     LOGIN_USER_MOBILE_ERROR("d_mai_login_user_mobile_error_%s","登录错误的用户手机号key","登录错误的用户手机号次数","k"),
     
     LOGIN_USER_EMAIL_ERROR("d_mai_login_user_email_error_%s","登录错误的用户邮箱key","登录错误的用户邮箱次数","k"),
+    
+    AREA_PROVINCE_LIST("d_mai_area_province_list","省地区集合","省地区集合数据","k")
     ;
 
     /**
