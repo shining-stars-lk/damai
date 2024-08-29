@@ -493,7 +493,7 @@ public interface RedisCache {
      * @param valueList valueList
      * @return 改动行数
      */
-    Long leftPushAllForList(RedisKeyBuild redisKeyBuild, List<Object> valueList);
+    Long leftPushAllForList(RedisKeyBuild redisKeyBuild, List<?> valueList);
 
     /**
      * List 从左边放入元素(当list存在的时候才加入)

@@ -398,7 +398,7 @@ public class RedisCacheImpl implements RedisCache {
     }
 
     @Override
-    public Long leftPushAllForList(RedisKeyBuild redisKeyBuild, List<Object> valueList){
+    public Long leftPushAllForList(RedisKeyBuild redisKeyBuild, List<?> valueList){
         CacheUtil.checkNotBlank(redisKeyBuild);
         CacheUtil.checkNotEmpty(valueList);
         String key = redisKeyBuild.getRelKey();
