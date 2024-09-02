@@ -16,7 +16,7 @@
               <li :class="item.nameInfoStyle">{{ item.nameInfo }}</li>
               <li class="detail">{{ item.detailInfo }}</li>
               <li class="explain">
-                <router-link :to="item.path"
+                <router-link v-if="experienceAccountFlag != 1" :to="item.path"
                              :class="(item.explainInfo =='立即验证'||item.explainInfo =='立即绑定')? 'pathBtn':'btnColor'">
                   {{ item.explainInfo }}
                 </router-link>
@@ -39,7 +39,8 @@ import {getName, getUserIdKey} from "../../utils/auth";
 import {getPersonInfoId} from '@/api/personInfo'
 import {ref, reactive} from 'vue'
 
-
+//体验账号标识
+const experienceAccountFlag = ref(import.meta.env.VITE_EXPERIENCE_ACCOUNT_FLAG);
 let accountLists = ref([])
 let telNum = ref('')
 
