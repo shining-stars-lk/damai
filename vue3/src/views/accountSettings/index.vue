@@ -20,6 +20,9 @@
                              :class="(item.explainInfo =='立即验证'||item.explainInfo =='立即绑定')? 'pathBtn':'btnColor'">
                   {{ item.explainInfo }}
                 </router-link>
+                <div class="btnColor" v-if="experienceAccountFlag == 1">
+                    体验不支持
+                </div>  
               </li>
             </ul>
           </div>
