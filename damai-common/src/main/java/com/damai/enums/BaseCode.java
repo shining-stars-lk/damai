@@ -192,6 +192,8 @@ public enum BaseCode {
     
     SEAT_UPDATE_REL_COUNT_NOT_EQUAL_PRESET_COUNT(50010,"座位数据更新数量与预设数量不一致"),
     
+    PROGRAM_ORDER_STRATEGY_NOT_EXIST(50011,"创建订单策略不存在"),
+    
     USER_LOG_IN_STATUS_ERROR(60001,"用户不是登录状态"),
     
     USER_LOG_IN(60002,"用户已登录"),
