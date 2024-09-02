@@ -1,33 +1,36 @@
 <template>
   <!--个人信息-->
-  <Header></Header>
-  <div class="red-line"></div>
-  <div class="section">
-    <MenuSideBar class="sidebarMenu" activeIndex="2"></MenuSideBar>
-    <div class="right-section">
-      <div class="breadcrumb"><span>账号设置</span></div>
-      <div class="right-tab">
-        <ul class="title">
-          <li class="left">账号设置</li>
-        </ul>
-        <div class="box">
-          <div class="account-info" v-for="item in accountLists">
-            <ul>
-              <li :class="item.nameInfoStyle">{{ item.nameInfo }}</li>
-              <li class="detail">{{ item.detailInfo }}</li>
-              <li class="explain">
-                <router-link :to="item.path"
-                             :class="(item.explainInfo =='立即验证'||item.explainInfo =='立即绑定')? 'pathBtn':'btnColor'">
-                  {{ item.explainInfo }}
-                </router-link>
-              </li>
-            </ul>
-          </div>
+    <Header></Header>
+    <div class="red-line"></div>
+    <div class="section">
+        <MenuSideBar class="sidebarMenu" activeIndex="2"></MenuSideBar>
+        <div class="right-section">
+            <div class="breadcrumb"><span>账号设置</span></div>
+            <div class="right-tab">
+                <ul class="title">
+                    <li class="left">账号设置</li>
+                </ul>
+                <div class="box">
+                    <div class="account-info" v-for="item in accountLists">
+                        <ul>
+                            <li :class="item.nameInfoStyle">{{ item.nameInfo }}</li>
+                            <li class="detail">{{ item.detailInfo }}</li>
+                            <li class="explain">
+                                <router-link v-if="experienceAccountFlag != 1" :to="item.path"
+                                             :class="(item.explainInfo =='立即验证'||item.explainInfo =='立即绑定')? 'pathBtn':'btnColor'">
+                                    {{ item.explainInfo }}
+                                </router-link>
+                                <div class="btnColor" v-if="experienceAccountFlag == 1">
+                                    体验不支持
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  <Footer class="foot"></Footer>
+    <Footer class="foot"></Footer>
 </template>
 
 <script setup>
@@ -39,40 +42,41 @@ import {getName, getUserIdKey} from "../../utils/auth";
 import {getPersonInfoId} from '@/api/personInfo'
 import {ref, reactive} from 'vue'
 
-
+//体验账号标识
+const experienceAccountFlag = ref(import.meta.env.VITE_EXPERIENCE_ACCOUNT_FLAG);
 let accountLists = ref([])
 let telNum = ref('')
 
 const accountList = reactive([
-  {
-    nameInfo: '登录密码',
-    detailInfo: '',
-    explainInfo: '修改',
-    path: './editPassword',
-    nameInfoStyle: 'name-info-yes'
-  },
-  {
-    nameInfo: '邮箱验证',
-    detailInfo: '验证邮箱可帮助您快速找回密码，并可接收订单、演出通知、促销活动等提醒',
-    explainInfo: '立即绑定',
-    path: './email',
-    nameInfoStyle: 'name-info-yes'
-  },
-  {
-    nameInfo: '手机验证',
-    detailInfo: `您验证的手机：${telNum.value}`,
-    explainInfo: '更换',
-    path: './mobile',
-    nameInfoStyle: 'name-info-yes'
-  },
-  {
-    nameInfo: '实名认证',
-    detailInfo: '认证您的实名信息，提高安全等级',
-    explainInfo: '立即验证',
-    path: './authentication',
-    nameInfoStyle: 'name-info-yes'
+    {
+        nameInfo: '登录密码',
+        detailInfo: '',
+        explainInfo: '修改',
+        path: './editPassword',
+        nameInfoStyle: 'name-info-yes'
+    },
+    {
+        nameInfo: '邮箱验证',
+        detailInfo: '验证邮箱可帮助您快速找回密码，并可接收订单、演出通知、促销活动等提醒',
+        explainInfo: '立即绑定',
+        path: './email',
+        nameInfoStyle: 'name-info-yes'
+    },
+    {
+        nameInfo: '手机验证',
+        detailInfo: `您验证的手机：${telNum.value}`,
+        explainInfo: '更换',
+        path: './mobile',
+        nameInfoStyle: 'name-info-yes'
+    },
+    {
+        nameInfo: '实名认证',
+        detailInfo: '认证您的实名信息，提高安全等级',
+        explainInfo: '立即验证',
+        path: './authentication',
+        nameInfoStyle: 'name-info-yes'
 
-  }
+    }
 ])
 
 
@@ -80,21 +84,21 @@ getIsVaild()
 
 //通过id获取是否进行验证，为验证的话控制图标，按钮的显示
 function getIsVaild() {
-  const id = getUserIdKey()
-  getPersonInfoId({id: id}).then(response => {
-    let {relAuthenticationStatus, emailStatus,mobile} = response.data
-    telNum.value = mobile
-    //此处判断是否验证，来控制显示那种图标
-    accountLists.value = accountList.map(item => {
-      if (item.nameInfo == '邮箱验证') {
-        emailStatus == "0" ? item.nameInfoStyle = 'name-info-no' : item.nameInfoStyle = 'name-info-yes'
-      } else if (item.nameInfo == '实名认证') {
-        relAuthenticationStatus == "0" ? item.nameInfoStyle = 'name-info-no' : item.nameInfoStyle = 'name-info-yes'
-      }
+    const id = getUserIdKey()
+    getPersonInfoId({id: id}).then(response => {
+        let {relAuthenticationStatus, emailStatus,mobile} = response.data
+        telNum.value = mobile
+        //此处判断是否验证，来控制显示那种图标
+        accountLists.value = accountList.map(item => {
+            if (item.nameInfo == '邮箱验证') {
+                emailStatus == "0" ? item.nameInfoStyle = 'name-info-no' : item.nameInfoStyle = 'name-info-yes'
+            } else if (item.nameInfo == '实名认证') {
+                relAuthenticationStatus == "0" ? item.nameInfoStyle = 'name-info-no' : item.nameInfoStyle = 'name-info-yes'
+            }
 
-      return item
+            return item
+        })
     })
-  })
 }
 
 
