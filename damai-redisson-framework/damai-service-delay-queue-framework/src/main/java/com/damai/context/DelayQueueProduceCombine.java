@@ -21,6 +21,7 @@ public class DelayQueueProduceCombine {
     public DelayQueueProduceCombine(DelayQueueBasePart delayQueueBasePart,String topic){
         Integer isolationRegionCount = delayQueueBasePart.getDelayQueueProperties().getIsolationRegionCount();
         isolationRegionSelector =new IsolationRegionSelector(isolationRegionCount);
+        //开始分片
         for(int i = 0; i < isolationRegionCount; i++) {
             delayProduceQueueList.add(new DelayProduceQueue(delayQueueBasePart.getRedissonClient(),topic + "-" + i));
         }
@@ -28,6 +29,7 @@ public class DelayQueueProduceCombine {
     
     public void offer(String content,long delayTime, TimeUnit timeUnit){
         int index = isolationRegionSelector.getIndex();
+        //拿取分片
         delayProduceQueueList.get(index).offer(content, delayTime, timeUnit);
     }
 }
