@@ -5,13 +5,18 @@ server:
 spring:
   application:
     name: ${prefix.distinction.name:damai}-admin-service
+  boot:
+    admin:
+      ui:
+        title: 服务监控中心
+        brand: <span>服务监控中心</span>
   # nacos
   cloud:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
         username: nacos
-        password: nacos
+        password: nacos 
   security:
     user:
       name: admin

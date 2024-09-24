@@ -1,7 +1,8 @@
 package com.damai.monitor;
 
-import com.alibaba.fastjson.JSON;
-import com.damai.util.StringUtil;
+
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.nacos.common.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +22,7 @@ public class DingTalkMessage {
     
     private final String token;
     
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
     
     private HttpEntity<String> createMessage(String message) {
         Map<String, Object> messageJson = new HashMap<>(8);
@@ -35,7 +36,7 @@ public class DingTalkMessage {
     }
     
     public void sendMessage(String message){
-        if (StringUtil.isNotEmpty(token)) {
+        if (StringUtils.isNotEmpty(token)) {
             restTemplate.postForEntity(token, createMessage(message), Void.class);
         }
     }
