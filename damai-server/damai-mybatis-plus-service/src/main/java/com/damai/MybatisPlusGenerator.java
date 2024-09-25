@@ -16,6 +16,8 @@ import java.util.Collections;
 public class MybatisPlusGenerator {
     
     public static void main(String[] args) {
+        //此为mybatisPlus代码生成器，并不需要启动
+        //放在这里的作用是如果自己在工作中需要生成表的对应service、do、实体映射的话，可以参考此配置
         FastAutoGenerator.create("jdbc:mysql://www.cookframe.com:3306/damai?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&remarks=true&useInformationSchema=true", "root", "root")
                 .globalConfig(builder -> {
                     builder.author("k") // 设置作者
