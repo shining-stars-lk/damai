@@ -46,7 +46,7 @@ public class TableOrderComplexGeneArithmetic implements ComplexKeysShardingAlgor
             value = userIdValues.stream().findFirst().orElseThrow(() -> new DaMaiFrameException(BaseCode.USER_ID_NOT_EXIST));
         }
         if (Objects.nonNull(value)) {
-            actualTableNames.add(logicTableName + "_" + value % shardingCount);
+            actualTableNames.add(logicTableName + "_" + ((shardingCount - 1) & value));
             return actualTableNames;
         }
         return allActualSplitTableNames;

@@ -3,6 +3,7 @@ package com.damai.shardingsphere;
 import cn.hutool.core.collection.CollectionUtil;
 import com.damai.enums.BaseCode;
 import com.damai.exception.DaMaiFrameException;
+import com.damai.util.StringUtil;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 
@@ -49,8 +50,7 @@ public class DatabaseOrderComplexGeneArithmetic implements ComplexKeysShardingAl
             value = userIdValues.stream().findFirst().orElseThrow(() -> new DaMaiFrameException(BaseCode.USER_ID_NOT_EXIST));
         }
         if (Objects.nonNull(value)) {
-            long tableIndex = value % tableShardingCount;
-            long databaseIndex = calculateDatabaseIndex(shardingCount,tableIndex,tableShardingCount);
+            long databaseIndex = calculateDatabaseIndex(shardingCount,value,tableShardingCount);
             String databaseIndexStr = String.valueOf(databaseIndex);
             for (String actualSplitDatabaseName : allActualSplitDatabaseNames) {
                 if (actualSplitDatabaseName.contains(databaseIndexStr)) {
@@ -68,21 +68,24 @@ public class DatabaseOrderComplexGeneArithmetic implements ComplexKeysShardingAl
      * 计算给定表索引应分配到的数据库编号。
      *
      * @param databaseCount 数据库总数
-     * @param tableIndex    表索引
+     * @param splicingKey    分片键
      * @param tableCount    表总数
      * @return 分配到的数据库编号
      */
-    public long calculateDatabaseIndex(long databaseCount, long tableIndex, long tableCount) {
-        long tablesPerDatabase = tableCount / databaseCount;
-        long remainder = tableCount % databaseCount;
+    public long calculateDatabaseIndex(Integer databaseCount, Long splicingKey, Integer tableCount) {
+        String splicingKeyBinary = Long.toBinaryString(splicingKey);
+        long replacementLength = log2N(tableCount);
+        String geneBinaryStr = splicingKeyBinary.substring(splicingKeyBinary.length() - (int) replacementLength);
         
-        long databaseIndex;
-        if (tableIndex < (tablesPerDatabase + 1) * remainder) {
-            databaseIndex = tableIndex / (tablesPerDatabase + 1);
-        } else {
-            databaseIndex = remainder + (tableIndex - (tablesPerDatabase + 1) * remainder) / tablesPerDatabase;
+        if (StringUtil.isNotEmpty(geneBinaryStr)) {
+            int h;
+            int geneOptimizeHashCode = (h = geneBinaryStr.hashCode()) ^ (h >>> 16);
+            return (databaseCount - 1) & geneOptimizeHashCode;
         }
-        
-        return databaseIndex;
+        throw new DaMaiFrameException(BaseCode.NOT_FOUND_GENE);
+    }
+    
+    public long log2N(long count) {
+        return (long)(Math.log(count)/ Math.log(2));
     }
 }

@@ -301,7 +301,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
                 new String[]{outTradeNo});
         lock.lock();
         try {
-            Order order = orderMapper.selectOne(Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, outTradeNo));
+            Order order = orderMapper.selectOne(Wrappers.lambdaQuery(Order.class).eq(Order::getOrderNumber, Long.parseLong(outTradeNo)));
             if (Objects.isNull(order)) {
                 throw new DaMaiFrameException(BaseCode.ORDER_NOT_EXIST);
             }

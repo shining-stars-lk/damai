@@ -139,7 +139,8 @@ CREATE TABLE `d_user_email_0` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `edit_time` datetime NOT NULL COMMENT '编辑时间',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:正常 0:删除',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `email_idx` (`email`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户邮箱表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -166,7 +167,8 @@ CREATE TABLE `d_user_email_1` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `edit_time` datetime NOT NULL COMMENT '编辑时间',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:正常 0:删除',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `email_idx` (`email`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户邮箱表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -193,7 +195,8 @@ CREATE TABLE `d_user_mobile_0` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `edit_time` datetime NOT NULL COMMENT '编辑时间',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:正常 0:删除',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `mobile_idx` (`mobile`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户手机表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -220,7 +223,8 @@ CREATE TABLE `d_user_mobile_1` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `edit_time` datetime NOT NULL COMMENT '编辑时间',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:正常 0:删除',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `mobile_idx` (`mobile`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户手机表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
