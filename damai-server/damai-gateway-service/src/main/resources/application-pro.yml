@@ -68,3 +68,12 @@ spring:
             - StripPrefix=2
           metadata:
             title: 用户服务
+            
+        - id: ${prefix.distinction.name:damai}-admin-service
+          uri: lb://${prefix.distinction.name:damai}-admin-service
+          predicates:
+            - Path=/damai/admin/**
+          filters:
+            - StripPrefix=2
+          metadata:
+            title: 监听服务    
