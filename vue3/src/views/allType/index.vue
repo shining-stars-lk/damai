@@ -401,7 +401,9 @@ const categoryClick = (item, ind) => {
     pageParams.value.parentProgramCategoryId = item.id
     //推荐节目列表入参中的父节目类型字段
     recommendParams.parentProgramCategoryId = item.id
-    getChildrenTypeList()
+      if (isActive.value == false) {
+          getChildrenTypeList()
+      }
     getList()
     getRecommendList()
   }
