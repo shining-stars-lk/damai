@@ -393,15 +393,18 @@ const categoryClick = (item, ind) => {
   } else {
     isActive.value = false
   }
+  console.log("isActive: ",isActive.value)
   if (parentProgramCategoryId.value = '') {
     isShowChildren.value = false
   } else {
     isShowChildren.value = true
-    parentProgramCategoryId.value = item.id
-    pageParams.value.parentProgramCategoryId = item.id
+    parentProgramCategoryId.value = item.id;
+    pageParams.value.parentProgramCategoryId = item.id;
     //推荐节目列表入参中的父节目类型字段
-    recommendParams.parentProgramCategoryId = item.id
-    getChildrenTypeList()
+    recommendParams.parentProgramCategoryId = item.id;
+    if (isActive.value == false) {
+        getChildrenTypeList()
+    }
     getList()
     getRecommendList()
   }

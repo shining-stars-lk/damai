@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
@@ -35,7 +36,7 @@ import java.util.TimeZone;
  * @description: 定制对象字段
  * @author: 阿星不是程序员
  **/
-public class JacksonCustom implements Jackson2ObjectMapperBuilderCustomizer, Ordered {
+public class JacksonCustomEnhance implements Jackson2ObjectMapperBuilderCustomizer, Ordered {
 
     /**
      * 默认日期时间格式 
@@ -45,12 +46,11 @@ public class JacksonCustom implements Jackson2ObjectMapperBuilderCustomizer, Ord
     @Override
     public void customize(Jackson2ObjectMapperBuilder builder) {
         builder.serializationInclusion(Include.ALWAYS);
-        
         builder.featuresToEnable(Feature.ALLOW_SINGLE_QUOTES);
         builder.featuresToEnable(Feature.ALLOW_UNQUOTED_FIELD_NAMES);
         
-        SimpleModule[] simpleModules = new SimpleModule[9];
         
+        SimpleModule[] simpleModules = new SimpleModule[9];
         simpleModules[0] = new SimpleModule().setSerializerModifier(new JsonCustomSerializer());
         simpleModules[1] = new SimpleModule().addSerializer(Date.class, new JsonSerializer<Date>() {
 
@@ -77,6 +77,7 @@ public class JacksonCustom implements Jackson2ObjectMapperBuilderCustomizer, Ord
         simpleModules[8] = new SimpleModule().addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
         
         builder.modules(simpleModules);
+        builder.modules(new JavaTimeModule());
         
         builder.timeZone(TimeZone.getDefault());
         builder.featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
