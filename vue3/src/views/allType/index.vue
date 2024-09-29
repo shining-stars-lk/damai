@@ -393,7 +393,6 @@ const categoryClick = (item, ind) => {
   } else {
     isActive.value = false
   }
-  console.log("isActive: ",isActive.value)
   if (parentProgramCategoryId.value = '') {
     isShowChildren.value = false
   } else {
