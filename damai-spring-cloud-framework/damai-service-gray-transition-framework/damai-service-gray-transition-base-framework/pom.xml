@@ -13,12 +13,6 @@
     <name>damai-service-gray-transition-base-framework</name>
     <description>灰度服务基础组件</description>
 
-    <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.example</groupId>
