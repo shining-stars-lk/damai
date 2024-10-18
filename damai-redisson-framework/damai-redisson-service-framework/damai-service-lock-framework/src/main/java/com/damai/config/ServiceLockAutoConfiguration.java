@@ -1,16 +1,12 @@
 package com.damai.config;
 
 import com.damai.constant.LockInfoType;
+import com.damai.core.ManageLocker;
 import com.damai.lockinfo.LockInfoHandle;
 import com.damai.lockinfo.factory.LockInfoHandleFactory;
 import com.damai.lockinfo.impl.ServiceLockInfoHandle;
-import com.damai.servicelock.ServiceLocker;
 import com.damai.servicelock.aspect.ServiceLockAspect;
 import com.damai.servicelock.factory.ServiceLockFactory;
-import com.damai.servicelock.impl.RedissonFairLocker;
-import com.damai.servicelock.impl.RedissonReadLocker;
-import com.damai.servicelock.impl.RedissonReentrantLocker;
-import com.damai.servicelock.impl.RedissonWriteLocker;
 import com.damai.util.ServiceLockTool;
 import org.redisson.api.RedissonClient;
 import org.springframework.context.annotation.Bean;
@@ -27,32 +23,20 @@ public class ServiceLockAutoConfiguration {
         return new ServiceLockInfoHandle();
     }
     
+    /**
+     * 锁管理
+     * */
     @Bean
-    public ServiceLocker redissonFairLocker(RedissonClient redissonClient){
-        return new RedissonFairLocker(redissonClient);
+    public ManageLocker manageLocker(RedissonClient redissonClient){
+        return new ManageLocker(redissonClient);
     }
     
+    /**
+     * 锁工厂
+     * */
     @Bean
-    public ServiceLocker redissonWriteLocker(RedissonClient redissonClient){
-        return new RedissonWriteLocker(redissonClient);
-    }
-
-    @Bean
-    public ServiceLocker redissonReadLocker(RedissonClient redissonClient){
-        return new RedissonReadLocker(redissonClient);
-    }
-
-    @Bean
-    public ServiceLocker redissonReentrantLocker(RedissonClient redissonClient){
-        return new RedissonReentrantLocker(redissonClient);
-    }
-   
-    @Bean
-    public ServiceLockFactory serviceLockFactory(ServiceLocker redissonFairLocker,
-                                                 ServiceLocker redissonWriteLocker,
-                                                 ServiceLocker redissonReadLocker,
-                                                 ServiceLocker redissonReentrantLocker){
-        return new ServiceLockFactory(redissonFairLocker,redissonWriteLocker,redissonReadLocker,redissonReentrantLocker);
+    public ServiceLockFactory serviceLockFactory(ManageLocker manageLocker){
+        return new ServiceLockFactory(manageLocker);
     }
     
     @Bean

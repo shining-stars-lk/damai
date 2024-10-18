@@ -1,5 +1,6 @@
 package com.damai.servicelock.factory;
 
+import com.damai.core.ManageLocker;
 import com.damai.servicelock.LockType;
 import com.damai.servicelock.ServiceLocker;
 import lombok.AllArgsConstructor;
@@ -12,29 +13,23 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ServiceLockFactory {
     
-    private final ServiceLocker redissonFairLocker;
-    
-    private final ServiceLocker redissonWriteLocker;
-    
-    private final ServiceLocker redissonReadLocker;
-    
-    private final ServiceLocker redissonReentrantLocker;
+    private final ManageLocker manageLocker;
     
 
     public ServiceLocker getLock(LockType lockType){
         ServiceLocker lock;
         switch (lockType) {
             case Fair:
-                lock = redissonFairLocker;
+                lock = manageLocker.getFairLocker();
                 break;
             case Write:
-                lock = redissonWriteLocker;
+                lock = manageLocker.getWriteLocker();
                 break;
             case Read:
-                lock = redissonReadLocker;
+                lock = manageLocker.getReadLocker();
                 break;
             default:
-                lock = redissonReentrantLocker;
+                lock = manageLocker.getReentrantLocker();
                 break;
         }
         return lock;
