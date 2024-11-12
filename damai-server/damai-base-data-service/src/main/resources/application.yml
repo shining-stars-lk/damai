@@ -10,7 +10,7 @@ spring:
   main:
     allow-bean-definition-overriding: true
   mvc:
-    pathmatch:
+    pathmatch:  
       matching-strategy: ant_path_matcher
     servlet:
       load-on-startup: 1
@@ -58,7 +58,11 @@ feign:
     response:
       enabled: true
 management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
   endpoints:
+    enabled-by-default: true 
     web:
       exposure:
         include: '*'
@@ -69,6 +73,10 @@ management:
   health:
     elasticsearch:
       enabled: false
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 jasypt:
   encryptor:
     password: bgtjkjl!%^sdc
