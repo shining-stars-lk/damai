@@ -19,7 +19,7 @@ public class RedissonReadLocker implements ServiceLocker {
     
     @Override
     public RLock getLock(String lockKey) {
-        return redissonClient.getFairLock(lockKey);
+        return redissonClient.getReadWriteLock(lockKey).readLock();
     }
     
     @Override
