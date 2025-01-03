@@ -29,4 +29,7 @@ public class GatewayProperty {
     
     @Value("${allow.normal.access:true}")
     private boolean allowNormalAccess;
+    
+    @Value("${userId.paths:/**/program/detail,/**/program/detail/v1,/**/program/detail/v2}")
+    private String[] userIdPaths;
 }

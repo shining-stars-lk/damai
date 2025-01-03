@@ -232,6 +232,11 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
                 userId = userVo.getId();
             }
             
+            if (StringUtil.isEmpty(userId) && checkNeedUserId(url) && StringUtil.isNotEmpty(token)) {
+                UserVo userVo = tokenService.getUser(token,code,channelDataVo.getTokenSecret());
+                userId = userVo.getId();
+            }
+            
             requestBody = bodyContent.get(BUSINESS_BODY);
         }
         apiRestrictService.apiRestrict(userId,url,request);
@@ -308,5 +313,15 @@ public class RequestValidationFilter implements GlobalFilter, Ordered {
     
     public boolean checkParameter(String originalBody,String noVerify){
         return (!(VERIFY_VALUE.equals(noVerify))) && StringUtil.isNotEmpty(originalBody);
+    }
+    
+    private boolean checkNeedUserId(String url){
+        for (String userIdPath : gatewayProperty.getUserIdPaths()) {
+            PathMatcher matcher = new AntPathMatcher();
+            if (matcher.match(userIdPath, url)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
