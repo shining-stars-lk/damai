@@ -20,5 +20,11 @@ public interface OrderTicketUserMapper extends BaseMapper<OrderTicketUser> {
      * @return 结果
      * */
     List<OrderTicketUserAggregate> selectOrderTicketUserAggregate(@Param("orderNumberList")List<Long> orderNumberList);
+    
+    /**
+     * 真实删除购票人订单数据
+     * @return 结果
+     * */
+    Integer relDelOrderTicketUser();
 
 }

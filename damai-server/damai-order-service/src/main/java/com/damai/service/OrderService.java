@@ -624,4 +624,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order> {
         }
         return cancel(orderCancelDto);
     }
+    
+    
+    public void delOrderAndOrderTicketUser(){
+        orderMapper.relDelOrder();
+        orderTicketUserMapper.relDelOrderTicketUser();
+    }
 }

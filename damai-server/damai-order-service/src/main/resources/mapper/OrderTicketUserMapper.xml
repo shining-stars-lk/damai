@@ -29,4 +29,9 @@
         group by order_number
     </select>
 
+    <select id="relDelOrderTicketUser" resultType="java.lang.Integer">
+        delete
+        from d_order_ticket_user
+        where order_status in (1,2,3,4)
+    </select>
 </mapper>

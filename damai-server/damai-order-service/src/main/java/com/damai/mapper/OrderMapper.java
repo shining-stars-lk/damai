@@ -19,4 +19,10 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @return 结果
      * */
     Integer accountOrderCount(@Param("userId")Long userId,@Param("programId")Long programId);
+    
+    /**
+     * 真实删除订单数据
+     * @return 结果
+     * */
+    Integer relDelOrder();
 }

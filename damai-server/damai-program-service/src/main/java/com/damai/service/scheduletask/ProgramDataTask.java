@@ -15,10 +15,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * @program: damai
- * @description:
- * @author: k
- * @create: 2024-06-05
+ * @program: 极度真实还原大麦网高并发实战项目。 添加 阿星不是程序员 微信，添加时备注 大麦 来获取项目的完整资料 
+ * @description: 节目服务定时任务重置
+ * @author: 阿星不是程序员
  **/
 @Slf4j
 @Component
@@ -41,7 +40,7 @@ public class ProgramDataTask {
     public void executeTask(){
         BusinessThreadPool.execute( () -> {
             try {
-                log.warn("定时任务重置执行");
+                log.warn("节目服务定时任务重置执行");
                 List<Long> allProgramIdList = programService.getAllProgramIdList();
                 if (CollectionUtil.isNotEmpty(allProgramIdList)) {
                     for (Long programId : allProgramIdList) {

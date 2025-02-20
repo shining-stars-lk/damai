@@ -26,4 +26,10 @@
         and user_id = #{userId,jdbcType=BIGINT}
         and program_id = #{programId,jdbcType=BIGINT}
     </select>
+    
+    <select id="relDelOrder" resultType="java.lang.Integer">
+        delete 
+        from d_order
+        where order_status in (1,2,3,4)
+    </select>
 </mapper>

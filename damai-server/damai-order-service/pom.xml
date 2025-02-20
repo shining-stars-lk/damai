@@ -82,6 +82,11 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
+            <artifactId>damai-thread-pool-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
             <artifactId>damai-service-delay-queue-framework</artifactId>
             <version>${revision}</version>
         </dependency>
