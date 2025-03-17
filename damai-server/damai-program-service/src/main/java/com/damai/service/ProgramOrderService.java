@@ -149,9 +149,9 @@ public class ProgramOrderService {
                     throw new DaMaiFrameException(BaseCode.TICKET_REMAIN_NUMBER_NOT_SUFFICIENT);
                 }
             }
+            Map<String, SeatVo> seatVoMap = seatVoList.stream().collect(Collectors
+                    .toMap(seat -> seat.getRowCode() + "-" + seat.getColCode(), seat -> seat, (v1, v2) -> v2));
             for (SeatDto seatDto : seatDtoList) {
-                Map<String, SeatVo> seatVoMap = seatVoList.stream().collect(Collectors
-                        .toMap(seat -> seat.getRowCode() + "-" + seat.getColCode(), seat -> seat, (v1, v2) -> v2));
                 SeatVo seatVo = seatVoMap.get(seatDto.getRowCode() + "-" + seatDto.getColCode());
                 if (Objects.isNull(seatVo)) {
                     throw new DaMaiFrameException(BaseCode.SEAT_IS_NOT_NOT_SOLD);
