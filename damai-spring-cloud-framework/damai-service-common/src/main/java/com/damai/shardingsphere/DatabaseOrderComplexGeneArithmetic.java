@@ -37,7 +37,7 @@ public class DatabaseOrderComplexGeneArithmetic implements ComplexKeysShardingAl
         List<String> actualDatabaseNames = new ArrayList<>(allActualSplitDatabaseNames.size());
         Map<String, Collection<Long>> columnNameAndShardingValuesMap = complexKeysShardingValue.getColumnNameAndShardingValuesMap();
         if (CollectionUtil.isEmpty(columnNameAndShardingValuesMap)) {
-            return actualDatabaseNames;
+            return allActualSplitDatabaseNames;
         }
         
         Collection<Long> orderNumberValues = columnNameAndShardingValuesMap.get("order_number");
