@@ -804,30 +804,30 @@ public class ProgramService extends ServiceImpl<ProgramMapper, Program> {
                 Wrappers.lambdaQuery(Seat.class).eq(Seat::getProgramId, programId)
                         .in(Seat::getSellStatus,SellStatus.LOCK.getCode(),SellStatus.SOLD.getCode());
         List<Seat> seatList = seatMapper.selectList(seatQueryWrapper);
-        if (CollectionUtil.isEmpty(seatList)) {
-            return true;
+        if (CollectionUtil.isNotEmpty(seatList)) {
+            LambdaUpdateWrapper<Seat> seatUpdateWrapper =
+                    Wrappers.lambdaUpdate(Seat.class).eq(Seat::getProgramId, programId);
+            Seat seatUpdate = new Seat();
+            seatUpdate.setSellStatus(SellStatus.NO_SOLD.getCode());
+            seatMapper.update(seatUpdate,seatUpdateWrapper);
         }
-        LambdaUpdateWrapper<Seat> seatUpdateWrapper =
-                Wrappers.lambdaUpdate(Seat.class).eq(Seat::getProgramId, programId);
-        Seat seatUpdate = new Seat();
-        seatUpdate.setSellStatus(SellStatus.NO_SOLD.getCode());
-        seatMapper.update(seatUpdate,seatUpdateWrapper);
-        
         LambdaQueryWrapper<TicketCategory> ticketCategoryQueryWrapper =
                 Wrappers.lambdaQuery(TicketCategory.class).eq(TicketCategory::getProgramId, programId);
         List<TicketCategory> ticketCategories = ticketCategoryMapper.selectList(ticketCategoryQueryWrapper);
-        for (TicketCategory ticketCategory : ticketCategories) {
-            Long remainNumber = ticketCategory.getRemainNumber();
-            Long totalNumber = ticketCategory.getTotalNumber();
-            if (!(remainNumber.equals(totalNumber))) {
-                TicketCategory ticketCategoryUpdate = new TicketCategory();
-                ticketCategoryUpdate.setRemainNumber(totalNumber);
-                
-                LambdaUpdateWrapper<TicketCategory> ticketCategoryUpdateWrapper =
-                        Wrappers.lambdaUpdate(TicketCategory.class)
-                                .eq(TicketCategory::getProgramId, programId)
-                                .eq(TicketCategory::getId,ticketCategory.getId());
-                ticketCategoryMapper.update(ticketCategoryUpdate,ticketCategoryUpdateWrapper);
+        if (CollectionUtil.isNotEmpty(ticketCategories)) {
+            for (TicketCategory ticketCategory : ticketCategories) {
+                Long remainNumber = ticketCategory.getRemainNumber();
+                Long totalNumber = ticketCategory.getTotalNumber();
+                if (!(remainNumber.equals(totalNumber))) {
+                    TicketCategory ticketCategoryUpdate = new TicketCategory();
+                    ticketCategoryUpdate.setRemainNumber(totalNumber);
+                    
+                    LambdaUpdateWrapper<TicketCategory> ticketCategoryUpdateWrapper =
+                            Wrappers.lambdaUpdate(TicketCategory.class)
+                                    .eq(TicketCategory::getProgramId, programId)
+                                    .eq(TicketCategory::getId,ticketCategory.getId());
+                    ticketCategoryMapper.update(ticketCategoryUpdate,ticketCategoryUpdateWrapper);
+                }
             }
         }
         delRedisData(programId);
