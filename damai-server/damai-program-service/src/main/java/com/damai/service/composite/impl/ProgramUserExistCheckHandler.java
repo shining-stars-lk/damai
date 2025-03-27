@@ -82,7 +82,7 @@ public class ProgramUserExistCheckHandler extends AbstractProgramCheckHandler {
         }
         ProgramGetDto programGetDto = new ProgramGetDto();
         programGetDto.setId(programOrderCreateDto.getProgramId());
-        ProgramVo programVo = programService.detail(programGetDto);
+        ProgramVo programVo = programService.detailV2(programGetDto);
         if (Objects.isNull(programVo)) {
             throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_EXIST);
         }
