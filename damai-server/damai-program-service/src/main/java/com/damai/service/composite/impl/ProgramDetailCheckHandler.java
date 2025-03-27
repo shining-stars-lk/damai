@@ -31,7 +31,7 @@ public class ProgramDetailCheckHandler extends AbstractProgramCheckHandler {
     protected void execute(final ProgramOrderCreateDto programOrderCreateDto) {
         ProgramGetDto programGetDto = new ProgramGetDto();
         programGetDto.setId(programOrderCreateDto.getProgramId());
-        ProgramVo programVo = programService.detail(programGetDto);
+        ProgramVo programVo = programService.detailV2(programGetDto);
         if (programVo.getPermitChooseSeat().equals(BusinessStatus.NO.getCode())) {
             if (Objects.nonNull(programOrderCreateDto.getSeatDtoList())) {
                 throw new DaMaiFrameException(BaseCode.PROGRAM_NOT_ALLOW_CHOOSE_SEAT);
