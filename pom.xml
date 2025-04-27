@@ -134,30 +134,6 @@
 					<encoding>${project.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
-<!--			<plugin>-->
-<!--				<groupId>com.diffplug.spotless</groupId>-->
-<!--				<artifactId>spotless-maven-plugin</artifactId>-->
-<!--				<version>${spotless-maven-plugin.version}</version>-->
-<!--				<configuration>-->
-<!--					<java>-->
-<!--						<eclipse>-->
-<!--							<file>${project.basedir}/spotless/spotless.xml</file>-->
-<!--						</eclipse>-->
-<!--						<licenseHeader>-->
-<!--							<file>${project.basedir}/spotless/license-header</file>-->
-<!--						</licenseHeader>-->
-<!--					</java>-->
-<!--				</configuration>-->
-<!--				&lt;!&ndash;绑定maven生命周期，在compile时会执行apply &ndash;&gt;-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<goals>-->
-<!--							<goal>apply</goal>-->
-<!--						</goals>-->
-<!--						<phase>compile</phase>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
