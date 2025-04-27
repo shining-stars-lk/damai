@@ -13,10 +13,6 @@ public enum RedisKeyManage {
     /**
      * redis 缓存 key管理
      * */
-
-    Key("key","键值测试","value为TestCacheDto类型","k"),
-    Key2("key:%s","键值占位测试","value为TestCacheDto类型","k"),
-    
     USER_LOGIN("user_login_%s_%s","user_login","value为UserVo类型","k"),
     
     PRODUCT_STOCK("product_stock:%s","商品库存id","value为库存","k"),

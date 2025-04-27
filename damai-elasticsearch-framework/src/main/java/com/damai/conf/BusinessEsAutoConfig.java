@@ -70,6 +70,7 @@ public class BusinessEsAutoConfig {
 
 	/**
 	 * 获取HttpHost对象
+	 * @param s 地址
 	 *
 	 */
 	private HttpHost makeHttpHost(String s) {

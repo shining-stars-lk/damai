@@ -60,6 +60,7 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 	}
 
 	/**
+	 * 以下方法是从 SpringBoot 3.0.0 复制过来的
 	 * Inspects the target class.
 	 * <p>Exceptions will be logged, and a marker map returned to indicate the
 	 * lack of debug information.

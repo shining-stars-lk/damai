@@ -15,8 +15,8 @@ public enum CaptchaBaseMapEnum {
     SLIDING_BLOCK("SLIDING_BLOCK", "滑动拼图滑块底图"),
     PIC_CLICK("PIC_CLICK", "文字点选底图");
 
-    private String codeValue;
-    private String codeDesc;
+    private final String codeValue;
+    private final String codeDesc;
 
     private CaptchaBaseMapEnum(String codeValue, String codeDesc) {
         this.codeValue = codeValue;
@@ -43,26 +43,12 @@ public enum CaptchaBaseMapEnum {
         return null;
     }
     
-    /**
-     * 根据codeValue获取描述
-     */
-    public static String getCodeDescByCodeBalue(String codeValue) {
-        CaptchaBaseMapEnum enumItem = parseFromCodeValue(codeValue);
-        return enumItem == null ? "" : enumItem.getCodeDesc();
-    }
-    
-    /**
-     * 验证codeValue是否有效
-     */
-    public static boolean validateCodeValue(String codeValue) {
-        return parseFromCodeValue(codeValue) != null;
-    }
     
     /**
      * 列出所有值字符串
      */
     public static String getString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (CaptchaBaseMapEnum e : CaptchaBaseMapEnum.values()) {
             buffer.append(e.codeValue).append("--").append(e.getCodeDesc()).append(", ");
         }
