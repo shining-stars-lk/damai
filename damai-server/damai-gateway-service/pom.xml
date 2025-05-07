@@ -138,6 +138,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>damai-service-lock-framework</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 
     <build>

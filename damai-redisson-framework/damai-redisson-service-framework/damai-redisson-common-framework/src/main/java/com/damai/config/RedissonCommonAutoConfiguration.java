@@ -6,6 +6,9 @@ import com.damai.lockinfo.factory.LockInfoHandleFactory;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
+import org.redisson.spring.starter.RedissonAutoConfiguration;
+import org.redisson.spring.starter.RedissonAutoConfigurationV2;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @description: redisson通用配置
  * @author: 阿星不是程序员
  **/
+@AutoConfigureBefore(value = {RedissonAutoConfigurationV2.class, RedissonAutoConfiguration.class})
 @EnableConfigurationProperties(RedissonBaseProperties.class)
 public class RedissonCommonAutoConfiguration {
     
