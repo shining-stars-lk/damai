@@ -23,7 +23,7 @@ public class GatewayConstant {
     
     public static final String VERIFY_VALUE = "true";
     
-    public static final String USER_ID = "user_id";
+    public static final String USER_ID = "userId";
     
     public static final String V2 = "v2";
     
