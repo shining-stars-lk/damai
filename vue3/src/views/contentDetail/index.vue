@@ -353,7 +353,7 @@ function getRecommendList(){
 .app-container {
   width: 1200px;
   margin: 0 auto;
-  //overflow: auto;     删去这一行
+  overflow: auto;
 
   .wrapper {
     display: flex;
