@@ -1,10 +1,48 @@
 <p align="center">
-  <img src="https://multimedia-javaup.cn/damai/structure/damai-banner.png" alt="DAMAI 大麦高并发票务系统" width="100%" />
+  <a href="https://javaup.chat/damai">
+    <img src="https://multimedia-javaup.cn/damai/structure/damai-banner.png" alt="DAMAI 大麦高并发票务系统" width="100%" />
+  </a>
 </p>
 
-**开源不易，还请您点个Star 多谢！🎉**
+<p align="center">
+  <strong>企业级高并发票务微服务项目</strong><br />
+  <span>从节目浏览、座位选择到支付订单和高并发治理的完整业务闭环</span>
+</p>
+
+<p align="center">
+  <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-4a9b8f?style=flat-square" /></a>
+  <img alt="Java" src="https://img.shields.io/badge/Java-17%2B-df5b46?style=flat-square&logo=openjdk" />
+  <img alt="Maven" src="https://img.shields.io/badge/Maven-Multi--Module-cb3b32?style=flat-square&logo=apachemaven&logoColor=white" />
+  <img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-Framework-6db33f?style=flat-square&logo=springboot&logoColor=white" />
+  <img alt="Vue 3" src="https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vuedotjs&logoColor=white" />
+  <img alt="Spring Cloud Alibaba" src="https://img.shields.io/badge/Spring%20Cloud%20Alibaba-Framework-4a9b8f?style=flat-square" />
+  <img alt="Nacos" src="https://img.shields.io/badge/Nacos-Service%20Discovery-4a9b8f?style=flat-square" />
+  <img alt="Redis" src="https://img.shields.io/badge/Redis-Cache%20%26%20Queue-dc382d?style=flat-square&logo=redis&logoColor=white" />
+  <img alt="Redisson" src="https://img.shields.io/badge/Redisson-Distributed%20Lock-8a63d2?style=flat-square" />
+  <img alt="Kafka" src="https://img.shields.io/badge/Kafka-Event%20Streaming-231f20?style=flat-square&logo=apachekafka&logoColor=white" />
+  <img alt="Elasticsearch" src="https://img.shields.io/badge/Elasticsearch-Search-005571?style=flat-square&logo=elasticsearch&logoColor=white" />
+  <img alt="Sentinel" src="https://img.shields.io/badge/Sentinel-Resilience-e87545?style=flat-square" />
+  <img alt="ShardingSphere" src="https://img.shields.io/badge/ShardingSphere-Database%20Sharding-4a9b8f?style=flat-square" />
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-Deployment-2496ed?style=flat-square&logo=docker&logoColor=white" />
+  <img alt="High Concurrency" src="https://img.shields.io/badge/High%20Concurrency-Production%20Patterns-e87545?style=flat-square" />
+</p>
+
+<p align="center">
+  <a href="https://javaup.chat/damai"><strong>官网文档</strong></a>
+  ·
+  <a href="https://www.damai-javaup.chat"><strong>在线体验</strong></a>
+  ·
+  <a href="https://javaup.chat/damai/getting-started/prerequisites"><strong>快速启动</strong></a>
+  ·
+  <a href="#技术结构"><strong>核心架构</strong></a>
+</p>
+
+<p align="center">
+  <strong>开源不易，如果这个项目对你有帮助，欢迎给大麦点一个 Star。</strong>
+</p>
 
 # 项目背景
+
 可以说目前的Java程序员面试是非常激烈的，前几年大家都热衷于八股文的研究，把八股文背熟了大部分就能拿到岗位offer了，但现在仅仅靠八股文已经不好使了，现在面试官看的是真正的设计项目，**项目中的架构复杂程度怎样？**、**做过的东西哪些具有亮点？**、
 **解决了哪些有价值的问题？** 将实际项目和八股文相结合从而判断面试者的能力。
 
@@ -285,4 +323,3 @@
 
 # 文档和视频目录
 ![](https://multimedia-javaup.cn/%E6%9E%B6%E6%9E%84%E5%9B%BE/%E6%96%87%E6%A1%A3%E7%9B%AE%E5%BD%95.png)
-
