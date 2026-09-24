@@ -13,7 +13,7 @@
     <artifactId>damai-base-captcha</artifactId>
 
     <name>damai-base-captcha</name>
-    <description>damai-base-captcha</description>
+    <description>验证码基础组件</description>
     
     <dependencies>
         <dependency>

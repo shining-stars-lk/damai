@@ -13,7 +13,7 @@
     <artifactId>damai-elasticsearch-framework</artifactId>
 
     <name>damai-elasticsearch-framework</name>
-    <description>elasticsearch封装</description>
+    <description>elasticsearch自封装组件</description>
     
 
     <dependencies>
