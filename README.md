@@ -28,13 +28,13 @@
 </p>
 
 <p align="center">
-  <a href="https://javaup.chat/damai"><strong>官网文档</strong></a>
+  <a href="https://javaup.chat/damai/overview/project-intro"><strong>官网文档</strong></a>
   ·
-  <a href="https://www.damai-javaup.chat"><strong>在线体验</strong></a>
+  <a href="https://damai-javaup.chat"><strong>在线体验</strong></a>
   ·
   <a href="https://javaup.chat/damai/getting-started/prerequisites"><strong>快速启动</strong></a>
   ·
-  <a href="#技术结构"><strong>核心架构</strong></a>
+  <a href="https://javaup.chat/damai/overview/highlights"><strong>核心架构</strong></a>
 </p>
 
 <p align="center">
@@ -53,9 +53,9 @@
 # 项目介绍
 大麦订票服务系统提供了可以在线上对相应的节目（包括：演唱会、话剧歌剧、体育比赛、儿童亲子）进行订票的功能，用户可以进行注册，登录，然后选择节目和座位后进行购票，支付，以及查询自己的订单功能
 
-- **大麦项目在线体验：** [👉 点击进行体验](https://www.damai-javaup.chat)
+- **大麦项目在线体验：** [👉 点击进行体验](https://damai-javaup.chat)
 
-- **大麦项目详细讲解：** [👉 点击查看讲解](https://www.javaup.chat)
+- **大麦项目详细讲解：** [👉 点击查看讲解](https://javaup.chat/damai/overview/project-intro)
 
 # 项目优势
 
