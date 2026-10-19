@@ -23,7 +23,7 @@ public class DelayQueueInitHandler implements ApplicationListener<ApplicationSta
     
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
-
+        //获取消费任务
         Map<String, ConsumerTask> consumerTaskMap = event.getApplicationContext().getBeansOfType(ConsumerTask.class);
         if (CollectionUtil.isEmpty(consumerTaskMap)) {
             return;
